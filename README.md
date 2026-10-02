@@ -60,7 +60,7 @@ openspec show bootstrap-solution  # view a change
 openspec validate --all --strict  # validate changes and specs
 ```
 
-Current change: [`bootstrap-solution`](openspec/changes/bootstrap-solution/proposal.md) — solution skeleton, localization and game viewport.
+Specs: [`localization`](openspec/specs/localization/spec.md), [`game-viewport`](openspec/specs/game-viewport/spec.md). Completed changes are in [`openspec/changes/archive/`](openspec/changes/archive/).
 
 ## Getting started
 
