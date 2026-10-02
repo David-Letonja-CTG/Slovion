@@ -7,7 +7,13 @@ Defines how the player moves through the game world: maps authored as data, tile
 ## Requirements
 
 ### Requirement: Maps are content
-Maps SHALL be loaded from content data (Tiled JSON) that defines ground layers, a collision layer, a spawn point, interactive spots and optional habitat zones (rectangles naming a habitat). No map layout SHALL be hardcoded in game code.
+Maps SHALL be loaded from content data (Tiled JSON). A map SHALL define:
+- ground layers and a collision layer
+- a spawn point
+- interactive spots
+- optional habitat zones (rectangles naming a habitat)
+
+No map layout SHALL be hardcoded in game code.
 
 #### Scenario: Entering the meadow
 - **WHEN** a game starts or continues
@@ -16,6 +22,11 @@ Maps SHALL be loaded from content data (Tiled JSON) that defines ground layers, 
 #### Scenario: Habitat zones
 - **WHEN** the meadow is loaded
 - **THEN** its tall-grass tiles belong to a zone of habitat `tall_grass` and the path does not
+- **AND** the hedgerow strip south of the meadow belongs to a zone of habitat `hedgerow`
+
+#### Scenario: The hedgerow is closed off
+- **WHEN** the player walks along the southern hedge of the meadow
+- **THEN** the hedgerow strip is visible beyond it, but no walkable tile connects the meadow to the strip
 
 ### Requirement: Invalid map is reported
 If a map cannot be loaded or does not satisfy the supported format (orthogonal, fixed tile size, a spawn point, layers referenced by name), the game SHALL show a Slovenian error message instead of a broken or blank world.

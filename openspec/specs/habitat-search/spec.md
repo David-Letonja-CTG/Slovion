@@ -7,25 +7,28 @@ Defines how players search habitats for species: habitat zones in maps, habitat 
 ## Requirements
 
 ### Requirement: Habitat content
-Each habitat SHALL be a content file containing:
+Each habitat SHALL be a content file. It SHALL contain:
 - a stable ID
 - a localized display name, with Slovenian (`sl`) required and other languages optional
+- a positive integer order, which sorts habitats for display
 - a search chance between 1 and 100 percent
 - at least one species with a positive integer weight
 
-The display name is a game label, not a biological fact. The chance and the weights are gameplay data. Neither SHALL be shown to players as biological facts, and the chance and the weights SHALL NOT be shown to players at all.
+The display name is a game label, not a biological fact. The chance and the weights are gameplay data and SHALL NOT be shown to players.
 
-Content validation SHALL reject any of the following:
+Content validation SHALL reject any habitat with:
 - unknown species
 - non-positive weights
 - a chance outside 1–100
 - a missing Slovenian name
-- duplicate habitat IDs
-- map zones that name an unknown habitat
+- a missing or non-positive order
+- a duplicate habitat ID
+
+Content validation SHALL also reject map zones that name an unknown habitat.
 
 #### Scenario: Valid repository habitats
 - **WHEN** the API starts with the repository content
-- **THEN** habitat `tall_grass` is available with its weighted species and the Slovenian name *Visoka trava*
+- **THEN** habitat `tall_grass` (*Visoka trava*, order 1) and habitat `hedgerow` (*Mejica*, order 2) are available with their weighted species
 
 #### Scenario: Unknown species in a habitat
 - **WHEN** a habitat lists species `vulpes_vulpes`, which does not exist
@@ -38,6 +41,10 @@ Content validation SHALL reject any of the following:
 #### Scenario: Habitat without a Slovenian name
 - **WHEN** habitat `tall_grass` has no Slovenian name
 - **THEN** content validation fails and names `tall_grass`
+
+#### Scenario: Habitat without an order
+- **WHEN** habitat `hedgerow` has no order
+- **THEN** content validation fails and names `hedgerow`
 
 ### Requirement: Searching a habitat
 `POST /api/save/searches` with a map and a tile SHALL search the habitat zone that contains the tile. With the habitat's search chance, the server SHALL pick one species by weight using its random source. Otherwise it SHALL respond `200` with `found: false` and record nothing.
