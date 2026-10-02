@@ -1,0 +1,30 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 55%);
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 32rem;
+  padding: 1.25rem;
+  border: 3px solid var(--color-panel-border);
+  background: var(--color-panel);
+  color: var(--color-text);
+  text-align: center;
+}
+
+.dialog__text {
+  font-size: 1.15rem;
+}
+
+.dialog__text p {
+  margin: 0;
+}

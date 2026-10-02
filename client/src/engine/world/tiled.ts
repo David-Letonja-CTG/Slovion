@@ -1,0 +1,145 @@
+import { Direction } from '../input/actions';
+import { Spot, TILE_SIZE, TileLayer, Tileset, WorldMap } from './world-map';
+
+/** The map does not satisfy the supported Tiled subset. Lists every problem found. */
+export class MapFormatError extends Error {
+  constructor(
+    readonly mapId: string,
+    readonly problems: readonly string[],
+  ) {
+    super(`Map "${mapId}" is invalid: ${problems.join('; ')}`);
+    this.name = 'MapFormatError';
+  }
+}
+
+interface TiledProperty {
+  name?: string;
+  value?: unknown;
+}
+
+interface TiledObject {
+  type?: string;
+  class?: string;
+  x?: number;
+  y?: number;
+  properties?: TiledProperty[];
+}
+
+interface TiledLayer {
+  name?: string;
+  type?: string;
+  visible?: boolean;
+  data?: number[];
+  objects?: TiledObject[];
+}
+
+interface TiledTileset {
+  firstgid?: number;
+  columns?: number;
+  tilecount?: number;
+  image?: string;
+}
+
+interface TiledMap {
+  orientation?: string;
+  width?: number;
+  height?: number;
+  tilewidth?: number;
+  tileheight?: number;
+  layers?: TiledLayer[];
+  tilesets?: TiledTileset[];
+}
+
+const DIRECTIONS: readonly Direction[] = ['up', 'down', 'left', 'right'];
+
+/**
+ * Parses the Tiled JSON subset Slovion supports (design §4): orthogonal, 16×16 tiles, one embedded
+ * tileset, tile layers `ground` (+ optional others) and `collision`, object layer `objects` with one
+ * `spawn` and any number of `spot` objects.
+ */
+export function parseTiledMap(id: string, json: unknown): WorldMap {
+  const map = (json ?? {}) as TiledMap;
+  const problems: string[] = [];
+  const width = map.width ?? 0;
+  const height = map.height ?? 0;
+
+  if (map.orientation !== 'orthogonal') problems.push('only orthogonal maps are supported');
+  if (map.tilewidth !== TILE_SIZE || map.tileheight !== TILE_SIZE) {
+    problems.push(`tiles must be ${TILE_SIZE}×${TILE_SIZE}`);
+  }
+  if (width <= 0 || height <= 0) problems.push('width and height must be positive');
+
+  const tileLayers = (map.layers ?? []).filter((layer) => layer.type === 'tilelayer');
+  for (const required of ['ground', 'collision']) {
+    if (!tileLayers.some((layer) => layer.name === required)) {
+      problems.push(`tile layer "${required}" is required`);
+    }
+  }
+  for (const layer of tileLayers) {
+    if (layer.data?.length !== width * height) {
+      problems.push(`tile layer "${layer.name}" must have ${width * height} tiles`);
+    }
+  }
+
+  const tileset = map.tilesets?.length === 1 ? map.tilesets[0] : undefined;
+  if (!tileset?.image || !tileset.columns || !tileset.firstgid || !tileset.tilecount) {
+    problems.push('exactly one embedded tileset with an image is required');
+  }
+
+  const objects = map.layers?.find(
+    (l) => l.name === 'objects' && l.type === 'objectgroup',
+  )?.objects;
+  if (!objects) problems.push('object layer "objects" is required');
+
+  const classOf = (object: TiledObject) => object.type || object.class;
+  const tileOf = (object: TiledObject) => ({
+    x: Math.floor((object.x ?? -1) / TILE_SIZE),
+    y: Math.floor((object.y ?? -1) / TILE_SIZE),
+  });
+  const property = (object: TiledObject, name: string) =>
+    object.properties?.find((p) => p.name === name)?.value;
+
+  const spawns = objects?.filter((object) => classOf(object) === 'spawn') ?? [];
+  if (objects && spawns.length !== 1) {
+    problems.push(`exactly one spawn is required (found ${spawns.length})`);
+  }
+  const facing = spawns[0] ? property(spawns[0], 'facing') : undefined;
+  if (spawns.length === 1 && !DIRECTIONS.includes(facing as Direction)) {
+    problems.push('spawn needs a "facing" property: up, down, left or right');
+  }
+
+  const spots: Spot[] = [];
+  for (const object of objects?.filter((o) => classOf(o) === 'spot') ?? []) {
+    const spotId = property(object, 'spotId');
+    if (typeof spotId !== 'string' || spotId === '') {
+      problems.push('a spot is missing its "spotId"');
+      continue;
+    }
+    spots.push({ spotId, ...tileOf(object) });
+  }
+
+  if (problems.length > 0) throw new MapFormatError(id, problems);
+
+  const spawnTile = tileOf(spawns[0]);
+  const collision = tileLayers.find((layer) => layer.name === 'collision')!.data!;
+  const layers: TileLayer[] = tileLayers
+    .filter((layer) => layer.name !== 'collision' && layer.visible !== false)
+    .map((layer) => ({ name: layer.name ?? '', tiles: layer.data! }));
+  const set: Tileset = {
+    firstGid: tileset!.firstgid!,
+    columns: tileset!.columns!,
+    tileCount: tileset!.tilecount!,
+    image: tileset!.image!,
+  };
+
+  return new WorldMap(
+    id,
+    width,
+    height,
+    layers,
+    collision.map((gid) => gid !== 0),
+    { ...spawnTile, facing: facing as Direction },
+    spots,
+    set,
+  );
+}

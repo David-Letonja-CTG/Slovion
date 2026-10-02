@@ -70,4 +70,4 @@ The project uses the OpenSpec CLI (`@fission-ai/openspec`, `spec-driven` schema)
 
 ## D10 — In-game naming of the NatureDex (Accepted, 2026-10-02)
 
-"NatureDex" is the internal/code name only. The player-facing name is Slovenian and original (working proposal: *Terenski dnevnik*) to avoid imitating existing franchises. Final name to be confirmed with the first NatureDex change.
+"NatureDex" is the internal/code name only. The player-facing name is **Terenski dnevnik** (confirmed by the project owner with the first NatureDex change, `add-meadow-walking-skeleton`) — Slovenian and original, to avoid imitating existing franchises.

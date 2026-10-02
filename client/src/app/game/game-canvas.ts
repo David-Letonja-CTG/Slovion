@@ -5,10 +5,12 @@ import {
   InjectionToken,
   afterNextRender,
   inject,
+  input,
+  output,
   viewChild,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { createGame } from '../../engine';
+import { Game, Interaction, LoadedWorld, createGame } from '../../engine';
 
 /** Creates the engine; replaceable in tests. */
 export const GAME_FACTORY = new InjectionToken<typeof createGame>('GAME_FACTORY', {
@@ -23,6 +25,7 @@ export const GAME_FACTORY = new InjectionToken<typeof createGame>('GAME_FACTORY'
   template: `<canvas
     #canvas
     role="img"
+    tabindex="-1"
     [attr.aria-label]="'game.viewportLabel' | transloco"
   ></canvas>`,
   styles: `
@@ -31,9 +34,20 @@ export const GAME_FACTORY = new InjectionToken<typeof createGame>('GAME_FACTORY'
       display: block;
       overflow: hidden;
     }
+    canvas:focus {
+      outline: none;
+    }
   `,
 })
 export class GameCanvas {
+  readonly world = input.required<LoadedWorld>();
+  /** The player interacted with a spot; the host asks the server what happens. */
+  readonly interaction = output<Interaction>();
+  /** The player asked for the menu (OpenMenu) while in the world. */
+  readonly menuRequested = output<void>();
+  /** Emitted once the engine runs, so the host can route input to overlays. */
+  readonly started = output<Game>();
+
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
 
   constructor() {
@@ -42,9 +56,19 @@ export class GameCanvas {
     const createGameFn = inject(GAME_FACTORY);
 
     afterNextRender(() => {
-      const game = createGameFn(host.nativeElement, this.canvas().nativeElement);
+      const game = createGameFn(host.nativeElement, this.canvas().nativeElement, {
+        world: this.world(),
+        onInteract: (interaction) => this.interaction.emit(interaction),
+        onOpenMenu: () => this.menuRequested.emit(),
+      });
       game.start();
       destroyRef.onDestroy(() => game.stop());
+      this.started.emit(game);
     });
+  }
+
+  /** Gives keyboard focus back to the game, e.g. after closing a dialog. */
+  focus(): void {
+    this.canvas().nativeElement.focus();
   }
 }

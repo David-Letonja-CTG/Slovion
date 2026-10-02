@@ -1,0 +1,46 @@
+<main class="title">
+  <h1 class="title__name">{{ 'app.title' | transloco }}</h1>
+  <p class="title__tagline">{{ 'shell.tagline' | transloco }}</p>
+
+  @if (error(); as code) {
+    <p class="title__error" role="alert">{{ 'errors.' + code | transloco }}</p>
+  }
+
+  @if (confirming()) {
+    <section class="title__confirm" role="alertdialog" aria-labelledby="confirm-replace">
+      <p id="confirm-replace">{{ 'title.confirmReplace' | transloco }}</p>
+      <div class="title__buttons">
+        <button type="button" class="button button--primary" (click)="confirmReplace()">
+          {{ 'title.confirmReplaceYes' | transloco }}
+        </button>
+        <button type="button" class="button" (click)="cancelReplace()">
+          {{ 'common.cancel' | transloco }}
+        </button>
+      </div>
+    </section>
+  } @else {
+    <nav class="title__buttons">
+      @if (hasSave()) {
+        <button
+          type="button"
+          class="button button--primary"
+          data-action="continue"
+          [disabled]="busy()"
+          (click)="continueGame()"
+        >
+          {{ 'title.continue' | transloco }}
+        </button>
+      }
+      <button
+        type="button"
+        class="button"
+        [class.button--primary]="!hasSave()"
+        data-action="new-game"
+        [disabled]="busy()"
+        (click)="newGame()"
+      >
+        {{ 'title.newGame' | transloco }}
+      </button>
+    </nav>
+  }
+</main>

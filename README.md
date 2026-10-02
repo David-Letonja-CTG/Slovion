@@ -11,7 +11,7 @@ An original 2D exploration RPG set in a fictionalized Slovenia. Instead of ficti
 
 ## Status
 
-🚧 **Foundation stage.** The solution skeleton is in place: .NET API with PostgreSQL, Angular app with Slovenian localization, and a canvas game engine showing a scaled test pattern. No gameplay yet.
+🚧 **First playable slice in progress.** Start a new game, walk across a small Dravsko polje meadow, discover the meadow sage (*travniška kadulja*), read about it in *Terenski dnevnik* (the in-game NatureDex), and keep it after reloading. Art is placeholder.
 
 First milestone: a small playable vertical slice in a **Dravsko polje meadow** — walk around, discover and identify a few real species, read about them in Slovenian, complete a small quest, and keep progress across reloads. See the [roadmap](docs/product-vision.md#roadmap--first-vertical-slice).
 
@@ -31,7 +31,7 @@ First milestone: a small playable vertical slice in a **Dravsko polje meadow** �
 src/        .NET backend (Domain, Application, Infrastructure, Api)
 tests/      backend tests (unit, integration, architecture)
 client/     Angular app; client/src/engine/ = canvas game engine
-content/    (planned) species, maps, quests and dialogue as versioned data files
+content/    game content as versioned files: species (with sources), maps (Tiled), tilesets
 docs/       product vision and decision log
 openspec/   specifications and change proposals
 ```
@@ -95,9 +95,23 @@ dotnet test --solution Slovion.slnx
 # Client: formatting, lint, translation keys, unit tests, production build
 cd client
 npm run check
+
+# End-to-end: plays the demo path in Chromium (needs the database; starts API and client itself)
+npx playwright install chromium   # once
+npm run e2e
 ```
 
 CI runs the same checks on every push and pull request (`.github/workflows/ci.yml`).
+
+### Controls
+
+Arrow keys or WASD to walk, Shift to run, E / Enter / Space to interact, M to open *Terenski dnevnik*, Esc to close.
+
+### Content and database
+
+- **Species** live in `content/species/<genus_species>.json`. Every fact needs a source; the API refuses to start on invalid content, and `dotnet test` validates it.
+- **Maps** are Tiled JSON in `content/maps/` (orthogonal, 16×16 tiles, layers `ground`, `decor`, `collision`, `objects`) and can be edited in [Tiled](https://www.mapeditor.org/).
+- **Database migrations** are applied automatically when the API starts. To add one: `dotnet tool restore`, then `dotnet ef migrations add <Name> --project src/Slovion.Infrastructure --output-dir Persistence/Migrations`.
 
 ## Content and IP
 

@@ -15,6 +15,9 @@ public static class ErrorCodes
     public const string InternalError = "internal_error";
     public const string Unknown = "error";
 
+    public const string InvalidSaveToken = "invalid_save_token";
+    public const string UnknownSpot = "unknown_spot";
+
     public static string FromStatusCode(int? statusCode) => statusCode switch
     {
         StatusCodes.Status400BadRequest => BadRequest,
@@ -24,4 +27,8 @@ public static class ErrorCodes
         >= 500 => InternalError,
         _ => Unknown,
     };
+
+    /// <summary>A problem response with an explicit code.</summary>
+    public static IResult Problem(int statusCode, string code) =>
+        TypedResults.Problem(statusCode: statusCode, extensions: new Dictionary<string, object?> { [ExtensionName] = code });
 }

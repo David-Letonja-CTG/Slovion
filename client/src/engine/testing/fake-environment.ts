@@ -1,3 +1,4 @@
+import { ActionSink } from '../input/actions';
 import { Clock, FrameScheduler, GameEnvironment, Unsubscribe } from '../platform';
 
 /** Manually advanced clock and frame scheduler for deterministic loop tests. */
@@ -56,6 +57,7 @@ export class FakeEnvironment implements GameEnvironment {
   private readonly resizeListeners = new Set<(width: number, height: number) => void>();
   private readonly ratioListeners = new Set<() => void>();
   private readonly visibilityListeners = new Set<(hidden: boolean) => void>();
+  private readonly inputSinks = new Set<ActionSink>();
 
   devicePixelRatio(): number {
     return this.pixelRatio;
@@ -76,8 +78,24 @@ export class FakeEnvironment implements GameEnvironment {
     return track(this.visibilityListeners, onChange);
   }
 
+  attachInput(sink: ActionSink): Unsubscribe {
+    return track(this.inputSinks, sink);
+  }
+
+  /** The attached input sink; tests press actions through it like a keyboard would. */
+  get input(): ActionSink {
+    const [sink] = this.inputSinks;
+    if (!sink) throw new Error('No input attached.');
+    return sink;
+  }
+
   get listenerCount(): number {
-    return this.resizeListeners.size + this.ratioListeners.size + this.visibilityListeners.size;
+    return (
+      this.resizeListeners.size +
+      this.ratioListeners.size +
+      this.visibilityListeners.size +
+      this.inputSinks.size
+    );
   }
 
   resize(width: number, height: number): void {
