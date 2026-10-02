@@ -1,0 +1,26 @@
+schema: spec-driven
+
+context: |
+  Slovion: original 2D exploration RPG in a fictionalized Slovenia; the player discovers and identifies real Slovenian species.
+  Product vision: docs/product-vision.md. Binding decisions: docs/decisions.md (D1-D10) - artifacts must not contradict them without proposing a decision change.
+  Write OpenSpec artifacts in English. All player-facing text in the product is Slovenian (sl-SI) and comes from localization data, never hardcoded.
+  Original IP: never use or imitate Pokemon names, creatures, sprites, maps, music, dialogue, data or mechanics.
+  Never invent biological facts; every real-world species fact needs a source reference. Gameplay values are fictional and labelled as such.
+  No personal data is collected; anonymous save slots only. Audience is all ages.
+  No combat and no capture of organisms.
+  Server is authoritative for encounters, discoveries, NatureDex, quests and progression; client owns movement/collision/rendering. Randomness and clocks are injectable for deterministic tests.
+  Stack: .NET 10 / ASP.NET Core / EF Core / PostgreSQL (modular monolith), Angular + framework-free TypeScript canvas engine, REST + OpenAPI.
+  Only introduce endpoints, tables and systems that the current change's specs require.
+
+rules:
+  proposal:
+    - State non-goals explicitly.
+    - Name the slice/demo outcome the change makes possible.
+  specs:
+    - Use language-independent IDs in scenarios (e.g. vulpes_vulpes), never translated names as identity.
+    - Include edge cases and error conditions as scenarios.
+  design:
+    - Record which decisions from docs/decisions.md the design relies on.
+  tasks:
+    - Every task group lands its own tests (domain, application, integration or client unit tests as applicable).
+    - Include a final validation group - build, test, lint, compare against specs and acceptance criteria.
