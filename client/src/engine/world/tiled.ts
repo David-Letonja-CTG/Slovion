@@ -1,5 +1,5 @@
 import { Direction } from '../input/actions';
-import { Spot, TILE_SIZE, TileLayer, Tileset, WorldMap } from './world-map';
+import { HabitatZone, Spot, TILE_SIZE, TileLayer, Tileset, WorldMap } from './world-map';
 
 /** The map does not satisfy the supported Tiled subset. Lists every problem found. */
 export class MapFormatError extends Error {
@@ -20,8 +20,11 @@ interface TiledProperty {
 interface TiledObject {
   type?: string;
   class?: string;
+  name?: string;
   x?: number;
   y?: number;
+  width?: number;
+  height?: number;
   properties?: TiledProperty[];
 }
 
@@ -118,6 +121,36 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     spots.push({ spotId, ...tileOf(object) });
   }
 
+  // Habitat zones: a tile belongs to a zone when its centre lies inside the rectangle (design §1).
+  const habitats: HabitatZone[] = [];
+  for (const object of objects?.filter((o) => classOf(o) === 'habitat') ?? []) {
+    const habitatId = property(object, 'habitatId');
+    const label = `habitat zone "${object.name ?? habitatId}"`;
+    if (typeof habitatId !== 'string' || habitatId === '') {
+      problems.push(`${label} is missing its "habitatId"`);
+      continue;
+    }
+    const half = TILE_SIZE / 2;
+    const x = object.x ?? 0;
+    const y = object.y ?? 0;
+    const zone: HabitatZone = {
+      habitatId,
+      minX: Math.ceil((x - half) / TILE_SIZE),
+      minY: Math.ceil((y - half) / TILE_SIZE),
+      maxX: Math.ceil((x + (object.width ?? 0) - half) / TILE_SIZE) - 1,
+      maxY: Math.ceil((y + (object.height ?? 0) - half) / TILE_SIZE) - 1,
+    };
+    if (zone.maxX < zone.minX || zone.maxY < zone.minY) {
+      problems.push(`${label} covers no tiles`);
+    } else if (zone.minX < 0 || zone.minY < 0 || zone.maxX >= width || zone.maxY >= height) {
+      problems.push(`${label} extends beyond the map`);
+    } else if (habitats.some((other) => overlaps(other, zone))) {
+      problems.push(`${label} overlaps another habitat zone`);
+    } else {
+      habitats.push(zone);
+    }
+  }
+
   if (problems.length > 0) throw new MapFormatError(id, problems);
 
   const spawnTile = tileOf(spawns[0]);
@@ -141,5 +174,10 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     { ...spawnTile, facing: facing as Direction },
     spots,
     set,
+    habitats,
   );
+}
+
+function overlaps(a: HabitatZone, b: HabitatZone): boolean {
+  return a.minX <= b.maxX && b.minX <= a.maxX && a.minY <= b.maxY && b.minY <= a.maxY;
 }

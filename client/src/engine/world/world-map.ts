@@ -23,6 +23,15 @@ export interface Spot {
   readonly y: number;
 }
 
+/** Tiles (inclusive) belonging to a habitat; the server decides what can be found there (D3). */
+export interface HabitatZone {
+  readonly habitatId: string;
+  readonly minX: number;
+  readonly minY: number;
+  readonly maxX: number;
+  readonly maxY: number;
+}
+
 export interface Spawn {
   readonly x: number;
   readonly y: number;
@@ -40,6 +49,7 @@ export class WorldMap {
     readonly spawn: Spawn,
     readonly spots: readonly Spot[],
     readonly tileset: Tileset,
+    readonly habitats: readonly HabitatZone[] = [],
   ) {}
 
   inBounds(x: number, y: number): boolean {
@@ -53,5 +63,12 @@ export class WorldMap {
 
   spotAt(x: number, y: number): Spot | undefined {
     return this.spots.find((spot) => spot.x === x && spot.y === y);
+  }
+
+  /** The habitat whose zone contains the tile, if any. */
+  habitatAt(x: number, y: number): string | undefined {
+    return this.habitats.find(
+      (zone) => x >= zone.minX && x <= zone.maxX && y >= zone.minY && y <= zone.maxY,
+    )?.habitatId;
   }
 }

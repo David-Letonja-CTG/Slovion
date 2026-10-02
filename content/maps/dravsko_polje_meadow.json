@@ -2110,12 +2110,48 @@
      "width": 0,
      "x": 456,
      "y": 136
+    },
+    {
+     "height": 64,
+     "id": 7,
+     "name": "tall_grass_south",
+     "properties": [
+      {
+       "name": "habitatId",
+       "type": "string",
+       "value": "tall_grass"
+      }
+     ],
+     "rotation": 0,
+     "type": "habitat",
+     "visible": true,
+     "width": 112,
+     "x": 192,
+     "y": 192
+    },
+    {
+     "height": 64,
+     "id": 8,
+     "name": "tall_grass_north",
+     "properties": [
+      {
+       "name": "habitatId",
+       "type": "string",
+       "value": "tall_grass"
+      }
+     ],
+     "rotation": 0,
+     "type": "habitat",
+     "visible": true,
+     "width": 96,
+     "x": 128,
+     "y": 48
     }
    ]
   }
  ],
  "nextlayerid": 5,
- "nextobjectid": 7,
+ "nextobjectid": 9,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.11.2",

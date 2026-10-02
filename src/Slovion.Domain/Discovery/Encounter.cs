@@ -8,24 +8,6 @@ namespace Slovion.Domain.Discovery;
 /// </summary>
 public sealed class Encounter
 {
-    private Encounter(
-        Guid id,
-        Guid saveSlotId,
-        SpeciesId speciesId,
-        string mapId,
-        string spotId,
-        IReadOnlyList<SpeciesId> candidates,
-        DateTimeOffset createdAt)
-    {
-        Id = id;
-        SaveSlotId = saveSlotId;
-        SpeciesId = speciesId;
-        MapId = mapId;
-        SpotId = spotId;
-        Candidates = candidates;
-        CreatedAt = createdAt;
-    }
-
     public Guid Id { get; private set; }
 
     public Guid SaveSlotId { get; private set; }
@@ -35,7 +17,11 @@ public sealed class Encounter
 
     public string MapId { get; private set; }
 
-    public string SpotId { get; private set; }
+    /// <summary>The spot, for encounters at a spot; otherwise <c>null</c>.</summary>
+    public string? SpotId { get; private set; }
+
+    /// <summary>The searched habitat, for encounters found by searching; otherwise <c>null</c>.</summary>
+    public string? HabitatId { get; private set; }
 
     /// <summary>Offered species in display order; contains <see cref="SpeciesId"/> exactly once.</summary>
     public IReadOnlyList<SpeciesId> Candidates { get; private set; }
@@ -46,16 +32,23 @@ public sealed class Encounter
 
     public bool IsOpen => ClosedAt is null;
 
-    public static Encounter Start(
-        Guid id,
-        Guid saveSlotId,
-        MapSpot spot,
-        IReadOnlyList<SpeciesId> candidates,
-        DateTimeOffset createdAt)
+    private Encounter(Guid id, Guid saveSlotId, SpeciesId speciesId, string mapId, string? spotId, string? habitatId, IReadOnlyList<SpeciesId> candidates, DateTimeOffset createdAt)
+    {
+        Id = id;
+        SaveSlotId = saveSlotId;
+        SpeciesId = speciesId;
+        MapId = mapId;
+        SpotId = spotId;
+        HabitatId = habitatId;
+        Candidates = candidates;
+        CreatedAt = createdAt;
+    }
+
+    public static Encounter Start(Guid id, Guid saveSlotId, Sighting sighting, IReadOnlyList<SpeciesId> candidates, DateTimeOffset createdAt)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(id, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(saveSlotId, Guid.Empty);
-        ArgumentNullException.ThrowIfNull(spot);
+        ArgumentNullException.ThrowIfNull(sighting);
         ArgumentNullException.ThrowIfNull(candidates);
 
         if (candidates.Count < 2 || candidates.Distinct().Count() != candidates.Count)
@@ -63,12 +56,12 @@ public sealed class Encounter
             throw new ArgumentException("An encounter needs at least two distinct candidates.", nameof(candidates));
         }
 
-        if (!candidates.Contains(spot.SpeciesId))
+        if (!candidates.Contains(sighting.SpeciesId))
         {
             throw new ArgumentException("The observed species must be one of the candidates.", nameof(candidates));
         }
 
-        return new Encounter(id, saveSlotId, spot.SpeciesId, spot.MapId, spot.SpotId, candidates.ToList(), createdAt);
+        return new Encounter(id, saveSlotId, sighting.SpeciesId, sighting.MapId, sighting.SpotId, sighting.HabitatId, candidates.ToList(), createdAt);
     }
 
     public bool IsCandidate(SpeciesId speciesId) => Candidates.Contains(speciesId);

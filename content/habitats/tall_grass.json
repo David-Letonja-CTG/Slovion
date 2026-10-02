@@ -1,0 +1,11 @@
+{
+  "id": "tall_grass",
+  "searchChancePercent": 70,
+  "species": [
+    { "speciesId": "lepus_europaeus", "weight": 30 },
+    { "speciesId": "alauda_arvensis", "weight": 30 },
+    { "speciesId": "papilio_machaon", "weight": 20 },
+    { "speciesId": "taraxacum_officinale", "weight": 15 },
+    { "speciesId": "salvia_pratensis", "weight": 5 }
+  ]
+}

@@ -13,7 +13,7 @@ public class SpeciesDiscoveryTests
     {
         var slot = Guid.NewGuid();
 
-        var discovery = SpeciesDiscovery.Observe(slot, Sage, June1);
+        var discovery = SpeciesDiscovery.Observe(slot, Sighting.AtSpot(Sage), June1);
 
         Assert.Equal(slot, discovery.SaveSlotId);
         Assert.Equal(Sage.SpeciesId, discovery.SpeciesId);
@@ -25,7 +25,7 @@ public class SpeciesDiscoveryTests
     [Fact]
     public void Identifying_keeps_the_first_identification_time()
     {
-        var discovery = SpeciesDiscovery.Observe(Guid.NewGuid(), Sage, June1);
+        var discovery = SpeciesDiscovery.Observe(Guid.NewGuid(), Sighting.AtSpot(Sage), June1);
 
         discovery.Identify(June1.AddHours(1));
         discovery.Identify(June1.AddHours(5));
@@ -37,6 +37,6 @@ public class SpeciesDiscoveryTests
     [Fact]
     public void Requires_a_save_slot()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => SpeciesDiscovery.Observe(Guid.Empty, Sage, June1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => SpeciesDiscovery.Observe(Guid.Empty, Sighting.AtSpot(Sage), June1));
     }
 }

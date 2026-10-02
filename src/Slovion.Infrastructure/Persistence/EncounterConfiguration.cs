@@ -19,7 +19,8 @@ internal sealed class EncounterConfiguration : IEntityTypeConfiguration<Encounte
             .HasColumnName("species_id")
             .HasConversion(id => id.Value, value => SpeciesId.Parse(value));
         builder.Property(encounter => encounter.MapId).HasColumnName("map_id").IsRequired();
-        builder.Property(encounter => encounter.SpotId).HasColumnName("spot_id").IsRequired();
+        builder.Property(encounter => encounter.SpotId).HasColumnName("spot_id");
+        builder.Property(encounter => encounter.HabitatId).HasColumnName("habitat_id");
         builder.Property(encounter => encounter.Candidates)
             .HasColumnName("candidates")
             .HasColumnType("text[]")

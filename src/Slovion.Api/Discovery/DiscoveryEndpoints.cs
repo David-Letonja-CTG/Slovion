@@ -14,37 +14,24 @@ public sealed record AnswerRequest(string? SpeciesId);
 
 public sealed record SourceResponse(string Title, string Publisher, string Url, string Accessed, string Licence);
 
-public sealed record SpeciesResponse(
-    string Name,
-    string ScientificName,
-    string Family,
-    string Habitat,
-    string Distribution,
-    string Season,
-    IReadOnlyList<string> Characteristics,
-    IReadOnlyList<SourceResponse> Sources);
+public sealed record SpeciesResponse(string Name, string ScientificName, string Family, string Habitat, string Distribution, string Season, IReadOnlyList<string> Characteristics, IReadOnlyList<SourceResponse> Sources);
 
 /// <summary>A NatureDex entry. <c>Species</c> is present only when <c>Status</c> is <c>identified</c>.</summary>
-public sealed record NatureDexEntryResponse(
-    string SpeciesId,
-    string Group,
-    string Status,
-    DateTime ObservedAt,
-    DateTime? IdentifiedAt,
-    SpeciesResponse? Species);
+public sealed record NatureDexEntryResponse(string SpeciesId, string Group, string Status, DateTime ObservedAt, DateTime? IdentifiedAt, SpeciesResponse? Species);
 
 public sealed record NatureDexResponse(IReadOnlyList<NatureDexEntryResponse> Entries);
 
 public sealed record CandidateResponse(string SpeciesId, string Name);
 
 /// <summary>An open encounter. It never says which candidate is correct.</summary>
-public sealed record EncounterResponse(
-    Guid EncounterId,
-    string Group,
-    IReadOnlyList<string> Clues,
-    IReadOnlyList<CandidateResponse> Candidates);
+public sealed record EncounterResponse(Guid EncounterId, string Group, IReadOnlyList<string> Clues, IReadOnlyList<CandidateResponse> Candidates);
 
 public sealed record AlreadyIdentifiedResponse(bool AlreadyIdentified, NatureDexEntryResponse Entry);
+
+public sealed record SearchRequest(string? MapId, int? X, int? Y);
+
+/// <summary>A search that found nothing.</summary>
+public sealed record NothingFoundResponse(bool Found);
 
 public sealed record AnswerResponse(bool Correct, CandidateResponse Species, NatureDexEntryResponse? Entry);
 
@@ -52,6 +39,14 @@ public static class DiscoveryEndpoints
 {
     public static RouteGroupBuilder MapDiscoveryEndpoints(this RouteGroupBuilder save)
     {
+        save.MapPost("/searches", Search)
+            .WithName("SearchHabitat")
+            .Produces<EncounterResponse>(StatusCodes.Status201Created)
+            .Produces<AlreadyIdentifiedResponse>(StatusCodes.Status200OK)
+            .Produces<NothingFoundResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         save.MapPost("/encounters", StartEncounter)
             .WithName("StartEncounter")
             .Produces<EncounterResponse>(StatusCodes.Status201Created)
@@ -72,12 +67,7 @@ public static class DiscoveryEndpoints
         return save;
     }
 
-    private static async Task<IResult> StartEncounter(
-        StartEncounterRequest request,
-        HttpContext httpContext,
-        EncounterService encounters,
-        IContentCatalog content,
-        CancellationToken cancellationToken)
+    private static async Task<IResult> StartEncounter(StartEncounterRequest request, HttpContext httpContext, EncounterService encounters, IContentCatalog content, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.MapId) || string.IsNullOrWhiteSpace(request.SpotId))
         {
@@ -88,28 +78,46 @@ public static class DiscoveryEndpoints
         var slot = SaveTokenFilter.CurrentSlot(httpContext);
         var result = await encounters.StartAsync(slot.Id, request.MapId, request.SpotId, language, cancellationToken);
 
+        return result is StartEncounterResult.UnknownSpot
+            ? ErrorCodes.Problem(StatusCodes.Status404NotFound, ErrorCodes.UnknownSpot)
+            : ToResult(result);
+    }
+
+    /// <summary>Searches the habitat at a tile; the server decides whether and what is found (D3).</summary>
+    private static async Task<IResult> Search(SearchRequest request, HttpContext httpContext, EncounterService encounters, IContentCatalog content, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.MapId) || request.X is not { } x || request.Y is not { } y)
+        {
+            return ErrorCodes.Problem(StatusCodes.Status400BadRequest, ErrorCodes.BadRequest);
+        }
+
+        var language = ContentLanguage.Negotiate(httpContext, content);
+        var slot = SaveTokenFilter.CurrentSlot(httpContext);
+        var result = await encounters.SearchAsync(slot.Id, request.MapId, x, y, language, cancellationToken);
+
         return result switch
         {
-            StartEncounterResult.Started started => TypedResults.Json(
-                new EncounterResponse(
-                    started.Encounter.EncounterId,
-                    started.Encounter.Group.ToName(),
-                    started.Encounter.Clues,
-                    started.Encounter.Candidates.Select(ToResponse).ToList()),
-                statusCode: StatusCodes.Status201Created),
-            StartEncounterResult.AlreadyIdentified known => TypedResults.Ok(
-                new AlreadyIdentifiedResponse(true, ToResponse(known.Entry))),
-            _ => ErrorCodes.Problem(StatusCodes.Status404NotFound, ErrorCodes.UnknownSpot),
+            SearchResult.Found found => ToResult(found.Encounter),
+            SearchResult.NothingFound => TypedResults.Ok(new NothingFoundResponse(false)),
+            _ => ErrorCodes.Problem(StatusCodes.Status404NotFound, ErrorCodes.UnknownHabitat),
         };
     }
 
-    private static async Task<IResult> Answer(
-        Guid encounterId,
-        AnswerRequest request,
-        HttpContext httpContext,
-        EncounterService encounters,
-        IContentCatalog content,
-        CancellationToken cancellationToken)
+    /// <summary>The response for an opened encounter or an already identified species, shared by spots and searches.</summary>
+    private static IResult ToResult(StartEncounterResult result) => result switch
+    {
+        StartEncounterResult.Started started => TypedResults.Json(
+            new EncounterResponse(
+                started.Encounter.EncounterId,
+                started.Encounter.Group.ToName(),
+                started.Encounter.Clues,
+                started.Encounter.Candidates.Select(ToResponse).ToList()),
+            statusCode: StatusCodes.Status201Created),
+        StartEncounterResult.AlreadyIdentified known => TypedResults.Ok(new AlreadyIdentifiedResponse(true, ToResponse(known.Entry))),
+        _ => throw new InvalidOperationException($"Unexpected result {result}."),
+    };
+
+    private static async Task<IResult> Answer(Guid encounterId, AnswerRequest request, HttpContext httpContext, EncounterService encounters, IContentCatalog content, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.SpeciesId))
         {
@@ -131,11 +139,7 @@ public static class DiscoveryEndpoints
         };
     }
 
-    private static async Task<IResult> GetNatureDex(
-        HttpContext httpContext,
-        NatureDexService natureDex,
-        IContentCatalog content,
-        CancellationToken cancellationToken)
+    private static async Task<IResult> GetNatureDex(HttpContext httpContext, NatureDexService natureDex, IContentCatalog content, CancellationToken cancellationToken)
     {
         var language = ContentLanguage.Negotiate(httpContext, content);
         var slot = SaveTokenFilter.CurrentSlot(httpContext);

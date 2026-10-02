@@ -21,24 +21,30 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
     private readonly Dictionary<SpeciesId, Species> species;
     private readonly Dictionary<(string MapId, string SpotId), MapSpot> spots;
-
-    private FileContentCatalog(
-        Dictionary<SpeciesId, Species> species,
-        Dictionary<(string, string), MapSpot> spots,
-        IReadOnlySet<string> languages)
-    {
-        this.species = species;
-        this.spots = spots;
-        Languages = languages;
-    }
+    private readonly Dictionary<string, Habitat> habitats;
+    private readonly Dictionary<string, List<HabitatZone>> zones;
 
     public IReadOnlySet<string> Languages { get; }
 
     public IReadOnlyCollection<Species> AllSpecies => species.Values;
 
+    private FileContentCatalog(Dictionary<SpeciesId, Species> species, Dictionary<(string, string), MapSpot> spots, Dictionary<string, Habitat> habitats, Dictionary<string, List<HabitatZone>> zones, IReadOnlySet<string> languages)
+    {
+        this.species = species;
+        this.spots = spots;
+        this.habitats = habitats;
+        this.zones = zones;
+        Languages = languages;
+    }
+
     public Species? FindSpecies(SpeciesId id) => species.GetValueOrDefault(id);
 
     public MapSpot? FindSpot(string mapId, string spotId) => spots.GetValueOrDefault((mapId, spotId));
+
+    public Habitat? FindHabitatAt(string mapId, int x, int y) =>
+        zones.GetValueOrDefault(mapId)?.FirstOrDefault(zone => zone.Contains(x, y)) is { } zone
+            ? habitats[zone.HabitatId]
+            : null;
 
     /// <exception cref="ContentValidationException">The content is missing or invalid.</exception>
     public static FileContentCatalog Load(string rootPath)
@@ -50,7 +56,8 @@ public sealed partial class FileContentCatalog : IContentCatalog
         }
 
         var species = LoadSpecies(Path.Combine(rootPath, "species"), errors);
-        var spots = LoadMaps(Path.Combine(rootPath, "maps"), species, errors);
+        var habitats = LoadHabitats(Path.Combine(rootPath, "habitats"), species, errors);
+        var (spots, zones) = LoadMaps(Path.Combine(rootPath, "maps"), species, habitats, errors);
 
         if (errors.Count > 0)
         {
@@ -59,7 +66,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
         var languages = species.Values.SelectMany(item => item.Text.Keys).ToHashSet(StringComparer.Ordinal);
         languages.Add(IContentCatalog.DefaultLanguage);
-        return new FileContentCatalog(species, spots, languages);
+        return new FileContentCatalog(species, spots, habitats, zones, languages);
     }
 
     private static Dictionary<SpeciesId, Species> LoadSpecies(string folder, List<string> errors)
@@ -130,11 +137,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
     }
 
     /// <summary>Exactly three distinct clues, each pointing at a characteristic in every language.</summary>
-    private static List<int> ValidateClues(
-        List<int>? clues,
-        Dictionary<string, SpeciesText> texts,
-        string name,
-        List<string> errors)
+    private static List<int> ValidateClues(List<int>? clues, Dictionary<string, SpeciesText> texts, string name, List<string> errors)
     {
         const int ClueCount = 3;
         if (clues is null || clues.Count != ClueCount)
@@ -159,10 +162,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
         return clues;
     }
 
-    private static Dictionary<string, Source> ValidateSources(
-        Dictionary<string, SourceFile>? files,
-        string name,
-        List<string> errors)
+    private static Dictionary<string, Source> ValidateSources(Dictionary<string, SourceFile>? files, string name, List<string> errors)
     {
         var result = new Dictionary<string, Source>(StringComparer.Ordinal);
         if (files is null || files.Count == 0)
@@ -260,12 +260,69 @@ public sealed partial class FileContentCatalog : IContentCatalog
         return new Fact(fact.Value, fact.Sources);
     }
 
-    private static Dictionary<(string, string), MapSpot> LoadMaps(
-        string folder,
-        Dictionary<SpeciesId, Species> species,
-        List<string> errors)
+    private static Dictionary<string, Habitat> LoadHabitats(string folder, Dictionary<SpeciesId, Species> species, List<string> errors)
+    {
+        var result = new Dictionary<string, Habitat>(StringComparer.Ordinal);
+        foreach (var file in JsonFiles(folder))
+        {
+            var name = $"habitats/{Path.GetFileName(file)}";
+            var habitat = Read<HabitatFile>(file, name, errors);
+            if (habitat is null)
+            {
+                continue;
+            }
+
+            var errorCount = errors.Count;
+            if (habitat.Id is null || !MapIdPattern().IsMatch(habitat.Id))
+            {
+                errors.Add($"{name}: invalid habitat ID '{habitat.Id}' (expected lowercase snake_case).");
+            }
+
+            if (habitat.SearchChancePercent is < 1 or > 100)
+            {
+                errors.Add($"{name}: 'searchChancePercent' must be between 1 and 100 (found {habitat.SearchChancePercent}).");
+            }
+
+            if (habitat.Species is null || habitat.Species.Count == 0)
+            {
+                errors.Add($"{name}: at least one species is required.");
+            }
+
+            var entries = new List<HabitatSpecies>();
+            foreach (var entry in habitat.Species ?? [])
+            {
+                if (!SpeciesId.IsValid(entry.SpeciesId) || !species.ContainsKey(SpeciesId.Parse(entry.SpeciesId!)))
+                {
+                    errors.Add($"{name}: unknown species '{entry.SpeciesId}'.");
+                }
+                else if (entry.Weight <= 0)
+                {
+                    errors.Add($"{name}: species '{entry.SpeciesId}' needs a positive weight (found {entry.Weight}).");
+                }
+                else
+                {
+                    entries.Add(new HabitatSpecies(SpeciesId.Parse(entry.SpeciesId!), entry.Weight));
+                }
+            }
+
+            if (errors.Count > errorCount)
+            {
+                continue;
+            }
+
+            if (!result.TryAdd(habitat.Id!, new Habitat(habitat.Id!, habitat.SearchChancePercent, entries)))
+            {
+                errors.Add($"{name}: duplicate habitat ID '{habitat.Id}'.");
+            }
+        }
+
+        return result;
+    }
+
+    private static (Dictionary<(string, string), MapSpot> Spots, Dictionary<string, List<HabitatZone>> Zones) LoadMaps(string folder, Dictionary<SpeciesId, Species> species, Dictionary<string, Habitat> habitats, List<string> errors)
     {
         var result = new Dictionary<(string, string), MapSpot>();
+        var zones = new Dictionary<string, List<HabitatZone>>(StringComparer.Ordinal);
         foreach (var file in JsonFiles(folder))
         {
             var mapId = Path.GetFileNameWithoutExtension(file);
@@ -283,18 +340,60 @@ public sealed partial class FileContentCatalog : IContentCatalog
                 {
                     result[(spot.MapId, spot.SpotId)] = spot;
                 }
+
+                zones[mapId] = ValidateZones(map, name, habitats, errors);
+            }
+        }
+
+        return (result, zones);
+    }
+
+    /// <summary>Habitat zones: rectangles of class <c>habitat</c>; a tile belongs to a zone if its centre is inside.</summary>
+    private static List<HabitatZone> ValidateZones(TiledMapFile map, string name, Dictionary<string, Habitat> habitats, List<string> errors)
+    {
+        var result = new List<HabitatZone>();
+        var objects = map.Layers?.FirstOrDefault(l => l.Name == "objects" && l.Type == "objectgroup")?.Objects ?? [];
+        foreach (var zone in objects.Where(o => o.ObjectClass == "habitat"))
+        {
+            var habitatId = zone.StringProperty("habitatId");
+            var at = $"{name}: habitat zone '{zone.Name ?? habitatId}'";
+            if (habitatId is null || !habitats.ContainsKey(habitatId))
+            {
+                errors.Add($"{at} refers to unknown habitat '{habitatId}'.");
+                continue;
+            }
+
+            // Tile x is covered when its centre (16x + 8) lies in [X, X + Width).
+            const double HalfTile = TileSize / 2.0;
+            var tiles = new HabitatZone(
+                habitatId,
+                (int)Math.Ceiling((zone.X - HalfTile) / TileSize),
+                (int)Math.Ceiling((zone.Y - HalfTile) / TileSize),
+                (int)Math.Ceiling((zone.X + zone.Width - HalfTile) / TileSize) - 1,
+                (int)Math.Ceiling((zone.Y + zone.Height - HalfTile) / TileSize) - 1);
+
+            if (tiles.MaxX < tiles.MinX || tiles.MaxY < tiles.MinY)
+            {
+                errors.Add($"{at} covers no tiles.");
+            }
+            else if (tiles.MinX < 0 || tiles.MinY < 0 || tiles.MaxX >= map.Width || tiles.MaxY >= map.Height)
+            {
+                errors.Add($"{at} extends beyond the map.");
+            }
+            else if (result.Any(other => other.Overlaps(tiles)))
+            {
+                errors.Add($"{at} overlaps another habitat zone.");
+            }
+            else
+            {
+                result.Add(tiles);
             }
         }
 
         return result;
     }
 
-    private static List<MapSpot> ValidateMap(
-        TiledMapFile map,
-        string mapId,
-        string name,
-        Dictionary<SpeciesId, Species> species,
-        List<string> errors)
+    private static List<MapSpot> ValidateMap(TiledMapFile map, string mapId, string name, Dictionary<SpeciesId, Species> species, List<string> errors)
     {
         var spots = new List<MapSpot>();
         if (map.Orientation != "orthogonal")

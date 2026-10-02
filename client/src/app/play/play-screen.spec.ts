@@ -15,7 +15,7 @@ import {
 } from '../testing/test-app';
 
 const MAP_URL = '/content/maps/dravsko_polje_meadow.json';
-const SAGE = { mapId: 'dravsko_polje_meadow', spotId: 'meadow_sage_1' };
+const SAGE = { kind: 'spot', mapId: 'dravsko_polje_meadow', spotId: 'meadow_sage_1' } as const;
 
 async function openPlay(mapResponse: object | 404 = meadow) {
   const app = await setupTestApp();
@@ -91,7 +91,7 @@ describe('Identification flow', () => {
 
     expect(game.consumer).toBe('ui');
     const request = http.expectOne(START);
-    expect(request.request.body).toEqual(SAGE);
+    expect(request.request.body).toEqual({ mapId: SAGE.mapId, spotId: SAGE.spotId });
     request.flush(SAGE_ENCOUNTER, { status: 201, statusText: 'Created' });
   });
 
@@ -229,6 +229,74 @@ describe('Identification flow', () => {
     expect(root().querySelector('[role="alert"]')?.textContent).toBe(sl.errors.invalid_save_token);
     expect(TestBed.inject(GameSession).active()).toBe(false);
     expect(TestBed.inject(SaveTokenStore).get()).toBeNull();
+  });
+});
+
+describe('Search flow', () => {
+  afterEach(() => TestBed.inject(Router).dispose());
+
+  const SEARCHES = '/api/save/searches';
+  const IN_GRASS = { kind: 'search', mapId: 'dravsko_polje_meadow', x: 12, y: 12 } as const;
+
+  it('blocks world input and asks the server to search the tile', async () => {
+    const { game, http } = await openPlay();
+
+    game.options!.onInteract(IN_GRASS);
+
+    expect(game.consumer).toBe('ui');
+    const request = http.expectOne({ method: 'POST', url: SEARCHES });
+    expect(request.request.body).toEqual({ mapId: 'dravsko_polje_meadow', x: 12, y: 12 });
+    request.flush({ found: false });
+  });
+
+  it('says when nothing is here and gives input back after closing', async () => {
+    const { game, http, dialogText, settle: wait } = await openPlay();
+
+    game.options!.onInteract(IN_GRASS);
+    http.expectOne(SEARCHES).flush({ found: false });
+    await wait();
+    expect(dialogText()).toContain(sl.search.nothing);
+
+    game.pressUi('Confirm');
+    await wait();
+    expect(game.consumer).toBe('world');
+  });
+
+  it('opens the identification dialog when something is found', async () => {
+    const { game, http, root, settle: wait } = await openPlay();
+
+    game.options!.onInteract(IN_GRASS);
+    http
+      .expectOne(SEARCHES)
+      .flush({ ...SAGE_ENCOUNTER, group: 'mammal' }, { status: 201, statusText: 'Created' });
+    await wait();
+
+    const dialog = root().querySelector('app-identification-dialog');
+    expect(dialog?.querySelector('h2')?.textContent?.trim()).toBe(sl.identification.heading.mammal);
+  });
+
+  it('says when the found species is already recorded', async () => {
+    const { game, http, dialogText, settle: wait } = await openPlay();
+
+    game.options!.onInteract(IN_GRASS);
+    http.expectOne(SEARCHES).flush({ alreadyIdentified: true, entry: SAGE_ENTRY });
+    await wait();
+
+    expect(dialogText()).toContain(
+      'Ta vrsta je že zapisana v Terenskem dnevniku: travniška kadulja',
+    );
+  });
+
+  it('explains a tile where searching is not possible', async () => {
+    const { game, http, dialogText, settle: wait } = await openPlay();
+
+    game.options!.onInteract(IN_GRASS);
+    http
+      .expectOne(SEARCHES)
+      .flush({ code: 'unknown_habitat' }, { status: 404, statusText: 'Not Found' });
+    await wait();
+
+    expect(dialogText()).toContain(sl.errors.unknown_habitat);
   });
 });
 

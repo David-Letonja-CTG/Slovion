@@ -129,7 +129,7 @@ describe('Interaction', () => {
     input.press('Interact');
     frames.frame(STEP_MS);
 
-    expect(interactions).toEqual([{ mapId: 'test_map', spotId: 'spot' }]);
+    expect(interactions).toEqual([{ kind: 'spot', mapId: 'test_map', spotId: 'spot' }]);
   });
 
   it('does nothing when facing a tile without a spot', () => {
@@ -146,6 +146,33 @@ describe('Interaction', () => {
     input.press('MoveRight');
     frames.frame(STEP_MS);
     input.release('MoveRight');
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([]);
+  });
+
+  it('searches when standing in tall grass and facing no spot', () => {
+    const { input, frames, interactions } = setup(['#G..#']);
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([{ kind: 'search', mapId: 'test_map', x: 1, y: 0 }]);
+  });
+
+  it('prefers a faced spot over searching the grass underfoot', () => {
+    const { input, frames, interactions } = setup(['#G*#']);
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([{ kind: 'spot', mapId: 'test_map', spotId: 'spot' }]);
+  });
+
+  it('does not search when only the faced tile is grass', () => {
+    const { input, frames, interactions } = setup(['#Sg.#']);
 
     input.press('Interact');
     frames.frame(STEP_MS);

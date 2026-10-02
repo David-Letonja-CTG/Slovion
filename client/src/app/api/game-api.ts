@@ -59,6 +59,11 @@ export interface AlreadyIdentified {
   readonly entry: NatureDexEntry;
 }
 
+/** A search that found nothing. */
+export interface NothingFound {
+  readonly found: false;
+}
+
 export interface AnswerResult {
   readonly correct: boolean;
   /** The correct species, revealed after answering. */
@@ -68,15 +73,21 @@ export interface AnswerResult {
 
 /**
  * Error codes the client shows messages for; each has a key `errors.<code>`, used dynamically:
- * t(errors.invalid_save_token, errors.unknown_spot, errors.unknown_encounter, errors.network, errors.error)
+ * t(errors.invalid_save_token, errors.unknown_spot, errors.unknown_encounter, errors.unknown_habitat, errors.network, errors.error)
  */
 export type ApiErrorCode =
-  'invalid_save_token' | 'unknown_spot' | 'unknown_encounter' | 'network' | 'error';
+  | 'invalid_save_token'
+  | 'unknown_spot'
+  | 'unknown_encounter'
+  | 'unknown_habitat'
+  | 'network'
+  | 'error';
 
 const KNOWN_CODES: readonly ApiErrorCode[] = [
   'invalid_save_token',
   'unknown_spot',
   'unknown_encounter',
+  'unknown_habitat',
 ];
 
 /** Maps any failure to a code with a translated message. */
@@ -101,6 +112,19 @@ export class GameApi {
   /** Observes the species at a spot; already identified species open no encounter. */
   startEncounter(mapId: string, spotId: string): Observable<Encounter | AlreadyIdentified> {
     return this.http.post<Encounter | AlreadyIdentified>('/api/save/encounters', { mapId, spotId });
+  }
+
+  /** Searches the habitat at a tile; the server decides whether and what is found. */
+  search(
+    mapId: string,
+    x: number,
+    y: number,
+  ): Observable<Encounter | AlreadyIdentified | NothingFound> {
+    return this.http.post<Encounter | AlreadyIdentified | NothingFound>('/api/save/searches', {
+      mapId,
+      x,
+      y,
+    });
   }
 
   answer(encounterId: string, speciesId: string): Observable<AnswerResult> {

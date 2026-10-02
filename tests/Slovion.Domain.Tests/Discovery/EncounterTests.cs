@@ -11,7 +11,7 @@ public class EncounterTests
     private static readonly MapSpot SageSpot = new("dravsko_polje_meadow", "meadow_sage_1", Sage);
 
     private static Encounter Start(params SpeciesId[] candidates) =>
-        Encounter.Start(Guid.NewGuid(), Guid.NewGuid(), SageSpot, candidates, DateTimeOffset.UnixEpoch);
+        Encounter.Start(Guid.NewGuid(), Guid.NewGuid(), Sighting.AtSpot(SageSpot), candidates, DateTimeOffset.UnixEpoch);
 
     [Fact]
     public void Starts_open_with_the_spot_species_as_the_answer()

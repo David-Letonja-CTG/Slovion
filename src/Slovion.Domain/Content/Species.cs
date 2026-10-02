@@ -7,25 +7,13 @@ public sealed record Fact(string Value, IReadOnlyList<string> SourceIds);
 public sealed record Source(string Id, string Title, string Publisher, Uri Url, DateOnly Accessed, string Licence);
 
 /// <summary>Species facts in one language.</summary>
-public sealed record SpeciesText(
-    Fact Name,
-    Fact Family,
-    Fact Habitat,
-    Fact Distribution,
-    Fact Season,
-    IReadOnlyList<Fact> Characteristics);
+public sealed record SpeciesText(Fact Name, Fact Family, Fact Habitat, Fact Distribution, Fact Season, IReadOnlyList<Fact> Characteristics);
 
 /// <summary>
 /// Real-world species content. <see cref="Clues"/> is the only gameplay value: it chooses which
 /// sourced characteristics serve as identification clues, and in which order (docs/decisions.md D1, D6).
 /// </summary>
-public sealed record Species(
-    SpeciesId Id,
-    SpeciesGroup Group,
-    Fact ScientificName,
-    IReadOnlyDictionary<string, Source> Sources,
-    IReadOnlyDictionary<string, SpeciesText> Text,
-    IReadOnlyList<int> Clues);
+public sealed record Species(SpeciesId Id, SpeciesGroup Group, Fact ScientificName, IReadOnlyDictionary<string, Source> Sources, IReadOnlyDictionary<string, SpeciesText> Text, IReadOnlyList<int> Clues);
 
 /// <summary>An interactive place in a map where a species can be discovered.</summary>
 public sealed record MapSpot(string MapId, string SpotId, SpeciesId SpeciesId);

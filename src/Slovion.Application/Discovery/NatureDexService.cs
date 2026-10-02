@@ -8,10 +8,7 @@ namespace Slovion.Application.Discovery;
 public sealed class NatureDexService(IContentCatalog content, IDiscoveryRepository discoveries)
 {
     /// <summary>Observed species of a slot, oldest observation first.</summary>
-    public async Task<IReadOnlyList<NatureDexEntry>> GetAsync(
-        Guid saveSlotId,
-        string language,
-        CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<NatureDexEntry>> GetAsync(Guid saveSlotId, string language, CancellationToken cancellationToken)
     {
         var stored = await discoveries.ListAsync(saveSlotId, cancellationToken);
         return stored

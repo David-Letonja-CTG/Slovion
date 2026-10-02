@@ -16,6 +16,15 @@ public sealed class ContentValidationTests
         Assert.Equal("travniška kadulja", sage.Text["sl"].Name.Value);
         Assert.Equal(sage.Id, catalog.FindSpot("dravsko_polje_meadow", "meadow_sage_1")?.SpeciesId);
         Assert.Contains("sl", catalog.Languages);
+
+        // The tall grass patches south and north of the path are habitat; the path and spawn are not.
+        Assert.Equal(70, catalog.FindHabitatAt("dravsko_polje_meadow", 12, 12)?.SearchChancePercent);
+        Assert.Equal("tall_grass", catalog.FindHabitatAt("dravsko_polje_meadow", 18, 15)?.Id);
+        Assert.Equal("tall_grass", catalog.FindHabitatAt("dravsko_polje_meadow", 8, 3)?.Id);
+        Assert.Equal("tall_grass", catalog.FindHabitatAt("dravsko_polje_meadow", 13, 6)?.Id);
+        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 10, 10));
+        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 19, 12));
+        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 12, 11));
     }
 
     [Fact]
@@ -26,6 +35,11 @@ public sealed class ContentValidationTests
         var catalog = FileContentCatalog.Load(content.Write());
 
         Assert.NotNull(catalog.FindSpot("test_meadow", "sage_1"));
+        Assert.Equal("tall_grass", catalog.FindHabitatAt("test_meadow", 1, 0)?.Id);
+        Assert.Equal("tall_grass", catalog.FindHabitatAt("test_meadow", 2, 2)?.Id);
+        Assert.Null(catalog.FindHabitatAt("test_meadow", 0, 1));
+        Assert.Null(catalog.FindHabitatAt("test_meadow", 3, 1));
+        Assert.Null(catalog.FindHabitatAt("other_map", 1, 0));
     }
 
     public static TheoryData<string, Action<ContentFolder>, string> BrokenContent => new()
@@ -44,6 +58,12 @@ public sealed class ContentValidationTests
         { "duplicate clues", c => c.Species["identification"]!["clues"] = new JsonArray(0, 1, 1), "must not repeat a characteristic" },
         { "too few clues", c => c.Species["identification"]!["clues"] = new JsonArray(0, 1), "must list exactly 3 characteristics (found 2)" },
         { "no identification", c => c.Species.Remove("identification"), "must list exactly 3 characteristics (found 0)" },
+        { "habitat with unknown species", c => c.Habitat["species"]![0]!["speciesId"] = "vulpes_vulpes", "unknown species 'vulpes_vulpes'" },
+        { "non-positive weight", c => c.Habitat["species"]![0]!["weight"] = 0, "needs a positive weight (found 0)" },
+        { "chance out of range", c => c.Habitat["searchChancePercent"] = 0, "must be between 1 and 100 (found 0)" },
+        { "habitat without species", c => c.Habitat["species"] = new JsonArray(), "at least one species is required" },
+        { "zone naming a missing habitat", c => Objects(c)[2]!["properties"]![0]!["value"] = "swamp", "refers to unknown habitat 'swamp'" },
+        { "overlapping zones", c => Objects(c).Add(ContentFolder.HabitatZone()), "overlaps another habitat zone" },
         { "spot with unknown species", c => Objects(c)[1]!["properties"]![1]!["value"] = "vulpes_vulpes", "spot 'sage_1' references unknown species 'vulpes_vulpes'" },
     };
 
@@ -68,6 +88,17 @@ public sealed class ContentValidationTests
         var error = Assert.Throws<ContentValidationException>(() => FileContentCatalog.Load(content.Write(speciesFile: "copy.json")));
 
         Assert.Contains(error.Errors, message => message.Contains("duplicate species ID 'salvia_pratensis'", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Duplicate_habitat_IDs_are_rejected()
+    {
+        using var content = new ContentFolder();
+        content.Write();
+
+        var error = Assert.Throws<ContentValidationException>(() => FileContentCatalog.Load(content.Write(habitatFile: "copy.json")));
+
+        Assert.Contains(error.Errors, message => message.Contains("duplicate habitat ID 'tall_grass'", StringComparison.Ordinal));
     }
 
     [Fact]

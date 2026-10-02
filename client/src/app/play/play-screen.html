@@ -44,6 +44,11 @@
         </app-message-dialog>
       }
     }
+    @case ('nothing') {
+      <app-message-dialog (closed)="close()">
+        <p>{{ 'search.nothing' | transloco }}</p>
+      </app-message-dialog>
+    }
     @case ('error') {
       @if (shown.kind === 'error') {
         <app-message-dialog (closed)="close()">

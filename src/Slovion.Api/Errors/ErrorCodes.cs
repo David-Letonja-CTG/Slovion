@@ -18,6 +18,7 @@ public static class ErrorCodes
     public const string InvalidSaveToken = "invalid_save_token";
     public const string UnknownSpot = "unknown_spot";
     public const string UnknownEncounter = "unknown_encounter";
+    public const string UnknownHabitat = "unknown_habitat";
 
     public static string FromStatusCode(int? statusCode) => statusCode switch
     {

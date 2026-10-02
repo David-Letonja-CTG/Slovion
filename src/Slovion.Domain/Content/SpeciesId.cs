@@ -8,9 +8,9 @@ namespace Slovion.Domain.Content;
 /// </summary>
 public readonly partial record struct SpeciesId
 {
-    private SpeciesId(string value) => Value = value;
-
     public string Value { get; }
+
+    private SpeciesId(string value) => Value = value;
 
     public static bool IsValid(string? value) => value is not null && Pattern().IsMatch(value);
 

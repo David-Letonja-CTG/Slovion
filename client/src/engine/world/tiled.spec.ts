@@ -78,6 +78,37 @@ describe('parseTiledMap', () => {
     }
   });
 
+  it('reads the tall-grass habitat zones (same tiles as the server)', () => {
+    const map = parseTiledMap('dravsko_polje_meadow', meadow);
+
+    for (const [x, y] of [
+      [12, 12],
+      [18, 15],
+      [8, 3],
+      [13, 6],
+    ]) {
+      expect(map.habitatAt(x, y), `${x},${y}`).toBe('tall_grass');
+    }
+    for (const [x, y] of [
+      [10, 10],
+      [19, 12],
+      [12, 11],
+    ]) {
+      expect(map.habitatAt(x, y), `${x},${y}`).toBeUndefined();
+    }
+  });
+
+  it('reports overlapping habitat zones', () => {
+    const json = meadowCopy();
+    const objects = json.layers.find((l) => l['name'] === 'objects')!['objects'] as Record<
+      string,
+      unknown
+    >[];
+    objects.push({ ...objects.find((o) => o['type'] === 'habitat')!, name: 'copy' });
+
+    expect(problemsOf(json)).toContain('habitat zone "copy" overlaps another habitat zone');
+  });
+
   it('reports a missing spawn', () => {
     const json = meadowCopy();
     const objects = json.layers.find((l) => l['name'] === 'objects')!['objects'] as unknown[];

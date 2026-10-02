@@ -31,7 +31,7 @@ First milestone: a small playable vertical slice in a **Dravsko polje meadow** �
 src/        .NET backend (Domain, Application, Infrastructure, Api)
 tests/      backend tests (unit, integration, architecture)
 client/     Angular app; client/src/engine/ = canvas game engine
-content/    game content as versioned files: species (with sources), maps (Tiled), tilesets
+content/    game content as versioned files: species (with sources), habitats, maps (Tiled), tilesets
 docs/       product vision and decision log
 openspec/   specifications and change proposals
 ```
@@ -106,12 +106,13 @@ CI runs the same checks on every push and pull request (`.github/workflows/ci.ym
 
 ### Controls
 
-Arrow keys or WASD to walk, Shift to run, E / Enter / Space to interact, M to open *Terenski dnevnik*, Esc to close. In the observation dialog: arrows to choose, Enter to confirm, Esc to leave (mouse and touch work too).
+Arrow keys or WASD to walk, Shift to run, E / Enter / Space to interact (or to search while standing in tall grass), M to open *Terenski dnevnik*, Esc to close. In the observation dialog: arrows to choose, Enter to confirm, Esc to leave (mouse and touch work too).
 
 ### Content and database
 
 - **Species** live in `content/species/<genus_species>.json`. Every fact needs a source; the API refuses to start on invalid content, and `dotnet test` validates it.
-- **Maps** are Tiled JSON in `content/maps/` (orthogonal, 16×16 tiles, layers `ground`, `decor`, `collision`, `objects`) and can be edited in [Tiled](https://www.mapeditor.org/).
+- **Maps** are Tiled JSON in `content/maps/` (orthogonal, 16×16 tiles, layers `ground`, `decor`, `collision`, `objects`) and can be edited in [Tiled](https://www.mapeditor.org/). The `objects` layer holds the spawn, species spots and habitat zones (rectangles of class `habitat` with a `habitatId`).
+- **Habitats** live in `content/habitats/<habitatId>.json`: the chance that a search finds something and the species weights (rarity). These are fictional gameplay values, never shown as biology.
 - **Database migrations** are applied automatically when the API starts. To add one: `dotnet tool restore`, then `dotnet ef migrations add <Name> --project src/Slovion.Infrastructure --output-dir Persistence/Migrations`.
 
 ## Content and IP

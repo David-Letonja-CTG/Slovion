@@ -13,6 +13,8 @@ public class EncounterServiceTests
     private readonly EncounterService service;
     private readonly NatureDexService natureDex;
 
+    private static CancellationToken Token => TestContext.Current.CancellationToken;
+
     public EncounterServiceTests()
     {
         var catalog = new FakeContentCatalog(
@@ -24,8 +26,6 @@ public class EncounterServiceTests
         service = new EncounterService(catalog, discoveries, new InMemoryEncounterRepository(), new SeededRandom(1), time);
         natureDex = new NatureDexService(catalog, discoveries);
     }
-
-    private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     private async Task<EncounterView> Start(string spotId, string language = "sl") =>
         Assert.IsType<StartEncounterResult.Started>(
