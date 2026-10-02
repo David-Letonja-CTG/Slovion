@@ -291,7 +291,8 @@ public sealed class DiscoveryTests(PostgresFixture database)
         Assert.Equal(["sl"], dex.Content.Headers.ContentLanguage);
         Assert.Equal(["sl"], encounter.Content.Headers.ContentLanguage);
         using var body = await ReadJsonAsync(dex);
-        var entry = Assert.Single(body.RootElement.GetProperty("entries").EnumerateArray());
+        var entry = Assert.Single(NatureDexEntries(body.RootElement));
+        Assert.Equal("Visoka trava", body.RootElement.GetProperty("habitats")[0].GetProperty("name").GetString());
         Assert.Equal("travniška kadulja", entry.GetProperty("species").GetProperty("name").GetString());
     }
 

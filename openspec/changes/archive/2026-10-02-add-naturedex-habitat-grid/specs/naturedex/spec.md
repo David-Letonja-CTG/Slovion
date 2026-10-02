@@ -1,10 +1,4 @@
-# naturedex Specification
-
-## Purpose
-
-Defines the NatureDex — shown to players as *Terenski dnevnik* — a picture grid per habitat of every species, showing which ones the save has not found, observed or identified, with sourced, localized information about each identified species.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: NatureDex entries from the server
 `GET /api/save/naturedex` SHALL return the journal grouped by habitat. There SHALL be one section per habitat, ordered by habitat ID. Each section SHALL contain the habitat ID, its localized name, and every species of that habitat in the order the habitat's content lists them. Each species SHALL have its ID and a status of `unknown`, `observed` or `identified`:
@@ -72,6 +66,8 @@ An observed but not yet identified species SHALL appear in the grid as a greysca
 #### Scenario: Hare observed, not identified
 - **WHEN** the player opens the hare's picture after answering the hare encounter wrongly
 - **THEN** a card shows *Neznana vrsta* and *sesalec*, but not *poljski zajec*
+
+## ADDED Requirements
 
 ### Requirement: Habitat grid
 *Terenski dnevnik* SHALL show one section per habitat, in the order the server returns them. Each section SHALL have a heading with the habitat's name and how many of its species are identified out of its total (for example *Visoka trava 1/5*). Below the heading SHALL be a grid of the habitat's species pictures, where each picture shows the species' status:

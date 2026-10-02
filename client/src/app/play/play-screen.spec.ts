@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import sl from '../../../public/i18n/sl.json';
+import { Action } from '../../engine';
+import { NatureDexEntry, NatureDexSection, NatureDexSlot } from '../api/game-api';
 import { GameSession } from '../session/game-session';
 import { SaveTokenStore } from '../session/save-token-store';
 import {
@@ -303,14 +305,45 @@ describe('Search flow', () => {
 describe('Terenski dnevnik', () => {
   afterEach(() => TestBed.inject(Router).dispose());
 
-  async function openNatureDex(entries = [SAGE_ENTRY]) {
+  const slot = (speciesId: string, entry: NatureDexEntry | null = null): NatureDexSlot => ({
+    speciesId,
+    status: entry?.status ?? 'unknown',
+    entry,
+  });
+  /** The meadow's tall grass with the sage identified and the hare as given. */
+  const tallGrass = (
+    sage: NatureDexEntry | null = SAGE_ENTRY,
+    hare: NatureDexEntry | null = null,
+  ): NatureDexSection[] => [
+    {
+      habitatId: 'tall_grass',
+      name: 'Visoka trava',
+      species: [
+        slot('lepus_europaeus', hare),
+        slot('alauda_arvensis'),
+        slot('papilio_machaon'),
+        slot('taraxacum_officinale'),
+        slot('salvia_pratensis', sage),
+      ],
+    },
+  ];
+
+  async function openNatureDex(habitats = tallGrass()) {
     const play = await openPlay();
     play.game.options!.onOpenMenu!();
     await play.settle();
-    play.http.expectOne('/api/save/naturedex').flush({ entries });
+    play.http.expectOne('/api/save/naturedex').flush({ habitats });
     await play.settle();
     const panel = () => play.root().querySelector('app-naturedex-panel');
-    return { ...play, panel };
+    const picture = (id: string) =>
+      panel()!.querySelector<HTMLButtonElement>(`.picture[data-species="${id}"]`)!;
+    const label = (id: string) => picture(id).querySelector('.picture__label')?.textContent?.trim();
+    const page = () => panel()!.querySelector('article.entry');
+    const press = async (...actions: Action[]) => {
+      for (const action of actions) play.game.pressUi(action);
+      await play.settle();
+    };
+    return { ...play, panel, picture, label, page, press };
   }
 
   it('opens from the world and takes input while open', async () => {
@@ -320,10 +353,51 @@ describe('Terenski dnevnik', () => {
     expect(game.consumer).toBe('ui');
   });
 
-  it('shows the sourced Slovenian entry', async () => {
+  it('shows each habitat with its name and how many of its species are identified', async () => {
     const { panel } = await openNatureDex();
-    const entry = panel()!.querySelector('[data-species="salvia_pratensis"]')!;
+    const heading = panel()!.querySelector('[data-habitat="tall_grass"] h3')!;
 
+    expect(heading.textContent).toContain('Visoka trava');
+    expect(heading.querySelector('.habitat__count')?.textContent?.trim()).toBe('1/5');
+  });
+
+  it('shows unknown species as silhouettes, observed ones grey and identified ones in colour', async () => {
+    const { picture } = await openNatureDex(tallGrass(SAGE_ENTRY, HARE_OBSERVED));
+
+    expect(picture('alauda_arvensis').classList).toContain('picture--unknown');
+    expect(picture('lepus_europaeus').classList).toContain('picture--observed');
+    expect(picture('salvia_pratensis').classList).toContain('picture--identified');
+    expect(picture('salvia_pratensis').querySelector('img')?.getAttribute('src')).toBe(
+      '/content/species-pictures/salvia_pratensis.png',
+    );
+  });
+
+  it('labels identified species by name and every other species with ???', async () => {
+    const { picture, label } = await openNatureDex(tallGrass(SAGE_ENTRY, HARE_OBSERVED));
+
+    expect(label('salvia_pratensis')).toBe('travniška kadulja');
+    expect(label('lepus_europaeus')).toBe(sl.naturedex.unknownLabel);
+    expect(label('alauda_arvensis')).toBe(sl.naturedex.unknownLabel);
+    expect(picture('salvia_pratensis').getAttribute('aria-label')).toBe('travniška kadulja');
+    expect(picture('lepus_europaeus').getAttribute('aria-label')).toBe(sl.naturedex.unknown);
+    expect(picture('alauda_arvensis').getAttribute('aria-disabled')).toBe('true');
+  });
+
+  it('selects and focuses the first picture when it opens', async () => {
+    const { picture } = await openNatureDex();
+
+    expect(picture('lepus_europaeus').classList).toContain('picture--selected');
+    expect(document.activeElement).toBe(picture('lepus_europaeus'));
+  });
+
+  it('opens the sourced page of an identified species', async () => {
+    const { picture, page, settle: wait } = await openNatureDex();
+
+    picture('salvia_pratensis').click();
+    await wait();
+
+    const entry = page()!;
+    expect(entry.getAttribute('data-species')).toBe('salvia_pratensis');
     expect(entry.querySelector('h3')?.textContent).toBe('travniška kadulja');
     expect(entry.querySelector('i')?.textContent).toBe('Salvia pratensis L.');
     expect(entry.textContent).toContain(sl.naturedex.family);
@@ -336,10 +410,13 @@ describe('Terenski dnevnik', () => {
     expect(source?.textContent).toContain('Notranjski regijski park');
   });
 
-  it('shows an observed species as unknown, with its group but without its name', async () => {
-    const { panel } = await openNatureDex([HARE_OBSERVED]);
-    const entry = panel()!.querySelector('[data-species="lepus_europaeus"]')!;
+  it('opens an observed species as unknown, with its group but without its name', async () => {
+    const { picture, page, settle: wait } = await openNatureDex(tallGrass(null, HARE_OBSERVED));
 
+    picture('lepus_europaeus').click();
+    await wait();
+
+    const entry = page()!;
     expect(entry.querySelector('h3')?.textContent).toBe(sl.naturedex.unknown);
     expect(entry.textContent).toContain(sl.species.group.mammal);
     expect(entry.textContent).toContain(sl.naturedex.observeAgain);
@@ -347,38 +424,97 @@ describe('Terenski dnevnik', () => {
     expect(entry.querySelector('.entry__sources')).toBeNull();
   });
 
+  it('opens nothing for an unknown species', async () => {
+    const { picture, page, settle: wait } = await openNatureDex();
+
+    picture('alauda_arvensis').click();
+    await wait();
+
+    expect(page()).toBeNull();
+  });
+
   it('labels facts by the species group', async () => {
-    const swallowtail = {
-      ...SAGE_ENTRY,
-      speciesId: 'papilio_machaon',
-      group: 'insect' as const,
+    const swallowtail = { ...SAGE_ENTRY, speciesId: 'papilio_machaon', group: 'insect' as const };
+    const habitats = tallGrass();
+    habitats[0] = {
+      ...habitats[0],
+      species: habitats[0].species.map((s) =>
+        s.speciesId === 'papilio_machaon' ? slot('papilio_machaon', swallowtail) : s,
+      ),
     };
-    const { panel } = await openNatureDex([SAGE_ENTRY, swallowtail]);
-    const labels = (id: string) =>
-      [...panel()!.querySelectorAll(`[data-species="${id}"] dt`)].map((dt) => dt.textContent);
+    const { picture, page, settle: wait } = await openNatureDex(habitats);
+    const labels = () => [...page()!.querySelectorAll('dt')].map((dt) => dt.textContent);
 
-    expect(labels('salvia_pratensis')).toContain(sl.naturedex.season.plant);
-    expect(labels('salvia_pratensis')).toContain(sl.naturedex.habitat.plant);
-    expect(labels('papilio_machaon')).toContain(sl.naturedex.season.insect);
-    expect(labels('papilio_machaon')).toContain(sl.naturedex.habitat.insect);
-  });
-
-  it('encourages exploring when nothing is discovered yet', async () => {
-    const { panel } = await openNatureDex([]);
-
-    expect(panel()?.querySelector('.naturedex__empty')?.textContent).toBe(sl.naturedex.empty);
-  });
-
-  it('closes with Cancel only and gives input back to the world', async () => {
-    const { game, panel, settle: wait } = await openNatureDex();
-
-    game.pressUi('Confirm');
+    picture('papilio_machaon').click();
     await wait();
+
+    expect(labels()).toContain(sl.naturedex.season.insect);
+    expect(labels()).toContain(sl.naturedex.habitat.insect);
+  });
+
+  it('moves the selection with the arrow keys and opens with Confirm', async () => {
+    const { picture, page, press } = await openNatureDex();
+
+    await press('MoveRight', 'MoveRight', 'MoveRight', 'MoveRight');
+    expect(picture('salvia_pratensis').classList).toContain('picture--selected');
+    expect(document.activeElement).toBe(picture('salvia_pratensis'));
+
+    await press('Confirm');
+    expect(page()?.getAttribute('data-species')).toBe('salvia_pratensis');
+  });
+
+  it('keeps the selection at the first picture when moving left', async () => {
+    const { picture, press } = await openNatureDex();
+
+    await press('MoveLeft');
+
+    expect(picture('lepus_europaeus').classList).toContain('picture--selected');
+  });
+
+  it('goes back to the grid with Cancel, then closes and gives input back to the world', async () => {
+    const { game, panel, picture, page, press } = await openNatureDex();
+
+    picture('salvia_pratensis').click();
+    await press('Cancel');
+    expect(page()).toBeNull();
     expect(panel()).not.toBeNull();
+    expect(document.activeElement).toBe(picture('salvia_pratensis'));
 
-    game.pressUi('Cancel');
-    await wait();
+    await press('Cancel');
     expect(panel()).toBeNull();
     expect(game.consumer).toBe('world');
+  });
+
+  it('returns to the grid with the back button', async () => {
+    const { picture, page, settle: wait } = await openNatureDex();
+
+    picture('salvia_pratensis').click();
+    await wait();
+    page()!.querySelector<HTMLButtonElement>('.entry__back')!.click();
+    await wait();
+
+    expect(page()).toBeNull();
+  });
+
+  it('ignores Confirm on an unknown species', async () => {
+    const { panel, page, press } = await openNatureDex();
+
+    await press('MoveRight', 'Confirm');
+
+    expect(page()).toBeNull();
+    expect(panel()).not.toBeNull();
+  });
+
+  it('encourages exploring above a grid of silhouettes when nothing is discovered yet', async () => {
+    const { panel } = await openNatureDex(tallGrass(null));
+
+    expect(panel()?.querySelector('.naturedex__empty')?.textContent).toBe(sl.naturedex.empty);
+    expect(panel()!.querySelectorAll('.picture--unknown')).toHaveLength(5);
+  });
+
+  it('has no encouragement once something is discovered', async () => {
+    const { panel } = await openNatureDex();
+
+    expect(panel()?.querySelector('.naturedex__empty')).toBeNull();
   });
 });

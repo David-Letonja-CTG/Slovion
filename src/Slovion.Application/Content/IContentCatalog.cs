@@ -14,6 +14,9 @@ public interface IContentCatalog
     /// <summary>Every species in the catalog.</summary>
     IReadOnlyCollection<Species> AllSpecies { get; }
 
+    /// <summary>Every habitat in the catalog, ordered by ID.</summary>
+    IReadOnlyList<Habitat> AllHabitats { get; }
+
     Species? FindSpecies(SpeciesId id);
 
     MapSpot? FindSpot(string mapId, string spotId);

@@ -19,7 +19,13 @@ public sealed record SpeciesResponse(string Name, string ScientificName, string 
 /// <summary>A NatureDex entry. <c>Species</c> is present only when <c>Status</c> is <c>identified</c>.</summary>
 public sealed record NatureDexEntryResponse(string SpeciesId, string Group, string Status, DateTime ObservedAt, DateTime? IdentifiedAt, SpeciesResponse? Species);
 
-public sealed record NatureDexResponse(IReadOnlyList<NatureDexEntryResponse> Entries);
+/// <summary>A species in a NatureDex section. <c>Entry</c> is present unless <c>Status</c> is <c>unknown</c>.</summary>
+public sealed record NatureDexSlotResponse(string SpeciesId, string Status, NatureDexEntryResponse? Entry);
+
+/// <summary>A habitat's part of the NatureDex: its localized name and every species it lists.</summary>
+public sealed record NatureDexSectionResponse(string HabitatId, string Name, IReadOnlyList<NatureDexSlotResponse> Species);
+
+public sealed record NatureDexResponse(IReadOnlyList<NatureDexSectionResponse> Habitats);
 
 public sealed record CandidateResponse(string SpeciesId, string Name);
 
@@ -143,17 +149,28 @@ public static class DiscoveryEndpoints
     {
         var language = ContentLanguage.Negotiate(httpContext, content);
         var slot = SaveTokenFilter.CurrentSlot(httpContext);
-        var entries = await natureDex.GetAsync(slot.Id, language, cancellationToken);
+        var sections = await natureDex.GetAsync(slot.Id, language, cancellationToken);
 
-        return TypedResults.Ok(new NatureDexResponse(entries.Select(ToResponse).ToList()));
+        return TypedResults.Ok(new NatureDexResponse(sections.Select(ToResponse).ToList()));
     }
+
+    private static NatureDexSectionResponse ToResponse(NatureDexSection section) => new(
+        section.HabitatId,
+        section.Name,
+        section.Species
+            .Select(slot => slot.Entry is null
+                ? new NatureDexSlotResponse(slot.SpeciesId.Value, "unknown", null)
+                : new NatureDexSlotResponse(slot.SpeciesId.Value, StatusOf(slot.Entry), ToResponse(slot.Entry)))
+            .ToList());
+
+    private static string StatusOf(NatureDexEntry entry) => entry.IsIdentified ? "identified" : "observed";
 
     private static CandidateResponse ToResponse(CandidateView candidate) => new(candidate.SpeciesId.Value, candidate.Name);
 
     private static NatureDexEntryResponse ToResponse(NatureDexEntry entry) => new(
         entry.SpeciesId.Value,
         entry.Group.ToName(),
-        entry.IsIdentified ? "identified" : "observed",
+        StatusOf(entry),
         entry.ObservedAt.UtcDateTime,
         entry.IdentifiedAt?.UtcDateTime,
         entry.Species is null ? null : ToResponse(entry.Species));

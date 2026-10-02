@@ -44,6 +44,7 @@ export class PlayScreen {
   private readonly router = inject(Router);
   private readonly canvas = viewChild(GameCanvas);
   private readonly identification = viewChild(IdentificationDialog);
+  private readonly natureDex = viewChild(NatureDexPanel);
   private game: Game | undefined;
 
   protected readonly world = signal<LoadedWorld | undefined>(undefined);
@@ -131,8 +132,8 @@ export class PlayScreen {
       this.identification()?.handleAction(action);
     } else if (kind === 'result' || kind === 'known' || kind === 'nothing' || kind === 'error') {
       if (action === 'Confirm' || action === 'Cancel') this.close();
-    } else if (kind === 'naturedex' && action === 'Cancel') {
-      this.close();
+    } else if (kind === 'naturedex') {
+      this.natureDex()?.handleAction(action);
     }
   }
 }

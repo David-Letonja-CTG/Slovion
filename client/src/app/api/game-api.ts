@@ -41,6 +41,20 @@ export interface NatureDexEntry {
   readonly species: SpeciesInfo | null;
 }
 
+/** A species in a habitat section of the NatureDex; `entry` is null while it is unknown to the save. */
+export interface NatureDexSlot {
+  readonly speciesId: string;
+  readonly status: 'unknown' | 'observed' | 'identified';
+  readonly entry: NatureDexEntry | null;
+}
+
+/** A habitat's part of the NatureDex: its name and every species it lists. */
+export interface NatureDexSection {
+  readonly habitatId: string;
+  readonly name: string;
+  readonly species: readonly NatureDexSlot[];
+}
+
 export interface Candidate {
   readonly speciesId: string;
   readonly name: string;
@@ -134,7 +148,8 @@ export class GameApi {
     );
   }
 
-  natureDex(): Observable<{ entries: NatureDexEntry[] }> {
-    return this.http.get<{ entries: NatureDexEntry[] }>('/api/save/naturedex');
+  /** Every species per habitat, with the save's progress on each. */
+  natureDex(): Observable<{ habitats: NatureDexSection[] }> {
+    return this.http.get<{ habitats: NatureDexSection[] }>('/api/save/naturedex');
   }
 }

@@ -11,7 +11,7 @@ An original 2D exploration RPG set in a fictionalized Slovenia. Instead of ficti
 
 ## Status
 
-🚧 **First playable slice in progress.** Start a new game, walk across a small Dravsko polje meadow, observe real species (meadow sage, dandelion, brown hare, skylark, swallowtail), identify each one from sourced clues, read about it in *Terenski dnevnik* (the in-game NatureDex), and keep your progress after reloading. Art is placeholder.
+🚧 **First playable slice in progress.** Start a new game, walk across a small Dravsko polje meadow, observe real species (meadow sage, dandelion, brown hare, skylark, swallowtail), identify each one from sourced clues, read about it in *Terenski dnevnik* (the in-game NatureDex: a picture grid per habitat where found species turn from silhouettes to colour), and keep your progress after reloading. Art is placeholder.
 
 First milestone: a small playable vertical slice in a **Dravsko polje meadow** — walk around, discover and identify a few real species, read about them in Slovenian, complete a small quest, and keep progress across reloads. See the [roadmap](docs/product-vision.md#roadmap--first-vertical-slice).
 
@@ -31,7 +31,7 @@ First milestone: a small playable vertical slice in a **Dravsko polje meadow** �
 src/        .NET backend (Domain, Application, Infrastructure, Api)
 tests/      backend tests (unit, integration, architecture)
 client/     Angular app; client/src/engine/ = canvas game engine
-content/    game content as versioned files: species (with sources), habitats, maps (Tiled), tilesets
+content/    game content as versioned files: species (with sources), species pictures, habitats, maps (Tiled), tilesets
 docs/       product vision and decision log
 openspec/   specifications and change proposals
 ```
@@ -106,13 +106,14 @@ CI runs the same checks on every push and pull request (`.github/workflows/ci.ym
 
 ### Controls
 
-Arrow keys or WASD to walk, Shift to run, E / Enter / Space to interact (or to search while standing in tall grass), M to open *Terenski dnevnik*, Esc to close. In the observation dialog: arrows to choose, Enter to confirm, Esc to leave (mouse and touch work too).
+Arrow keys or WASD to walk, Shift to run, E / Enter / Space to interact (or to search while standing in tall grass), M to open *Terenski dnevnik*, Esc to close. In the observation dialog: arrows to choose, Enter to confirm, Esc to leave. In *Terenski dnevnik*: arrows to move through the pictures, Enter to open a species, Esc to go back (mouse and touch work too).
 
 ### Content and database
 
 - **Species** live in `content/species/<genus_species>.json`. Every fact needs a source; the API refuses to start on invalid content, and `dotnet test` validates it.
+- **Species pictures** live in `content/species-pictures/<genus_species>.png`: original 32×32 pixel art, one per species (required). The journal shows them as silhouettes, greyscale or colour depending on progress.
 - **Maps** are Tiled JSON in `content/maps/` (orthogonal, 16×16 tiles, layers `ground`, `decor`, `collision`, `objects`) and can be edited in [Tiled](https://www.mapeditor.org/). The `objects` layer holds the spawn, species spots and habitat zones (rectangles of class `habitat` with a `habitatId`).
-- **Habitats** live in `content/habitats/<habitatId>.json`: the chance that a search finds something and the species weights (rarity). These are fictional gameplay values, never shown as biology.
+- **Habitats** live in `content/habitats/<habitatId>.json`: a Slovenian display name (the journal section title), the chance that a search finds something and the species weights (rarity). Chance and weights are fictional gameplay values, never shown to players. Every species must be listed in at least one habitat.
 - **Database migrations** are applied automatically when the API starts. To add one: `dotnet tool restore`, then `dotnet ef migrations add <Name> --project src/Slovion.Infrastructure --output-dir Persistence/Migrations`.
 
 ## Content and IP

@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -7,12 +8,19 @@ using Slovion.Domain.Content;
 namespace Slovion.Infrastructure.Content;
 
 /// <summary>
-/// Loads and validates content from <c>species/*.json</c> and <c>maps/*.json</c> under a root folder.
+/// Loads and validates content from <c>species/*.json</c>, <c>species-pictures/*.png</c>, <c>habitats/*.json</c>
+/// and <c>maps/*.json</c> under a root folder.
 /// Validation collects every problem and fails once, so authors see all errors at the same time.
 /// </summary>
 public sealed partial class FileContentCatalog : IContentCatalog
 {
     private const int TileSize = 16;
+    private const int PictureSize = 32;
+
+    /// <summary>Content folder with one picture per species, served to clients as-is.</summary>
+    public const string PicturesFolder = "species-pictures";
+
+    private static readonly byte[] PngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
@@ -28,6 +36,8 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
     public IReadOnlyCollection<Species> AllSpecies => species.Values;
 
+    public IReadOnlyList<Habitat> AllHabitats { get; }
+
     private FileContentCatalog(Dictionary<SpeciesId, Species> species, Dictionary<(string, string), MapSpot> spots, Dictionary<string, Habitat> habitats, Dictionary<string, List<HabitatZone>> zones, IReadOnlySet<string> languages)
     {
         this.species = species;
@@ -35,6 +45,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
         this.habitats = habitats;
         this.zones = zones;
         Languages = languages;
+        AllHabitats = habitats.Values.OrderBy(habitat => habitat.Id, StringComparer.Ordinal).ToList();
     }
 
     public Species? FindSpecies(SpeciesId id) => species.GetValueOrDefault(id);
@@ -56,7 +67,14 @@ public sealed partial class FileContentCatalog : IContentCatalog
         }
 
         var species = LoadSpecies(Path.Combine(rootPath, "species"), errors);
+        ValidatePictures(Path.Combine(rootPath, PicturesFolder), species, errors);
+        var errorsBeforeHabitats = errors.Count;
         var habitats = LoadHabitats(Path.Combine(rootPath, "habitats"), species, errors);
+        if (errors.Count == errorsBeforeHabitats)
+        {
+            // Skipped when a habitat file is invalid, which would otherwise report its species here too.
+            ValidateHabitatMembership(species, habitats, errors);
+        }
         var (spots, zones) = LoadMaps(Path.Combine(rootPath, "maps"), species, habitats, errors);
 
         if (errors.Count > 0)
@@ -260,6 +278,51 @@ public sealed partial class FileContentCatalog : IContentCatalog
         return new Fact(fact.Value, fact.Sources);
     }
 
+    /// <summary>Every species needs a 32×32 PNG picture; only the signature and IHDR header are read.</summary>
+    private static void ValidatePictures(string folder, Dictionary<SpeciesId, Species> species, List<string> errors)
+    {
+        foreach (var id in species.Keys.Select(id => id.Value).Order(StringComparer.Ordinal))
+        {
+            var name = $"{PicturesFolder}/{id}.png";
+            var file = Path.Combine(folder, $"{id}.png");
+            if (!File.Exists(file))
+            {
+                errors.Add($"{name}: species '{id}' has no picture.");
+                continue;
+            }
+
+            // PNG signature (8 bytes), then the IHDR chunk: length (4), type (4), width (4), height (4).
+            var header = new byte[24];
+            using (var stream = File.OpenRead(file))
+            {
+                stream.ReadAtLeast(header, header.Length, throwOnEndOfStream: false);
+            }
+
+            if (!header.AsSpan(0, 8).SequenceEqual(PngSignature) || !"IHDR"u8.SequenceEqual(header.AsSpan(12, 4)))
+            {
+                errors.Add($"{name}: the picture of species '{id}' is not a PNG.");
+                continue;
+            }
+
+            var width = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(16, 4));
+            var height = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(20, 4));
+            if (width != PictureSize || height != PictureSize)
+            {
+                errors.Add($"{name}: the picture of species '{id}' must be {PictureSize}×{PictureSize} pixels (found {width}×{height}).");
+            }
+        }
+    }
+
+    /// <summary>Every species is listed in at least one habitat, so it has a place in the NatureDex.</summary>
+    private static void ValidateHabitatMembership(Dictionary<SpeciesId, Species> species, Dictionary<string, Habitat> habitats, List<string> errors)
+    {
+        var listed = habitats.Values.SelectMany(habitat => habitat.Species).Select(entry => entry.SpeciesId).ToHashSet();
+        foreach (var id in species.Keys.Where(id => !listed.Contains(id)).Select(id => id.Value).Order(StringComparer.Ordinal))
+        {
+            errors.Add($"habitats: species '{id}' is not listed in any habitat.");
+        }
+    }
+
     private static Dictionary<string, Habitat> LoadHabitats(string folder, Dictionary<SpeciesId, Species> species, List<string> errors)
     {
         var result = new Dictionary<string, Habitat>(StringComparer.Ordinal);
@@ -276,6 +339,24 @@ public sealed partial class FileContentCatalog : IContentCatalog
             if (habitat.Id is null || !MapIdPattern().IsMatch(habitat.Id))
             {
                 errors.Add($"{name}: invalid habitat ID '{habitat.Id}' (expected lowercase snake_case).");
+            }
+
+            var names = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var (language, text) in habitat.Text ?? [])
+            {
+                if (string.IsNullOrWhiteSpace(text?.Name))
+                {
+                    errors.Add($"{name}: 'text.{language}.name' is missing.");
+                }
+                else
+                {
+                    names[language] = text.Name;
+                }
+            }
+
+            if (habitat.Text is null || !habitat.Text.ContainsKey(IContentCatalog.DefaultLanguage))
+            {
+                errors.Add($"{name}: Slovenian name ('text.{IContentCatalog.DefaultLanguage}.name') is required.");
             }
 
             if (habitat.SearchChancePercent is < 1 or > 100)
@@ -310,7 +391,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
                 continue;
             }
 
-            if (!result.TryAdd(habitat.Id!, new Habitat(habitat.Id!, habitat.SearchChancePercent, entries)))
+            if (!result.TryAdd(habitat.Id!, new Habitat(habitat.Id!, names, habitat.SearchChancePercent, entries)))
             {
                 errors.Add($"{name}: duplicate habitat ID '{habitat.Id}'.");
             }

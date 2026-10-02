@@ -87,18 +87,35 @@ internal sealed class FakeContentCatalog(params Species[] species) : IContentCat
 
     public IReadOnlyCollection<Species> AllSpecies => species;
 
-    public Species? FindSpecies(SpeciesId id) => species.FirstOrDefault(s => s.Id == id);
-
-    /// <summary>Every species has a spot named after it on <see cref="MapId"/>.</summary>
     /// <summary>The habitat covering every tile with x ≥ 10 of <see cref="MapId"/>; none by default.</summary>
     public Habitat? Grass { get; set; }
 
+    /// <summary>The habitats listed by <see cref="AllHabitats"/> (in ID order); empty by default.</summary>
+    public List<Habitat> Habitats { get; } = [];
+
+    public IReadOnlyList<Habitat> AllHabitats => Habitats.OrderBy(habitat => habitat.Id, StringComparer.Ordinal).ToList();
+
+    public Species? FindSpecies(SpeciesId id) => species.FirstOrDefault(s => s.Id == id);
+
     public Habitat? FindHabitatAt(string mapId, int x, int y) => mapId == MapId && x >= 10 ? Grass : null;
 
+    /// <summary>Every species has a spot named after it on <see cref="MapId"/>.</summary>
     public MapSpot? FindSpot(string mapId, string spotId) =>
         mapId == MapId && species.FirstOrDefault(s => s.Id.Value == spotId) is { } match
             ? new MapSpot(mapId, spotId, match.Id)
             : null;
+
+    /// <summary>A habitat with a Slovenian name (and an English one when given) listing <paramref name="species"/> with weight 1.</summary>
+    public static Habitat Habitat(string id, string slName, string? enName, params SpeciesId[] species)
+    {
+        var names = new Dictionary<string, string> { ["sl"] = slName };
+        if (enName is not null)
+        {
+            names["en"] = enName;
+        }
+
+        return new Habitat(id, names, 100, species.Select(speciesId => new HabitatSpecies(speciesId, 1)).ToList());
+    }
 
     /// <summary>A species whose characteristics are "{slName} trait 0..3" and whose clues are 3, 0, 1.</summary>
     public static Species Species(string id, string slName, string? enName = null, SpeciesGroup group = SpeciesGroup.Plant)

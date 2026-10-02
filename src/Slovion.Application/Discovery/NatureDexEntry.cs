@@ -49,3 +49,9 @@ public sealed record NatureDexEntry(SpeciesId SpeciesId, SpeciesGroup Group, Dat
 {
     public bool IsIdentified => IdentifiedAt is not null;
 }
+
+/// <summary>A species' place in a NatureDex section. <see cref="Entry"/> is <c>null</c> while the save has not observed it.</summary>
+public sealed record NatureDexSlot(SpeciesId SpeciesId, NatureDexEntry? Entry);
+
+/// <summary>A habitat's part of the NatureDex: its localized name and every species it lists, in content order.</summary>
+public sealed record NatureDexSection(string HabitatId, string Name, IReadOnlyList<NatureDexSlot> Species);

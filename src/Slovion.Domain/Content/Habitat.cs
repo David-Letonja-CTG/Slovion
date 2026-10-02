@@ -6,5 +6,6 @@ public sealed record HabitatSpecies(SpeciesId SpeciesId, int Weight);
 /// <summary>
 /// A searchable habitat with fictional encounter values: the chance that a search finds anything, and
 /// the relative weights (rarity) of the species that can be found (docs/decisions.md D6, D7).
+/// <see cref="Names"/> holds its display name per language: a game label, not a biological fact.
 /// </summary>
-public sealed record Habitat(string Id, int SearchChancePercent, IReadOnlyList<HabitatSpecies> Species);
+public sealed record Habitat(string Id, IReadOnlyDictionary<string, string> Names, int SearchChancePercent, IReadOnlyList<HabitatSpecies> Species);

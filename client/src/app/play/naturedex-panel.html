@@ -7,78 +7,142 @@
   >
     <header class="naturedex__header">
       <h2 id="naturedex-title">{{ 'naturedex.title' | transloco }}</h2>
-      <button #close type="button" class="button" (click)="closed.emit()">
+      <button type="button" class="button" (click)="closed.emit()">
         {{ 'common.close' | transloco }}
       </button>
     </header>
 
-    @switch (state().kind) {
+    @let current = state();
+    @switch (current.kind) {
       @case ('loading') {
         <p>{{ 'common.loading' | transloco }}</p>
       }
       @case ('error') {
-        @if (state(); as failed) {
-          @if (failed.kind === 'error') {
-            <p role="alert">{{ 'errors.' + failed.code | transloco }}</p>
-          }
+        @if (current.kind === 'error') {
+          <p role="alert">{{ 'errors.' + current.code | transloco }}</p>
         }
       }
       @case ('loaded') {
-        @if (state(); as loaded) {
-          @if (loaded.kind === 'loaded') {
-            @for (entry of loaded.entries; track entry.speciesId) {
-              @if (entry.species; as species) {
-                <article class="entry" [attr.data-species]="entry.speciesId">
+        @let opened = view();
+        @if (opened.kind === 'grid') {
+          @if (empty()) {
+            <p class="naturedex__empty">{{ 'naturedex.empty' | transloco }}</p>
+          }
+          @for (section of sections(); track section.habitatId; let s = $index) {
+            <section class="habitat" [attr.data-habitat]="section.habitatId">
+              <h3 class="habitat__heading">
+                <span>{{ section.name }}</span>
+                <span class="habitat__count">{{
+                  'naturedex.progress'
+                    | transloco
+                      : { identified: identifiedCount(section), total: section.species.length }
+                }}</span>
+              </h3>
+              <ul class="habitat__grid">
+                @for (slot of section.species; track slot.speciesId; let i = $index) {
+                  @let name = slot.status === 'identified' ? slot.entry?.species?.name : null;
+                  <li>
+                    <button
+                      #picture
+                      type="button"
+                      class="picture"
+                      [class]="'picture--' + slot.status"
+                      [class.picture--selected]="isSelected(s, i)"
+                      [attr.data-species]="slot.speciesId"
+                      [attr.data-status]="slot.status"
+                      [attr.aria-disabled]="slot.status === 'unknown' ? 'true' : null"
+                      [attr.aria-label]="name ?? ('naturedex.unknown' | transloco)"
+                      (click)="select(s, i, slot)"
+                    >
+                      <img [src]="pictureUrl(slot.speciesId)" alt="" width="32" height="32" />
+                      <span class="picture__label" aria-hidden="true">{{
+                        name ?? ('naturedex.unknownLabel' | transloco)
+                      }}</span>
+                    </button>
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+        } @else if (opened.kind === 'page') {
+          @if (opened.entry.species; as species) {
+            <article class="entry" [attr.data-species]="opened.speciesId">
+              <button #backButton type="button" class="button entry__back" (click)="back()">
+                {{ 'naturedex.back' | transloco }}
+              </button>
+              <div class="entry__top">
+                <img
+                  class="entry__picture"
+                  [src]="pictureUrl(opened.speciesId)"
+                  alt=""
+                  width="32"
+                  height="32"
+                />
+                <div>
                   <h3 class="entry__name">{{ species.name }}</h3>
                   <p class="entry__scientific">
                     <i>{{ species.scientificName }}</i>
                   </p>
-                  <dl class="entry__facts">
-                    <dt>{{ 'naturedex.family' | transloco }}</dt>
-                    <dd>{{ species.family }}</dd>
-                    <dt>{{ 'naturedex.habitat.' + entry.group | transloco }}</dt>
-                    <dd>{{ species.habitat }}</dd>
-                    <dt>{{ 'naturedex.distribution' | transloco }}</dt>
-                    <dd>{{ species.distribution }}</dd>
-                    <dt>{{ 'naturedex.season.' + entry.group | transloco }}</dt>
-                    <dd>{{ species.season }}</dd>
-                    <dt>{{ 'naturedex.discoveredAt' | transloco }}</dt>
-                    <dd>{{ entry.identifiedAt | date: 'longDate' }}</dd>
-                  </dl>
-                  <h4>{{ 'naturedex.characteristics' | transloco }}</h4>
-                  <ul class="entry__list">
-                    @for (characteristic of species.characteristics; track $index) {
-                      <li>{{ characteristic }}</li>
-                    }
-                  </ul>
-                  <h4>{{ 'naturedex.sources' | transloco }}</h4>
-                  <ul class="entry__list entry__sources">
-                    @for (source of species.sources; track source.url) {
-                      <li>
-                        <a [href]="source.url" target="_blank" rel="noopener noreferrer">{{
-                          source.title
-                        }}</a>
-                        — {{ source.publisher }}
-                      </li>
-                    }
-                  </ul>
-                </article>
-              } @else {
-                <!-- Observed but not identified: no name, facts or sources yet (D1). -->
-                <article class="entry entry--unknown" [attr.data-species]="entry.speciesId">
-                  <h3 class="entry__name">{{ 'naturedex.unknown' | transloco }}</h3>
-                  <p class="entry__scientific">{{ 'species.group.' + entry.group | transloco }}</p>
-                  <dl class="entry__facts">
-                    <dt>{{ 'naturedex.observedAt' | transloco }}</dt>
-                    <dd>{{ entry.observedAt | date: 'longDate' }}</dd>
-                  </dl>
-                  <p class="entry__hint">{{ 'naturedex.observeAgain' | transloco }}</p>
-                </article>
-              }
-            } @empty {
-              <p class="naturedex__empty">{{ 'naturedex.empty' | transloco }}</p>
-            }
+                </div>
+              </div>
+              <dl class="entry__facts">
+                <dt>{{ 'naturedex.family' | transloco }}</dt>
+                <dd>{{ species.family }}</dd>
+                <dt>{{ 'naturedex.habitat.' + opened.entry.group | transloco }}</dt>
+                <dd>{{ species.habitat }}</dd>
+                <dt>{{ 'naturedex.distribution' | transloco }}</dt>
+                <dd>{{ species.distribution }}</dd>
+                <dt>{{ 'naturedex.season.' + opened.entry.group | transloco }}</dt>
+                <dd>{{ species.season }}</dd>
+                <dt>{{ 'naturedex.discoveredAt' | transloco }}</dt>
+                <dd>{{ opened.entry.identifiedAt | date: 'longDate' }}</dd>
+              </dl>
+              <h4>{{ 'naturedex.characteristics' | transloco }}</h4>
+              <ul class="entry__list">
+                @for (characteristic of species.characteristics; track $index) {
+                  <li>{{ characteristic }}</li>
+                }
+              </ul>
+              <h4>{{ 'naturedex.sources' | transloco }}</h4>
+              <ul class="entry__list entry__sources">
+                @for (source of species.sources; track source.url) {
+                  <li>
+                    <a [href]="source.url" target="_blank" rel="noopener noreferrer">{{
+                      source.title
+                    }}</a>
+                    — {{ source.publisher }}
+                  </li>
+                }
+              </ul>
+            </article>
           }
+        } @else {
+          <!-- Observed but not identified: no name, facts or sources yet (D1). -->
+          <article class="entry entry--unknown" [attr.data-species]="opened.speciesId">
+            <button #backButton type="button" class="button entry__back" (click)="back()">
+              {{ 'naturedex.back' | transloco }}
+            </button>
+            <div class="entry__top">
+              <img
+                class="entry__picture entry__picture--observed"
+                [src]="pictureUrl(opened.speciesId)"
+                alt=""
+                width="32"
+                height="32"
+              />
+              <div>
+                <h3 class="entry__name">{{ 'naturedex.unknown' | transloco }}</h3>
+                <p class="entry__scientific">
+                  {{ 'species.group.' + opened.entry.group | transloco }}
+                </p>
+              </div>
+            </div>
+            <dl class="entry__facts">
+              <dt>{{ 'naturedex.observedAt' | transloco }}</dt>
+              <dd>{{ opened.entry.observedAt | date: 'longDate' }}</dd>
+            </dl>
+            <p class="entry__hint">{{ 'naturedex.observeAgain' | transloco }}</p>
+          </article>
         }
       }
     }
