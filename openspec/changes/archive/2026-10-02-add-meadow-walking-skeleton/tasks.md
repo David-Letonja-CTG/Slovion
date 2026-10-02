@@ -49,7 +49,7 @@
 ## 7. End-to-end test, CI and docs
 
 - [x] 7.1 Add Playwright (Chromium) with `client/e2e/` and `npm run e2e` (webServer: API + `ng serve`); verify the demo-path test passes locally against `docker compose` PostgreSQL
-- [ ] 7.2 Add the `e2e` CI job with a `postgres:18` service; verify it passes on the pull request
+- [x] 7.2 Add the `e2e` CI job with a `postgres:18` service; verify it passes on the pull request
 - [x] 7.3 Update README and CLAUDE.md (content folder, E2E command, migration command) and mark D10 *Terenski dnevnik* as final in `docs/decisions.md`; verify the documented commands run as written
 
 ## 8. Validation
