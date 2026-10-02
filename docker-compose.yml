@@ -1,0 +1,20 @@
+# Local development services. The API and client run on the host.
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: slovion
+      POSTGRES_USER: slovion
+      POSTGRES_PASSWORD: slovion_dev # local development only
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U slovion -d slovion"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db-data:

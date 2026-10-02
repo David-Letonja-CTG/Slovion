@@ -41,7 +41,20 @@ Domain depends on nothing. Layer rules are enforced by architecture tests. REST 
 
 ## Commands
 
-_Added once `bootstrap-solution` is implemented._
+```bash
+docker compose up -d db                       # PostgreSQL for local dev
+dotnet run --project src/Slovion.Api          # API on http://localhost:5080
+dotnet format Slovion.slnx --verify-no-changes
+dotnet test --solution Slovion.slnx           # all .NET tests (integration tests need Docker)
+dotnet test --project tests/Slovion.ArchitectureTests
+
+cd client
+npm start                                     # http://localhost:4200, proxies /api to the API
+npm run check                                 # format, lint, i18n keys, tests, build
+npm test | npm run lint | npm run i18n:check  # individual client checks
+```
+
+.NET tests use xUnit (`xunit.v3` package) on Microsoft.Testing.Platform, so use `dotnet test --solution/--project` (no VSTest). Client tests use Vitest.
 
 ## Workflow: SPEC → PLAN → IMPLEMENT → VALIDATE
 

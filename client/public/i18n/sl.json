@@ -1,0 +1,11 @@
+{
+  "app": {
+    "title": "Slovion"
+  },
+  "shell": {
+    "tagline": "Odkrij živo naravo Slovenije"
+  },
+  "game": {
+    "viewportLabel": "Igralni svet"
+  }
+}
