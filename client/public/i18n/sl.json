@@ -7,5 +7,41 @@
   },
   "game": {
     "viewportLabel": "Igralni svet"
+  },
+  "title": {
+    "newGame": "Nova igra",
+    "continue": "Nadaljuj",
+    "confirmReplace": "Začneš novo igro? Obstoječa igra na tej napravi bo izgubljena.",
+    "confirmReplaceYes": "Da, začni novo igro"
+  },
+  "common": {
+    "cancel": "Prekliči",
+    "close": "Zapri",
+    "loading": "Nalaganje …"
+  },
+  "play": {
+    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči · M: Terenski dnevnik"
+  },
+  "discovery": {
+    "new": "Nov vnos v Terenskem dnevniku: {{name}}",
+    "known": "Ta vrsta je že zapisana v Terenskem dnevniku: {{name}}"
+  },
+  "naturedex": {
+    "title": "Terenski dnevnik",
+    "empty": "Terenski dnevnik je še prazen. Razišči travnik in poišči rastline in živali.",
+    "discoveredAt": "Zapisano",
+    "family": "Družina",
+    "habitat": "Rastišče",
+    "distribution": "Razširjenost",
+    "season": "Čas cvetenja",
+    "characteristics": "Prepoznavni znaki",
+    "sources": "Viri"
+  },
+  "errors": {
+    "invalid_save_token": "Shranjene igre ni bilo mogoče najti. Začni novo igro.",
+    "unknown_spot": "Tega mesta ni bilo mogoče raziskati.",
+    "network": "Povezava s strežnikom ni uspela. Poskusi znova.",
+    "map": "Območja ni bilo mogoče naložiti.",
+    "error": "Nekaj je šlo narobe. Poskusi znova."
   }
 }

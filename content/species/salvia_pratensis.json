@@ -1,0 +1,58 @@
+{
+  "id": "salvia_pratensis",
+  "group": "plant",
+  "scientificName": { "value": "Salvia pratensis L.", "sources": ["gbif"] },
+  "sources": {
+    "bv-ul": {
+      "title": "Salvia pratensis (travniška kadulja)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/salvia-pratensis",
+      "accessed": "2026-10-02",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "nrp": {
+      "title": "Travniška kadulja",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/rastlinski-svet/ustnatice/travniska-kadulja",
+      "accessed": "2026-10-02",
+      "licence": "© Notranjski regijski park; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Salvia pratensis L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2927007",
+      "accessed": "2026-10-02",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": { "value": "travniška kadulja", "sources": ["bv-ul", "nrp"] },
+      "family": { "value": "ustnatice (Lamiaceae)", "sources": ["nrp", "gbif"] },
+      "habitat": {
+        "value": "Suhi travniki in pašniki. Raste na suhih, s hranili revnih tleh na sončnih, svetlih mestih.",
+        "sources": ["nrp"]
+      },
+      "distribution": {
+        "value": "V Sloveniji je zelo pogosta in splošno razširjena vrsta.",
+        "sources": ["nrp"]
+      },
+      "season": { "value": "Cveti od maja do avgusta.", "sources": ["nrp"] },
+      "characteristics": [
+        { "value": "Zraste od 30 do 60 cm visoko.", "sources": ["nrp"] },
+        {
+          "value": "Steblo je štirirobo in se v zgornjem delu, kjer so cvetovi, razveji.",
+          "sources": ["nrp"]
+        },
+        {
+          "value": "Pritlični listi imajo dolge peclje in tvorijo listno rozeto; njihov rob je naguban in topo nazobčan.",
+          "sources": ["nrp"]
+        },
+        {
+          "value": "Cvetovi so modri do vijolični in dolgi od 2 do 2,5 cm; po štiri do osem jih raste v vretencih.",
+          "sources": ["bv-ul", "nrp"]
+        }
+      ]
+    }
+  }
+}

@@ -11,6 +11,11 @@
   --color-backdrop: #11161c;
   --color-text: #e8efe4;
   --color-text-muted: #9fb3a1;
+  --color-panel: #1c2530;
+  --color-panel-border: #3a4a5a;
+  --color-accent: #8bac6f;
+  --color-accent-text: #11161c;
+  --color-warning: #f2c46d;
   --font-ui: 'Pixelify Sans', system-ui, sans-serif;
 }
 
@@ -30,4 +35,34 @@ body {
   background: var(--color-backdrop);
   color: var(--color-text);
   font-family: var(--font-ui);
+}
+
+button {
+  font: inherit;
+}
+
+.button {
+  padding: 0.6rem 1.2rem;
+  border: 2px solid var(--color-panel-border);
+  border-radius: 0;
+  background: var(--color-panel);
+  color: var(--color-text);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.button--primary {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+}
+
+.button:focus-visible {
+  outline: 3px solid var(--color-warning);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: progress;
 }

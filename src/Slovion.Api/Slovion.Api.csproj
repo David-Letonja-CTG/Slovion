@@ -9,4 +9,9 @@
     <ProjectReference Include="..\Slovion.Infrastructure\Slovion.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Game content (docs/decisions.md D7) ships with the API and is read from the output folder. -->
+    <None Include="..\..\content\**\*" LinkBase="content" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,45 @@
+<main class="play">
+  @if (loadFailed()) {
+    <p class="play__status" role="alert">{{ 'errors.map' | transloco }}</p>
+  } @else if (world(); as loaded) {
+    <app-game-canvas
+      class="play__game"
+      [world]="loaded"
+      (started)="onStarted($event)"
+      (interaction)="onInteraction($event)"
+      (menuRequested)="onMenu()"
+    />
+    <p class="play__hint">{{ 'play.controlsHint' | transloco }}</p>
+  } @else {
+    <p class="play__status">{{ 'common.loading' | transloco }}</p>
+  }
+
+  @switch (overlay().kind) {
+    @case ('discovery') {
+      @if (overlay(); as shown) {
+        @if (shown.kind === 'discovery') {
+          <app-message-dialog (closed)="close()">
+            <p>
+              {{
+                (shown.result.isNew ? 'discovery.new' : 'discovery.known')
+                  | transloco: { name: shown.result.species.name }
+              }}
+            </p>
+          </app-message-dialog>
+        }
+      }
+    }
+    @case ('error') {
+      @if (overlay(); as shown) {
+        @if (shown.kind === 'error') {
+          <app-message-dialog (closed)="close()">
+            <p role="alert">{{ 'errors.' + shown.code | transloco }}</p>
+          </app-message-dialog>
+        }
+      }
+    }
+    @case ('naturedex') {
+      <app-naturedex-panel (closed)="close()" (saveLost)="onSaveLost()" />
+    }
+  }
+</main>

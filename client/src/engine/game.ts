@@ -1,18 +1,37 @@
 import { GameLoop } from './game-loop';
-import { renderPlaceholder } from './placeholder-renderer';
+import { ActionConsumer, ActionDispatcher } from './input/action-dispatcher';
+import { ActionState } from './input/action-state';
+import { Action } from './input/actions';
 import { GameEnvironment, Unsubscribe, browserEnvironment } from './platform';
+import { WorldImages, renderWorld } from './render/world-renderer';
 import { LOGICAL_WIDTH, ViewportLayout, computeViewport } from './viewport';
+import { Interaction, World } from './world/world';
+import { WorldMap } from './world/world-map';
+
+/** Everything needed to show a map: loaded by the host, never fetched by the engine. */
+export interface LoadedWorld extends WorldImages {
+  readonly map: WorldMap;
+}
 
 export interface Game {
-  /** Starts the loop and begins tracking size, pixel ratio and page visibility. */
+  /** Starts the loop and begins tracking size, pixel ratio, visibility and input. */
   start(): void;
   /** Stops the loop and releases every listener. Safe to call more than once. */
   stop(): void;
+  /** Routes input to the world or to UI overlays (never both). */
+  setActionConsumer(consumer: ActionConsumer): void;
+  /** UI overlays receive actions here while they are the consumer. */
+  onUiAction(listener: (action: Action) => void): Unsubscribe;
 }
 
 export interface GameOptions {
+  readonly world: LoadedWorld;
+  /** Called when the player interacts with a spot; the host asks the server what happens. */
+  readonly onInteract: (interaction: Interaction) => void;
+  /** Called when the player opens the menu from the world. */
+  readonly onOpenMenu?: () => void;
   /** Platform services. Defaults to the browser. */
-  environment?: GameEnvironment;
+  readonly environment?: GameEnvironment;
 }
 
 /**
@@ -22,7 +41,7 @@ export interface GameOptions {
 export function createGame(
   container: HTMLElement,
   canvas: HTMLCanvasElement,
-  options: GameOptions = {},
+  options: GameOptions,
 ): Game {
   const environment = options.environment ?? browserEnvironment(window);
   const context = canvas.getContext('2d');
@@ -30,16 +49,18 @@ export function createGame(
     throw new Error('Canvas 2D context is not available.');
   }
 
+  const input = new ActionState();
+  const dispatcher = new ActionDispatcher(input);
+  const world = new World(options.world.map, options.onInteract, options.onOpenMenu);
+
   let availableWidth = container.clientWidth;
   let availableHeight = container.clientHeight;
   let subscriptions: Unsubscribe[] = [];
 
   const loop = new GameLoop(
     {
-      update: () => {
-        // No simulation yet; world updates arrive with the first gameplay change.
-      },
-      render: () => renderPlaceholder(context),
+      update: (stepMs) => world.update(input, stepMs),
+      render: () => renderWorld(context, world, options.world),
     },
     environment.clock,
     environment.scheduler,
@@ -64,6 +85,7 @@ export function createGame(
         }),
         environment.observeDevicePixelRatio(applyLayout),
         environment.observeVisibility((hidden) => (hidden ? loop.pause() : loop.resume())),
+        environment.attachInput(dispatcher),
       ];
       applyLayout();
       loop.start();
@@ -74,6 +96,9 @@ export function createGame(
       subscriptions.forEach((unsubscribe) => unsubscribe());
       subscriptions = [];
     },
+
+    setActionConsumer: (consumer) => dispatcher.setConsumer(consumer),
+    onUiAction: (listener) => dispatcher.onUiAction(listener),
   };
 }
 

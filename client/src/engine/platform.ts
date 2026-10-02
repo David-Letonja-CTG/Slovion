@@ -1,3 +1,6 @@
+import type { ActionSink } from './input/actions';
+import { attachKeyboard } from './input/keyboard';
+
 /** Monotonic time source in milliseconds. */
 export interface Clock {
   now(): number;
@@ -26,6 +29,8 @@ export interface GameEnvironment {
   ): Unsubscribe;
   observeDevicePixelRatio(onChange: () => void): Unsubscribe;
   observeVisibility(onChange: (hidden: boolean) => void): Unsubscribe;
+  /** Connects the player's input devices (currently the keyboard) to `sink`. */
+  attachInput(sink: ActionSink): Unsubscribe;
 }
 
 /** The real browser implementation of {@link GameEnvironment}. */
@@ -69,5 +74,7 @@ export function browserEnvironment(window: Window): GameEnvironment {
       document.addEventListener('visibilitychange', listener);
       return () => document.removeEventListener('visibilitychange', listener);
     },
+
+    attachInput: (sink) => attachKeyboard(window, sink),
   };
 }

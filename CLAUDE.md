@@ -52,9 +52,13 @@ cd client
 npm start                                     # http://localhost:4200, proxies /api to the API
 npm run check                                 # format, lint, i18n keys, tests, build
 npm test | npm run lint | npm run i18n:check  # individual client checks
+npm run e2e                                   # Playwright demo path (needs the database)
+
+dotnet tool restore                           # once, for dotnet-ef
+dotnet ef migrations add <Name> --project src/Slovion.Infrastructure --output-dir Persistence/Migrations
 ```
 
-.NET tests use xUnit (`xunit.v3` package) on Microsoft.Testing.Platform, so use `dotnet test --solution/--project` (no VSTest). Client tests use Vitest.
+.NET tests use xUnit (`xunit.v3` package) on Microsoft.Testing.Platform, so use `dotnet test --solution/--project` (no VSTest). Client tests use Vitest; test-only helpers live in `*.testing.ts` or `testing/` folders (excluded from the app build). Migrations run at API startup.
 
 ## Workflow: SPEC → PLAN → IMPLEMENT → VALIDATE
 
