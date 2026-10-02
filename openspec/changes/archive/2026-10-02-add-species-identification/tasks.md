@@ -27,7 +27,7 @@
 
 - [x] 4.1 Update the E2E demo path (identify the sage by clicking its name) and add a wrong-answer E2E test that checks the *Neznana vrsta* entry; verify `npm run e2e` passes locally
 - [x] 4.2 Update `docs/product-vision.md` (roadmap: this change and `add-habitat-search`) and README controls/description; verify the links resolve
-- [ ] 4.3 Push and verify all CI jobs pass on the pull request
+- [x] 4.3 Push and verify all CI jobs pass on the pull request
 
 ## 5. Validation
 
