@@ -1,0 +1,93 @@
+{
+  "id": "taraxacum_officinale",
+  "group": "plant",
+  "scientificName": {
+    "value": "Taraxacum officinale Weber ex F.H.Wigg.",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "nrp": {
+      "title": "Navadni regrat",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/rastlinski-svet/radicevke/navadni-regrat",
+      "accessed": "2026-10-02",
+      "licence": "© Notranjski regijski park; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Taraxacum officinale Weber ex F.H.Wigg. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5394163",
+      "accessed": "2026-10-02",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "navadni regrat",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "family": {
+        "value": "radičevke (Cichoriaceae)",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "habitat": {
+        "value": "Gojeni travniki, robovi poti, stari zidovi in obdelane površine; raste na svežih, z dušikom bogatih tleh.",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "distribution": {
+        "value": "Raste po vsej Sloveniji.",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "season": {
+        "value": "Cveti od marca do maja, včasih še oktobra.",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Zraste od 5 do 30 cm visoko.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Listi rastejo v pritlični rozeti; so suličasti in globoko zarezani.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Košek sestavljajo številni rumeni jezičasti cvetovi.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Rastlina vsebuje bel sok.",
+          "sources": [
+            "nrp"
+          ]
+        }
+      ]
+    }
+  },
+  "identification": {
+    "clues": [
+      2,
+      1,
+      3
+    ]
+  }
+}

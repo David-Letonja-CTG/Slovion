@@ -11,6 +11,8 @@ public sealed class SlovionDbContext(DbContextOptions<SlovionDbContext> options)
 
     public DbSet<SpeciesDiscovery> Discoveries => Set<SpeciesDiscovery>();
 
+    public DbSet<Encounter> Encounters => Set<Encounter>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(SlovionDbContext).Assembly);
 }

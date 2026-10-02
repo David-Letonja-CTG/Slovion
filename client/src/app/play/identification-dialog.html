@@ -1,0 +1,45 @@
+<div class="overlay">
+  <section
+    class="dialog identification"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="identification-heading"
+  >
+    <h2 id="identification-heading">
+      {{ 'identification.heading.' + encounter().group | transloco }}
+    </h2>
+
+    <ol class="identification__clues" aria-live="polite">
+      @for (clue of visibleClues(); track $index) {
+        <li>{{ clue }}</li>
+      }
+    </ol>
+
+    <p class="identification__question">{{ 'identification.question' | transloco }}</p>
+
+    <div class="identification__options">
+      @for (option of options(); track $index) {
+        <button
+          #option
+          type="button"
+          class="button"
+          [class.button--primary]="selected() === $index"
+          [attr.data-kind]="option.kind"
+          (click)="activate($index)"
+        >
+          @switch (option.kind) {
+            @case ('clue') {
+              {{ 'identification.nextClue' | transloco }}
+            }
+            @case ('candidate') {
+              {{ option.kind === 'candidate' ? option.name : '' }}
+            }
+            @case ('leave') {
+              {{ 'identification.leave' | transloco }}
+            }
+          }
+        </button>
+      }
+    </div>
+  </section>
+</div>

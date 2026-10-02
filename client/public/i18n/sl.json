@@ -23,17 +23,29 @@
     "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči · M: Terenski dnevnik"
   },
   "discovery": {
-    "new": "Nov vnos v Terenskem dnevniku: {{name}}",
     "known": "Ta vrsta je že zapisana v Terenskem dnevniku: {{name}}"
   },
   "naturedex": {
     "title": "Terenski dnevnik",
     "empty": "Terenski dnevnik je še prazen. Razišči travnik in poišči rastline in živali.",
+    "unknown": "Neznana vrsta",
+    "observedAt": "Opaženo",
+    "observeAgain": "Opazuj jo znova in jo prepoznaj.",
     "discoveredAt": "Zapisano",
     "family": "Družina",
-    "habitat": "Rastišče",
+    "habitat": {
+      "plant": "Rastišče",
+      "mammal": "Življenjski prostor",
+      "bird": "Življenjski prostor",
+      "insect": "Življenjski prostor"
+    },
     "distribution": "Razširjenost",
-    "season": "Čas cvetenja",
+    "season": {
+      "plant": "Čas cvetenja",
+      "insect": "Čas letanja",
+      "bird": "Prisotnost v Sloveniji",
+      "mammal": "Aktivnost"
+    },
     "characteristics": "Prepoznavni znaki",
     "sources": "Viri"
   },
@@ -42,6 +54,28 @@
     "unknown_spot": "Tega mesta ni bilo mogoče raziskati.",
     "network": "Povezava s strežnikom ni uspela. Poskusi znova.",
     "map": "Območja ni bilo mogoče naložiti.",
-    "error": "Nekaj je šlo narobe. Poskusi znova."
+    "error": "Nekaj je šlo narobe. Poskusi znova.",
+    "unknown_encounter": "To opazovanje ni več veljavno. Poskusi znova."
+  },
+  "identification": {
+    "heading": {
+      "plant": "Opaziš rastlino",
+      "mammal": "Opaziš sesalca",
+      "bird": "Opaziš ptico",
+      "insect": "Opaziš žuželko"
+    },
+    "question": "Katera vrsta je to?",
+    "nextClue": "Nov namig",
+    "leave": "Odidi",
+    "correct": "Pravilno! Nov vnos v Terenskem dnevniku: {{name}}",
+    "wrong": "Žal ne – to je bila vrsta {{name}}. Opazuj jo znova in jo prepoznaj."
+  },
+  "species": {
+    "group": {
+      "plant": "rastlina",
+      "mammal": "sesalec",
+      "bird": "ptica",
+      "insect": "žuželka"
+    }
   }
 }

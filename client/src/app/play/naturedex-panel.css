@@ -69,3 +69,12 @@
     margin-bottom: 0.5rem;
   }
 }
+
+.entry--unknown .entry__name {
+  color: var(--color-text-muted);
+}
+
+.entry__hint {
+  margin: 0.75rem 0 0;
+  color: var(--color-warning);
+}

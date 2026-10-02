@@ -2,67 +2,52 @@
 
 ## Purpose
 
-Defines how a save slot discovers a species: the player interacts with a spot in the world, the server decides which species that is, records the discovery once, and the player is told what they found.
+Defines how a save slot discovers a species: the player interacts with a spot in the world, the server decides which species that is and records the first observation once; identifying it is covered by the `identification` capability.
 
 ## Requirements
 
 ### Requirement: The server decides what was discovered
-A discovery request SHALL identify only the map and the spot. The server SHALL determine the species from map content; the client SHALL NOT name the species.
+An encounter request SHALL identify only the map and the spot. The server SHALL determine the species from map content; the client SHALL NOT name the species, and responses SHALL NOT reveal which species it is until it has been identified or answered.
 
 #### Scenario: Discovering the meadow sage
-- **WHEN** a valid save sends `POST /api/save/discoveries` with map `dravsko_polje_meadow` and the meadow sage spot ID
-- **THEN** the server records a discovery of `salvia_pratensis` for that save
-
-### Requirement: First discovery is recorded with server time
-The first discovery of a species by a save SHALL respond `201` with the species ID, `isNew: true`, the discovery time taken from the server clock, and the localized NatureDex entry.
-
-#### Scenario: New species
-- **WHEN** a save discovers `salvia_pratensis` for the first time at server time `2026-06-01T10:00:00Z`
-- **THEN** the response is `201` with `isNew: true` and `discoveredAt` `2026-06-01T10:00:00Z`
+- **WHEN** a valid save sends `POST /api/save/encounters` with map `dravsko_polje_meadow` and the meadow sage spot ID
+- **THEN** the server opens an encounter for `salvia_pratensis` without naming it in the response
 
 ### Requirement: Repeat discoveries are idempotent
-Discovering an already discovered species SHALL respond `200` with `isNew: false` and the original discovery time. No duplicate SHALL be stored, including when identical requests arrive at the same time.
+Observing an already observed species SHALL NOT create a second record or change its first observation time, including when identical requests arrive at the same time. Identifying an already identified species SHALL NOT change its identification time.
 
 #### Scenario: Interacting again
-- **WHEN** a save that already discovered `salvia_pratensis` interacts with the spot again
-- **THEN** the response is `200` with `isNew: false` and the first `discoveredAt`
+- **WHEN** a save that already observed `lepus_europaeus` starts another encounter with it
+- **THEN** its first observation time is unchanged
 
 #### Scenario: Two requests at once
-- **WHEN** two identical first-discovery requests for the same save arrive concurrently
-- **THEN** exactly one discovery is stored, one response has `isNew: true` and the other `isNew: false`
+- **WHEN** two first-encounter requests for the same species and save arrive concurrently
+- **THEN** exactly one observation is stored
 
 ### Requirement: Unknown spot
-A request naming a map or spot that does not exist, or a spot without a species, SHALL respond `404` with code `unknown_spot` and record nothing.
+An encounter request naming a map or spot that does not exist, or a spot without a species, SHALL respond `404` with code `unknown_spot` and record nothing.
 
 #### Scenario: Made-up spot
-- **WHEN** a save sends a discovery for spot `does_not_exist`
+- **WHEN** a save starts an encounter at spot `does_not_exist`
 - **THEN** the response is `404` with code `unknown_spot`
 
 ### Requirement: Valid save required
-Discovery requests without a token or with an unknown token SHALL respond `401` with code `invalid_save_token`.
+Encounter and identification requests without a token or with an unknown token SHALL respond `401` with code `invalid_save_token`.
 
 #### Scenario: Missing token
-- **WHEN** a discovery request has no `Authorization` header
+- **WHEN** an encounter request has no `Authorization` header
 - **THEN** the response is `401` with code `invalid_save_token`
 
 ### Requirement: Discoveries are persisted immediately
-A recorded discovery SHALL be stored durably before the response is sent, so it survives page reloads and server restarts.
+Observations and identifications SHALL be stored durably before the response is sent, so they survive page reloads and server restarts.
 
 #### Scenario: API restarted
-- **WHEN** the API is restarted after a discovery
-- **THEN** the save's NatureDex still contains the species
+- **WHEN** the API is restarted after a species was identified
+- **THEN** the save's NatureDex still lists the species as identified
 
-### Requirement: Player is told what was found
-After a discovery the client SHALL show a dialog with the species' Slovenian name: one message for a new entry and another when the species is already recorded. Messages SHALL be gender-neutral. The world SHALL not receive input until the dialog is closed with `Confirm` or `Cancel`.
+### Requirement: First observation is recorded
+Starting the first encounter with a species SHALL record that the save has **observed** it, using the server clock. The species then appears in the save's NatureDex as observed until it is identified.
 
-#### Scenario: New entry message
-- **WHEN** the server responds `isNew: true` for `salvia_pratensis`
-- **THEN** the dialog announces a new entry for *travniška kadulja* in *Terenski dnevnik*
-
-#### Scenario: Already recorded
-- **WHEN** the server responds `isNew: false`
-- **THEN** the dialog says the species is already recorded
-
-#### Scenario: Request fails
-- **WHEN** the discovery request fails with a network error
-- **THEN** a Slovenian error message is shown and, after closing it, the player can move and try again
+#### Scenario: Observing the hare for the first time
+- **WHEN** a save starts its first encounter with `lepus_europaeus` at server time `2026-06-02T08:00:00Z`
+- **THEN** the save's NatureDex lists `lepus_europaeus` as observed at `2026-06-02T08:00:00Z`

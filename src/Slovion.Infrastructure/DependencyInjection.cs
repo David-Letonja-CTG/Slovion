@@ -24,6 +24,8 @@ public static class DependencyInjection
 
         services.AddScoped<ISaveSlotRepository, SaveSlotRepository>();
         services.AddScoped<IDiscoveryRepository, DiscoveryRepository>();
+        services.AddScoped<IEncounterRepository, EncounterRepository>();
+        services.AddSingleton<IRandomSource, SystemRandomSource>();
 
         services.AddHealthChecks()
             .AddDbContextCheck<SlovionDbContext>(DatabaseHealthCheckName);

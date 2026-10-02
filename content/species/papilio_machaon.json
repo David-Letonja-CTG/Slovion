@@ -1,0 +1,100 @@
+{
+  "id": "papilio_machaon",
+  "group": "insect",
+  "scientificName": {
+    "value": "Papilio machaon Linnaeus, 1758",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "nrp": {
+      "title": "Lastovičar",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/izobrazevalne-vsebine/zivalski-svet/metulji/lastovicarji/lastovicar",
+      "accessed": "2026-10-02",
+      "licence": "© Notranjski regijski park; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Papilio machaon Linnaeus, 1758 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/8225376",
+      "accessed": "2026-10-02",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "lastovičar",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "family": {
+        "value": "lastovičarji (Papilionidae)",
+        "sources": [
+          "nrp",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Glede življenjskega prostora ni izbirčen; pojavlja se na vlažnih in na suhih območjih.",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "distribution": {
+        "value": "Je eden največjih metuljev v Sloveniji, vendar se nikjer ne pojavlja množično.",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "season": {
+        "value": "Navadno ima dve generaciji: prva leta od aprila do junija, druga od julija do oktobra.",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Razpon kril meri od 55 do 70 mm.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Telo in krila so rumeni z značilnim vzorcem črnih lis in črt.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Na zadnjih krilih ima repke, temno modre lise in oranžno okroglo liso, ki skupaj delujejo kot lažne oči.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Gosenica je zelena do skoraj bela, s prečnimi črnimi progami in oranžnimi pegami.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Gosenice se hranijo s kobulnicami, na primer s korenjem in peteršiljem.",
+          "sources": [
+            "nrp"
+          ]
+        }
+      ]
+    }
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

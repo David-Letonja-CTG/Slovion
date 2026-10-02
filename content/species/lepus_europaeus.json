@@ -1,0 +1,111 @@
+{
+  "id": "lepus_europaeus",
+  "group": "mammal",
+  "scientificName": {
+    "value": "Lepus europaeus Pallas, 1778",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "lzs": {
+      "title": "Poljski zajec",
+      "publisher": "Lovska zveza Slovenije",
+      "url": "https://www.lovska-zveza.si/prostozivece-zivali/sesalci/poljski-zajec/",
+      "accessed": "2026-10-02",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gis": {
+      "title": "Poljski zajec",
+      "publisher": "Gozdarski inštitut Slovenije (zdravgozd.si)",
+      "url": "https://www.zdravgozd.si/prirocnik/zapis.aspx?idso=778",
+      "accessed": "2026-10-02",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "bf-kzn": {
+      "title": "Poljski zajec (Kmetovati z naravo)",
+      "publisher": "Univerza v Ljubljani, Biotehniška fakulteta",
+      "url": "https://kmetovati-z-naravo.si/narava_na_kmetiji/poljski-zajec/",
+      "accessed": "2026-10-02",
+      "licence": "© kmetovati-z-naravo.si; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Lepus europaeus Pallas, 1778 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/7952072",
+      "accessed": "2026-10-02",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "poljski zajec",
+        "sources": [
+          "lzs",
+          "gis"
+        ]
+      },
+      "family": {
+        "value": "Leporidae",
+        "sources": [
+          "gbif",
+          "gis"
+        ]
+      },
+      "habitat": {
+        "value": "Odprta kmetijska krajina z različnimi poljščinami, mejicami, travniškimi pasovi in ekstenzivnimi travniki.",
+        "sources": [
+          "bf-kzn"
+        ]
+      },
+      "distribution": {
+        "value": "Pri nas je splošno razširjen, razen v alpskem visokogorju; največ ga je v nižinah subpanonskega in subsredozemskega sveta.",
+        "sources": [
+          "gis",
+          "lzs"
+        ]
+      },
+      "season": {
+        "value": "Dejaven je predvsem ponoči in v mraku, pa tudi podnevi.",
+        "sources": [
+          "gis",
+          "lzs"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Telo je dolgo od 50 do 70 cm, rep od 7 do 11 cm.",
+          "sources": [
+            "gis"
+          ]
+        },
+        {
+          "value": "Hrbet je v sredini rjav, trebuh pa povsem bel.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Rep je zgoraj črn in spodaj bel.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Teče s hitrostjo do 72 km/h in dela več kot 3 m dolge skoke.",
+          "sources": [
+            "gis"
+          ]
+        }
+      ]
+    }
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

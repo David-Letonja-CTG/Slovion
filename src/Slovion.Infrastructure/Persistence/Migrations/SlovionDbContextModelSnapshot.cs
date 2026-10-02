@@ -22,6 +22,54 @@ namespace Slovion.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Slovion.Domain.Discovery.Encounter", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string[]>("Candidates")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("candidates");
+
+                    b.Property<DateTimeOffset?>("ClosedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("closed_at");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("MapId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("map_id");
+
+                    b.Property<Guid>("SaveSlotId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("save_slot_id");
+
+                    b.Property<string>("SpeciesId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("species_id");
+
+                    b.Property<string>("SpotId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("spot_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SaveSlotId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_encounters_one_open_per_save_slot")
+                        .HasFilter("closed_at IS NULL");
+
+                    b.ToTable("encounters", (string)null);
+                });
+
             modelBuilder.Entity("Slovion.Domain.Discovery.SpeciesDiscovery", b =>
                 {
                     b.Property<Guid>("SaveSlotId")
@@ -32,14 +80,18 @@ namespace Slovion.Infrastructure.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("species_id");
 
-                    b.Property<DateTimeOffset>("DiscoveredAt")
+                    b.Property<DateTimeOffset?>("IdentifiedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("discovered_at");
+                        .HasColumnName("identified_at");
 
                     b.Property<string>("MapId")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("map_id");
+
+                    b.Property<DateTimeOffset>("ObservedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("observed_at");
 
                     b.Property<string>("SpotId")
                         .IsRequired()
@@ -72,6 +124,15 @@ namespace Slovion.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("save_slots", (string)null);
+                });
+
+            modelBuilder.Entity("Slovion.Domain.Discovery.Encounter", b =>
+                {
+                    b.HasOne("Slovion.Domain.Saves.SaveSlot", null)
+                        .WithMany()
+                        .HasForeignKey("SaveSlotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Slovion.Domain.Discovery.SpeciesDiscovery", b =>

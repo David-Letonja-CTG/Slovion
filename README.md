@@ -11,7 +11,7 @@ An original 2D exploration RPG set in a fictionalized Slovenia. Instead of ficti
 
 ## Status
 
-🚧 **First playable slice in progress.** Start a new game, walk across a small Dravsko polje meadow, discover the meadow sage (*travniška kadulja*), read about it in *Terenski dnevnik* (the in-game NatureDex), and keep it after reloading. Art is placeholder.
+🚧 **First playable slice in progress.** Start a new game, walk across a small Dravsko polje meadow, observe real species (meadow sage, dandelion, brown hare, skylark, swallowtail), identify each one from sourced clues, read about it in *Terenski dnevnik* (the in-game NatureDex), and keep your progress after reloading. Art is placeholder.
 
 First milestone: a small playable vertical slice in a **Dravsko polje meadow** — walk around, discover and identify a few real species, read about them in Slovenian, complete a small quest, and keep progress across reloads. See the [roadmap](docs/product-vision.md#roadmap--first-vertical-slice).
 
@@ -60,7 +60,7 @@ openspec show bootstrap-solution  # view a change
 openspec validate --all --strict  # validate changes and specs
 ```
 
-Specs (capabilities): [`localization`](openspec/specs/localization/spec.md), [`game-viewport`](openspec/specs/game-viewport/spec.md), [`input-actions`](openspec/specs/input-actions/spec.md), [`game-session`](openspec/specs/game-session/spec.md), [`world-exploration`](openspec/specs/world-exploration/spec.md), [`species-catalog`](openspec/specs/species-catalog/spec.md), [`discovery`](openspec/specs/discovery/spec.md), [`naturedex`](openspec/specs/naturedex/spec.md). Completed changes are in [`openspec/changes/archive/`](openspec/changes/archive/).
+Specs (capabilities): [`localization`](openspec/specs/localization/spec.md), [`game-viewport`](openspec/specs/game-viewport/spec.md), [`input-actions`](openspec/specs/input-actions/spec.md), [`game-session`](openspec/specs/game-session/spec.md), [`world-exploration`](openspec/specs/world-exploration/spec.md), [`species-catalog`](openspec/specs/species-catalog/spec.md), [`discovery`](openspec/specs/discovery/spec.md), [`identification`](openspec/specs/identification/spec.md), [`naturedex`](openspec/specs/naturedex/spec.md). Completed changes are in [`openspec/changes/archive/`](openspec/changes/archive/).
 
 ## Getting started
 
@@ -99,13 +99,14 @@ npm run check
 # End-to-end: plays the demo path in Chromium (needs the database; starts API and client itself)
 npx playwright install chromium   # once
 npm run e2e
+# next to your own running servers: E2E_API_PORT=5180 E2E_CLIENT_PORT=4300 npm run e2e
 ```
 
 CI runs the same checks on every push and pull request (`.github/workflows/ci.yml`).
 
 ### Controls
 
-Arrow keys or WASD to walk, Shift to run, E / Enter / Space to interact, M to open *Terenski dnevnik*, Esc to close.
+Arrow keys or WASD to walk, Shift to run, E / Enter / Space to interact, M to open *Terenski dnevnik*, Esc to close. In the observation dialog: arrows to choose, Enter to confirm, Esc to leave (mouse and touch work too).
 
 ### Content and database
 

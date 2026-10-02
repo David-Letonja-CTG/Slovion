@@ -6,7 +6,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import sl from '../../../public/i18n/sl.json';
 import { Action, Game, GameOptions } from '../../engine';
-import { DiscoveryResult, NatureDexEntry } from '../api/game-api';
+import { AnswerResult, Encounter, NatureDexEntry } from '../api/game-api';
 import { gameApiInterceptor } from '../api/game-api.interceptor';
 import { routes } from '../app.routes';
 import { GAME_FACTORY } from '../game/game-canvas';
@@ -99,7 +99,10 @@ export async function setupTestApp(options: TestAppOptions = {}) {
 
 export const SAGE_ENTRY: NatureDexEntry = {
   speciesId: 'salvia_pratensis',
-  discoveredAt: '2026-06-01T10:00:00Z',
+  group: 'plant',
+  status: 'identified',
+  observedAt: '2026-06-01T10:00:00Z',
+  identifiedAt: '2026-06-01T10:05:00Z',
   species: {
     name: 'travniška kadulja',
     scientificName: 'Salvia pratensis L.',
@@ -120,7 +123,33 @@ export const SAGE_ENTRY: NatureDexEntry = {
   },
 };
 
-export const sageDiscovery = (isNew: boolean): DiscoveryResult => ({ ...SAGE_ENTRY, isNew });
+/** An observed but not identified hare. */
+export const HARE_OBSERVED: NatureDexEntry = {
+  speciesId: 'lepus_europaeus',
+  group: 'mammal',
+  status: 'observed',
+  observedAt: '2026-06-02T08:00:00Z',
+  identifiedAt: null,
+  species: null,
+};
+
+export const SAGE_ENCOUNTER: Encounter = {
+  encounterId: 'enc-1',
+  group: 'plant',
+  clues: ['Cvetovi so modri do vijolični.', 'Steblo je štirirobo.', 'Listna rozeta.'],
+  candidates: [
+    { speciesId: 'lepus_europaeus', name: 'poljski zajec' },
+    { speciesId: 'salvia_pratensis', name: 'travniška kadulja' },
+    { speciesId: 'taraxacum_officinale', name: 'navadni regrat' },
+    { speciesId: 'papilio_machaon', name: 'lastovičar' },
+  ],
+};
+
+export const sageAnswer = (correct: boolean): AnswerResult => ({
+  correct,
+  species: { speciesId: 'salvia_pratensis', name: 'travniška kadulja' },
+  entry: correct ? SAGE_ENTRY : null,
+});
 
 /** Lets pending promises and change detection settle. */
 export async function settle(fixture?: { whenStable(): Promise<unknown> }): Promise<void> {

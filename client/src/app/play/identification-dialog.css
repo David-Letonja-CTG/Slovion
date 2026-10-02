@@ -1,0 +1,34 @@
+.identification {
+  width: min(32rem, 100%);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  text-align: left;
+}
+
+.identification h2 {
+  margin: 0;
+}
+
+.identification__clues {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.identification__question {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.identification__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.identification__options [data-kind='clue'],
+.identification__options [data-kind='leave'] {
+  font-size: 0.95rem;
+}

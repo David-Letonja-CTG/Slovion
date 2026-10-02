@@ -20,7 +20,9 @@ internal sealed class SpeciesDiscoveryConfiguration : IEntityTypeConfiguration<S
             .HasConversion(id => id.Value, value => SpeciesId.Parse(value));
         builder.Property(discovery => discovery.MapId).HasColumnName("map_id").IsRequired();
         builder.Property(discovery => discovery.SpotId).HasColumnName("spot_id").IsRequired();
-        builder.Property(discovery => discovery.DiscoveredAt).HasColumnName("discovered_at");
+        builder.Property(discovery => discovery.ObservedAt).HasColumnName("observed_at");
+        builder.Property(discovery => discovery.IdentifiedAt).HasColumnName("identified_at");
+        builder.Ignore(discovery => discovery.IsIdentified);
 
         builder.HasOne<SaveSlot>()
             .WithMany()

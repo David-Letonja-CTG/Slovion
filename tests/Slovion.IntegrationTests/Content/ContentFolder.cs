@@ -71,9 +71,13 @@ public sealed class ContentFolder : IDisposable
                 ["habitat"] = Fact("Suhi travniki.", "src"),
                 ["distribution"] = Fact("Pogosta.", "src"),
                 ["season"] = Fact("Maj–avgust.", "src"),
-                ["characteristics"] = new JsonArray(Fact("Štirirobo steblo.", "src")),
+                ["characteristics"] = new JsonArray(
+                    Fact("Štirirobo steblo.", "src"),
+                    Fact("Modri cvetovi.", "src"),
+                    Fact("Listna rozeta.", "src")),
             },
         },
+        ["identification"] = new JsonObject { ["clues"] = new JsonArray(1, 0, 2) },
     };
 
     private static JsonObject ValidMap()

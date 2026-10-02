@@ -1,6 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const ci = !!process.env['CI'];
+// Ports are configurable so the tests can run next to a developer's own servers.
+const apiPort = process.env['E2E_API_PORT'] ?? '5080';
+const clientPort = process.env['E2E_CLIENT_PORT'] ?? '4200';
+const apiUrl = `http://localhost:${apiPort}`;
 
 /**
  * End-to-end tests against the real API and client. PostgreSQL must be running
@@ -12,7 +16,7 @@ export default defineConfig({
   retries: ci ? 1 : 0,
   reporter: ci ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: 'http://localhost:4200',
+    baseURL: `http://localhost:${clientPort}`,
     viewport: { width: 1280, height: 720 },
     trace: 'retain-on-failure',
   },
@@ -25,15 +29,18 @@ export default defineConfig({
   webServer: [
     {
       // /health answers 200 only once the database is reachable and migrations ran.
-      command: 'dotnet run --project ../src/Slovion.Api --no-launch-profile',
-      url: 'http://localhost:5080/health',
-      env: { ASPNETCORE_URLS: 'http://localhost:5080', ASPNETCORE_ENVIRONMENT: 'Development' },
+      // Release build: its output folder is not locked by a developer's running Debug API.
+      command:
+        'dotnet run --project ../src/Slovion.Api --configuration Release --no-launch-profile',
+      url: `${apiUrl}/health`,
+      env: { ASPNETCORE_URLS: apiUrl, ASPNETCORE_ENVIRONMENT: 'Development' },
       reuseExistingServer: !ci,
       timeout: 180_000,
     },
     {
-      command: 'npm start -- --port 4200',
-      url: 'http://localhost:4200',
+      command: `npm start -- --port ${clientPort}`,
+      url: `http://localhost:${clientPort}`,
+      env: { SLOVION_API_URL: apiUrl },
       reuseExistingServer: !ci,
       timeout: 180_000,
     },
