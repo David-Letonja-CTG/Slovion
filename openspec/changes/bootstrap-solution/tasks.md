@@ -36,7 +36,7 @@
 
 ## 5. CI and developer docs
 
-- [ ] 5.1 Add `.github/workflows/ci.yml` with backend and client jobs per design §10; verify the workflow passes on a pushed branch
+- [x] 5.1 Add `.github/workflows/ci.yml` with backend and client jobs per design §10; verify the workflow passes on a pushed branch
 - [x] 5.2 Update `README.md` with prerequisites and the four commands (DB, API, client, all checks); verify each command works as written on a clean checkout
 - [x] 5.3 Add build/test/lint commands to `CLAUDE.md` "Commands" section; verify they match README
 
