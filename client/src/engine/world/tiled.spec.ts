@@ -20,10 +20,11 @@ describe('parseTiledMap', () => {
   it('parses the real Dravsko polje meadow', () => {
     const map = parseTiledMap('dravsko_polje_meadow', meadow);
 
-    expect([map.id, map.width, map.height]).toEqual(['dravsko_polje_meadow', 32, 20]);
+    expect([map.id, map.width, map.height]).toEqual(['dravsko_polje_meadow', 32, 28]);
     expect(map.spawn).toEqual({ x: 10, y: 10, facing: 'right' });
     expect(map.spots).toContainEqual({ spotId: 'meadow_sage_1', x: 13, y: 10 });
     expect(map.spots.map((spot) => spot.spotId).sort()).toEqual([
+      'hedgerow_hawthorn_1',
       'meadow_dandelion_1',
       'meadow_hare_1',
       'meadow_sage_1',
@@ -52,7 +53,8 @@ describe('parseTiledMap', () => {
     expect(map.spotAt(12, 10)).toBeUndefined();
   });
 
-  it('lets the player reach every spot from the spawn', () => {
+  /** Every tile the player can walk to from the spawn. */
+  function reachableFromSpawn() {
     const map = parseTiledMap('dravsko_polje_meadow', meadow);
     const key = (x: number, y: number) => `${x},${y}`;
     const seen = new Set([key(map.spawn.x, map.spawn.y)]);
@@ -73,12 +75,28 @@ describe('parseTiledMap', () => {
       }
     }
 
-    for (const spot of map.spots) {
-      expect(seen.has(key(spot.x, spot.y)), spot.spotId).toBe(true);
+    return { map, reachable: (x: number, y: number) => seen.has(key(x, y)) };
+  }
+
+  it('lets the player reach every meadow spot from the spawn', () => {
+    const { map, reachable } = reachableFromSpawn();
+
+    for (const spot of map.spots.filter((s) => s.spotId.startsWith('meadow_'))) {
+      expect(reachable(spot.x, spot.y), spot.spotId).toBe(true);
     }
   });
 
-  it('reads the tall-grass habitat zones (same tiles as the server)', () => {
+  it('keeps the hedgerow strip closed off behind the southern hedge', () => {
+    const { map, reachable } = reachableFromSpawn();
+
+    for (let y = 19; y < map.height; y++) {
+      for (let x = 0; x < map.width; x++) {
+        expect(reachable(x, y), `${x},${y}`).toBe(false);
+      }
+    }
+  });
+
+  it('reads the habitat zones (same tiles as the server)', () => {
     const map = parseTiledMap('dravsko_polje_meadow', meadow);
 
     for (const [x, y] of [
@@ -90,9 +108,20 @@ describe('parseTiledMap', () => {
       expect(map.habitatAt(x, y), `${x},${y}`).toBe('tall_grass');
     }
     for (const [x, y] of [
+      [2, 20],
+      [13, 22],
+      [29, 22],
+      [5, 26],
+    ]) {
+      expect(map.habitatAt(x, y), `${x},${y}`).toBe('hedgerow');
+    }
+    for (const [x, y] of [
       [10, 10],
       [19, 12],
       [12, 11],
+      [20, 21],
+      [10, 23],
+      [20, 19],
     ]) {
       expect(map.habitatAt(x, y), `${x},${y}`).toBeUndefined();
     }

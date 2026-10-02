@@ -1,0 +1,102 @@
+{
+  "id": "crataegus_monogyna",
+  "group": "plant",
+  "scientificName": {
+    "value": "Crataegus monogyna Jacq.",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "nrp": {
+      "title": "Enovrati glog",
+      "publisher": "Notranjski regijski park",
+      "url": "https://www.notranjski-park.si/izobrazevalne-vsebine/rastlinski-svet/roznice/enovrati-glog",
+      "accessed": "2026-10-02",
+      "licence": "© Notranjski regijski park; facts paraphrased with attribution."
+    },
+    "wiki": {
+      "title": "Enovrati glog",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Enovratni_glog",
+      "accessed": "2026-10-02",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Crataegus monogyna Jacq. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/9220780",
+      "accessed": "2026-10-02",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "enovrati glog",
+        "sources": [
+          "nrp",
+          "wiki"
+        ]
+      },
+      "family": {
+        "value": "rožnice (Rosaceae)",
+        "sources": [
+          "nrp",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Žive meje, kamnita travnata pobočja, svetli gozdovi in gozdni robovi.",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "distribution": {
+        "value": "Razširjen je po vsej Sloveniji; raste na pustih tleh v toplejših in svetlih legah.",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "season": {
+        "value": "Cveti od maja do junija.",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Je grm s trnatimi poganjki, velik do 6 m.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Listi so izrazito krpati, s tremi do petimi krpami; zareze segajo čez polovico temno zelene, bleščeče listne ploskve.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Beli petštevni cvetovi so združeni v socvetja na vrhu poganjkov.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Bleščeče rdeči plodovi vsebujejo eno samo koščico.",
+          "sources": [
+            "nrp"
+          ]
+        }
+      ]
+    }
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

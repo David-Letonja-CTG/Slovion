@@ -48,7 +48,9 @@ test('identify the meadow sage, read about it, and keep it after a reload', asyn
   await page.keyboard.press('KeyM');
   const natureDex = page.getByRole('dialog', { name: 'Terenski dnevnik' });
   await expect(natureDex.locator('[data-habitat="tall_grass"] h3')).toContainText('Visoka trava');
-  await expect(natureDex.locator('.habitat__count')).toHaveText('1/5');
+  await expect(natureDex.locator('[data-habitat="tall_grass"] .habitat__count')).toHaveText('1/5');
+  await expect(natureDex.locator('[data-habitat="hedgerow"] h3')).toContainText('Mejica');
+  await expect(natureDex.locator('[data-habitat="hedgerow"] .habitat__count')).toHaveText('0/2');
 
   // Hovering shows the name of the identified sage and ??? for a species not yet found.
   const sage = pictureOf(page, 'salvia_pratensis');

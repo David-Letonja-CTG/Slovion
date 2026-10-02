@@ -26,8 +26,34 @@ public sealed class ContentValidationTests
         Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 19, 12));
         Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 12, 11));
 
-        var grass = Assert.Single(catalog.AllHabitats);
-        Assert.Equal("Visoka trava", grass.Names["sl"]);
+        // The hedgerow strip south of the meadow: zones beside the track; the track and the hedge are not.
+        Assert.Equal("hedgerow", catalog.FindHabitatAt("dravsko_polje_meadow", 2, 20)?.Id);
+        Assert.Equal("hedgerow", catalog.FindHabitatAt("dravsko_polje_meadow", 13, 22)?.Id);
+        Assert.Equal("hedgerow", catalog.FindHabitatAt("dravsko_polje_meadow", 29, 22)?.Id);
+        Assert.Equal("hedgerow", catalog.FindHabitatAt("dravsko_polje_meadow", 5, 26)?.Id);
+        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 20, 21));
+        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 10, 23));
+        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 20, 19));
+        Assert.Equal(SpeciesId.Parse("crataegus_monogyna"), catalog.FindSpot("dravsko_polje_meadow", "hedgerow_hawthorn_1")?.SpeciesId);
+
+        Assert.Equal(["tall_grass", "hedgerow"], catalog.AllHabitats.Select(habitat => habitat.Id));
+        Assert.Equal(["Visoka trava", "Mejica"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
+        Assert.Equal([1, 2], catalog.AllHabitats.Select(habitat => habitat.Order));
+    }
+
+    [Theory]
+    [InlineData("crataegus_monogyna", SpeciesGroup.Plant, "enovrati glog")]
+    [InlineData("lanius_collurio", SpeciesGroup.Bird, "rjavi srakoper")]
+    public void Repository_content_has_the_hedgerow_species(string id, SpeciesGroup group, string slName)
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        var species = catalog.FindSpecies(SpeciesId.Parse(id));
+        Assert.NotNull(species);
+        Assert.Equal(group, species.Group);
+        Assert.Equal(slName, species.Text["sl"].Name.Value);
+        Assert.Equal(3, species.Clues.Count);
+        Assert.Contains(catalog.AllHabitats.Single(habitat => habitat.Id == "hedgerow").Species, entry => entry.SpeciesId == species.Id);
     }
 
     [Fact]
@@ -71,6 +97,8 @@ public sealed class ContentValidationTests
         { "picture of the wrong size", c => c.Picture = ContentFolder.Png(64, 64), "must be 32×32 pixels (found 64×64)" },
         { "picture that is not a PNG", c => c.Picture = "GIF89a not a png at all"u8.ToArray(), "picture of species 'salvia_pratensis' is not a PNG" },
         { "habitat without Slovenian name", c => c.Habitat.Remove("text"), "Slovenian name ('text.sl.name') is required" },
+        { "habitat without order", c => c.Habitat.Remove("order"), "'order' must be a positive integer (found none)" },
+        { "non-positive habitat order", c => c.Habitat["order"] = 0, "'order' must be a positive integer (found 0)" },
         { "blank habitat name", c => c.Habitat["text"]!["sl"]!["name"] = " ", "'text.sl.name' is missing" },
         { "spot with unknown species", c => Objects(c)[1]!["properties"]![1]!["value"] = "vulpes_vulpes", "spot 'sage_1' references unknown species 'vulpes_vulpes'" },
     };

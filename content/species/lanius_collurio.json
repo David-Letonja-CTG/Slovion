@@ -1,0 +1,124 @@
+{
+  "id": "lanius_collurio",
+  "group": "bird",
+  "scientificName": {
+    "value": "Lanius collurio Linnaeus, 1758",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "nrp": {
+      "title": "Rjavi srakoper",
+      "publisher": "Notranjski regijski park",
+      "url": "https://www.notranjski-park.si/izobrazevalne-vsebine/zivalski-svet/ptici/srakoperji/rjavi-srakoper",
+      "accessed": "2026-10-02",
+      "licence": "© Notranjski regijski park; facts paraphrased with attribution."
+    },
+    "dopps": {
+      "title": "Ptice Slovenije – Srakoperji",
+      "publisher": "DOPPS – BirdLife Slovenija",
+      "url": "https://ptice.si/ptice-in-ljudje/ptice-slovenije/srakoperji/",
+      "accessed": "2026-10-02",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "drava": {
+      "title": "Rjavi srakoper",
+      "publisher": "Drava Natura 2000",
+      "url": "https://drava-natura.si/vrste/rjavi-srakoper",
+      "accessed": "2026-10-02",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Lanius collurio Linnaeus, 1758 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/7745240",
+      "accessed": "2026-10-02",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "rjavi srakoper",
+        "sources": [
+          "nrp",
+          "dopps"
+        ]
+      },
+      "family": {
+        "value": "srakoperji (Laniidae)",
+        "sources": [
+          "dopps",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Mozaična kmetijska krajina, kjer se cvetoči travniki prepletajo s pašniki, posameznimi grmi in mejicami.",
+        "sources": [
+          "nrp",
+          "dopps",
+          "drava"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je splošno razširjena gnezdilka nižin in gričevja; pri nas gnezdi od 20.000 do 30.000 parov.",
+        "sources": [
+          "dopps",
+          "drava"
+        ]
+      },
+      "season": {
+        "value": "Je selivka, ki prezimuje v Afriki; k nam se vrne konec aprila ali v začetku maja.",
+        "sources": [
+          "nrp",
+          "dopps",
+          "drava"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Dolg je od 16 do 18 cm.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Samec ima sivo teme, črno obrazno masko ter rdečerjav hrbet in peruti.",
+          "sources": [
+            "dopps",
+            "nrp"
+          ]
+        },
+        {
+          "value": "Ulovljen plen včasih natakne na trnje grmov ali na bodečo žico.",
+          "sources": [
+            "dopps",
+            "drava"
+          ]
+        },
+        {
+          "value": "Gnezdi v gostem trnastem grmovju, na primer v šipku, glogu, črnem trnu ali robidi.",
+          "sources": [
+            "dopps",
+            "drava"
+          ]
+        },
+        {
+          "value": "Plen opazuje s preže na vrhu grma ali plota; najraje lovi žuželke.",
+          "sources": [
+            "nrp",
+            "drava"
+          ]
+        }
+      ]
+    }
+  },
+  "identification": {
+    "clues": [
+      4,
+      1,
+      2
+    ]
+  }
+}

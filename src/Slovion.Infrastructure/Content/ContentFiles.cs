@@ -39,7 +39,7 @@ internal sealed record HabitatSpeciesFile(string? SpeciesId, int Weight);
 internal sealed record HabitatTextFile(string? Name);
 
 /// <summary>A habitat's localized display name and fictional gameplay values (search chance, species weights).</summary>
-internal sealed record HabitatFile(string? Id, Dictionary<string, HabitatTextFile>? Text, int SearchChancePercent, List<HabitatSpeciesFile>? Species);
+internal sealed record HabitatFile(string? Id, Dictionary<string, HabitatTextFile>? Text, int? Order, int SearchChancePercent, List<HabitatSpeciesFile>? Species);
 
 /// <summary>Tiles (inclusive) covered by a habitat zone: those whose centre lies inside the rectangle.</summary>
 internal sealed record HabitatZone(string HabitatId, int MinX, int MinY, int MaxX, int MaxY)
