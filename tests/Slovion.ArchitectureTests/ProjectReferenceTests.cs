@@ -24,7 +24,9 @@ public class ProjectReferenceTests
 
         var referenced = XDocument.Load(projectFile)
             .Descendants("ProjectReference")
-            .Select(reference => Path.GetFileNameWithoutExtension(reference.Attribute("Include")!.Value))
+            // Project files use Windows separators; normalize so the name is extracted on every OS.
+            .Select(reference => Path.GetFileNameWithoutExtension(
+                reference.Attribute("Include")!.Value.Replace('\\', '/')))
             .ToArray();
 
         var forbidden = referenced.Except(allowed).ToArray();
