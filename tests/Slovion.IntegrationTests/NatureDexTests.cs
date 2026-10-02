@@ -9,6 +9,7 @@ namespace Slovion.IntegrationTests;
 public sealed class NatureDexTests(PostgresFixture database)
 {
     private static readonly string[] MeadowSpecies = ["lepus_europaeus", "alauda_arvensis", "papilio_machaon", "taraxacum_officinale", "salvia_pratensis"];
+    private static readonly string[] HedgerowSpecies = ["lanius_collurio", "crataegus_monogyna"];
 
     private static async Task<JsonElement> NatureDexAsync(HttpClient client, string token)
     {
@@ -22,7 +23,7 @@ public sealed class NatureDexTests(PostgresFixture database)
         NatureDexSlots(natureDex).Single(slot => slot.GetProperty("speciesId").GetString() == speciesId);
 
     [Fact]
-    public async Task A_fresh_save_sees_every_meadow_species_as_unknown()
+    public async Task A_fresh_save_sees_every_species_as_unknown_in_habitat_order()
     {
         await using var factory = new SlovionApiFactory(database.ConnectionString);
         using var client = factory.CreateClient();
@@ -30,11 +31,12 @@ public sealed class NatureDexTests(PostgresFixture database)
 
         var natureDex = await NatureDexAsync(client, token);
 
-        var section = Assert.Single(natureDex.GetProperty("habitats").EnumerateArray());
-        Assert.Equal("tall_grass", section.GetProperty("habitatId").GetString());
-        Assert.Equal("Visoka trava", section.GetProperty("name").GetString());
-        Assert.Equal(MeadowSpecies, section.GetProperty("species").EnumerateArray().Select(slot => slot.GetProperty("speciesId").GetString()));
-        Assert.All(section.GetProperty("species").EnumerateArray(), slot =>
+        var sections = natureDex.GetProperty("habitats").EnumerateArray().ToArray();
+        Assert.Equal(["tall_grass", "hedgerow"], sections.Select(section => section.GetProperty("habitatId").GetString()));
+        Assert.Equal(["Visoka trava", "Mejica"], sections.Select(section => section.GetProperty("name").GetString()));
+        Assert.Equal(MeadowSpecies, sections[0].GetProperty("species").EnumerateArray().Select(slot => slot.GetProperty("speciesId").GetString()));
+        Assert.Equal(HedgerowSpecies, sections[1].GetProperty("species").EnumerateArray().Select(slot => slot.GetProperty("speciesId").GetString()));
+        Assert.All(NatureDexSlots(natureDex), slot =>
         {
             Assert.Equal("unknown", slot.GetProperty("status").GetString());
             Assert.Equal(JsonValueKind.Null, slot.GetProperty("entry").ValueKind);
@@ -70,6 +72,6 @@ public sealed class NatureDexTests(PostgresFixture database)
         var sage = SlotOf(natureDex, Sage);
         Assert.Equal("identified", sage.GetProperty("status").GetString());
         Assert.Equal("travniška kadulja", sage.GetProperty("entry").GetProperty("species").GetProperty("name").GetString());
-        Assert.Equal(4, NatureDexSlots(natureDex).Count(slot => slot.GetProperty("status").GetString() == "unknown"));
+        Assert.Equal(6, NatureDexSlots(natureDex).Count(slot => slot.GetProperty("status").GetString() == "unknown"));
     }
 }

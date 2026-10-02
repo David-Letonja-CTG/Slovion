@@ -24,9 +24,10 @@ public class NatureDexServiceTests
             FakeContentCatalog.Species("taraxacum_officinale", "navadni regrat"),
             FakeContentCatalog.Species("lepus_europaeus", "poljski zajec", group: SpeciesGroup.Mammal));
 
-        // Added out of ID order; the hare lives in both; the fox is listed but no longer in content.
-        catalog.Habitats.Add(FakeContentCatalog.Habitat("tall_grass", "Visoka trava", "Tall grass", Sage, Dandelion, Hare));
-        catalog.Habitats.Add(FakeContentCatalog.Habitat("field_edge", "Rob polja", null, Hare, SpeciesId.Parse("vulpes_vulpes")));
+        // Sorted by order, then ID; the hare lives in two habitats; the fox is listed but no longer in content.
+        catalog.Habitats.Add(FakeContentCatalog.Habitat("field_edge", 2, "Rob polja", null, Hare, SpeciesId.Parse("vulpes_vulpes")));
+        catalog.Habitats.Add(FakeContentCatalog.Habitat("tall_grass", 1, "Visoka trava", "Tall grass", Sage, Dandelion, Hare));
+        catalog.Habitats.Add(FakeContentCatalog.Habitat("bank", 2, "Breg", null, Dandelion));
 
         var discoveries = new InMemoryDiscoveryRepository();
         encounters = new EncounterService(catalog, discoveries, new InMemoryEncounterRepository(), new SeededRandom(1), time);
@@ -46,13 +47,13 @@ public class NatureDexServiceTests
         sections.Single(section => section.HabitatId == habitatId).Species.Single(slot => slot.SpeciesId == speciesId);
 
     [Fact]
-    public async Task Sections_follow_habitat_ID_order_and_species_content_order()
+    public async Task Sections_follow_habitat_order_then_ID_and_species_content_order()
     {
         var sections = await service.GetAsync(slot, "sl", Token);
 
-        Assert.Equal(["field_edge", "tall_grass"], sections.Select(section => section.HabitatId));
-        Assert.Equal([Sage, Dandelion, Hare], sections[1].Species.Select(s => s.SpeciesId));
-        Assert.Equal(["Rob polja", "Visoka trava"], sections.Select(section => section.Name));
+        Assert.Equal(["tall_grass", "bank", "field_edge"], sections.Select(section => section.HabitatId));
+        Assert.Equal([Sage, Dandelion, Hare], sections[0].Species.Select(s => s.SpeciesId));
+        Assert.Equal(["Visoka trava", "Breg", "Rob polja"], sections.Select(section => section.Name));
     }
 
     [Fact]
@@ -61,7 +62,7 @@ public class NatureDexServiceTests
         var sections = await service.GetAsync(slot, "sl", Token);
 
         Assert.All(sections.SelectMany(section => section.Species), s => Assert.Null(s.Entry));
-        Assert.Equal(4, sections.Sum(section => section.Species.Count));
+        Assert.Equal(5, sections.Sum(section => section.Species.Count));
     }
 
     [Fact]
@@ -69,7 +70,7 @@ public class NatureDexServiceTests
     {
         var sections = await service.GetAsync(slot, "sl", Token);
 
-        Assert.Equal([Hare], sections[0].Species.Select(s => s.SpeciesId));
+        Assert.Equal([Hare], sections.Single(section => section.HabitatId == "field_edge").Species.Select(s => s.SpeciesId));
     }
 
     [Fact]
@@ -116,7 +117,7 @@ public class NatureDexServiceTests
     {
         var sections = await service.GetAsync(slot, "en", Token);
 
-        Assert.Equal(["Rob polja", "Tall grass"], sections.Select(section => section.Name));
+        Assert.Equal(["Tall grass", "Breg", "Rob polja"], sections.Select(section => section.Name));
     }
 
     [Fact]

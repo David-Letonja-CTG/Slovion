@@ -11,7 +11,7 @@ An original 2D exploration RPG set in a fictionalized Slovenia. Instead of ficti
 
 ## Status
 
-🚧 **First playable slice in progress.** Start a new game, walk across a small Dravsko polje meadow, observe real species (meadow sage, dandelion, brown hare, skylark, swallowtail), identify each one from sourced clues, read about it in *Terenski dnevnik* (the in-game NatureDex: a picture grid per habitat where found species turn from silhouettes to colour), and keep your progress after reloading. Art is placeholder.
+🚧 **First playable slice in progress.** Start a new game, walk across a small Dravsko polje meadow, observe real species (meadow sage, dandelion, brown hare, skylark, swallowtail), identify each one from sourced clues, read about it in *Terenski dnevnik* (the in-game NatureDex: a picture grid per habitat where found species turn from silhouettes to colour), and keep your progress after reloading. Beyond the southern hedge lies a hedgerow (*mejica*) with two more species, hawthorn and red-backed shrike, waiting for the first quest to open the way. Art is placeholder.
 
 First milestone: a small playable vertical slice in a **Dravsko polje meadow** — walk around, discover and identify a few real species, read about them in Slovenian, complete a small quest, and keep progress across reloads. See the [roadmap](docs/product-vision.md#roadmap--first-vertical-slice).
 
@@ -113,7 +113,7 @@ Arrow keys or WASD to walk, Shift to run, E / Enter / Space to interact (or to s
 - **Species** live in `content/species/<genus_species>.json`. Every fact needs a source; the API refuses to start on invalid content, and `dotnet test` validates it.
 - **Species pictures** live in `content/species-pictures/<genus_species>.png`: original 32×32 pixel art, one per species (required). The journal shows them as silhouettes, greyscale or colour depending on progress.
 - **Maps** are Tiled JSON in `content/maps/` (orthogonal, 16×16 tiles, layers `ground`, `decor`, `collision`, `objects`) and can be edited in [Tiled](https://www.mapeditor.org/). The `objects` layer holds the spawn, species spots and habitat zones (rectangles of class `habitat` with a `habitatId`).
-- **Habitats** live in `content/habitats/<habitatId>.json`: a Slovenian display name (the journal section title), the chance that a search finds something and the species weights (rarity). Chance and weights are fictional gameplay values, never shown to players. Every species must be listed in at least one habitat.
+- **Habitats** live in `content/habitats/<habitatId>.json`: a Slovenian display name (the journal section title), an `order` (position in the journal), the chance that a search finds something and the species weights (rarity). Chance and weights are fictional gameplay values, never shown to players. Every species must be listed in at least one habitat.
 - **Database migrations** are applied automatically when the API starts. To add one: `dotnet tool restore`, then `dotnet ef migrations add <Name> --project src/Slovion.Infrastructure --output-dir Persistence/Migrations`.
 
 ## Content and IP

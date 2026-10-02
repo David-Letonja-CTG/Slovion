@@ -45,7 +45,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
         this.habitats = habitats;
         this.zones = zones;
         Languages = languages;
-        AllHabitats = habitats.Values.OrderBy(habitat => habitat.Id, StringComparer.Ordinal).ToList();
+        AllHabitats = habitats.Values.OrderBy(habitat => habitat.Order).ThenBy(habitat => habitat.Id, StringComparer.Ordinal).ToList();
     }
 
     public Species? FindSpecies(SpeciesId id) => species.GetValueOrDefault(id);
@@ -359,6 +359,11 @@ public sealed partial class FileContentCatalog : IContentCatalog
                 errors.Add($"{name}: Slovenian name ('text.{IContentCatalog.DefaultLanguage}.name') is required.");
             }
 
+            if (habitat.Order is null or < 1)
+            {
+                errors.Add($"{name}: 'order' must be a positive integer (found {habitat.Order?.ToString(CultureInfo.InvariantCulture) ?? "none"}).");
+            }
+
             if (habitat.SearchChancePercent is < 1 or > 100)
             {
                 errors.Add($"{name}: 'searchChancePercent' must be between 1 and 100 (found {habitat.SearchChancePercent}).");
@@ -391,7 +396,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
                 continue;
             }
 
-            if (!result.TryAdd(habitat.Id!, new Habitat(habitat.Id!, names, habitat.SearchChancePercent, entries)))
+            if (!result.TryAdd(habitat.Id!, new Habitat(habitat.Id!, names, habitat.Order!.Value, habitat.SearchChancePercent, entries)))
             {
                 errors.Add($"{name}: duplicate habitat ID '{habitat.Id}'.");
             }

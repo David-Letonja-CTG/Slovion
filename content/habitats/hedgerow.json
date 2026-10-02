@@ -1,0 +1,10 @@
+{
+  "id": "hedgerow",
+  "text": { "sl": { "name": "Mejica" } },
+  "order": 2,
+  "searchChancePercent": 60,
+  "species": [
+    { "speciesId": "lanius_collurio", "weight": 60 },
+    { "speciesId": "crataegus_monogyna", "weight": 40 }
+  ]
+}

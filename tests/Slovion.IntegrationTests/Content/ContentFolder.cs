@@ -107,6 +107,7 @@ public sealed class ContentFolder : IDisposable
     {
         ["id"] = "tall_grass",
         ["text"] = new JsonObject { ["sl"] = new JsonObject { ["name"] = "Visoka trava" } },
+        ["order"] = 1,
         ["searchChancePercent"] = 70,
         ["species"] = new JsonArray(new JsonObject { ["speciesId"] = "salvia_pratensis", ["weight"] = 5 }),
     };
