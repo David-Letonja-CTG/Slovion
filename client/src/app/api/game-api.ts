@@ -22,23 +22,62 @@ export interface SpeciesInfo {
   readonly sources: readonly SourceInfo[];
 }
 
+/**
+ * Species groups; labels are looked up dynamically:
+ * t(species.group.plant, species.group.mammal, species.group.bird, species.group.insect)
+ * t(identification.heading.plant, identification.heading.mammal, identification.heading.bird, identification.heading.insect)
+ * t(naturedex.season.plant, naturedex.season.mammal, naturedex.season.bird, naturedex.season.insect)
+ * t(naturedex.habitat.plant, naturedex.habitat.mammal, naturedex.habitat.bird, naturedex.habitat.insect)
+ */
+export type SpeciesGroup = 'plant' | 'mammal' | 'bird' | 'insect';
+
+/** A species in the save's NatureDex; `species` is only present once identified. */
 export interface NatureDexEntry {
   readonly speciesId: string;
-  readonly discoveredAt: string;
-  readonly species: SpeciesInfo;
+  readonly group: SpeciesGroup;
+  readonly status: 'observed' | 'identified';
+  readonly observedAt: string;
+  readonly identifiedAt: string | null;
+  readonly species: SpeciesInfo | null;
 }
 
-export interface DiscoveryResult extends NatureDexEntry {
-  readonly isNew: boolean;
+export interface Candidate {
+  readonly speciesId: string;
+  readonly name: string;
+}
+
+/** An open observation. It never says which candidate is correct. */
+export interface Encounter {
+  readonly encounterId: string;
+  readonly group: SpeciesGroup;
+  readonly clues: readonly string[];
+  readonly candidates: readonly Candidate[];
+}
+
+export interface AlreadyIdentified {
+  readonly alreadyIdentified: true;
+  readonly entry: NatureDexEntry;
+}
+
+export interface AnswerResult {
+  readonly correct: boolean;
+  /** The correct species, revealed after answering. */
+  readonly species: Candidate;
+  readonly entry: NatureDexEntry | null;
 }
 
 /**
  * Error codes the client shows messages for; each has a key `errors.<code>`, used dynamically:
- * t(errors.invalid_save_token, errors.unknown_spot, errors.network, errors.error)
+ * t(errors.invalid_save_token, errors.unknown_spot, errors.unknown_encounter, errors.network, errors.error)
  */
-export type ApiErrorCode = 'invalid_save_token' | 'unknown_spot' | 'network' | 'error';
+export type ApiErrorCode =
+  'invalid_save_token' | 'unknown_spot' | 'unknown_encounter' | 'network' | 'error';
 
-const KNOWN_CODES: readonly ApiErrorCode[] = ['invalid_save_token', 'unknown_spot'];
+const KNOWN_CODES: readonly ApiErrorCode[] = [
+  'invalid_save_token',
+  'unknown_spot',
+  'unknown_encounter',
+];
 
 /** Maps any failure to a code with a translated message. */
 export function apiErrorCode(error: unknown): ApiErrorCode {
@@ -59,8 +98,16 @@ export class GameApi {
     return this.http.post<{ token: string }>('/api/saves', null);
   }
 
-  discover(mapId: string, spotId: string): Observable<DiscoveryResult> {
-    return this.http.post<DiscoveryResult>('/api/save/discoveries', { mapId, spotId });
+  /** Observes the species at a spot; already identified species open no encounter. */
+  startEncounter(mapId: string, spotId: string): Observable<Encounter | AlreadyIdentified> {
+    return this.http.post<Encounter | AlreadyIdentified>('/api/save/encounters', { mapId, spotId });
+  }
+
+  answer(encounterId: string, speciesId: string): Observable<AnswerResult> {
+    return this.http.post<AnswerResult>(
+      `/api/save/encounters/${encodeURIComponent(encounterId)}/identification`,
+      { speciesId },
+    );
   }
 
   natureDex(): Observable<{ entries: NatureDexEntry[] }> {

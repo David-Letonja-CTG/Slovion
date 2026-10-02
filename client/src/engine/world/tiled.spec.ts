@@ -22,7 +22,14 @@ describe('parseTiledMap', () => {
 
     expect([map.id, map.width, map.height]).toEqual(['dravsko_polje_meadow', 32, 20]);
     expect(map.spawn).toEqual({ x: 10, y: 10, facing: 'right' });
-    expect(map.spots).toEqual([{ spotId: 'meadow_sage_1', x: 13, y: 10 }]);
+    expect(map.spots).toContainEqual({ spotId: 'meadow_sage_1', x: 13, y: 10 });
+    expect(map.spots.map((spot) => spot.spotId).sort()).toEqual([
+      'meadow_dandelion_1',
+      'meadow_hare_1',
+      'meadow_sage_1',
+      'meadow_skylark_1',
+      'meadow_swallowtail_1',
+    ]);
     expect(map.layers.map((layer) => layer.name)).toEqual(['ground', 'decor']);
     expect(map.tileset.image).toBe('../tilesets/meadow.png');
   });
@@ -43,6 +50,32 @@ describe('parseTiledMap', () => {
 
     expect(map.spotAt(13, 10)?.spotId).toBe('meadow_sage_1');
     expect(map.spotAt(12, 10)).toBeUndefined();
+  });
+
+  it('lets the player reach every spot from the spawn', () => {
+    const map = parseTiledMap('dravsko_polje_meadow', meadow);
+    const key = (x: number, y: number) => `${x},${y}`;
+    const seen = new Set([key(map.spawn.x, map.spawn.y)]);
+    const queue = [{ x: map.spawn.x, y: map.spawn.y }];
+    while (queue.length > 0) {
+      const { x, y } = queue.shift()!;
+      for (const [dx, dy] of [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1],
+      ]) {
+        const next = { x: x + dx, y: y + dy };
+        if (!map.isBlocked(next.x, next.y) && !seen.has(key(next.x, next.y))) {
+          seen.add(key(next.x, next.y));
+          queue.push(next);
+        }
+      }
+    }
+
+    for (const spot of map.spots) {
+      expect(seen.has(key(spot.x, spot.y)), spot.spotId).toBe(true);
+    }
   });
 
   it('reports a missing spawn', () => {

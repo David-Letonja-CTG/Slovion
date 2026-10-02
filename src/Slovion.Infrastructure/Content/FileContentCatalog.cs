@@ -34,6 +34,8 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
     public IReadOnlySet<string> Languages { get; }
 
+    public IReadOnlyCollection<Species> AllSpecies => species.Values;
+
     public Species? FindSpecies(SpeciesId id) => species.GetValueOrDefault(id);
 
     public MapSpot? FindSpot(string mapId, string spotId) => spots.GetValueOrDefault((mapId, spotId));
@@ -96,9 +98,9 @@ public sealed partial class FileContentCatalog : IContentCatalog
             errors.Add($"{name}: invalid species ID '{file.Id}' (expected genus_species in lowercase ASCII).");
         }
 
-        if (string.IsNullOrWhiteSpace(file.Group))
+        if (!SpeciesGroups.TryParse(file.Group, out var group))
         {
-            errors.Add($"{name}: 'group' is required.");
+            errors.Add($"{name}: unknown group '{file.Group}' (expected plant, mammal, bird or insect).");
         }
 
         var sources = ValidateSources(file.Sources, name, errors);
@@ -120,9 +122,41 @@ public sealed partial class FileContentCatalog : IContentCatalog
             errors.Add($"{name}: Slovenian text ('text.{IContentCatalog.DefaultLanguage}') is required.");
         }
 
+        var clues = ValidateClues(file.Identification?.Clues, texts, name, errors);
+
         return errors.Count > errorCount
             ? null
-            : new Species(SpeciesId.Parse(file.Id!), file.Group!, scientificName!, sources, texts);
+            : new Species(SpeciesId.Parse(file.Id!), group, scientificName!, sources, texts, clues);
+    }
+
+    /// <summary>Exactly three distinct clues, each pointing at a characteristic in every language.</summary>
+    private static List<int> ValidateClues(
+        List<int>? clues,
+        Dictionary<string, SpeciesText> texts,
+        string name,
+        List<string> errors)
+    {
+        const int ClueCount = 3;
+        if (clues is null || clues.Count != ClueCount)
+        {
+            errors.Add($"{name}: 'identification.clues' must list exactly {ClueCount} characteristics (found {clues?.Count ?? 0}).");
+            return [];
+        }
+
+        if (clues.Distinct().Count() != clues.Count)
+        {
+            errors.Add($"{name}: 'identification.clues' must not repeat a characteristic.");
+        }
+
+        foreach (var (language, text) in texts)
+        {
+            foreach (var clue in clues.Where(clue => clue < 0 || clue >= text.Characteristics.Count))
+            {
+                errors.Add($"{name}: clue {clue} has no matching characteristic in text.{language} ({text.Characteristics.Count} characteristics).");
+            }
+        }
+
+        return clues;
     }
 
     private static Dictionary<string, Source> ValidateSources(

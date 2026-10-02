@@ -14,28 +14,41 @@
     <p class="play__status">{{ 'common.loading' | transloco }}</p>
   }
 
-  @switch (overlay().kind) {
-    @case ('discovery') {
-      @if (overlay(); as shown) {
-        @if (shown.kind === 'discovery') {
-          <app-message-dialog (closed)="close()">
-            <p>
-              {{
-                (shown.result.isNew ? 'discovery.new' : 'discovery.known')
-                  | transloco: { name: shown.result.species.name }
-              }}
-            </p>
-          </app-message-dialog>
-        }
+  @let shown = overlay();
+  @switch (shown.kind) {
+    @case ('encounter') {
+      @if (shown.kind === 'encounter') {
+        <app-identification-dialog
+          [encounter]="shown.encounter"
+          (answered)="onAnswer(shown.encounter, $event)"
+          (left)="close()"
+        />
+      }
+    }
+    @case ('result') {
+      @if (shown.kind === 'result') {
+        <app-message-dialog (closed)="close()">
+          <p>
+            {{
+              (shown.result.correct ? 'identification.correct' : 'identification.wrong')
+                | transloco: { name: shown.result.species.name }
+            }}
+          </p>
+        </app-message-dialog>
+      }
+    }
+    @case ('known') {
+      @if (shown.kind === 'known') {
+        <app-message-dialog (closed)="close()">
+          <p>{{ 'discovery.known' | transloco: { name: shown.name } }}</p>
+        </app-message-dialog>
       }
     }
     @case ('error') {
-      @if (overlay(); as shown) {
-        @if (shown.kind === 'error') {
-          <app-message-dialog (closed)="close()">
-            <p role="alert">{{ 'errors.' + shown.code | transloco }}</p>
-          </app-message-dialog>
-        }
+      @if (shown.kind === 'error') {
+        <app-message-dialog (closed)="close()">
+          <p role="alert">{{ 'errors.' + shown.code | transloco }}</p>
+        </app-message-dialog>
       }
     }
     @case ('naturedex') {

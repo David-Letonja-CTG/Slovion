@@ -1,0 +1,111 @@
+{
+  "id": "alauda_arvensis",
+  "group": "bird",
+  "scientificName": {
+    "value": "Alauda arvensis Linnaeus, 1758",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "nrp": {
+      "title": "Poljski škrjanec",
+      "publisher": "Notranjski regijski park",
+      "url": "https://www.notranjski-park.si/izobrazevalne-vsebine/zivalski-svet/ptici/skrjanci/poljski-skrjanec",
+      "accessed": "2026-10-02",
+      "licence": "© Notranjski regijski park; facts paraphrased with attribution."
+    },
+    "dopps": {
+      "title": "Ptice Slovenije – Škrjanci",
+      "publisher": "DOPPS – BirdLife Slovenija",
+      "url": "https://ptice.si/ptice-in-ljudje/ptice-slovenije/skrjanci/",
+      "accessed": "2026-10-02",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Alauda arvensis Linnaeus, 1758 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/8077224",
+      "accessed": "2026-10-02",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "poljski škrjanec",
+        "sources": [
+          "nrp",
+          "dopps"
+        ]
+      },
+      "family": {
+        "value": "škrjanci (Alaudidae)",
+        "sources": [
+          "dopps",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Odprta obdelana krajina: polja in travniki z nizko ali redko vegetacijo.",
+        "sources": [
+          "nrp",
+          "dopps"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je pogost gnezdilec, vendar njegova populacija v zadnjih desetletjih močno upada.",
+        "sources": [
+          "nrp",
+          "dopps"
+        ]
+      },
+      "season": {
+        "value": "Pri nas je stalnica; pred hudim mrazom se izjemoma umakne v kraje brez snega.",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Dolg je od 16 do 18 cm.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Po trebuhu je umazano bel, po hrbtu sivkasto rjav in izrazito vzdolžno progast.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Zunanji rob repa je bel.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Poje med počasnim dviganjem v zrak in lahko lebdi tudi več kot 100 m visoko.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Gnezdi na tleh.",
+          "sources": [
+            "dopps",
+            "nrp"
+          ]
+        }
+      ]
+    }
+  },
+  "identification": {
+    "clues": [
+      3,
+      1,
+      4
+    ]
+  }
+}

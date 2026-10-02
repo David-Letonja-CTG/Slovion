@@ -27,41 +27,54 @@
         @if (state(); as loaded) {
           @if (loaded.kind === 'loaded') {
             @for (entry of loaded.entries; track entry.speciesId) {
-              <article class="entry" [attr.data-species]="entry.speciesId">
-                <h3 class="entry__name">{{ entry.species.name }}</h3>
-                <p class="entry__scientific">
-                  <i>{{ entry.species.scientificName }}</i>
-                </p>
-                <dl class="entry__facts">
-                  <dt>{{ 'naturedex.family' | transloco }}</dt>
-                  <dd>{{ entry.species.family }}</dd>
-                  <dt>{{ 'naturedex.habitat' | transloco }}</dt>
-                  <dd>{{ entry.species.habitat }}</dd>
-                  <dt>{{ 'naturedex.distribution' | transloco }}</dt>
-                  <dd>{{ entry.species.distribution }}</dd>
-                  <dt>{{ 'naturedex.season' | transloco }}</dt>
-                  <dd>{{ entry.species.season }}</dd>
-                  <dt>{{ 'naturedex.discoveredAt' | transloco }}</dt>
-                  <dd>{{ entry.discoveredAt | date: 'longDate' }}</dd>
-                </dl>
-                <h4>{{ 'naturedex.characteristics' | transloco }}</h4>
-                <ul class="entry__list">
-                  @for (characteristic of entry.species.characteristics; track $index) {
-                    <li>{{ characteristic }}</li>
-                  }
-                </ul>
-                <h4>{{ 'naturedex.sources' | transloco }}</h4>
-                <ul class="entry__list entry__sources">
-                  @for (source of entry.species.sources; track source.url) {
-                    <li>
-                      <a [href]="source.url" target="_blank" rel="noopener noreferrer">{{
-                        source.title
-                      }}</a>
-                      — {{ source.publisher }}
-                    </li>
-                  }
-                </ul>
-              </article>
+              @if (entry.species; as species) {
+                <article class="entry" [attr.data-species]="entry.speciesId">
+                  <h3 class="entry__name">{{ species.name }}</h3>
+                  <p class="entry__scientific">
+                    <i>{{ species.scientificName }}</i>
+                  </p>
+                  <dl class="entry__facts">
+                    <dt>{{ 'naturedex.family' | transloco }}</dt>
+                    <dd>{{ species.family }}</dd>
+                    <dt>{{ 'naturedex.habitat.' + entry.group | transloco }}</dt>
+                    <dd>{{ species.habitat }}</dd>
+                    <dt>{{ 'naturedex.distribution' | transloco }}</dt>
+                    <dd>{{ species.distribution }}</dd>
+                    <dt>{{ 'naturedex.season.' + entry.group | transloco }}</dt>
+                    <dd>{{ species.season }}</dd>
+                    <dt>{{ 'naturedex.discoveredAt' | transloco }}</dt>
+                    <dd>{{ entry.identifiedAt | date: 'longDate' }}</dd>
+                  </dl>
+                  <h4>{{ 'naturedex.characteristics' | transloco }}</h4>
+                  <ul class="entry__list">
+                    @for (characteristic of species.characteristics; track $index) {
+                      <li>{{ characteristic }}</li>
+                    }
+                  </ul>
+                  <h4>{{ 'naturedex.sources' | transloco }}</h4>
+                  <ul class="entry__list entry__sources">
+                    @for (source of species.sources; track source.url) {
+                      <li>
+                        <a [href]="source.url" target="_blank" rel="noopener noreferrer">{{
+                          source.title
+                        }}</a>
+                        — {{ source.publisher }}
+                      </li>
+                    }
+                  </ul>
+                </article>
+              } @else {
+                <!-- Observed but not identified: no name, facts or sources yet (D1). -->
+                <article class="entry entry--unknown" [attr.data-species]="entry.speciesId">
+                  <h3 class="entry__name">{{ 'naturedex.unknown' | transloco }}</h3>
+                  <p class="entry__scientific">{{ 'species.group.' + entry.group | transloco }}</p>
+                  <dl class="entry__facts">
+                    <dt>{{ 'naturedex.observedAt' | transloco }}</dt>
+                    <dd>{{ entry.observedAt | date: 'longDate' }}</dd>
+                  </dl>
+                  <p class="entry__hint">{{ 'naturedex.observeAgain' | transloco }}</p>
+                </article>
+              }
             } @empty {
               <p class="naturedex__empty">{{ 'naturedex.empty' | transloco }}</p>
             }

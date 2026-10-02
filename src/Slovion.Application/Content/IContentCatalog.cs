@@ -11,6 +11,9 @@ public interface IContentCatalog
     /// <summary>Languages for which content text exists.</summary>
     IReadOnlySet<string> Languages { get; }
 
+    /// <summary>Every species in the catalog.</summary>
+    IReadOnlyCollection<Species> AllSpecies { get; }
+
     Species? FindSpecies(SpeciesId id);
 
     MapSpot? FindSpot(string mapId, string spotId);

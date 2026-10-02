@@ -2,9 +2,10 @@ import { Component, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Action, Game, Interaction, LoadedWorld } from '../../engine';
-import { ApiErrorCode, DiscoveryResult, GameApi, apiErrorCode } from '../api/game-api';
+import { AnswerResult, ApiErrorCode, Encounter, GameApi, apiErrorCode } from '../api/game-api';
 import { GameCanvas } from '../game/game-canvas';
 import { GameSession } from '../session/game-session';
+import { IdentificationDialog } from './identification-dialog';
 import { MessageDialog } from './message-dialog';
 import { NatureDexPanel } from './naturedex-panel';
 import { WorldLoader } from './world-loader';
@@ -13,15 +14,18 @@ export const START_MAP = 'dravsko_polje_meadow';
 
 type Overlay =
   | { readonly kind: 'none' }
+  /** Waiting for the server; the world already has no input. */
   | { readonly kind: 'pending' }
-  | { readonly kind: 'discovery'; readonly result: DiscoveryResult }
+  | { readonly kind: 'encounter'; readonly encounter: Encounter }
+  | { readonly kind: 'result'; readonly result: AnswerResult }
+  | { readonly kind: 'known'; readonly name: string }
   | { readonly kind: 'naturedex' }
   | { readonly kind: 'error'; readonly code: ApiErrorCode };
 
 /** The game: the world on canvas plus UI overlays that take input while open. */
 @Component({
   selector: 'app-play-screen',
-  imports: [GameCanvas, MessageDialog, NatureDexPanel, TranslocoPipe],
+  imports: [GameCanvas, IdentificationDialog, MessageDialog, NatureDexPanel, TranslocoPipe],
   templateUrl: './play-screen.html',
   styleUrl: './play-screen.css',
 })
@@ -30,6 +34,7 @@ export class PlayScreen {
   private readonly session = inject(GameSession);
   private readonly router = inject(Router);
   private readonly canvas = viewChild(GameCanvas);
+  private readonly identification = viewChild(IdentificationDialog);
   private game: Game | undefined;
 
   protected readonly world = signal<LoadedWorld | undefined>(undefined);
@@ -50,19 +55,26 @@ export class PlayScreen {
     game.onUiAction((action) => this.onUiAction(action));
   }
 
+  /** Interacting with a spot starts an observation; the server decides the species (D3). */
   protected onInteraction(interaction: Interaction): void {
     // Block the world right away, so the player cannot walk off while the server answers.
     this.open({ kind: 'pending' });
-    this.api.discover(interaction.mapId, interaction.spotId).subscribe({
-      next: (result) => this.overlay.set({ kind: 'discovery', result }),
-      error: (error: unknown) => {
-        const code = apiErrorCode(error);
-        if (code === 'invalid_save_token') {
-          this.onSaveLost();
-        } else {
-          this.overlay.set({ kind: 'error', code });
-        }
-      },
+    this.api.startEncounter(interaction.mapId, interaction.spotId).subscribe({
+      next: (result) =>
+        this.overlay.set(
+          'alreadyIdentified' in result
+            ? { kind: 'known', name: result.entry.species?.name ?? '' }
+            : { kind: 'encounter', encounter: result },
+        ),
+      error: (error: unknown) => this.onError(error),
+    });
+  }
+
+  protected onAnswer(encounter: Encounter, speciesId: string): void {
+    this.overlay.set({ kind: 'pending' });
+    this.api.answer(encounter.encounterId, speciesId).subscribe({
+      next: (result) => this.overlay.set({ kind: 'result', result }),
+      error: (error: unknown) => this.onError(error),
     });
   }
 
@@ -83,6 +95,15 @@ export class PlayScreen {
     void this.router.navigate(['/']);
   }
 
+  private onError(error: unknown): void {
+    const code = apiErrorCode(error);
+    if (code === 'invalid_save_token') {
+      this.onSaveLost();
+    } else {
+      this.overlay.set({ kind: 'error', code });
+    }
+  }
+
   private open(overlay: Overlay): void {
     this.overlay.set(overlay);
     this.game?.setActionConsumer('ui');
@@ -90,11 +111,11 @@ export class PlayScreen {
 
   private onUiAction(action: Action): void {
     const kind = this.overlay().kind;
-    const closesMessage = kind === 'discovery' || kind === 'error';
-    if (
-      (closesMessage && (action === 'Confirm' || action === 'Cancel')) ||
-      (kind === 'naturedex' && action === 'Cancel')
-    ) {
+    if (kind === 'encounter') {
+      this.identification()?.handleAction(action);
+    } else if (kind === 'result' || kind === 'known' || kind === 'error') {
+      if (action === 'Confirm' || action === 'Cancel') this.close();
+    } else if (kind === 'naturedex' && action === 'Cancel') {
       this.close();
     }
   }

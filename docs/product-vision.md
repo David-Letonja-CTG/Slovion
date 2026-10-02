@@ -62,7 +62,8 @@ Each step is one OpenSpec change and ends with something demonstrable.
 |---|---|---|
 | 1 | `bootstrap-solution` | Solution skeleton, Angular shell with sl-SI localization, framework-free engine drawing a scaled canvas, Postgres, CI. No gameplay. |
 | 2 | `add-meadow-walking-skeleton` | New game → walk a small meadow with collision → interact with one species spot → server records discovery → NatureDex shows it in Slovenian → reload keeps it. |
-| 3 | `add-habitat-discovery-and-identification` | 4–6 sourced species, habitat-based seeded encounter rolls, clue-based identification (D1), progressive NatureDex reveal. |
+| 3a | `add-species-identification` | Four more sourced species, clue-based identification with candidates (D1), *Terenski dnevnik* stages (observed → identified). |
+| 3b | `add-habitat-search` | Searching habitat patches, habitat-based seeded random encounters and rarity. |
 | 4 | `add-first-quest` | One NPC with dialogue, quest "observe 3 meadow species", progression flag unlocking a new path. |
 
 Later candidates: world conditions (season/time/weather), inventory, research stations, additional regions, offline support, accounts/cloud save.

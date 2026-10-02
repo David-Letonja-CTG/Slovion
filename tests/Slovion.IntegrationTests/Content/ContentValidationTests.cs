@@ -39,6 +39,11 @@ public sealed class ContentValidationTests
         { "map without spawn", c => Objects(c).RemoveAt(0), "exactly one 'spawn' object is required (found 0)" },
         { "map without collision layer", c => c.Map["layers"]!.AsArray().RemoveAt(1), "tile layer 'collision' is required" },
         { "non-orthogonal map", c => c.Map["orientation"] = "isometric", "only orthogonal maps are supported" },
+        { "unknown group", c => c.Species["group"] = "fungus", "unknown group 'fungus'" },
+        { "clue out of range", c => c.Species["identification"]!["clues"] = new JsonArray(0, 1, 4), "clue 4 has no matching characteristic in text.sl" },
+        { "duplicate clues", c => c.Species["identification"]!["clues"] = new JsonArray(0, 1, 1), "must not repeat a characteristic" },
+        { "too few clues", c => c.Species["identification"]!["clues"] = new JsonArray(0, 1), "must list exactly 3 characteristics (found 2)" },
+        { "no identification", c => c.Species.Remove("identification"), "must list exactly 3 characteristics (found 0)" },
         { "spot with unknown species", c => Objects(c)[1]!["properties"]![1]!["value"] = "vulpes_vulpes", "spot 'sage_1' references unknown species 'vulpes_vulpes'" },
     };
 

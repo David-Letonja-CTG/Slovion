@@ -15,13 +15,17 @@ public sealed record SpeciesText(
     Fact Season,
     IReadOnlyList<Fact> Characteristics);
 
-/// <summary>Real-world species content. Contains no gameplay values.</summary>
+/// <summary>
+/// Real-world species content. <see cref="Clues"/> is the only gameplay value: it chooses which
+/// sourced characteristics serve as identification clues, and in which order (docs/decisions.md D1, D6).
+/// </summary>
 public sealed record Species(
     SpeciesId Id,
-    string Group,
+    SpeciesGroup Group,
     Fact ScientificName,
     IReadOnlyDictionary<string, Source> Sources,
-    IReadOnlyDictionary<string, SpeciesText> Text);
+    IReadOnlyDictionary<string, SpeciesText> Text,
+    IReadOnlyList<int> Clues);
 
 /// <summary>An interactive place in a map where a species can be discovered.</summary>
 public sealed record MapSpot(string MapId, string SpotId, SpeciesId SpeciesId);

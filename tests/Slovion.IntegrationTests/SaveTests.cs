@@ -35,7 +35,7 @@ public sealed class SaveTests(PostgresFixture database)
 
         var first = await CreateSaveAsync(client);
         var second = await CreateSaveAsync(client);
-        using var _ = await DiscoverAsync(client, first);
+        await IdentifyAsync(client, first, SageSpot, Sage);
         using var secondDex = await GetNatureDexAsync(client, second);
 
         Assert.NotEqual(first, second);
@@ -73,9 +73,13 @@ public sealed class SaveTests(PostgresFixture database)
         foreach (var request in new[]
                  {
                      new HttpRequestMessage(HttpMethod.Get, new Uri("/api/save/naturedex", UriKind.Relative)),
-                     new HttpRequestMessage(HttpMethod.Post, new Uri("/api/save/discoveries", UriKind.Relative))
+                     new HttpRequestMessage(HttpMethod.Post, new Uri("/api/save/encounters", UriKind.Relative))
                      {
                          Content = new StringContent("""{"mapId":"dravsko_polje_meadow","spotId":"meadow_sage_1"}""", Encoding.UTF8, "application/json"),
+                     },
+                     new HttpRequestMessage(HttpMethod.Post, new Uri($"/api/save/encounters/{Guid.NewGuid()}/identification", UriKind.Relative))
+                     {
+                         Content = new StringContent("""{"speciesId":"salvia_pratensis"}""", Encoding.UTF8, "application/json"),
                      },
                  })
         {

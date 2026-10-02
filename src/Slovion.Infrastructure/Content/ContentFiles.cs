@@ -17,12 +17,16 @@ internal sealed record SpeciesTextFile(
     FactFile? Season,
     List<FactFile>? Characteristics);
 
+/// <summary>Gameplay data: indices into <c>characteristics</c> used as identification clues.</summary>
+internal sealed record IdentificationFile(List<int>? Clues);
+
 internal sealed record SpeciesFile(
     string? Id,
     string? Group,
     FactFile? ScientificName,
     Dictionary<string, SourceFile>? Sources,
-    Dictionary<string, SpeciesTextFile>? Text);
+    Dictionary<string, SpeciesTextFile>? Text,
+    IdentificationFile? Identification);
 
 /// <summary>The subset of the Tiled JSON map format that Slovion uses on the server.</summary>
 internal sealed record TiledMapFile(

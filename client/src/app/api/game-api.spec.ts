@@ -120,6 +120,43 @@ describe('gameApiInterceptor', () => {
   });
 });
 
+describe('GameApi encounters', () => {
+  afterEach(() => TestBed.inject(HttpTestingController).verify());
+
+  it('starts an encounter with only the map and spot', () => {
+    const { api, store, http } = setup();
+    store.set('token');
+
+    api.startEncounter('dravsko_polje_meadow', 'meadow_hare_1').subscribe();
+
+    const request = http.expectOne({ method: 'POST', url: '/api/save/encounters' });
+    expect(request.request.body).toEqual({
+      mapId: 'dravsko_polje_meadow',
+      spotId: 'meadow_hare_1',
+    });
+    expect(request.request.headers.get('Authorization')).toBe('Bearer token');
+    request.flush({ encounterId: 'e1', group: 'mammal', clues: [], candidates: [] });
+  });
+
+  it('answers an encounter by species ID', () => {
+    const { api, store, http } = setup();
+    store.set('token');
+
+    api.answer('3f2a', 'lepus_europaeus').subscribe();
+
+    const request = http.expectOne({
+      method: 'POST',
+      url: '/api/save/encounters/3f2a/identification',
+    });
+    expect(request.request.body).toEqual({ speciesId: 'lepus_europaeus' });
+    request.flush({
+      correct: true,
+      species: { speciesId: 'lepus_europaeus', name: 'x' },
+      entry: null,
+    });
+  });
+});
+
 describe('apiErrorCode', () => {
   it.each([
     [new HttpErrorResponse({ status: 0 }), 'network'],
@@ -128,6 +165,10 @@ describe('apiErrorCode', () => {
       'invalid_save_token',
     ],
     [new HttpErrorResponse({ status: 404, error: { code: 'unknown_spot' } }), 'unknown_spot'],
+    [
+      new HttpErrorResponse({ status: 404, error: { code: 'unknown_encounter' } }),
+      'unknown_encounter',
+    ],
     [new HttpErrorResponse({ status: 500, error: { code: 'internal_error' } }), 'error'],
     [new Error('boom'), 'error'],
   ])('maps %o to %s', (error, code) => {

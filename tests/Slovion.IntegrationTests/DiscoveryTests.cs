@@ -1,7 +1,9 @@
 using System.Net;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
+using Slovion.Infrastructure.Persistence;
 using Slovion.IntegrationTests.Infrastructure;
 using static Slovion.IntegrationTests.Infrastructure.GameApiClient;
 
@@ -21,61 +23,178 @@ public sealed class DiscoveryTests(PostgresFixture database)
             }
         });
 
-    [Fact]
-    public async Task First_discovery_returns_201_with_server_time_and_the_entry()
-    {
-        await using var factory = Factory(new FakeTimeProvider(June1));
-        using var client = factory.CreateClient();
-        var token = await CreateSaveAsync(client);
-
-        using var response = await DiscoverAsync(client, token);
-
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        using var body = await ReadJsonAsync(response);
-        var root = body.RootElement;
-        Assert.Equal("salvia_pratensis", root.GetProperty("speciesId").GetString());
-        Assert.True(root.GetProperty("isNew").GetBoolean());
-        Assert.Equal("2026-06-01T10:00:00Z", root.GetProperty("discoveredAt").GetString());
-        Assert.Equal("travniška kadulja", root.GetProperty("species").GetProperty("name").GetString());
-    }
+    private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Fact]
-    public async Task Repeat_discovery_returns_200_with_the_original_time()
-    {
-        var time = new FakeTimeProvider(June1);
-        await using var factory = Factory(time);
-        using var client = factory.CreateClient();
-        var token = await CreateSaveAsync(client);
-        using var first = await DiscoverAsync(client, token);
-        time.Advance(TimeSpan.FromHours(2));
-
-        using var again = await DiscoverAsync(client, token);
-
-        Assert.Equal(HttpStatusCode.OK, again.StatusCode);
-        using var body = await ReadJsonAsync(again);
-        Assert.False(body.RootElement.GetProperty("isNew").GetBoolean());
-        Assert.Equal("2026-06-01T10:00:00Z", body.RootElement.GetProperty("discoveredAt").GetString());
-    }
-
-    [Fact]
-    public async Task Concurrent_duplicates_store_exactly_one_discovery()
+    public async Task Starting_an_encounter_offers_clues_and_candidates_without_the_answer()
     {
         await using var factory = Factory();
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
 
-        var responses = await Task.WhenAll(DiscoverAsync(client, token), DiscoverAsync(client, token));
+        using var response = await StartEncounterAsync(client, token, "meadow_dandelion_1");
 
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        using var body = await ReadJsonAsync(response);
+        var root = body.RootElement;
+        Assert.Equal("plant", root.GetProperty("group").GetString());
         Assert.Equal(
-            [HttpStatusCode.OK, HttpStatusCode.Created],
-            responses.Select(r => r.StatusCode).Order());
-        using var dex = await GetNatureDexAsync(client, token);
-        using var body = await ReadJsonAsync(dex);
-        Assert.Equal(1, body.RootElement.GetProperty("entries").GetArrayLength());
-        foreach (var response in responses)
-        {
-            response.Dispose();
-        }
+            ["Košek sestavljajo številni rumeni jezičasti cvetovi.", "Listi rastejo v pritlični rozeti; so suličasti in globoko zarezani.", "Rastlina vsebuje bel sok."],
+            root.GetProperty("clues").EnumerateArray().Select(c => c.GetString()));
+        var candidates = root.GetProperty("candidates").EnumerateArray().ToList();
+        Assert.Equal(4, candidates.Count);
+        Assert.Contains(candidates, c => c.GetProperty("speciesId").GetString() == "taraxacum_officinale" && c.GetProperty("name").GetString() == "navadni regrat");
+        Assert.All(candidates, c => Assert.Equal(["speciesId", "name"], c.EnumerateObject().Select(p => p.Name)));
+        Assert.Equal(["encounterId", "group", "clues", "candidates"], root.EnumerateObject().Select(p => p.Name));
+    }
+
+    [Fact]
+    public async Task First_encounter_records_an_observation_once()
+    {
+        var time = new FakeTimeProvider(June1);
+        await using var factory = Factory(time);
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+
+        await OpenEncounterAsync(client, token, HareSpot);
+        time.Advance(TimeSpan.FromHours(1));
+        await OpenEncounterAsync(client, token, HareSpot);
+
+        var entry = Assert.Single(await NatureDexEntriesAsync(client, token));
+        Assert.Equal(("lepus_europaeus", "mammal", "observed"), (entry.GetProperty("speciesId").GetString(), entry.GetProperty("group").GetString(), entry.GetProperty("status").GetString()));
+        Assert.Equal("2026-06-01T10:00:00Z", entry.GetProperty("observedAt").GetString());
+        Assert.Equal(JsonValueKind.Null, entry.GetProperty("species").ValueKind);
+        Assert.Equal(JsonValueKind.Null, entry.GetProperty("identifiedAt").ValueKind);
+    }
+
+    [Fact]
+    public async Task Correct_answer_identifies_at_server_time()
+    {
+        var time = new FakeTimeProvider(June1);
+        await using var factory = Factory(time);
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+        var encounterId = await OpenEncounterAsync(client, token, "meadow_dandelion_1");
+        time.Advance(TimeSpan.FromMinutes(5));
+
+        using var response = await AnswerAsync(client, token, encounterId, "taraxacum_officinale");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var body = await ReadJsonAsync(response);
+        Assert.True(body.RootElement.GetProperty("correct").GetBoolean());
+        Assert.Equal("navadni regrat", body.RootElement.GetProperty("species").GetProperty("name").GetString());
+        var entry = body.RootElement.GetProperty("entry");
+        Assert.Equal("identified", entry.GetProperty("status").GetString());
+        Assert.Equal("2026-06-01T10:05:00Z", entry.GetProperty("identifiedAt").GetString());
+        Assert.Equal("navadni regrat", entry.GetProperty("species").GetProperty("name").GetString());
+    }
+
+    [Fact]
+    public async Task Wrong_answer_names_the_species_and_keeps_it_observed()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+        using var start = await StartEncounterAsync(client, token, "meadow_dandelion_1");
+        using var startBody = await ReadJsonAsync(start);
+        var encounterId = startBody.RootElement.GetProperty("encounterId").GetGuid();
+        var wrong = startBody.RootElement.GetProperty("candidates").EnumerateArray()
+            .Select(c => c.GetProperty("speciesId").GetString()!)
+            .First(id => id != "taraxacum_officinale");
+
+        using var response = await AnswerAsync(client, token, encounterId, wrong);
+
+        using var body = await ReadJsonAsync(response);
+        Assert.False(body.RootElement.GetProperty("correct").GetBoolean());
+        Assert.Equal("taraxacum_officinale", body.RootElement.GetProperty("species").GetProperty("speciesId").GetString());
+        Assert.Equal("navadni regrat", body.RootElement.GetProperty("species").GetProperty("name").GetString());
+        Assert.Equal(JsonValueKind.Null, body.RootElement.GetProperty("entry").ValueKind);
+        Assert.Equal("observed", Assert.Single(await NatureDexEntriesAsync(client, token)).GetProperty("status").GetString());
+    }
+
+    [Fact]
+    public async Task Identified_species_opens_no_new_encounter()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+        await IdentifyAsync(client, token, SageSpot, Sage);
+
+        using var response = await StartEncounterAsync(client, token, SageSpot);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var body = await ReadJsonAsync(response);
+        Assert.True(body.RootElement.GetProperty("alreadyIdentified").GetBoolean());
+        Assert.Equal("travniška kadulja", body.RootElement.GetProperty("entry").GetProperty("species").GetProperty("name").GetString());
+    }
+
+    [Fact]
+    public async Task Answering_twice_is_an_unknown_encounter()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+        var encounterId = await OpenEncounterAsync(client, token, SageSpot);
+        using var first = await AnswerAsync(client, token, encounterId, Sage);
+
+        using var second = await AnswerAsync(client, token, encounterId, Sage);
+
+        await AssertProblem(second, HttpStatusCode.NotFound, "unknown_encounter");
+    }
+
+    [Fact]
+    public async Task A_newer_encounter_closes_the_open_one()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+        var hare = await OpenEncounterAsync(client, token, HareSpot);
+        await OpenEncounterAsync(client, token, SkylarkSpot);
+
+        using var response = await AnswerAsync(client, token, hare, Hare);
+
+        await AssertProblem(response, HttpStatusCode.NotFound, "unknown_encounter");
+    }
+
+    [Fact]
+    public async Task Another_saves_encounter_is_unknown()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var owner = await CreateSaveAsync(client);
+        var stranger = await CreateSaveAsync(client);
+        var encounterId = await OpenEncounterAsync(client, owner, HareSpot);
+
+        using var response = await AnswerAsync(client, stranger, encounterId, Hare);
+
+        await AssertProblem(response, HttpStatusCode.NotFound, "unknown_encounter");
+    }
+
+    [Fact]
+    public async Task Made_up_encounter_is_unknown()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+
+        using var response = await AnswerAsync(client, token, Guid.NewGuid(), Hare);
+
+        await AssertProblem(response, HttpStatusCode.NotFound, "unknown_encounter");
+    }
+
+    [Fact]
+    public async Task Species_that_was_not_offered_is_a_bad_request_and_keeps_the_encounter_open()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+        var encounterId = await OpenEncounterAsync(client, token, HareSpot);
+
+        using var bad = await AnswerAsync(client, token, encounterId, "vulpes_vulpes");
+        using var good = await AnswerAsync(client, token, encounterId, Hare);
+
+        await AssertProblem(bad, HttpStatusCode.BadRequest, "bad_request");
+        Assert.Equal(HttpStatusCode.OK, good.StatusCode);
     }
 
     [Theory]
@@ -87,66 +206,66 @@ public sealed class DiscoveryTests(PostgresFixture database)
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
 
-        using var response = await DiscoverAsync(client, token, mapId, spotId);
+        using var response = await StartEncounterAsync(client, token, spotId, mapId);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        using var body = await ReadJsonAsync(response);
-        Assert.Equal("unknown_spot", body.RootElement.GetProperty("code").GetString());
-        using var dex = await GetNatureDexAsync(client, token);
-        using var dexBody = await ReadJsonAsync(dex);
-        Assert.Equal(0, dexBody.RootElement.GetProperty("entries").GetArrayLength());
+        await AssertProblem(response, HttpStatusCode.NotFound, "unknown_spot");
+        Assert.Empty(await NatureDexEntriesAsync(client, token));
     }
 
     [Fact]
-    public async Task Request_without_map_or_spot_is_a_bad_request()
+    public async Task Concurrent_starts_leave_one_open_encounter_and_one_observation()
     {
         await using var factory = Factory();
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
 
-        using var response = await DiscoverAsync(client, token, mapId: "", spotId: SageSpot);
+        var responses = await Task.WhenAll(StartEncounterAsync(client, token, HareSpot), StartEncounterAsync(client, token, HareSpot));
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        using var body = await ReadJsonAsync(response);
-        Assert.Equal("bad_request", body.RootElement.GetProperty("code").GetString());
+        Assert.All(responses, r => Assert.Equal(HttpStatusCode.Created, r.StatusCode));
+        Assert.Single(await NatureDexEntriesAsync(client, token));
+        await using var scope = factory.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<SlovionDbContext>();
+        var hash = Slovion.Application.Saves.SaveToken.Hash(token);
+        var slotId = (await db.SaveSlots.SingleAsync(slot => slot.TokenHash == hash, Token)).Id;
+        Assert.Equal(2, await db.Encounters.CountAsync(e => e.SaveSlotId == slotId, Token));
+        Assert.Equal(1, await db.Encounters.CountAsync(e => e.SaveSlotId == slotId && e.ClosedAt == null, Token));
+        foreach (var response in responses)
+        {
+            response.Dispose();
+        }
     }
 
     [Fact]
-    public async Task Discoveries_survive_an_api_restart()
+    public async Task Identifications_survive_an_api_restart()
     {
         string token;
         await using (var before = Factory())
         {
             using var client = before.CreateClient();
             token = await CreateSaveAsync(client);
-            using var _ = await DiscoverAsync(client, token);
+            await IdentifyAsync(client, token, SageSpot, Sage);
         }
 
         await using var after = Factory();
         using var restarted = after.CreateClient();
-        using var dex = await GetNatureDexAsync(restarted, token);
+        var entry = Assert.Single(await NatureDexEntriesAsync(restarted, token));
 
-        using var body = await ReadJsonAsync(dex);
-        var entry = Assert.Single(body.RootElement.GetProperty("entries").EnumerateArray());
-        Assert.Equal("salvia_pratensis", entry.GetProperty("speciesId").GetString());
+        Assert.Equal(("salvia_pratensis", "identified"), (entry.GetProperty("speciesId").GetString(), entry.GetProperty("status").GetString()));
     }
 
     [Fact]
-    public async Task NatureDex_entry_contains_sourced_slovenian_information()
+    public async Task Identified_entry_contains_sourced_slovenian_information()
     {
         await using var factory = Factory();
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
-        using var _ = await DiscoverAsync(client, token);
+        await IdentifyAsync(client, token, SageSpot, Sage);
 
-        using var dex = await GetNatureDexAsync(client, token);
+        var entry = Assert.Single(await NatureDexEntriesAsync(client, token));
 
-        Assert.Equal(HttpStatusCode.OK, dex.StatusCode);
-        using var body = await ReadJsonAsync(dex);
-        var species = Assert.Single(body.RootElement.GetProperty("entries").EnumerateArray()).GetProperty("species");
+        var species = entry.GetProperty("species");
         Assert.Equal("travniška kadulja", species.GetProperty("name").GetString());
         Assert.Equal("Salvia pratensis L.", species.GetProperty("scientificName").GetString());
-        Assert.Equal("ustnatice (Lamiaceae)", species.GetProperty("family").GetString());
         Assert.Equal(4, species.GetProperty("characteristics").GetArrayLength());
         Assert.Equal(
             ["Botanični vrt Univerze v Ljubljani", "Notranjski regijski park", "GBIF Secretariat"],
@@ -164,14 +283,31 @@ public sealed class DiscoveryTests(PostgresFixture database)
         await using var factory = Factory();
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
-        using var _ = await DiscoverAsync(client, token);
+        await IdentifyAsync(client, token, SageSpot, Sage);
 
         using var dex = await GetNatureDexAsync(client, token, acceptLanguage);
+        using var encounter = await StartEncounterAsync(client, token, HareSpot, acceptLanguage: acceptLanguage);
 
         Assert.Equal(["sl"], dex.Content.Headers.ContentLanguage);
+        Assert.Equal(["sl"], encounter.Content.Headers.ContentLanguage);
         using var body = await ReadJsonAsync(dex);
         var entry = Assert.Single(body.RootElement.GetProperty("entries").EnumerateArray());
         Assert.Equal("travniška kadulja", entry.GetProperty("species").GetProperty("name").GetString());
+    }
+
+    [Fact]
+    public async Task Requests_without_map_spot_or_answer_are_bad_requests()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+        var encounterId = await OpenEncounterAsync(client, token, HareSpot);
+
+        using var noSpot = await StartEncounterAsync(client, token, spotId: "");
+        using var noAnswer = await AnswerAsync(client, token, encounterId, "");
+
+        await AssertProblem(noSpot, HttpStatusCode.BadRequest, "bad_request");
+        await AssertProblem(noAnswer, HttpStatusCode.BadRequest, "bad_request");
     }
 
     [Fact]
@@ -180,12 +316,21 @@ public sealed class DiscoveryTests(PostgresFixture database)
         await using var factory = Factory();
         using var client = factory.CreateClient();
 
-        using var response = await client.GetAsync(new Uri("/openapi/v1.json", UriKind.Relative), TestContext.Current.CancellationToken);
+        using var response = await client.GetAsync(new Uri("/openapi/v1.json", UriKind.Relative), Token);
 
-        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync(Token));
         var paths = document.RootElement.GetProperty("paths").EnumerateObject().Select(p => p.Name).ToList();
         Assert.Contains("/api/saves", paths);
-        Assert.Contains("/api/save/discoveries", paths);
+        Assert.Contains("/api/save/encounters", paths);
+        Assert.Contains("/api/save/encounters/{encounterId}/identification", paths);
         Assert.Contains("/api/save/naturedex", paths);
+        Assert.DoesNotContain("/api/save/discoveries", paths);
+    }
+
+    private static async Task AssertProblem(HttpResponseMessage response, HttpStatusCode status, string code)
+    {
+        Assert.Equal(status, response.StatusCode);
+        using var body = await ReadJsonAsync(response);
+        Assert.Equal(code, body.RootElement.GetProperty("code").GetString());
     }
 }

@@ -14,7 +14,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<SaveSlotService>();
-builder.Services.AddScoped<DiscoveryService>();
+builder.Services.AddScoped<EncounterService>();
+builder.Services.AddScoped<NatureDexService>();
 
 var app = builder.Build();
 
