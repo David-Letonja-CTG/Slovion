@@ -13,23 +13,32 @@ public sealed class ContentFolder : IDisposable
 
     public JsonObject Habitat { get; }
 
+    /// <summary>The picture written for the species; <c>null</c> writes none.</summary>
+    public byte[]? Picture { get; set; } = Png(32, 32);
+
     public ContentFolder()
     {
         Path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "slovion-content-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "species"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "maps"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "habitats"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "species-pictures"));
         Species = ValidSpecies();
         Map = ValidMap();
         Habitat = ValidHabitat();
     }
 
-    /// <summary>Writes the species and map documents and returns the folder path.</summary>
+    /// <summary>Writes the species, its picture, the map and the habitat, and returns the folder path.</summary>
     public string Write(string speciesFile = "salvia_pratensis.json", string mapFile = "test_meadow.json", string habitatFile = "tall_grass.json")
     {
         File.WriteAllText(System.IO.Path.Combine(Path, "species", speciesFile), Species.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "maps", mapFile), Map.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "habitats", habitatFile), Habitat.ToJsonString());
+        if (Picture is not null)
+        {
+            File.WriteAllBytes(System.IO.Path.Combine(Path, "species-pictures", $"{Species["id"]}.png"), Picture);
+        }
+
         return Path;
     }
 
@@ -46,6 +55,15 @@ public sealed class ContentFolder : IDisposable
         return System.IO.Path.Combine(
             directory?.FullName ?? throw new InvalidOperationException("Repository root not found."),
             "content");
+    }
+
+    /// <summary>The start of a PNG of the given size: signature and IHDR chunk, all that validation reads.</summary>
+    public static byte[] Png(int width, int height)
+    {
+        byte[] png = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, .. "IHDR"u8, 0, 0, 0, 0, 0, 0, 0, 0, 8, 6, 0, 0, 0, 0, 0, 0, 0];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32BigEndian(png.AsSpan(16), width);
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32BigEndian(png.AsSpan(20), height);
+        return png;
     }
 
     private static JsonObject Fact(string value, params string[] sources) =>
@@ -88,6 +106,7 @@ public sealed class ContentFolder : IDisposable
     private static JsonObject ValidHabitat() => new()
     {
         ["id"] = "tall_grass",
+        ["text"] = new JsonObject { ["sl"] = new JsonObject { ["name"] = "Visoka trava" } },
         ["searchChancePercent"] = 70,
         ["species"] = new JsonArray(new JsonObject { ["speciesId"] = "salvia_pratensis", ["weight"] = 5 }),
     };

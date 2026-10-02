@@ -62,13 +62,25 @@ public static class GameApiClient
     public static Task<HttpResponseMessage> GetNatureDexAsync(HttpClient client, string? token, string? acceptLanguage = null) =>
         SendAsync(client, new HttpRequestMessage(HttpMethod.Get, new Uri("/api/save/naturedex", UriKind.Relative)), token, acceptLanguage);
 
+    /// <summary>The entries of every species the save has observed, once each (a species may be in several habitats).</summary>
     public static async Task<JsonElement[]> NatureDexEntriesAsync(HttpClient client, string token)
     {
         using var response = await GetNatureDexAsync(client, token);
         response.EnsureSuccessStatusCode();
         using var body = await ReadJsonAsync(response);
-        return body.RootElement.GetProperty("entries").EnumerateArray().Select(entry => entry.Clone()).ToArray();
+        return NatureDexEntries(body.RootElement);
     }
+
+    public static JsonElement[] NatureDexEntries(JsonElement natureDex) =>
+        NatureDexSlots(natureDex)
+            .Where(slot => slot.GetProperty("entry").ValueKind != JsonValueKind.Null)
+            .DistinctBy(slot => slot.GetProperty("speciesId").GetString())
+            .Select(slot => slot.GetProperty("entry").Clone())
+            .ToArray();
+
+    /// <summary>Every species slot of every habitat section, in response order.</summary>
+    public static IEnumerable<JsonElement> NatureDexSlots(JsonElement natureDex) =>
+        natureDex.GetProperty("habitats").EnumerateArray().SelectMany(section => section.GetProperty("species").EnumerateArray());
 
     public static async Task<JsonDocument> ReadJsonAsync(HttpResponseMessage response) =>
         JsonDocument.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));

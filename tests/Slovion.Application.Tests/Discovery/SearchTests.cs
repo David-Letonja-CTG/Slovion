@@ -16,6 +16,7 @@ public class SearchTests
 {
     private static readonly SpeciesId Hare = SpeciesId.Parse("lepus_europaeus");
     private static readonly SpeciesId Skylark = SpeciesId.Parse("alauda_arvensis");
+    private static readonly Dictionary<string, string> Names = new() { ["sl"] = "Visoka trava" };
     private readonly Guid slot = Guid.NewGuid();
     private readonly InMemoryDiscoveryRepository discoveries = new();
     private readonly FakeContentCatalog catalog = new(
@@ -28,7 +29,7 @@ public class SearchTests
     public SearchTests()
     {
         // Weights 3:1 for hare and skylark; tiles with x ≥ 10 are tall grass.
-        catalog.Grass = new Habitat("tall_grass", 70, [new(Hare, 3), new(Skylark, 1)]);
+        catalog.Grass = new Habitat("tall_grass", Names, 70, [new(Hare, 3), new(Skylark, 1)]);
     }
 
     private EncounterService Service(IRandomSource random) =>
@@ -107,7 +108,7 @@ public class SearchTests
     [Fact]
     public async Task Weights_decide_how_often_each_species_is_found()
     {
-        catalog.Grass = new Habitat("tall_grass", 100, [new(Hare, 3), new(Skylark, 1)]);
+        catalog.Grass = new Habitat("tall_grass", Names, 100, [new(Hare, 3), new(Skylark, 1)]);
         var service = Service(new SeededRandom(123));
         var counts = new Dictionary<SpeciesGroup, int> { [SpeciesGroup.Mammal] = 0, [SpeciesGroup.Bird] = 0 };
 

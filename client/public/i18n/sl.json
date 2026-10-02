@@ -47,7 +47,10 @@
       "mammal": "Aktivnost"
     },
     "characteristics": "Prepoznavni znaki",
-    "sources": "Viri"
+    "sources": "Viri",
+    "progress": "{{identified}}/{{total}}",
+    "unknownLabel": "???",
+    "back": "Nazaj"
   },
   "errors": {
     "invalid_save_token": "Shranjene igre ni bilo mogoče najti. Začni novo igro.",

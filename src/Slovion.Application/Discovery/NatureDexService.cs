@@ -4,19 +4,27 @@ using Slovion.Domain.Discovery;
 
 namespace Slovion.Application.Discovery;
 
-/// <summary>A save's NatureDex: observed species stay anonymous until identified.</summary>
+/// <summary>A save's NatureDex: every species per habitat; observed species stay anonymous until identified.</summary>
 public sealed class NatureDexService(IContentCatalog content, IDiscoveryRepository discoveries)
 {
-    /// <summary>Observed species of a slot, oldest observation first.</summary>
-    public async Task<IReadOnlyList<NatureDexEntry>> GetAsync(Guid saveSlotId, string language, CancellationToken cancellationToken)
+    /// <summary>
+    /// One section per habitat (by ID) listing all its species in content order. Discoveries of species no
+    /// longer in content are skipped; their records are kept.
+    /// </summary>
+    public async Task<IReadOnlyList<NatureDexSection>> GetAsync(Guid saveSlotId, string language, CancellationToken cancellationToken)
     {
-        var stored = await discoveries.ListAsync(saveSlotId, cancellationToken);
-        return stored
-            .OrderBy(discovery => discovery.ObservedAt)
-            .ThenBy(discovery => discovery.SpeciesId.Value, StringComparer.Ordinal)
-            .Select(discovery => (discovery, species: content.FindSpecies(discovery.SpeciesId)))
-            .Where(pair => pair.species is not null) // content removed since: skip, keep the record
-            .Select(pair => ToEntry(pair.discovery, pair.species!, language))
+        var stored = (await discoveries.ListAsync(saveSlotId, cancellationToken)).ToDictionary(discovery => discovery.SpeciesId);
+        return content.AllHabitats
+            .Select(habitat => new NatureDexSection(
+                habitat.Id,
+                NameOf(habitat, language),
+                habitat.Species
+                    .Select(entry => (entry.SpeciesId, species: content.FindSpecies(entry.SpeciesId)))
+                    .Where(pair => pair.species is not null)
+                    .Select(pair => new NatureDexSlot(
+                        pair.SpeciesId,
+                        stored.TryGetValue(pair.SpeciesId, out var discovery) ? ToEntry(discovery, pair.species!, language) : null))
+                    .ToList()))
             .ToList();
     }
 
@@ -27,4 +35,8 @@ public sealed class NatureDexService(IContentCatalog content, IDiscoveryReposito
             discovery.ObservedAt,
             discovery.IdentifiedAt,
             discovery.IsIdentified ? SpeciesView.For(species, language) : null);
+
+    /// <summary>The habitat name in <paramref name="language"/>, falling back to Slovenian.</summary>
+    private static string NameOf(Habitat habitat, string language) =>
+        habitat.Names.TryGetValue(language, out var name) ? name : habitat.Names[IContentCatalog.DefaultLanguage];
 }

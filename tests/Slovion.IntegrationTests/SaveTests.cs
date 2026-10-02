@@ -36,11 +36,9 @@ public sealed class SaveTests(PostgresFixture database)
         var first = await CreateSaveAsync(client);
         var second = await CreateSaveAsync(client);
         await IdentifyAsync(client, first, SageSpot, Sage);
-        using var secondDex = await GetNatureDexAsync(client, second);
 
         Assert.NotEqual(first, second);
-        using var body = await ReadJsonAsync(secondDex);
-        Assert.Equal(0, body.RootElement.GetProperty("entries").GetArrayLength());
+        Assert.Empty(await NatureDexEntriesAsync(client, second));
     }
 
     [Fact]

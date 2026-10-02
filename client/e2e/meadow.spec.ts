@@ -29,6 +29,10 @@ async function observeTheSage(page: Page) {
   return observation;
 }
 
+/** A species picture in the open *Terenski dnevnik*. */
+const pictureOf = (page: Page, speciesId: string) =>
+  page.locator(`app-naturedex-panel .picture[data-species="${speciesId}"]`);
+
 test('identify the meadow sage, read about it, and keep it after a reload', async ({ page }) => {
   const observation = await observeTheSage(page);
 
@@ -43,9 +47,24 @@ test('identify the meadow sage, read about it, and keep it after a reload', asyn
 
   await page.keyboard.press('KeyM');
   const natureDex = page.getByRole('dialog', { name: 'Terenski dnevnik' });
-  await expect(natureDex).toContainText('travniška kadulja');
-  await expect(natureDex).toContainText('Salvia pratensis L.');
+  await expect(natureDex.locator('[data-habitat="tall_grass"] h3')).toContainText('Visoka trava');
+  await expect(natureDex.locator('.habitat__count')).toHaveText('1/5');
+
+  // Hovering shows the name of the identified sage and ??? for a species not yet found.
+  const sage = pictureOf(page, 'salvia_pratensis');
+  await sage.hover();
+  await expect(sage.locator('.picture__label')).toBeVisible();
+  await expect(sage.locator('.picture__label')).toHaveText('travniška kadulja');
+  const skylark = pictureOf(page, 'alauda_arvensis');
+  await skylark.hover();
+  await expect(skylark.locator('.picture__label')).toHaveText('???');
+
+  await sage.click();
+  await expect(natureDex.locator('article.entry')).toContainText('Salvia pratensis L.');
   await expect(natureDex).toContainText('Viri');
+  await page.keyboard.press('Escape');
+  await expect(natureDex.locator('article.entry')).toHaveCount(0);
+  await expect(sage).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(natureDex).toHaveCount(0);
 
@@ -53,9 +72,8 @@ test('identify the meadow sage, read about it, and keep it after a reload', asyn
   await page.getByRole('button', { name: 'Nadaljuj' }).click();
   await waitForTheWorld(page);
   await page.keyboard.press('KeyM');
-  await expect(page.getByRole('dialog', { name: 'Terenski dnevnik' })).toContainText(
-    'travniška kadulja',
-  );
+  await expect(pictureOf(page, 'salvia_pratensis')).toHaveAttribute('data-status', 'identified');
+  await expect(pictureOf(page, 'salvia_pratensis')).toHaveAccessibleName('travniška kadulja');
 });
 
 test('a wrong answer leaves the species unknown until it is identified', async ({ page }) => {
@@ -73,9 +91,12 @@ test('a wrong answer leaves the species unknown until it is identified', async (
 
   await page.keyboard.press('KeyM');
   const natureDex = page.getByRole('dialog', { name: 'Terenski dnevnik' });
+  await expect(pictureOf(page, 'salvia_pratensis')).toHaveAttribute('data-status', 'observed');
+  await pictureOf(page, 'salvia_pratensis').click();
   await expect(natureDex).toContainText('Neznana vrsta');
   await expect(natureDex).toContainText('rastlina');
   await expect(natureDex).not.toContainText('travniška kadulja');
+  await page.keyboard.press('Escape');
   await page.keyboard.press('Escape');
   await expect(natureDex).toHaveCount(0);
 

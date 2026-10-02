@@ -25,6 +25,9 @@ public sealed class ContentValidationTests
         Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 10, 10));
         Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 19, 12));
         Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 12, 11));
+
+        var grass = Assert.Single(catalog.AllHabitats);
+        Assert.Equal("Visoka trava", grass.Names["sl"]);
     }
 
     [Fact]
@@ -64,6 +67,11 @@ public sealed class ContentValidationTests
         { "habitat without species", c => c.Habitat["species"] = new JsonArray(), "at least one species is required" },
         { "zone naming a missing habitat", c => Objects(c)[2]!["properties"]![0]!["value"] = "swamp", "refers to unknown habitat 'swamp'" },
         { "overlapping zones", c => Objects(c).Add(ContentFolder.HabitatZone()), "overlaps another habitat zone" },
+        { "missing picture", c => c.Picture = null, "species 'salvia_pratensis' has no picture" },
+        { "picture of the wrong size", c => c.Picture = ContentFolder.Png(64, 64), "must be 32×32 pixels (found 64×64)" },
+        { "picture that is not a PNG", c => c.Picture = "GIF89a not a png at all"u8.ToArray(), "picture of species 'salvia_pratensis' is not a PNG" },
+        { "habitat without Slovenian name", c => c.Habitat.Remove("text"), "Slovenian name ('text.sl.name') is required" },
+        { "blank habitat name", c => c.Habitat["text"]!["sl"]!["name"] = " ", "'text.sl.name' is missing" },
         { "spot with unknown species", c => Objects(c)[1]!["properties"]![1]!["value"] = "vulpes_vulpes", "spot 'sage_1' references unknown species 'vulpes_vulpes'" },
     };
 
@@ -99,6 +107,19 @@ public sealed class ContentValidationTests
         var error = Assert.Throws<ContentValidationException>(() => FileContentCatalog.Load(content.Write(habitatFile: "copy.json")));
 
         Assert.Contains(error.Errors, message => message.Contains("duplicate habitat ID 'tall_grass'", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Species_in_no_habitat_are_rejected()
+    {
+        using var content = new ContentFolder();
+        content.Write();
+        content.Species["id"] = "vulpes_vulpes";
+
+        var error = Assert.Throws<ContentValidationException>(() => FileContentCatalog.Load(content.Write(speciesFile: "vulpes_vulpes.json")));
+
+        Assert.Contains(error.Errors, message => message.Contains("species 'vulpes_vulpes' is not listed in any habitat", StringComparison.Ordinal));
+        Assert.DoesNotContain(error.Errors, message => message.Contains("salvia_pratensis", StringComparison.Ordinal));
     }
 
     [Fact]

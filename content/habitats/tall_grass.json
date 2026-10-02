@@ -1,5 +1,6 @@
 {
   "id": "tall_grass",
+  "text": { "sl": { "name": "Visoka trava" } },
   "searchChancePercent": 70,
   "species": [
     { "speciesId": "lepus_europaeus", "weight": 30 },

@@ -11,7 +11,6 @@ public class EncounterServiceTests
     private readonly InMemoryDiscoveryRepository discoveries = new();
     private readonly Guid slot = Guid.NewGuid();
     private readonly EncounterService service;
-    private readonly NatureDexService natureDex;
 
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
@@ -24,7 +23,6 @@ public class EncounterServiceTests
             FakeContentCatalog.Species("alauda_arvensis", "poljski škrjanec", group: SpeciesGroup.Bird),
             FakeContentCatalog.Species("papilio_machaon", "lastovičar", group: SpeciesGroup.Insect));
         service = new EncounterService(catalog, discoveries, new InMemoryEncounterRepository(), new SeededRandom(1), time);
-        natureDex = new NatureDexService(catalog, discoveries);
     }
 
     private async Task<EncounterView> Start(string spotId, string language = "sl") =>
@@ -62,10 +60,9 @@ public class EncounterServiceTests
         time.Advance(TimeSpan.FromHours(1));
         await Start("lepus_europaeus");
 
-        var entry = Assert.Single(await natureDex.GetAsync(slot, "sl", Token));
+        var entry = Assert.Single(await discoveries.ListAsync(slot, Token));
         Assert.Equal(June1, entry.ObservedAt);
         Assert.False(entry.IsIdentified);
-        Assert.Null(entry.Species);
     }
 
     [Fact]
@@ -93,7 +90,7 @@ public class EncounterServiceTests
         Assert.False(result.Correct);
         Assert.Equal("taraxacum_officinale", result.CorrectSpecies.SpeciesId.Value);
         Assert.Null(result.Entry);
-        Assert.False(Assert.Single(await natureDex.GetAsync(slot, "sl", Token)).IsIdentified);
+        Assert.False(Assert.Single(await discoveries.ListAsync(slot, Token)).IsIdentified);
     }
 
     [Fact]
@@ -160,6 +157,6 @@ public class EncounterServiceTests
         var result = await service.StartAsync(slot, mapId, spotId, "sl", Token);
 
         Assert.IsType<StartEncounterResult.UnknownSpot>(result);
-        Assert.Empty(await natureDex.GetAsync(slot, "sl", Token));
+        Assert.Empty(await discoveries.ListAsync(slot, Token));
     }
 }
