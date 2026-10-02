@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  NG_CLI_ANALYTICS: 'false'
+
+jobs:
+  backend:
+    name: Backend (.NET)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore Slovion.slnx
+
+      - name: Check formatting
+        run: dotnet format Slovion.slnx --verify-no-changes --no-restore
+
+      - name: Build
+        run: dotnet build Slovion.slnx --configuration Release --no-restore
+
+      # Integration tests start PostgreSQL with Testcontainers on the runner's Docker.
+      - name: Test
+        run: dotnet test --solution Slovion.slnx --configuration Release --no-build
+
+  client:
+    name: Client (Angular)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check translation keys
+        run: npm run i18n:check
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build

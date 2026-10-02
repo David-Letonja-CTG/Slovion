@@ -11,7 +11,7 @@ An original 2D exploration RPG set in a fictionalized Slovenia. Instead of ficti
 
 ## Status
 
-🚧 **Planning stage.** The repository currently contains the product vision, architecture decisions and the first OpenSpec change. No code yet.
+🚧 **Foundation stage.** The solution skeleton is in place: .NET API with PostgreSQL, Angular app with Slovenian localization, and a canvas game engine showing a scaled test pattern. No gameplay yet.
 
 First milestone: a small playable vertical slice in a **Dravsko polje meadow** — walk around, discover and identify a few real species, read about them in Slovenian, complete a small quest, and keep progress across reloads. See the [roadmap](docs/product-vision.md#roadmap--first-vertical-slice).
 
@@ -25,13 +25,13 @@ First milestone: a small playable vertical slice in a **Dravsko polje meadow** �
 | Game rendering | Framework-free TypeScript engine on HTML Canvas |
 | Platforms | Responsive web / PWA first (desktop, tablet, mobile) |
 
-## Planned repository layout
+## Repository layout
 
 ```text
 src/        .NET backend (Domain, Application, Infrastructure, Api)
 tests/      backend tests (unit, integration, architecture)
 client/     Angular app; client/src/engine/ = canvas game engine
-content/    species, maps, quests and dialogue as versioned data files
+content/    (planned) species, maps, quests and dialogue as versioned data files
 docs/       product vision and decision log
 openspec/   specifications and change proposals
 ```
@@ -60,15 +60,44 @@ openspec show bootstrap-solution  # view a change
 openspec validate --all --strict  # validate changes and specs
 ```
 
-Current change: [`bootstrap-solution`](openspec/changes/bootstrap-solution/proposal.md) — solution skeleton, localization and game viewport.
+Specs: [`localization`](openspec/specs/localization/spec.md), [`game-viewport`](openspec/specs/game-viewport/spec.md). Completed changes are in [`openspec/changes/archive/`](openspec/changes/archive/).
 
 ## Getting started
 
-Build and run instructions will be added with the `bootstrap-solution` change. Prerequisites:
+### Prerequisites
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Node.js 24](https://nodejs.org/) + npm, and Angular CLI (`npm install -g @angular/cli`)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows: requires WSL2)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download) (pinned in `global.json`)
+- [Node.js 24](https://nodejs.org/) + npm
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows: requires WSL2) — for the database and integration tests
+
+### Run locally
+
+```bash
+# 1. Database (PostgreSQL on localhost:5432)
+docker compose up -d db
+
+# 2. API on http://localhost:5080 — /health, /openapi/v1.json
+dotnet run --project src/Slovion.Api
+
+# 3. Client on http://localhost:4200 (proxies /api, /health, /openapi to the API)
+cd client
+npm ci
+npm start
+```
+
+### Run all checks
+
+```bash
+# Backend: formatting, build, unit + architecture + integration tests (integration tests need Docker)
+dotnet format Slovion.slnx --verify-no-changes
+dotnet test --solution Slovion.slnx
+
+# Client: formatting, lint, translation keys, unit tests, production build
+cd client
+npm run check
+```
+
+CI runs the same checks on every push and pull request (`.github/workflows/ci.yml`).
 
 ## Content and IP
 

@@ -83,8 +83,10 @@ Module-to-module isolation rules come once a second module exists.
 ### 5. Backend testing
 
 - xUnit, using xUnit's own assertions. FluentAssertions is avoided because of its commercial licence since v8.
+  - *Implementation note:* the current `xunit.v3` package (4.x) runs on **Microsoft.Testing.Platform**, which .NET 10 requires opting into via `global.json` (`"test": { "runner": "Microsoft.Testing.Platform" }`). The VSTest packages (`Microsoft.NET.Test.Sdk`, `xunit.runner.visualstudio`) are not used. Run tests with `dotnet test --solution` or `--project`.
+  - `Slovion.Domain.Tests` and `Slovion.Application.Tests` have no code to test yet, so they accept the platform's "zero tests ran" exit code (8). Remove that allowance when the first tests are added.
 - Integration tests use `WebApplicationFactory<Program>` with a PostgreSQL **Testcontainers** instance, so CI and local runs need Docker.
-- Architecture tests use **NetArchTest.Rules**. *Alternative:* ArchUnitNET is more powerful but heavier; it can be revisited if module-isolation rules get complex.
+- Architecture tests use **NetArchTest.Rules** for type-level dependencies, plus a check of each `.csproj`'s declared project references. The compiler drops references that no code uses yet, so type-level rules alone would miss them. *Alternative:* ArchUnitNET is more powerful but heavier; it can be revisited if module-isolation rules get complex.
 
 ### 6. Angular application
 
@@ -110,7 +112,8 @@ Module-to-module isolation rules come once a second module exists.
   - The integer scale is computed in **physical pixels**. The canvas backing store is `320·s × 180·s` physical pixels, and its CSS size is the backing store divided by DPR.
   - Below 1× the canvas falls back to fractional CSS downscaling.
 - **Loop:** fixed 1/60 s accumulator with the 250 ms catch-up clamp. It pauses on `visibilitychange`, and on resume it resets the accumulator so hidden time is discarded.
-- **Angular host:** a single `GameCanvasComponent` creates the game in `afterNextRender`, feeds it size changes from a `ResizeObserver` (plus DPR via `matchMedia`), and calls `stop()` through `DestroyRef`.
+- **Angular host:** a single `GameCanvasComponent` creates the game in `afterNextRender` and calls `stop()` through `DestroyRef`.
+- **Platform observation lives in the engine** (deviation from the first draft, recorded during implementation): `createGame(container, canvas)` watches container size (`ResizeObserver`), pixel ratio (`matchMedia`) and page visibility itself, through an injected `GameEnvironment`. The first draft had the Angular host feed sizes in. Moving it into the engine keeps the Angular host trivial, keeps all platform handling framework-free and unit-testable with a fake environment, and lets `stop()` release every listener in one place.
 - **Placeholder rendering:** a 16-px checkerboard test pattern with a 1-px border, to make scaling and crispness visible by eye. This is temporary and replaced by the map renderer in the next change.
 
 ### 9. Font

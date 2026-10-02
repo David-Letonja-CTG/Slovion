@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Slovion.Api/Slovion.Api.csproj" />
+    <Project Path="src/Slovion.Application/Slovion.Application.csproj" />
+    <Project Path="src/Slovion.Domain/Slovion.Domain.csproj" />
+    <Project Path="src/Slovion.Infrastructure/Slovion.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Slovion.Application.Tests/Slovion.Application.Tests.csproj" />
+    <Project Path="tests/Slovion.ArchitectureTests/Slovion.ArchitectureTests.csproj" />
+    <Project Path="tests/Slovion.Domain.Tests/Slovion.Domain.Tests.csproj" />
+    <Project Path="tests/Slovion.IntegrationTests/Slovion.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

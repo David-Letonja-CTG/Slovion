@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Slovion.Application\Slovion.Application.csproj" />
+    <ProjectReference Include="..\Slovion.Domain\Slovion.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
