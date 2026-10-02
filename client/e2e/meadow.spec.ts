@@ -86,3 +86,37 @@ test('a wrong answer leaves the species unknown until it is identified', async (
   await again.getByRole('button', { name: 'travniška kadulja' }).click();
   await expect(page.getByRole('dialog')).toContainText('Pravilno!');
 });
+
+test('searching the tall grass finds something sooner or later', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Nova igra' }).click();
+  await waitForTheWorld(page);
+
+  // From the spawn (10,10): two steps right, two down into the south tall-grass patch at (12,12).
+  await step(page, 'ArrowRight');
+  await step(page, 'ArrowRight');
+  await step(page, 'ArrowDown');
+  await step(page, 'ArrowDown');
+
+  const observation = page.getByRole('dialog', { name: /^Opaziš / });
+  let found = false;
+  // Every search ends in one of three messages; at a 70 % chance, six tries almost surely find something.
+  for (let attempt = 0; attempt < 6 && !found; attempt++) {
+    await page.keyboard.press('KeyE');
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    if (await observation.isVisible()) {
+      found = true;
+      await expect(observation.getByRole('button', { name: 'Odidi' })).toBeVisible();
+      await page.keyboard.press('Escape');
+    } else {
+      await expect(dialog).toContainText(
+        /Tu ni ničesar\. Poskusi drugje\.|Ta vrsta je že zapisana v Terenskem dnevniku/,
+      );
+      await page.keyboard.press('Enter');
+    }
+    await expect(dialog).toHaveCount(0);
+  }
+
+  expect(found).toBe(true);
+});

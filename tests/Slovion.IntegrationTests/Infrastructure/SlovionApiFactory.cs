@@ -8,10 +8,7 @@ using Slovion.Infrastructure.Persistence;
 namespace Slovion.IntegrationTests.Infrastructure;
 
 /// <summary>Hosts the API in-process against the given database connection string.</summary>
-public sealed class SlovionApiFactory(
-    string connectionString,
-    IReadOnlyDictionary<string, string?>? settings = null,
-    Action<IServiceCollection>? configureServices = null)
+public sealed class SlovionApiFactory(string connectionString, IReadOnlyDictionary<string, string?>? settings = null, Action<IServiceCollection>? configureServices = null)
     : WebApplicationFactory<Program>
 {
     /// <summary>A connection string whose server refuses connections immediately; needs no Docker.</summary>

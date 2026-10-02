@@ -2,7 +2,15 @@ import { Component, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Action, Game, Interaction, LoadedWorld } from '../../engine';
-import { AnswerResult, ApiErrorCode, Encounter, GameApi, apiErrorCode } from '../api/game-api';
+import {
+  AlreadyIdentified,
+  AnswerResult,
+  ApiErrorCode,
+  Encounter,
+  GameApi,
+  NothingFound,
+  apiErrorCode,
+} from '../api/game-api';
 import { GameCanvas } from '../game/game-canvas';
 import { GameSession } from '../session/game-session';
 import { IdentificationDialog } from './identification-dialog';
@@ -19,6 +27,7 @@ type Overlay =
   | { readonly kind: 'encounter'; readonly encounter: Encounter }
   | { readonly kind: 'result'; readonly result: AnswerResult }
   | { readonly kind: 'known'; readonly name: string }
+  | { readonly kind: 'nothing' }
   | { readonly kind: 'naturedex' }
   | { readonly kind: 'error'; readonly code: ApiErrorCode };
 
@@ -55,19 +64,26 @@ export class PlayScreen {
     game.onUiAction((action) => this.onUiAction(action));
   }
 
-  /** Interacting with a spot starts an observation; the server decides the species (D3). */
+  /** A spot starts an observation; a search may find something. The server decides both (D3). */
   protected onInteraction(interaction: Interaction): void {
     // Block the world right away, so the player cannot walk off while the server answers.
     this.open({ kind: 'pending' });
-    this.api.startEncounter(interaction.mapId, interaction.spotId).subscribe({
-      next: (result) =>
-        this.overlay.set(
-          'alreadyIdentified' in result
-            ? { kind: 'known', name: result.entry.species?.name ?? '' }
-            : { kind: 'encounter', encounter: result },
-        ),
+    const request =
+      interaction.kind === 'spot'
+        ? this.api.startEncounter(interaction.mapId, interaction.spotId)
+        : this.api.search(interaction.mapId, interaction.x, interaction.y);
+    request.subscribe({
+      next: (result) => this.overlay.set(this.overlayFor(result)),
       error: (error: unknown) => this.onError(error),
     });
+  }
+
+  private overlayFor(result: Encounter | AlreadyIdentified | NothingFound): Overlay {
+    if ('found' in result) return { kind: 'nothing' };
+    if ('alreadyIdentified' in result) {
+      return { kind: 'known', name: result.entry.species?.name ?? '' };
+    }
+    return { kind: 'encounter', encounter: result };
   }
 
   protected onAnswer(encounter: Encounter, speciesId: string): void {
@@ -113,7 +129,7 @@ export class PlayScreen {
     const kind = this.overlay().kind;
     if (kind === 'encounter') {
       this.identification()?.handleAction(action);
-    } else if (kind === 'result' || kind === 'known' || kind === 'error') {
+    } else if (kind === 'result' || kind === 'known' || kind === 'nothing' || kind === 'error') {
       if (action === 'Confirm' || action === 'Cancel') this.close();
     } else if (kind === 'naturedex' && action === 'Cancel') {
       this.close();

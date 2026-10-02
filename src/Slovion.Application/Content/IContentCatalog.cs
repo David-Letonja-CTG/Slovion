@@ -17,4 +17,7 @@ public interface IContentCatalog
     Species? FindSpecies(SpeciesId id);
 
     MapSpot? FindSpot(string mapId, string spotId);
+
+    /// <summary>The habitat whose zone contains tile (<paramref name="x"/>, <paramref name="y"/>) of a map, if any.</summary>
+    Habitat? FindHabitatAt(string mapId, int x, int y);
 }

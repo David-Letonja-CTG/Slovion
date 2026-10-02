@@ -90,6 +90,11 @@ internal sealed class FakeContentCatalog(params Species[] species) : IContentCat
     public Species? FindSpecies(SpeciesId id) => species.FirstOrDefault(s => s.Id == id);
 
     /// <summary>Every species has a spot named after it on <see cref="MapId"/>.</summary>
+    /// <summary>The habitat covering every tile with x ≥ 10 of <see cref="MapId"/>; none by default.</summary>
+    public Habitat? Grass { get; set; }
+
+    public Habitat? FindHabitatAt(string mapId, int x, int y) => mapId == MapId && x >= 10 ? Grass : null;
+
     public MapSpot? FindSpot(string mapId, string spotId) =>
         mapId == MapId && species.FirstOrDefault(s => s.Id.Value == spotId) is { } match
             ? new MapSpot(mapId, spotId, match.Id)

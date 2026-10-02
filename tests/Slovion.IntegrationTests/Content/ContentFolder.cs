@@ -5,26 +5,31 @@ namespace Slovion.IntegrationTests.Content;
 /// <summary>A temporary content folder that starts valid and can be broken one detail at a time.</summary>
 public sealed class ContentFolder : IDisposable
 {
-    public ContentFolder()
-    {
-        Path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "slovion-content-" + Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(System.IO.Path.Combine(Path, "species"));
-        Directory.CreateDirectory(System.IO.Path.Combine(Path, "maps"));
-        Species = ValidSpecies();
-        Map = ValidMap();
-    }
-
     public string Path { get; }
 
     public JsonObject Species { get; }
 
     public JsonObject Map { get; }
 
+    public JsonObject Habitat { get; }
+
+    public ContentFolder()
+    {
+        Path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "slovion-content-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "species"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "maps"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "habitats"));
+        Species = ValidSpecies();
+        Map = ValidMap();
+        Habitat = ValidHabitat();
+    }
+
     /// <summary>Writes the species and map documents and returns the folder path.</summary>
-    public string Write(string speciesFile = "salvia_pratensis.json", string mapFile = "test_meadow.json")
+    public string Write(string speciesFile = "salvia_pratensis.json", string mapFile = "test_meadow.json", string habitatFile = "tall_grass.json")
     {
         File.WriteAllText(System.IO.Path.Combine(Path, "species", speciesFile), Species.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "maps", mapFile), Map.ToJsonString());
+        File.WriteAllText(System.IO.Path.Combine(Path, "habitats", habitatFile), Habitat.ToJsonString());
         return Path;
     }
 
@@ -80,6 +85,25 @@ public sealed class ContentFolder : IDisposable
         ["identification"] = new JsonObject { ["clues"] = new JsonArray(1, 0, 2) },
     };
 
+    private static JsonObject ValidHabitat() => new()
+    {
+        ["id"] = "tall_grass",
+        ["searchChancePercent"] = 70,
+        ["species"] = new JsonArray(new JsonObject { ["speciesId"] = "salvia_pratensis", ["weight"] = 5 }),
+    };
+
+    /// <summary>A habitat rectangle covering tiles x 1–2, y 0–2 of the 4×3 test map.</summary>
+    public static JsonObject HabitatZone(string habitatId = "tall_grass") => new()
+    {
+        ["type"] = "habitat",
+        ["name"] = "grass",
+        ["x"] = 16,
+        ["y"] = 0,
+        ["width"] = 32,
+        ["height"] = 48,
+        ["properties"] = new JsonArray(new JsonObject { ["name"] = "habitatId", ["type"] = "string", ["value"] = habitatId }),
+    };
+
     private static JsonObject ValidMap()
     {
         static JsonArray Tiles(int count) => new(Enumerable.Range(0, count).Select(_ => (JsonNode?)JsonValue.Create(0)).ToArray());
@@ -112,7 +136,8 @@ public sealed class ContentFolder : IDisposable
                         Point("spawn", 0, 1, new JsonArray(Property("facing", "right"))),
                         Point("spot", 2, 1, new JsonArray(
                             Property("spotId", "sage_1"),
-                            Property("speciesId", "salvia_pratensis")))),
+                            Property("speciesId", "salvia_pratensis"))),
+                        HabitatZone()),
                 }),
         };
     }

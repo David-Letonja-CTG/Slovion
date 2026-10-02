@@ -134,7 +134,7 @@ describe('createGame', () => {
     environment.input.press('Interact');
     environment.frames.frame(STEP_MS);
 
-    expect(interactions).toEqual([{ mapId: 'test_map', spotId: 'spot' }]);
+    expect(interactions).toEqual([{ kind: 'spot', mapId: 'test_map', spotId: 'spot' }]);
   });
 
   it('gives input to UI overlays instead of the world when asked', () => {

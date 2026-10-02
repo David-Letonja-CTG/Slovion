@@ -6,18 +6,18 @@ namespace Slovion.Domain.Saves;
 /// </summary>
 public sealed class SaveSlot
 {
+    public Guid Id { get; private set; }
+
+    public byte[] TokenHash { get; private set; }
+
+    public DateTimeOffset CreatedAt { get; private set; }
+
     private SaveSlot(Guid id, byte[] tokenHash, DateTimeOffset createdAt)
     {
         Id = id;
         TokenHash = tokenHash;
         CreatedAt = createdAt;
     }
-
-    public Guid Id { get; private set; }
-
-    public byte[] TokenHash { get; private set; }
-
-    public DateTimeOffset CreatedAt { get; private set; }
 
     public static SaveSlot Create(Guid id, byte[] tokenHash, DateTimeOffset createdAt)
     {

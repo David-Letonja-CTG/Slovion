@@ -11,6 +11,8 @@ public class NatureDexServiceTests
     private readonly EncounterService encounters;
     private readonly NatureDexService service;
 
+    private static CancellationToken Token => TestContext.Current.CancellationToken;
+
     public NatureDexServiceTests()
     {
         var catalog = new FakeContentCatalog(
@@ -20,8 +22,6 @@ public class NatureDexServiceTests
         encounters = new EncounterService(catalog, discoveries, new InMemoryEncounterRepository(), new SeededRandom(1), time);
         service = new NatureDexService(catalog, discoveries);
     }
-
-    private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     private async Task Observe(string spotId) =>
         await encounters.StartAsync(slot, FakeContentCatalog.MapId, spotId, "sl", Token);

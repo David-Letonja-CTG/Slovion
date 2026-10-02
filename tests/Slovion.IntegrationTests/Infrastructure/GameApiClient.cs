@@ -22,12 +22,7 @@ public static class GameApiClient
         return body.RootElement.GetProperty("token").GetString()!;
     }
 
-    public static Task<HttpResponseMessage> StartEncounterAsync(
-        HttpClient client,
-        string? token,
-        string spotId = SageSpot,
-        string mapId = MeadowMap,
-        string? acceptLanguage = null) =>
+    public static Task<HttpResponseMessage> StartEncounterAsync(HttpClient client, string? token, string spotId = SageSpot, string mapId = MeadowMap, string? acceptLanguage = null) =>
         SendAsync(
             client,
             new HttpRequestMessage(HttpMethod.Post, new Uri("/api/save/encounters", UriKind.Relative))

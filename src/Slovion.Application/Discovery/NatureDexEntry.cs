@@ -6,16 +6,7 @@ namespace Slovion.Application.Discovery;
 public sealed record SourceView(string Title, string Publisher, Uri Url, DateOnly Accessed, string Licence);
 
 /// <summary>Species information in one language, with every source it is based on.</summary>
-public sealed record SpeciesView(
-    string Language,
-    string Name,
-    string ScientificName,
-    string Family,
-    string Habitat,
-    string Distribution,
-    string Season,
-    IReadOnlyList<string> Characteristics,
-    IReadOnlyList<SourceView> Sources)
+public sealed record SpeciesView(string Language, string Name, string ScientificName, string Family, string Habitat, string Distribution, string Season, IReadOnlyList<string> Characteristics, IReadOnlyList<SourceView> Sources)
 {
     /// <summary>Text in <paramref name="language"/>, or Slovenian when the species lacks that language.</summary>
     public static SpeciesView For(Species species, string language)
@@ -54,12 +45,7 @@ public sealed record SpeciesView(
 /// A species in a save's NatureDex. <see cref="Species"/> is present only once identified; an observed
 /// species stays anonymous (docs/decisions.md D1).
 /// </summary>
-public sealed record NatureDexEntry(
-    SpeciesId SpeciesId,
-    SpeciesGroup Group,
-    DateTimeOffset ObservedAt,
-    DateTimeOffset? IdentifiedAt,
-    SpeciesView? Species)
+public sealed record NatureDexEntry(SpeciesId SpeciesId, SpeciesGroup Group, DateTimeOffset ObservedAt, DateTimeOffset? IdentifiedAt, SpeciesView? Species)
 {
     public bool IsIdentified => IdentifiedAt is not null;
 }

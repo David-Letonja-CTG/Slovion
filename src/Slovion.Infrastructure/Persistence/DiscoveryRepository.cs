@@ -7,15 +7,13 @@ namespace Slovion.Infrastructure.Persistence;
 
 internal sealed class DiscoveryRepository(SlovionDbContext db) : IDiscoveryRepository
 {
-    public async Task<(SpeciesDiscovery Stored, bool Added)> AddIfAbsentAsync(
-        SpeciesDiscovery discovery,
-        CancellationToken cancellationToken)
+    public async Task<(SpeciesDiscovery Stored, bool Added)> AddIfAbsentAsync(SpeciesDiscovery discovery, CancellationToken cancellationToken)
     {
         // A single atomic statement: concurrent duplicates insert exactly one row.
         var inserted = await db.Database.ExecuteSqlInterpolatedAsync(
             $"""
-            INSERT INTO discoveries (save_slot_id, species_id, map_id, spot_id, observed_at)
-            VALUES ({discovery.SaveSlotId}, {discovery.SpeciesId.Value}, {discovery.MapId}, {discovery.SpotId}, {discovery.ObservedAt})
+            INSERT INTO discoveries (save_slot_id, species_id, map_id, spot_id, habitat_id, observed_at)
+            VALUES ({discovery.SaveSlotId}, {discovery.SpeciesId.Value}, {discovery.MapId}, {discovery.SpotId}, {discovery.HabitatId}, {discovery.ObservedAt})
             ON CONFLICT (save_slot_id, species_id) DO NOTHING
             """,
             cancellationToken);
@@ -33,11 +31,7 @@ internal sealed class DiscoveryRepository(SlovionDbContext db) : IDiscoveryRepos
             stored => stored.SaveSlotId == saveSlotId && stored.SpeciesId == speciesId,
             cancellationToken);
 
-    public async Task<SpeciesDiscovery> IdentifyAsync(
-        Guid saveSlotId,
-        SpeciesId speciesId,
-        DateTimeOffset identifiedAt,
-        CancellationToken cancellationToken)
+    public async Task<SpeciesDiscovery> IdentifyAsync(Guid saveSlotId, SpeciesId speciesId, DateTimeOffset identifiedAt, CancellationToken cancellationToken)
     {
         // Only the first identification counts, also when two answers race.
         await db.Discoveries

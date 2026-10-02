@@ -59,9 +59,11 @@ describe('GameCanvas', () => {
   it('emits interactions reported by the engine', async () => {
     const fixture = await render();
 
-    options?.onInteract({ mapId: 'test_map', spotId: 'spot' });
+    options?.onInteract({ kind: 'spot', mapId: 'test_map', spotId: 'spot' });
 
-    expect(fixture.componentInstance.interactions).toEqual([{ mapId: 'test_map', spotId: 'spot' }]);
+    expect(fixture.componentInstance.interactions).toEqual([
+      { kind: 'spot', mapId: 'test_map', spotId: 'spot' },
+    ]);
   });
 
   it('labels the canvas from the translation catalog', async () => {

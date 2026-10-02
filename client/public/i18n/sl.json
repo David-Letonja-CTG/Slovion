@@ -20,7 +20,7 @@
     "loading": "Nalaganje …"
   },
   "play": {
-    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči · M: Terenski dnevnik"
+    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči ali išči v visoki travi · M: Terenski dnevnik"
   },
   "discovery": {
     "known": "Ta vrsta je že zapisana v Terenskem dnevniku: {{name}}"
@@ -55,7 +55,8 @@
     "network": "Povezava s strežnikom ni uspela. Poskusi znova.",
     "map": "Območja ni bilo mogoče naložiti.",
     "error": "Nekaj je šlo narobe. Poskusi znova.",
-    "unknown_encounter": "To opazovanje ni več veljavno. Poskusi znova."
+    "unknown_encounter": "To opazovanje ni več veljavno. Poskusi znova.",
+    "unknown_habitat": "Tukaj ni mogoče iskati."
   },
   "identification": {
     "heading": {
@@ -77,5 +78,8 @@
       "bird": "ptica",
       "insect": "žuželka"
     }
+  },
+  "search": {
+    "nothing": "Tu ni ničesar. Poskusi drugje."
   }
 }

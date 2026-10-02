@@ -8,15 +8,6 @@ namespace Slovion.Domain.Discovery;
 /// </summary>
 public sealed class SpeciesDiscovery
 {
-    private SpeciesDiscovery(Guid saveSlotId, SpeciesId speciesId, string mapId, string spotId, DateTimeOffset observedAt)
-    {
-        SaveSlotId = saveSlotId;
-        SpeciesId = speciesId;
-        MapId = mapId;
-        SpotId = spotId;
-        ObservedAt = observedAt;
-    }
-
     public Guid SaveSlotId { get; private set; }
 
     public SpeciesId SpeciesId { get; private set; }
@@ -24,7 +15,11 @@ public sealed class SpeciesDiscovery
     /// <summary>Where the species was first observed.</summary>
     public string MapId { get; private set; }
 
-    public string SpotId { get; private set; }
+    /// <summary>The spot of the first observation, or <c>null</c> if it was found by searching a habitat.</summary>
+    public string? SpotId { get; private set; }
+
+    /// <summary>The habitat searched at the first observation, or <c>null</c> if it was seen at a spot.</summary>
+    public string? HabitatId { get; private set; }
 
     public DateTimeOffset ObservedAt { get; private set; }
 
@@ -32,11 +27,21 @@ public sealed class SpeciesDiscovery
 
     public bool IsIdentified => IdentifiedAt is not null;
 
-    public static SpeciesDiscovery Observe(Guid saveSlotId, MapSpot spot, DateTimeOffset observedAt)
+    private SpeciesDiscovery(Guid saveSlotId, SpeciesId speciesId, string mapId, string? spotId, string? habitatId, DateTimeOffset observedAt)
+    {
+        SaveSlotId = saveSlotId;
+        SpeciesId = speciesId;
+        MapId = mapId;
+        SpotId = spotId;
+        HabitatId = habitatId;
+        ObservedAt = observedAt;
+    }
+
+    public static SpeciesDiscovery Observe(Guid saveSlotId, Sighting sighting, DateTimeOffset observedAt)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(saveSlotId, Guid.Empty);
-        ArgumentNullException.ThrowIfNull(spot);
-        return new SpeciesDiscovery(saveSlotId, spot.SpeciesId, spot.MapId, spot.SpotId, observedAt);
+        ArgumentNullException.ThrowIfNull(sighting);
+        return new SpeciesDiscovery(saveSlotId, sighting.SpeciesId, sighting.MapId, sighting.SpotId, sighting.HabitatId, observedAt);
     }
 
     /// <summary>Marks the species identified. Identifying again keeps the first identification time.</summary>
