@@ -25,4 +25,4 @@
 - [x] 4.2 Run `dotnet format --verify-no-changes`, `dotnet test --solution Slovion.slnx`, `npm run check` and `npm run e2e`; all succeed
 - [x] 4.3 Manual play check: search both zones, get both outcomes, identify a found species; capture screenshots
 - [x] 4.4 Review the changed files against non-goals and every spec scenario; record deviations in design.md
-- [ ] 4.5 Run `openspec validate add-habitat-search --strict`, push, and verify all CI jobs pass on the pull request
+- [x] 4.5 Run `openspec validate add-habitat-search --strict`, push, and verify all CI jobs pass on the pull request
