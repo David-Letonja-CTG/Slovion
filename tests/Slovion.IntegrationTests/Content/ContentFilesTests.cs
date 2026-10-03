@@ -19,6 +19,7 @@ public sealed class ContentFilesTests
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(mediaType, response.Content.Headers.ContentType?.MediaType);
+        Assert.True(response.Headers.CacheControl?.NoCache, "content files must be revalidated, never reused stale");
     }
 
     [Theory]

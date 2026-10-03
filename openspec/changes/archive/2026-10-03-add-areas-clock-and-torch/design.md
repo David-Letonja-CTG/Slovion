@@ -120,6 +120,8 @@ Deviations and additions:
 - **Banner on phones:** on narrow screens (≤ 40rem) the banner sits below the indicator and the torch button. The manual check at 390×844 showed it overlapping the indicator.
 - **Banner restart:** each new place re-creates the banner through a keyed `@for`, which restarts the CSS animation. The banner removes itself on `animationend`.
 
+- **Content files are sent with `Cache-Control: no-cache`:** found after the PR opened. A browser had heuristically cached the old meadow map, which has no area zones. The new client correctly rejected it (walkable tiles without a place) and showed *Območja ni bilo mogoče naložiti*. Files under `/content` are now always revalidated, and ETags keep that cheap. An integration test asserts the header.
+
 **Manual check** at 1280×720 and 390×844, with no console errors:
 - The start banner *Travnik na Dravskem polju* appeared and was gone after about 2.5 s, while the clock moved 08:00 → 08:03.
 - With the quest completed through the API and the clock shifted to 22:00 in the dev database, the night was clearly dark.

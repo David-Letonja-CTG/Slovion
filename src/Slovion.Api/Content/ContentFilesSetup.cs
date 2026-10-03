@@ -22,6 +22,10 @@ public static class ContentFilesSetup
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(root, folder)),
                 RequestPath = $"/content/{folder}",
+
+                // Content changes with every release; without this, browsers may reuse an old map or picture
+                // heuristically and pair it with newer code. ETags keep the revalidation cheap (304).
+                OnPrepareResponse = context => context.Context.Response.Headers.CacheControl = "no-cache",
             });
         }
 
