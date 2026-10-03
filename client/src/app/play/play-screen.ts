@@ -1,8 +1,9 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, DestroyRef, computed, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
-import { Action, Game, Interaction, LoadedWorld } from '../../engine';
+import { Action, Game, Interaction, LoadedWorld, Season, TimeOfDay } from '../../engine';
 import {
   AlreadyIdentified,
   AnswerResult,
@@ -12,10 +13,12 @@ import {
   GameApi,
   NothingFound,
   PlayerProgress,
+  WorldTimeInfo,
   apiErrorCode,
 } from '../api/game-api';
 import { GameCanvas } from '../game/game-canvas';
 import { GameSession } from '../session/game-session';
+import { ConditionsIndicator } from './conditions-indicator';
 import { DialogueBox } from './dialogue-box';
 import { IdentificationDialog } from './identification-dialog';
 import { MessageDialog } from './message-dialog';
@@ -42,6 +45,8 @@ type Overlay =
   | { readonly kind: 'result'; readonly result: AnswerResult }
   | { readonly kind: 'known'; readonly name: string }
   | { readonly kind: 'nothing' }
+  /** A spot whose species is not around at the save's in-game time (D8). */
+  | { readonly kind: 'notNow' }
   | { readonly kind: 'naturedex' }
   | { readonly kind: 'dialogue'; readonly conversation: Conversation }
   | { readonly kind: 'error'; readonly code: ApiErrorCode };
@@ -50,6 +55,7 @@ type Overlay =
 @Component({
   selector: 'app-play-screen',
   imports: [
+    ConditionsIndicator,
     DialogueBox,
     GameCanvas,
     IdentificationDialog,
@@ -76,6 +82,11 @@ export class PlayScreen {
   protected readonly overlay = signal<Overlay>({ kind: 'none' });
   /** The save's flags and quests, as the server last reported them (D3). */
   protected readonly progress = signal<PlayerProgress>({ flags: [], quests: [] });
+  /** The save's in-game clock at load, passed to the engine, which advances it (D8). */
+  protected readonly worldTime = signal<WorldTimeInfo | undefined>(undefined);
+  protected readonly conditions = signal<{ season: Season; timeOfDay: TimeOfDay } | undefined>(
+    undefined,
+  );
   protected readonly activeQuest = computed(() =>
     this.progress().quests.find((quest) => quest.status === 'active'),
   );
@@ -87,9 +98,12 @@ export class PlayScreen {
         .load(START_MAP)
         .catch(() => Promise.reject(MAP_FAILED)),
       firstValueFrom(this.api.progress()),
+      firstValueFrom(this.api.time()),
     ]).then(
-      ([world, progress]) => {
+      ([world, progress, time]) => {
         this.progress.set(progress);
+        this.worldTime.set(time);
+        this.conditions.set({ season: time.season, timeOfDay: time.timeOfDay });
         this.world.set(world);
       },
       (error: unknown) => {
@@ -101,6 +115,32 @@ export class PlayScreen {
         }
       },
     );
+
+    // The game loop pauses while the page is hidden, but the server clock does not: re-sync on return.
+    const document = inject(DOCUMENT);
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible' && this.game) this.syncTime();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    inject(DestroyRef).onDestroy(() =>
+      document.removeEventListener('visibilitychange', onVisibility),
+    );
+  }
+
+  /** The world's season or time of day changed while playing. */
+  protected onConditionsChanged(conditions: { season: Season; timeOfDay: TimeOfDay }): void {
+    this.conditions.set(conditions);
+  }
+
+  private syncTime(): void {
+    this.api.time().subscribe({
+      next: (time) => {
+        this.game?.setWorldTime(time.minutes);
+        this.conditions.set({ season: time.season, timeOfDay: time.timeOfDay });
+      },
+      // A failed re-sync keeps the local clock; the server still decides every encounter.
+      error: () => undefined,
+    });
   }
 
   protected onStarted(game: Game): void {
@@ -124,14 +164,18 @@ export class PlayScreen {
       interaction.kind === 'spot'
         ? this.api.startEncounter(interaction.mapId, interaction.spotId)
         : this.api.search(interaction.mapId, interaction.x, interaction.y);
+    const kind = interaction.kind;
     request.subscribe({
-      next: (result) => this.overlay.set(this.overlayFor(result)),
+      next: (result) => this.overlay.set(this.overlayFor(result, kind)),
       error: (error: unknown) => this.onError(error),
     });
   }
 
-  private overlayFor(result: Encounter | AlreadyIdentified | NothingFound): Overlay {
-    if ('found' in result) return { kind: 'nothing' };
+  private overlayFor(
+    result: Encounter | AlreadyIdentified | NothingFound,
+    interaction: 'spot' | 'search',
+  ): Overlay {
+    if ('found' in result) return { kind: interaction === 'spot' ? 'notNow' : 'nothing' };
     if ('alreadyIdentified' in result) {
       return { kind: 'known', name: result.entry.species?.name ?? '' };
     }
@@ -212,7 +256,13 @@ export class PlayScreen {
     const kind = this.overlay().kind;
     if (kind === 'encounter') {
       this.identification()?.handleAction(action);
-    } else if (kind === 'result' || kind === 'known' || kind === 'nothing' || kind === 'error') {
+    } else if (
+      kind === 'result' ||
+      kind === 'known' ||
+      kind === 'nothing' ||
+      kind === 'notNow' ||
+      kind === 'error'
+    ) {
       if (action === 'Confirm' || action === 'Cancel') this.close();
     } else if (kind === 'naturedex') {
       this.natureDex()?.handleAction(action);

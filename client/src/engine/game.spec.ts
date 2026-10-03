@@ -1,4 +1,5 @@
 import { createGame } from './game';
+import { TIME_TINT } from './render/world-renderer';
 import { STEP_MS } from './game-loop';
 import { Action } from './input/actions';
 import { FakeEnvironment } from './testing/fake-environment';
@@ -7,6 +8,8 @@ import { textMap } from './world/testing';
 
 interface Draw {
   image: string;
+  /** The fill style of a fillRect (backdrop or tint). */
+  style?: string;
   sx: number;
   sy: number;
   dx: number;
@@ -24,7 +27,7 @@ function fakeContext() {
       this.transform = matrix;
     },
     fillRect() {
-      this.draws.push({ image: 'backdrop', sx: 0, sy: 0, dx: 0, dy: 0 });
+      this.draws.push({ image: 'backdrop', style: this.fillStyle, sx: 0, sy: 0, dx: 0, dy: 0 });
     },
     drawImage(
       image: { name: string },
@@ -168,6 +171,31 @@ describe('createGame', () => {
     const frame = context.draws.slice(lastFrameStart);
     const firstTile = frame.find((draw) => draw.image === 'tileset')!.dx;
     expect(frame.at(-1)!.dx - firstTile).toBe(3 * 16); // walked through the open gate
+  });
+
+  it('tints the whole view at night, after the player', () => {
+    const environment = new FakeEnvironment();
+    const canvas = document.createElement('canvas');
+    const context = fakeContext();
+    canvas.getContext = (() => context) as unknown as typeof canvas.getContext;
+    const game = createGame(document.createElement('div'), canvas, {
+      environment,
+      world: {
+        map: textMap(['#S.#']),
+        tileset: { name: 'tileset' } as unknown as CanvasImageSource,
+        playerSprite: { name: 'player' } as unknown as CanvasImageSource,
+      },
+      onInteract: () => undefined,
+      worldTime: { minutes: 22 * 60, gameMinutesPerSecond: 0 },
+    });
+    game.start();
+
+    environment.frames.frame(STEP_MS);
+    expect(context.draws.at(-1)).toMatchObject({ image: 'backdrop', style: TIME_TINT.night });
+
+    game.setWorldTime(12 * 60); // noon: no tint
+    environment.frames.frame(STEP_MS);
+    expect(context.draws.at(-1)?.image).toBe('player');
   });
 
   it('draws at whole pixel positions while walking', () => {

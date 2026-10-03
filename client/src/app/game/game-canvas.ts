@@ -10,7 +10,15 @@ import {
   viewChild,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Game, Interaction, LoadedWorld, createGame } from '../../engine';
+import {
+  Game,
+  Interaction,
+  LoadedWorld,
+  Season,
+  TimeOfDay,
+  WorldClock,
+  createGame,
+} from '../../engine';
 
 /** Creates the engine; replaceable in tests. */
 export const GAME_FACTORY = new InjectionToken<typeof createGame>('GAME_FACTORY', {
@@ -43,6 +51,10 @@ export class GameCanvas {
   readonly world = input.required<LoadedWorld>();
   /** The save's progress flags when the game starts; later changes go through `Game.setOpenFlags`. */
   readonly openFlags = input<readonly string[]>([]);
+  /** The save's in-game clock when the game starts; later re-syncs go through `Game.setWorldTime`. */
+  readonly worldTime = input<WorldClock | undefined>(undefined);
+  /** The season or the time of day changed while playing. */
+  readonly conditionsChanged = output<{ season: Season; timeOfDay: TimeOfDay }>();
   /** The player interacted with an NPC, a spot or a habitat; the host asks the server what happens. */
   readonly interaction = output<Interaction>();
   /** The player asked for the menu (OpenMenu) while in the world. */
@@ -63,6 +75,9 @@ export class GameCanvas {
         onInteract: (interaction) => this.interaction.emit(interaction),
         onOpenMenu: () => this.menuRequested.emit(),
         openFlags: this.openFlags(),
+        worldTime: this.worldTime(),
+        onConditionsChange: (season, timeOfDay) =>
+          this.conditionsChanged.emit({ season, timeOfDay }),
       });
       game.start();
       destroyRef.onDestroy(() => game.stop());

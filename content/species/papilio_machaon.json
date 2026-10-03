@@ -90,6 +90,16 @@
       ]
     }
   },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "sources": [
+      "nrp"
+    ]
+  },
   "identification": {
     "clues": [
       1,

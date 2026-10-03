@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Slovion.Application.Content;
 using Slovion.Domain.Content;
+using Slovion.Domain.World;
 
 namespace Slovion.Infrastructure.Content;
 
@@ -163,10 +164,63 @@ public sealed partial class FileContentCatalog : IContentCatalog
         }
 
         var clues = ValidateClues(file.Identification?.Clues, texts, name, errors);
+        var availability = ValidateAvailability(file.Availability, name, sourceIds, errors);
 
         return errors.Count > errorCount
             ? null
-            : new Species(SpeciesId.Parse(file.Id!), group, scientificName!, sources, texts, clues);
+            : new Species(SpeciesId.Parse(file.Id!), group, scientificName!, sources, texts, clues, availability!);
+    }
+
+    /// <summary>Sourced seasons and optional times of day (all times when absent), as lowercase names.</summary>
+    private static Availability? ValidateAvailability(AvailabilityFile? file, string name, HashSet<string> sourceIds, List<string> errors)
+    {
+        if (file is null)
+        {
+            errors.Add($"{name}: 'availability' is required.");
+            return null;
+        }
+
+        var errorCount = errors.Count;
+        var seasons = ParseNames<Season>(file.Seasons, $"{name}: availability.seasons", "season", errors);
+        var times = file.Times is null ? Enum.GetValues<TimeOfDay>().ToHashSet() : ParseNames<TimeOfDay>(file.Times, $"{name}: availability.times", "time of day", errors);
+
+        if (file.Sources is null || file.Sources.Count == 0)
+        {
+            errors.Add($"{name}: availability has no sources.");
+        }
+        else if (file.Sources.Where(id => !sourceIds.Contains(id)).ToList() is { Count: > 0 } unknown)
+        {
+            errors.Add($"{name}: availability references unknown source(s): {string.Join(", ", unknown)}.");
+        }
+
+        return errors.Count > errorCount ? null : new Availability(seasons, times, file.Sources!);
+    }
+
+    /// <summary>A non-empty set of enum values written as lowercase names (e.g. <c>spring</c>, <c>night</c>).</summary>
+    private static HashSet<T> ParseNames<T>(List<string>? names, string at, string kind, List<string> errors)
+        where T : struct, Enum
+    {
+        var result = new HashSet<T>();
+        if (names is null || names.Count == 0)
+        {
+            errors.Add($"{at} must list at least one {kind}.");
+            return result;
+        }
+
+        var byName = Enum.GetValues<T>().ToDictionary(item => item.ToString().ToLowerInvariant(), StringComparer.Ordinal);
+        foreach (var value in names)
+        {
+            if (value is null || !byName.TryGetValue(value, out var parsed))
+            {
+                errors.Add($"{at}: unknown {kind} '{value}'.");
+            }
+            else
+            {
+                result.Add(parsed);
+            }
+        }
+
+        return result;
     }
 
     /// <summary>Exactly three distinct clues, each pointing at a characteristic in every language.</summary>

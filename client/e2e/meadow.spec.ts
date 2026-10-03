@@ -35,6 +35,8 @@ const pictureOf = (page: Page, speciesId: string) =>
 
 test('identify the meadow sage, read about it, and keep it after a reload', async ({ page }) => {
   const observation = await observeTheSage(page);
+  // A new save starts on a spring morning (docs/decisions.md D8).
+  await expect(page.locator('app-conditions-indicator')).toHaveText(/Pomlad\s*·\s*jutro/);
 
   await observation.getByRole('button', { name: 'Nov namig' }).click();
   await expect(observation.locator('li')).toHaveCount(2);

@@ -1,6 +1,8 @@
 using Slovion.Application.Content;
 using Slovion.Domain.Content;
 using Slovion.Domain.Discovery;
+using Slovion.Domain.Saves;
+using Slovion.Domain.World;
 
 namespace Slovion.Application.Discovery;
 
@@ -17,6 +19,9 @@ public abstract record StartEncounterResult
 
     /// <summary>The map or spot does not exist, or holds no species.</summary>
     public sealed record UnknownSpot : StartEncounterResult;
+
+    /// <summary>The spot's species is not available at the save's in-game time (D8); nothing is recorded.</summary>
+    public sealed record NotNow : StartEncounterResult;
 
     /// <summary>The save already identified this species; no encounter is opened.</summary>
     public sealed record AlreadyIdentified(NatureDexEntry Entry) : StartEncounterResult;
@@ -56,11 +61,15 @@ public abstract record AnswerResult
     public sealed record Answered(bool Correct, CandidateView CorrectSpecies, NatureDexEntry? Entry) : AnswerResult;
 }
 
-/// <summary>Observation encounters and identification, decided by the server (docs/decisions.md D1, D3).</summary>
+/// <summary>
+/// Observation encounters and identification, decided by the server (docs/decisions.md D1, D3). Only species available
+/// at the save's in-game time can be encountered (D8).
+/// </summary>
 public sealed class EncounterService(IContentCatalog content, IDiscoveryRepository discoveries, IEncounterRepository encounters, IRandomSource random, TimeProvider time)
 {
-    public async Task<StartEncounterResult> StartAsync(Guid saveSlotId, string mapId, string spotId, string language, CancellationToken cancellationToken)
+    public async Task<StartEncounterResult> StartAsync(SaveSlot save, string mapId, string spotId, string language, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(save);
         var spot = content.FindSpot(mapId, spotId);
         var species = spot is null ? null : content.FindSpecies(spot.SpeciesId);
         if (spot is null || species is null)
@@ -68,15 +77,21 @@ public sealed class EncounterService(IContentCatalog content, IDiscoveryReposito
             return new StartEncounterResult.UnknownSpot();
         }
 
-        return await StartAsync(saveSlotId, Sighting.AtSpot(spot), species, language, cancellationToken);
+        if (!species.Availability.IsAvailableAt(WorldTimeOf(save)))
+        {
+            return new StartEncounterResult.NotNow();
+        }
+
+        return await StartAsync(save.Id, Sighting.AtSpot(spot), species, language, cancellationToken);
     }
 
     /// <summary>
     /// Searches the habitat at a tile (docs/decisions.md D3: rolled on an explicit action). Two draws from the
-    /// random source decide whether anything is found and, by weight, which species.
+    /// random source decide whether anything is found and, by weight among the species available now (D8), which.
     /// </summary>
-    public async Task<SearchResult> SearchAsync(Guid saveSlotId, string mapId, int x, int y, string language, CancellationToken cancellationToken)
+    public async Task<SearchResult> SearchAsync(SaveSlot save, string mapId, int x, int y, string language, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(save);
         var habitat = content.FindHabitatAt(mapId, x, y);
         if (habitat is null)
         {
@@ -88,16 +103,27 @@ public sealed class EncounterService(IContentCatalog content, IDiscoveryReposito
             return new SearchResult.NothingFound();
         }
 
-        var species = content.FindSpecies(PickByWeight(habitat))
-            ?? throw new InvalidOperationException($"Habitat '{habitat.Id}' names a species missing from the catalog.");
+        var now = WorldTimeOf(save);
+        var available = habitat.Species
+            .Where(entry => content.FindSpecies(entry.SpeciesId)?.Availability.IsAvailableAt(now) == true)
+            .ToList();
+        if (available.Count == 0)
+        {
+            return new SearchResult.NothingFound();
+        }
+
+        var species = content.FindSpecies(PickByWeight(available))!;
         var sighting = Sighting.InHabitat(mapId, habitat.Id, species.Id);
-        return new SearchResult.Found(await StartAsync(saveSlotId, sighting, species, language, cancellationToken));
+        return new SearchResult.Found(await StartAsync(save.Id, sighting, species, language, cancellationToken));
     }
 
-    private SpeciesId PickByWeight(Habitat habitat)
+    /// <summary>The save's in-game time now (docs/decisions.md D8).</summary>
+    private WorldTime WorldTimeOf(SaveSlot save) => WorldTime.Since(save.CreatedAt, time.GetUtcNow());
+
+    private SpeciesId PickByWeight(List<HabitatSpecies> candidates)
     {
-        var roll = random.NextIndex(habitat.Species.Sum(entry => entry.Weight));
-        foreach (var entry in habitat.Species)
+        var roll = random.NextIndex(candidates.Sum(entry => entry.Weight));
+        foreach (var entry in candidates)
         {
             if (roll < entry.Weight)
             {

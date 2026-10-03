@@ -1,3 +1,5 @@
+using Slovion.Domain.World;
+
 namespace Slovion.Domain.Content;
 
 /// <summary>A real-world fact and the IDs of the sources it is based on (docs/decisions.md D6).</summary>
@@ -13,7 +15,20 @@ public sealed record SpeciesText(Fact Name, Fact Family, Fact Habitat, Fact Dist
 /// Real-world species content. <see cref="Clues"/> is the only gameplay value: it chooses which
 /// sourced characteristics serve as identification clues, and in which order (docs/decisions.md D1, D6).
 /// </summary>
-public sealed record Species(SpeciesId Id, SpeciesGroup Group, Fact ScientificName, IReadOnlyDictionary<string, Source> Sources, IReadOnlyDictionary<string, SpeciesText> Text, IReadOnlyList<int> Clues);
+public sealed record Species(SpeciesId Id, SpeciesGroup Group, Fact ScientificName, IReadOnlyDictionary<string, Source> Sources, IReadOnlyDictionary<string, SpeciesText> Text, IReadOnlyList<int> Clues, Availability Availability);
+
+/// <summary>
+/// When a species can be found: in which seasons and at which times of day. Derived from sourced facts (flowering,
+/// flight or presence periods, activity) and backed by <see cref="SourceIds"/> (docs/decisions.md D6, D8).
+/// </summary>
+public sealed record Availability(IReadOnlySet<Season> Seasons, IReadOnlySet<TimeOfDay> Times, IReadOnlyList<string> SourceIds)
+{
+    public bool IsAvailableAt(WorldTime time)
+    {
+        ArgumentNullException.ThrowIfNull(time);
+        return Seasons.Contains(time.Season) && Times.Contains(time.TimeOfDay);
+    }
+}
 
 /// <summary>An interactive place in a map where a species can be discovered.</summary>
 public sealed record MapSpot(string MapId, string SpotId, SpeciesId SpeciesId);

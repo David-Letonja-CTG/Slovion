@@ -5,7 +5,8 @@ import { Action } from './input/actions';
 import { GameEnvironment, Unsubscribe, browserEnvironment } from './platform';
 import { WorldImages, renderWorld } from './render/world-renderer';
 import { LOGICAL_WIDTH, ViewportLayout, computeViewport } from './viewport';
-import { Interaction, World } from './world/world';
+import { Interaction, World, WorldClock } from './world/world';
+import { Season, TimeOfDay } from './world/world-time';
 import { WorldMap } from './world/world-map';
 
 /** Everything needed to show a map: loaded by the host, never fetched by the engine. */
@@ -24,6 +25,8 @@ export interface Game {
   onUiAction(listener: (action: Action) => void): Unsubscribe;
   /** Replaces the save's progress flags, which open gates (the server sets them, D3). */
   setOpenFlags(flags: readonly string[]): void;
+  /** Re-syncs the in-game clock with the server (D8). */
+  setWorldTime(minutes: number): void;
 }
 
 export interface GameOptions {
@@ -34,6 +37,10 @@ export interface GameOptions {
   readonly onOpenMenu?: () => void;
   /** The save's progress flags when the game starts. */
   readonly openFlags?: readonly string[];
+  /** The save's in-game clock as the server reported it; without it the world stands still at noon. */
+  readonly worldTime?: WorldClock;
+  /** Called when the season or the time of day changes. */
+  readonly onConditionsChange?: (season: Season, timeOfDay: TimeOfDay) => void;
   /** Platform services. Defaults to the browser. */
   readonly environment?: GameEnvironment;
 }
@@ -55,7 +62,13 @@ export function createGame(
 
   const input = new ActionState();
   const dispatcher = new ActionDispatcher(input);
-  const world = new World(options.world.map, options.onInteract, options.onOpenMenu);
+  const world = new World(
+    options.world.map,
+    options.onInteract,
+    options.onOpenMenu,
+    options.worldTime,
+    options.onConditionsChange,
+  );
   world.setOpenFlags(options.openFlags ?? []);
 
   let availableWidth = container.clientWidth;
@@ -105,6 +118,7 @@ export function createGame(
     setActionConsumer: (consumer) => dispatcher.setConsumer(consumer),
     onUiAction: (listener) => dispatcher.onUiAction(listener),
     setOpenFlags: (flags) => world.setOpenFlags(flags),
+    setWorldTime: (minutes) => world.setWorldTime(minutes),
   };
 }
 

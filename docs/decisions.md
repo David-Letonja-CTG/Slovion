@@ -60,9 +60,9 @@ No accounts and no login. A new game creates an **anonymous save slot** identifi
 - UI strings (menus, buttons, system messages) live in the Angular translation catalog. Content text (species facts, dialogue, quest text) lives with the content, keyed by locale.
 - The API never returns player-facing prose for UI messages; it returns stable codes and content IDs.
 
-## D8 — Time and seasons (Deferred)
+## D8 — Time and seasons (Accepted, 2026-10-03)
 
-Whether time of day and seasons follow an in-game clock or the real calendar is undecided. The first vertical slice is fixed to **summer, day**. Any clock is injected so behaviour stays deterministic in tests.
+Time of day and seasons follow an **in-game clock per save**, owned by the server (D3) and derived from the save's age: one real second is one in-game minute, day 1 starts at 08:00 when the save is created, and each season lasts three in-game days (spring → summer → autumn → winter). The clock keeps running while the player is away; the real calendar, real time and the device clock never affect the world. Species that are not available in the current season or time of day **cannot be found** (availability is sourced content, D6). The client shows the conditions with a time-of-day tint and a small indicator only (no seasonal map art). The server clock is injected so behaviour stays deterministic in tests. *(Previously deferred; the first slice was fixed to summer, day.)*
 
 ## D9 — OpenSpec tooling (Accepted, 2026-10-02)
 

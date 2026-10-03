@@ -35,6 +35,13 @@
       "url": "https://www.gbif.org/species/7745240",
       "accessed": "2026-10-02",
       "licence": "CC BY 4.0"
+    },
+    "bf-kzn": {
+      "title": "Rjavi srakoper (Kmetovati z naravo)",
+      "publisher": "Univerza v Ljubljani, Biotehniška fakulteta",
+      "url": "https://kmetovati-z-naravo.si/narava_na_kmetiji/rjavi-srakoper/",
+      "accessed": "2026-10-03",
+      "licence": "© kmetovati-z-naravo.si; facts paraphrased with attribution."
     }
   },
   "text": {
@@ -69,11 +76,12 @@
         ]
       },
       "season": {
-        "value": "Je selivka, ki prezimuje v Afriki; k nam se vrne konec aprila ali v začetku maja.",
+        "value": "Je selivka, ki prezimuje v Afriki; k nam se vrne konec aprila ali v začetku maja. Odrasle ptice odletijo že avgusta, mlade lahko opazujemo do konca septembra.",
         "sources": [
           "nrp",
           "dopps",
-          "drava"
+          "drava",
+          "bf-kzn"
         ]
       },
       "characteristics": [
@@ -113,6 +121,17 @@
         }
       ]
     }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "sources": [
+      "drava",
+      "bf-kzn"
+    ]
   },
   "identification": {
     "clues": [

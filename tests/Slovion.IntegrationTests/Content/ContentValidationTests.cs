@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using Slovion.Domain.Content;
+using Slovion.Domain.World;
 using Slovion.Infrastructure.Content;
 
 namespace Slovion.IntegrationTests.Content;
@@ -47,6 +48,25 @@ public sealed class ContentValidationTests
         Assert.Equal(["tall_grass", "hedgerow"], catalog.AllHabitats.Select(habitat => habitat.Id));
         Assert.Equal(["Visoka trava", "Mejica"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
         Assert.Equal([1, 2], catalog.AllHabitats.Select(habitat => habitat.Order));
+    }
+
+    [Theory]
+    [InlineData("alauda_arvensis", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter })]
+    [InlineData("lepus_europaeus", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter })]
+    [InlineData("taraxacum_officinale", new[] { Season.Spring, Season.Autumn })]
+    [InlineData("salvia_pratensis", new[] { Season.Spring, Season.Summer })]
+    [InlineData("crataegus_monogyna", new[] { Season.Spring, Season.Summer })]
+    [InlineData("papilio_machaon", new[] { Season.Spring, Season.Summer, Season.Autumn })]
+    [InlineData("lanius_collurio", new[] { Season.Spring, Season.Summer, Season.Autumn })]
+    public void Repository_species_have_their_sourced_availability(string id, Season[] seasons)
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        var availability = catalog.FindSpecies(SpeciesId.Parse(id))!.Availability;
+
+        Assert.Equal(seasons.Order(), availability.Seasons.Order());
+        Assert.Equal(Enum.GetValues<TimeOfDay>().Order(), availability.Times.Order()); // no sourced time-of-day limits yet
+        Assert.NotEmpty(availability.SourceIds);
     }
 
     [Theory]
@@ -101,6 +121,13 @@ public sealed class ContentValidationTests
         { "habitat without species", c => c.Habitat["species"] = new JsonArray(), "at least one species is required" },
         { "zone naming a missing habitat", c => Objects(c)[2]!["properties"]![0]!["value"] = "swamp", "refers to unknown habitat 'swamp'" },
         { "overlapping zones", c => Objects(c).Add(ContentFolder.HabitatZone()), "overlaps another habitat zone" },
+        { "missing availability", c => c.Species.Remove("availability"), "'availability' is required" },
+        { "unknown season", c => c.Species["availability"]!["seasons"] = new JsonArray("spring", "monsoon"), "availability.seasons: unknown season 'monsoon'" },
+        { "no seasons", c => c.Species["availability"]!["seasons"] = new JsonArray(), "availability.seasons must list at least one season" },
+        { "unknown time of day", c => c.Species["availability"]!["times"] = new JsonArray("midnight"), "availability.times: unknown time of day 'midnight'" },
+        { "capitalized season", c => c.Species["availability"]!["seasons"] = new JsonArray("Spring"), "unknown season 'Spring'" },
+        { "unsourced availability", c => c.Species["availability"]!.AsObject().Remove("sources"), "availability has no sources" },
+        { "availability with an unknown source", c => c.Species["availability"]!["sources"] = new JsonArray("nope"), "availability references unknown source(s): nope" },
         { "missing picture", c => c.Picture = null, "species 'salvia_pratensis' has no picture" },
         { "picture of the wrong size", c => c.Picture = ContentFolder.Png(64, 64), "must be 32×32 pixels (found 64×64)" },
         { "picture that is not a PNG", c => c.Picture = "GIF89a not a png at all"u8.ToArray(), "picture of species 'salvia_pratensis' is not a PNG" },

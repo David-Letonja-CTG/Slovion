@@ -92,6 +92,15 @@
       ]
     }
   },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "sources": [
+      "nrp"
+    ]
+  },
   "identification": {
     "clues": [
       1,
