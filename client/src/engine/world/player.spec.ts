@@ -213,6 +213,42 @@ describe('Interaction', () => {
     expect(world.isBlocked(2, 0)).toBe(true);
   });
 
+  it('wades through shallow water only with the boots', () => {
+    const without = setup(['S~.']);
+    without.input.press('MoveRight');
+    without.frames.frame(STEP_MS);
+    without.input.release('MoveRight');
+    without.frames.frames(60, 500);
+    expect(without.player.position).toEqual({ x: 0, y: 0 });
+
+    const withBoots = setup(['S~.']);
+    withBoots.world.setTools(['boots']);
+    withBoots.input.press('MoveRight');
+    withBoots.frames.frame(STEP_MS);
+    withBoots.input.release('MoveRight');
+    withBoots.frames.frames(60, 500);
+    expect(withBoots.player.position).toEqual({ x: 1, y: 0 });
+    // Animals still treat the water as blocked.
+    expect(withBoots.world.isBlocked(1, 0)).toBe(true);
+  });
+
+  it('reports the Inventory action to the host', () => {
+    const input = new ActionState();
+    const opened = vi.fn();
+    const world = new World(
+      textMap(['S.']),
+      () => undefined,
+      () => undefined,
+      undefined,
+      { onOpenInventory: opened },
+    );
+
+    input.press('Inventory');
+    world.update(input, STEP_MS);
+
+    expect(opened).toHaveBeenCalledOnce();
+  });
+
   it('prefers a faced NPC over searching the grass underfoot', () => {
     const { input, frames, interactions } = setup(['#GN#']);
 

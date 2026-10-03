@@ -20,6 +20,27 @@ public sealed class ProgressReader(IContentCatalog content, IDiscoveryRepository
         (await IdentifiedSpeciesAsync(saveSlotId, cancellationToken)).Count;
 
     /// <summary>
+    /// The save's tools: the start tools in content order, then the reward tools of its completed quests by completion
+    /// time (then quest ID), each once. Quests removed from content give nothing.
+    /// </summary>
+    public IReadOnlyList<Item> ItemsOf(IEnumerable<QuestProgress> all)
+    {
+        var owned = content.AllItems.Where(item => item.IsStart).ToList();
+        var rewarded = all.Where(stored => stored.IsCompleted)
+            .OrderBy(stored => stored.CompletedAt)
+            .ThenBy(stored => stored.QuestId, StringComparer.Ordinal)
+            .SelectMany(stored => content.FindQuest(stored.QuestId)?.RewardItems ?? [])
+            .Select(content.FindItem)
+            .OfType<Item>();
+        foreach (var item in rewarded.Where(item => !owned.Contains(item)))
+        {
+            owned.Add(item);
+        }
+
+        return owned;
+    }
+
+    /// <summary>
     /// Progress towards a quest's goal, capped at the goal: the identified species, only those of the goal's habitat
     /// when the quest names one.
     /// </summary>

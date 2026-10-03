@@ -2,7 +2,7 @@
   "id": "eye_for_nature",
   "giver": "vera",
   "goal": { "identifiedSpecies": 3 },
-  "reward": { "flag": "hedgerow_open" },
+  "reward": { "flag": "hedgerow_open", "items": ["binoculars"] },
   "text": {
     "sl": {
       "title": "Oko za naravo",

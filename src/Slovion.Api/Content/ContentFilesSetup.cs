@@ -7,7 +7,7 @@ namespace Slovion.Api.Content;
 public static class ContentFilesSetup
 {
     /// <summary>Folders of the content root that clients may download as-is.</summary>
-    private static readonly string[] PublicFolders = ["maps", "tilesets", FileContentCatalog.PicturesFolder, FileContentCatalog.AreasFolder, FileContentCatalog.WildlifeSpritesFolder, FileContentCatalog.NpcSpritesFolder];
+    private static readonly string[] PublicFolders = ["maps", "tilesets", FileContentCatalog.PicturesFolder, FileContentCatalog.AreasFolder, FileContentCatalog.WildlifeSpritesFolder, FileContentCatalog.NpcSpritesFolder, FileContentCatalog.ItemIconsFolder];
 
     /// <summary>
     /// Serves maps, tilesets, species pictures, area names and sprites as static files under <c>/content</c>. Species files are deliberately not

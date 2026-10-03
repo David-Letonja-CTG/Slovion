@@ -4,6 +4,7 @@ import {
   computed,
   effect,
   input,
+  linkedSignal,
   output,
   signal,
   viewChildren,
@@ -29,10 +30,12 @@ type Option =
 })
 export class IdentificationDialog {
   readonly encounter = input.required<Encounter>();
+  /** Clues shown when the dialog opens: 2 for plants and insects with the magnifier, otherwise 1. */
+  readonly initialClues = input(1);
   readonly answered = output<string>();
   readonly left = output<void>();
 
-  protected readonly revealed = signal(1);
+  protected readonly revealed = linkedSignal(() => this.initialClues());
   protected readonly selected = signal(0);
   protected readonly visibleClues = computed(() =>
     this.encounter().clues.slice(0, this.revealed()),

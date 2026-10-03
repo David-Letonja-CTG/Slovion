@@ -16,6 +16,8 @@ export interface Tileset {
   readonly image: string;
   /** Frame animations by tile index (Tiled tile animations); tiles without one are still. */
   readonly animations?: ReadonlyMap<number, readonly TileFrame[]>;
+  /** Tile indexes marked `wadeable`: blocked tiles a player with boots can wade through. */
+  readonly wadeable?: ReadonlySet<number>;
 }
 
 /** One frame of a tile animation: the tile index to show and for how long. */
@@ -121,6 +123,16 @@ export class WorldMap implements Obstacles {
   /** Tiles outside the map count as blocked. NPCs, gates and signposts are handled by the world. */
   isBlocked(x: number, y: number): boolean {
     return !this.inBounds(x, y) || this.blocked[y * this.width + x];
+  }
+
+  /** Whether any layer's tile at the cell is wadeable (shallow water). */
+  isWadeable(x: number, y: number): boolean {
+    const wadeable = this.tileset.wadeable;
+    if (!wadeable || !this.inBounds(x, y)) return false;
+    return this.layers.some((layer) => {
+      const gid = layer.tiles[y * this.width + x];
+      return gid >= this.tileset.firstGid && wadeable.has(gid - this.tileset.firstGid);
+    });
   }
 
   npcAt(x: number, y: number): MapNpc | undefined {

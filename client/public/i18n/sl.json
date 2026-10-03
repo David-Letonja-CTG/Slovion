@@ -20,7 +20,7 @@
     "loading": "Nalaganje …"
   },
   "play": {
-    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči, pogovori se, beri kažipot ali išči v visoki travi · L: svetilka · M: Terenski dnevnik"
+    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči, pogovori se, beri kažipot ali išči v visoki travi · L: svetilka · I: nahrbtnik · M: Terenski dnevnik"
   },
   "research": {
     "advanced": "Raziskava napreduje: {{name}} ({{level}}/3). V Terenskem dnevniku je nov zapis.",
@@ -121,6 +121,12 @@
   },
   "spot": {
     "notNow": "Tukaj zdaj ni ničesar. Poskusi ob drugem času."
+  },
+  "inventory": {
+    "title": "Nahrbtnik",
+    "button": "Nahrbtnik",
+    "empty": "Nahrbtnik je prazen.",
+    "received": "Novo v nahrbtniku: {{name}}"
   },
   "weather": {
     "clear": "jasno",

@@ -21,6 +21,12 @@ public sealed class ContentFolder : IDisposable
 
     public JsonObject Region { get; }
 
+    /// <summary>A start tool; written as <c>items/lamp.json</c>.</summary>
+    public JsonObject Item { get; }
+
+    /// <summary>The tool's icon; <c>null</c> writes none.</summary>
+    public byte[]? ItemIcon { get; set; } = Png(16, 16);
+
     /// <summary>The picture written for the species; <c>null</c> writes none.</summary>
     public byte[]? Picture { get; set; } = Png(32, 32);
 
@@ -43,6 +49,8 @@ public sealed class ContentFolder : IDisposable
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "npc-sprites"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "quests"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "regions"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "items"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "item-icons"));
         Species = ValidSpecies();
         Map = ValidMap();
         Habitat = ValidHabitat();
@@ -50,12 +58,19 @@ public sealed class ContentFolder : IDisposable
         Area = new JsonObject { ["id"] = "test_field", ["text"] = new JsonObject { ["sl"] = new JsonObject { ["name"] = "Testno polje" } } };
         Quest = ValidQuest();
         Region = ValidRegion();
+        Item = new JsonObject { ["id"] = "lamp", ["start"] = true, ["text"] = new JsonObject { ["sl"] = new JsonObject { ["name"] = "svetilka", ["description"] = "Ponoči osvetli okolico." } } };
     }
 
     /// <summary>Writes the species, its picture, the map, the habitat, the NPC, the quest and the region, and returns the folder path.</summary>
     public string Write(string speciesFile = "salvia_pratensis.json", string mapFile = "test_meadow.json", string habitatFile = "tall_grass.json", string npcFile = "vera.json", string questFile = "eye_for_nature.json", string regionFile = "dravsko_polje.json")
     {
         File.WriteAllText(System.IO.Path.Combine(Path, "regions", regionFile), Region.ToJsonString());
+        File.WriteAllText(System.IO.Path.Combine(Path, "items", "lamp.json"), Item.ToJsonString());
+        if (ItemIcon is not null)
+        {
+            File.WriteAllBytes(System.IO.Path.Combine(Path, "item-icons", $"{Item["id"]}.png"), ItemIcon);
+        }
+
         File.WriteAllText(System.IO.Path.Combine(Path, "npcs", npcFile), Npc.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "areas", "test_field.json"), Area.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "quests", questFile), Quest.ToJsonString());

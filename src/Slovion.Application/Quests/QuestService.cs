@@ -14,8 +14,11 @@ public enum QuestStatus
 /// <summary>A quest as the player sees it, in one language. Progress is capped at the goal.</summary>
 public sealed record QuestView(string QuestId, string Title, string Summary, string ReturnHint, QuestStatus Status, int Progress, int Goal);
 
-/// <summary>A save's progress: the flags earned from completed quests and every started quest.</summary>
-public sealed record PlayerProgress(IReadOnlyList<string> Flags, IReadOnlyList<QuestView> Quests);
+/// <summary>A tool in one language.</summary>
+public sealed record ItemView(string ItemId, string Name, string Description);
+
+/// <summary>A save's progress: the flags earned from completed quests, every started quest, and the save's tools.</summary>
+public sealed record PlayerProgress(IReadOnlyList<string> Flags, IReadOnlyList<QuestView> Quests, IReadOnlyList<ItemView> Items);
 
 public abstract record TalkResult
 {
@@ -25,8 +28,8 @@ public abstract record TalkResult
 
     public sealed record UnknownNpc : TalkResult;
 
-    /// <summary>What the NPC says, the quest's state afterwards, and the save's flags afterwards.</summary>
-    public sealed record Conversation(string NpcName, IReadOnlyList<string> Lines, QuestView Quest, IReadOnlyList<string> Flags) : TalkResult;
+    /// <summary>What the NPC says, the quest's state afterwards, and the save's flags and tools afterwards.</summary>
+    public sealed record Conversation(string NpcName, IReadOnlyList<string> Lines, QuestView Quest, IReadOnlyList<string> Flags, IReadOnlyList<ItemView> Items) : TalkResult;
 }
 
 /// <summary>
@@ -71,7 +74,7 @@ public sealed class QuestService(IContentCatalog content, ProgressReader progres
         }
 
         var all = await quests.ListAsync(saveSlotId, cancellationToken);
-        return new TalkResult.Conversation(NameOf(placed.Npc, language), lines, ViewOf(quest, text, stored, progress), progressReader.FlagsOf(all));
+        return new TalkResult.Conversation(NameOf(placed.Npc, language), lines, ViewOf(quest, text, stored, progress), progressReader.FlagsOf(all), ItemsOf(all, language));
     }
 
     /// <summary>The save's flags and started quests, for loading the game.</summary>
@@ -86,8 +89,14 @@ public sealed class QuestService(IContentCatalog content, ProgressReader progres
             .Where(pair => pair.quest is not null) // content removed since: skip, keep the record
             .Select(pair => ViewOf(pair.quest!, TextFor(pair.quest!, language), pair.stored, progressReader.ProgressOf(pair.quest!, identified)))
             .ToList();
-        return new PlayerProgress(progressReader.FlagsOf(all), views);
+        return new PlayerProgress(progressReader.FlagsOf(all), views, ItemsOf(all, language));
     }
+
+    private List<ItemView> ItemsOf(IEnumerable<QuestProgress> all, string language) =>
+        progressReader.ItemsOf(all)
+            .Select(item => item.Text.TryGetValue(language, out var text) ? (item, text) : (item, text: item.Text[IContentCatalog.DefaultLanguage]))
+            .Select(pair => new ItemView(pair.item.Id, pair.text.Name, pair.text.Description))
+            .ToList();
 
     private static QuestView ViewOf(Quest quest, QuestText text, QuestProgress stored, int progress) =>
         new(quest.Id, text.Title, text.Summary, text.ReturnHint, stored.IsCompleted ? QuestStatus.Completed : QuestStatus.Active, progress, quest.IdentifiedSpeciesGoal);

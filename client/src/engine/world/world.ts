@@ -20,6 +20,8 @@ export interface WorldListeners {
   /** The player's tile lies in another area (also reported on the first update). */
   readonly onAreaChange?: (areaId: string) => void;
   readonly onTorchChange?: (on: boolean) => void;
+  /** The player asked for the bag (the Inventory action). */
+  readonly onOpenInventory?: () => void;
 }
 
 interface NpcState {
@@ -39,6 +41,9 @@ const OPPOSITE: Record<Direction, Direction> = {
   left: 'right',
   right: 'left',
 };
+
+/** How far the binoculars reach, in tiles straight ahead. */
+const BINOCULARS_RANGE = 3;
 
 /** Without a server clock the world stands still at noon: daylight, no tint. */
 const STILL_NOON: WorldClock = { minutes: 12 * 60, gameMinutesPerSecond: 0 };
@@ -66,6 +71,8 @@ export class World implements Obstacles {
   private conditions: WorldTime;
   private torch = false;
   private currentWeather: Weather = 'clear';
+  /** The save's field tools, as the server reported them (D3). */
+  private tools: ReadonlySet<string> = new Set();
   /** Weather particles stand still for players who prefer reduced motion. */
   reducedMotion = false;
   /** The area of the player's tile when last checked; `null` before the first update. */
@@ -126,6 +133,11 @@ export class World implements Obstacles {
   }
 
   /** Whether the player's torch is lit; it only shows in the evening and at night. */
+  /** The save's field tools, as the server reported them; boots and binoculars change movement and reach. */
+  setTools(tools: Iterable<string>): void {
+    this.tools = new Set(tools);
+  }
+
   /** The current region's weather, as the server reported it (D11). */
   get weather(): Weather {
     return this.currentWeather;
@@ -172,6 +184,18 @@ export class World implements Obstacles {
     return this.isFixedObstacle(x, y) || this.residentList.some((r) => r.occupies(x, y));
   }
 
+  /** Like `isBlocked`, but with boots the player wades through wadeable water; animals never do. */
+  isBlockedForPlayer(x: number, y: number): boolean {
+    if (!(this.tools.has('boots') && this.map.isWadeable(x, y))) return this.isBlocked(x, y);
+    const gate = this.map.gateAt(x, y);
+    return (
+      this.map.npcAt(x, y) !== undefined ||
+      this.map.signpostAt(x, y) !== undefined ||
+      (gate !== undefined && !this.openFlags.has(gate.flag)) ||
+      this.residentList.some((r) => r.occupies(x, y))
+    );
+  }
+
   private isFixedObstacle(x: number, y: number): boolean {
     const gate = this.map.gateAt(x, y);
     return (
@@ -196,6 +220,10 @@ export class World implements Obstacles {
       this.onOpenMenu();
     }
 
+    if (presses.includes('Inventory')) {
+      this.listeners.onOpenInventory?.();
+    }
+
     if (presses.includes('Torch')) {
       this.setTorch(!this.torch);
     }
@@ -211,7 +239,7 @@ export class World implements Obstacles {
     this.player.update(
       { heldDirection: input.heldDirection, tappedDirection, running: input.isHeld('Run') },
       stepMs,
-      this,
+      { isBlocked: (x, y) => this.isBlockedForPlayer(x, y) },
     );
 
     // The location follows the player's tile: report it on the first update and whenever it changes.
@@ -256,6 +284,23 @@ export class World implements Obstacles {
     }
   }
 
+  /**
+   * With the binoculars, the nearest resident 2 or 3 tiles straight ahead, if nothing between blocks the view
+   * (map collision, an NPC or the signpost).
+   */
+  private residentInSight(x: number, y: number, dx: number, dy: number): Resident | undefined {
+    if (!this.tools.has('binoculars')) return undefined;
+    for (let distance = 2; distance <= BINOCULARS_RANGE; distance++) {
+      const [bx, by] = [x + dx * (distance - 1), y + dy * (distance - 1)];
+      if (this.map.isBlocked(bx, by) || this.map.npcAt(bx, by) || this.map.signpostAt(bx, by))
+        return undefined;
+      const [tx, ty] = [x + dx * distance, y + dy * distance];
+      const resident = this.residentList.find((r) => r.tileX === tx && r.tileY === ty);
+      if (resident) return resident;
+    }
+    return undefined;
+  }
+
   private interact(): void {
     const { dx, dy } = stepOf(this.player.facing);
     const { tileX: x, tileY: y } = this.player;
@@ -277,6 +322,12 @@ export class World implements Obstacles {
       this.onInteract({ kind: 'spot', mapId: this.map.id, spotId: resident.spotId });
     } else if (spot) {
       this.onInteract({ kind: 'spot', mapId: this.map.id, spotId: spot.spotId });
+    } else if (this.residentInSight(x, y, dx, dy)) {
+      this.onInteract({
+        kind: 'spot',
+        mapId: this.map.id,
+        spotId: this.residentInSight(x, y, dx, dy)!.spotId,
+      });
     } else if (this.map.isBlocked(x + dx, y + dy) && this.map.habitatAt(x + dx, y + dy)) {
       // A tree, shrub or rock inside a habitat zone is searched like the grass around it.
       this.onInteract({ kind: 'search', mapId: this.map.id, x: x + dx, y: y + dy });

@@ -9,7 +9,8 @@ export type Action =
   | 'Confirm'
   | 'Cancel'
   | 'OpenMenu'
-  | 'Torch';
+  | 'Torch'
+  | 'Inventory';
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 

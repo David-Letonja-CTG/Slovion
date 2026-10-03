@@ -65,6 +65,9 @@ public sealed class QuestTests(PostgresFixture database)
     private static string[] Lines(JsonElement conversation) =>
         conversation.GetProperty("lines").EnumerateArray().Select(line => line.GetString()!).ToArray();
 
+    private static string[] Items(JsonElement element) =>
+        element.GetProperty("items").EnumerateArray().Select(item => item.GetProperty("itemId").GetString()!).ToArray();
+
     private static string[] Flags(JsonElement element) =>
         element.GetProperty("flags").EnumerateArray().Select(flag => flag.GetString()!).ToArray();
 
@@ -89,6 +92,8 @@ public sealed class QuestTests(PostgresFixture database)
         Assert.StartsWith("Živijo! Jaz sem Vera", Lines(conversation)[0], StringComparison.Ordinal);
         AssertQuest(conversation.GetProperty("quest"), "active", 0);
         Assert.Empty(Flags(conversation));
+        Assert.Equal(["lamp"], Items(conversation));
+        Assert.Equal("svetilka", conversation.GetProperty("items")[0].GetProperty("name").GetString());
     }
 
     [Fact]
@@ -123,6 +128,7 @@ public sealed class QuestTests(PostgresFixture database)
             Assert.StartsWith("Odlično!", Lines(conversation)[0], StringComparison.Ordinal);
             AssertQuest(conversation.GetProperty("quest"), "completed", 3);
             Assert.Equal(["hedgerow_open"], Flags(conversation));
+            Assert.Equal(["lamp", "binoculars"], Items(conversation));
         }
 
         await using var after = Factory();

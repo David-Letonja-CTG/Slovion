@@ -74,6 +74,10 @@ export class GameCanvas {
   readonly interaction = output<Interaction>();
   /** The player asked for the menu (OpenMenu) while in the world. */
   readonly menuRequested = output<void>();
+  /** The player asked for the bag (Inventory) while in the world. */
+  readonly inventoryRequested = output<void>();
+  /** The save's field tools when a game starts; changes go through `Game.setTools`. */
+  readonly tools = input<readonly string[]>([]);
   /** Emitted whenever a game starts running, so the host can route input to overlays. */
   readonly started = output<Game>();
 
@@ -94,6 +98,8 @@ export class GameCanvas {
           world,
           onInteract: (interaction) => this.interaction.emit(interaction),
           onOpenMenu: () => this.menuRequested.emit(),
+          onOpenInventory: () => this.inventoryRequested.emit(),
+          tools: this.tools(),
           openFlags: this.openFlags(),
           worldTime: this.worldTime(),
           residents: this.residents(),

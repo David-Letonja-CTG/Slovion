@@ -27,7 +27,13 @@ import {
 
 const SAGE = { kind: 'spot', mapId: 'dravsko_polje_meadow', spotId: 'meadow_sage_1' } as const;
 
-const NO_PROGRESS: PlayerProgress = { flags: [], quests: [] };
+const LAMP = { itemId: 'lamp', name: 'svetilka', description: 'Ponoči osvetli okolico.' };
+const BINOCULARS = {
+  itemId: 'binoculars',
+  name: 'daljnogled',
+  description: 'Živali prepoznaš tudi do tri polja daleč.',
+};
+const NO_PROGRESS: PlayerProgress = { flags: [], quests: [], items: [LAMP] };
 const RESIDENTS = [
   { spotId: 'meadow_hare_1', speciesId: 'lepus_europaeus', torch: 'curious', present: true },
 ];
@@ -652,15 +658,25 @@ describe('Quests', () => {
     progress,
     goal: 3,
   });
-  const conversation = (lines: string[], flags: string[] = [], info = quest(0)) => ({
+  const conversation = (
+    lines: string[],
+    flags: string[] = [],
+    info = quest(0),
+    items = [LAMP],
+  ) => ({
     npcName: 'Vera',
     lines,
     quest: info,
     flags,
+    items,
   });
 
   it('starts the world with the flags of the loaded progress', async () => {
-    const { game } = await openPlay(meadow, { flags: ['hedgerow_open'], quests: [] });
+    const { game } = await openPlay(meadow, {
+      flags: ['hedgerow_open'],
+      quests: [],
+      items: [LAMP],
+    });
 
     expect(game.options?.openFlags).toEqual(['hedgerow_open']);
   });
@@ -672,7 +688,7 @@ describe('Quests', () => {
   });
 
   it('tracks an active quest with its title and progress', async () => {
-    const { root } = await openPlay(meadow, { flags: [], quests: [quest(1)] });
+    const { root } = await openPlay(meadow, { flags: [], quests: [quest(1)], items: [LAMP] });
     const tracker = root().querySelector('app-quest-tracker')!;
 
     expect(tracker.textContent).toContain('Oko za naravo');
@@ -680,7 +696,7 @@ describe('Quests', () => {
   });
 
   it('says to return to the giver once the goal is met', async () => {
-    const { root } = await openPlay(meadow, { flags: [], quests: [quest(3)] });
+    const { root } = await openPlay(meadow, { flags: [], quests: [quest(3)], items: [LAMP] });
 
     expect(root().querySelector('.tracker__hint')?.textContent?.trim()).toBe('Vrni se k Veri.');
   });
@@ -689,6 +705,7 @@ describe('Quests', () => {
     const { root } = await openPlay(meadow, {
       flags: ['hedgerow_open'],
       quests: [quest(3, 'completed')],
+      items: [LAMP],
     });
 
     expect(root().querySelector('app-quest-tracker')).toBeNull();
@@ -717,6 +734,7 @@ describe('Quests', () => {
     } = await openPlay(meadow, {
       flags: [],
       quests: [quest(3)],
+      items: [LAMP],
     });
 
     game.options!.onInteract(VERA);
@@ -793,7 +811,7 @@ describe('Quests', () => {
 
   /** Identifies the sage, then answers the progress reload with `reload` (a status to fail with). */
   async function identifyWithProgress(reload: PlayerProgress | number) {
-    const play = await openPlay(meadow, { flags: [], quests: [quest(1)] });
+    const play = await openPlay(meadow, { flags: [], quests: [quest(1)], items: [LAMP] });
     play.game.options!.onInteract(SAGE);
     play.http
       .expectOne('/api/save/encounters')
@@ -812,11 +830,15 @@ describe('Quests', () => {
   }
 
   it('moves the tracker on after a correct identification, as the server reports', async () => {
-    expect(await identifyWithProgress({ flags: [], quests: [quest(2)] })).toBe('2/3');
+    expect(await identifyWithProgress({ flags: [], quests: [quest(2)], items: [LAMP] })).toBe(
+      '2/3',
+    );
   });
 
   it('keeps the tracker when the identified species does not count for the quest', async () => {
-    expect(await identifyWithProgress({ flags: [], quests: [quest(1)] })).toBe('1/3');
+    expect(await identifyWithProgress({ flags: [], quests: [quest(1)], items: [LAMP] })).toBe(
+      '1/3',
+    );
   });
 
   it('keeps the tracker when the progress cannot be reloaded', async () => {
@@ -1195,5 +1217,107 @@ describe('Travel', () => {
     await play.settle();
 
     expect(play.root().querySelector('[role="alert"]')?.textContent).toBe(sl.errors.map);
+  });
+});
+
+describe('Field tools', () => {
+  afterEach(() => TestBed.inject(Router).dispose());
+
+  const MAGNIFIER = {
+    itemId: 'magnifier',
+    name: 'povečevalno steklo',
+    description: 'Pri rastlinah in žuželkah takoj vidiš dva namiga.',
+  };
+  const withItems = (...items: (typeof LAMP)[]): PlayerProgress => ({
+    flags: [],
+    quests: [],
+    items,
+  });
+  const items = (root: () => HTMLElement) =>
+    [...root().querySelectorAll('.inventory__item')].map((item) => item.getAttribute('data-item'));
+
+  it("starts the engine with the save's tools", async () => {
+    const { game } = await openPlay(meadow, withItems(LAMP, BINOCULARS));
+
+    expect(game.options?.tools).toEqual(['lamp', 'binoculars']);
+  });
+
+  it('opens the bag from the Inventory action and closes it with Cancel', async () => {
+    const play = await openPlay(meadow, withItems(LAMP, BINOCULARS));
+
+    play.game.options!.onOpenInventory!();
+    await play.settle();
+
+    expect(play.root().querySelector('#inventory-title')?.textContent).toBe(sl.inventory.title);
+    expect(items(play.root)).toEqual(['lamp', 'binoculars']);
+    expect(play.root().querySelector('.inventory__item')?.textContent).toContain(LAMP.description);
+    expect(play.game.consumer).toBe('ui');
+
+    play.game.pressUi('Cancel');
+    await play.settle();
+    expect(play.root().querySelector('#inventory-title')).toBeNull();
+    expect(play.game.consumer).toBe('world');
+  });
+
+  it('opens the bag from its button and closes it with the Inventory action', async () => {
+    const play = await openPlay();
+
+    play.root().querySelector<HTMLButtonElement>('.play__bag')!.click();
+    await play.settle();
+    expect(items(play.root)).toEqual(['lamp']);
+
+    play.game.pressUi('Inventory');
+    await play.settle();
+    expect(play.root().querySelector('#inventory-title')).toBeNull();
+  });
+
+  it('announces a tool a conversation gives once the dialogue closes', async () => {
+    const play = await openPlay();
+
+    play.game.options!.onInteract({ kind: 'npc', mapId: 'dravsko_polje_meadow', npcId: 'vera' });
+    play.http.expectOne('/api/save/conversations').flush({
+      npcName: 'Vera',
+      lines: ['Odlično!'],
+      quest: {
+        questId: 'eye_for_nature',
+        title: 'Oko za naravo',
+        summary: '',
+        returnHint: '',
+        status: 'completed',
+        progress: 3,
+        goal: 3,
+      },
+      flags: ['hedgerow_open'],
+      items: [LAMP, BINOCULARS],
+    });
+    await play.settle();
+    expect(play.root().querySelector('app-location-banner')).toBeNull();
+    play.game.pressUi('Confirm');
+    await play.settle();
+
+    expect(play.root().querySelector('app-location-banner')?.textContent).toBe(
+      'Novo v nahrbtniku: daljnogled',
+    );
+    expect(play.game.tools).toEqual(['lamp', 'binoculars']);
+  });
+
+  it.each([
+    ['a plant with the magnifier', 'plant', [LAMP, MAGNIFIER], 2],
+    ['a plant without it', 'plant', [LAMP], 1],
+    ['a mammal with the magnifier', 'mammal', [LAMP, MAGNIFIER], 1],
+  ] as const)('shows the right number of clues at first for %s', async (_, group, owned, clues) => {
+    const play = await openPlay(meadow, withItems(...owned));
+
+    play.game.options!.onInteract({
+      kind: 'spot',
+      mapId: 'dravsko_polje_meadow',
+      spotId: 'meadow_sage_1',
+    });
+    play.http
+      .expectOne('/api/save/encounters')
+      .flush({ ...SAGE_ENCOUNTER, group }, { status: 201, statusText: 'Created' });
+    await play.settle();
+
+    expect(play.root().querySelectorAll('.identification__clues li')).toHaveLength(clues);
   });
 });

@@ -76,10 +76,12 @@ describe('parseTiledMap', () => {
     flags: readonly string[] = [],
     id = 'dravsko_polje_meadow',
     json: unknown = meadow,
+    tools: readonly string[] = [],
   ) {
     const map = parseTiledMap(id, json);
     const world = new World(map, () => undefined);
     world.setOpenFlags(flags);
+    world.setTools(tools);
     const key = (x: number, y: number) => `${x},${y}`;
     const seen = new Set([key(map.spawn.x, map.spawn.y)]);
     const queue = [{ x: map.spawn.x, y: map.spawn.y }];
@@ -92,7 +94,7 @@ describe('parseTiledMap', () => {
         [0, -1],
       ]) {
         const next = { x: x + dx, y: y + dy };
-        if (!world.isBlocked(next.x, next.y) && !seen.has(key(next.x, next.y))) {
+        if (!world.isBlockedForPlayer(next.x, next.y) && !seen.has(key(next.x, next.y))) {
           seen.add(key(next.x, next.y));
           queue.push(next);
         }
@@ -145,7 +147,8 @@ describe('parseTiledMap', () => {
   ])(
     'parses the region map %s with a reachable signpost, spots and searchable trees',
     (id, json, spotId, area) => {
-      const { map, reachable } = reachableFromSpawn([], id, json);
+      // With the boots, so Kočevje's far bank counts too.
+      const { map, reachable } = reachableFromSpawn([], id, json, ['boots']);
       const [signpost] = map.signposts;
       const home = map.spots.find((spot) => spot.spotId === spotId)!;
 
@@ -177,6 +180,24 @@ describe('parseTiledMap', () => {
       expect(zonedBlocked).toBe(true);
     },
   );
+
+  it("reads wadeable tiles: Kočevje's stream needs the boots to cross", () => {
+    const map = parseTiledMap('kocevje_forest', kocevje);
+    const salamander = map.spots.find((spot) => spot.spotId === 'kocevje_salamander_1')!;
+
+    expect(map.tileset.wadeable).toEqual(new Set([46]));
+    expect([map.isWadeable(5, 16), map.isWadeable(5, 15)]).toEqual([true, false]);
+    expect(salamander.y).toBe(17);
+    expect(
+      reachableFromSpawn([], 'kocevje_forest', kocevje).reachable(salamander.x, salamander.y),
+    ).toBe(false);
+    expect(
+      reachableFromSpawn([], 'kocevje_forest', kocevje, ['boots']).reachable(
+        salamander.x,
+        salamander.y,
+      ),
+    ).toBe(true);
+  });
 
   it('searches at a spruce beside the Pohorje path, from outside the zones', () => {
     // The spawn moved onto the path at (5, 9), facing the spruce at (5, 8).

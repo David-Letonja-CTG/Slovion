@@ -199,3 +199,36 @@ describe('NPCs', () => {
     expect(world.npcFacing('vera')).toBe('left');
   });
 });
+
+describe('Binoculars', () => {
+  function sight(rows: readonly string[], tools: readonly string[]) {
+    const interactions: Interaction[] = [];
+    const world = new World(textMap(rows), (interaction) => interactions.push(interaction));
+    world.setTools(tools);
+    world.setResidents([
+      { spotId: 'hare', speciesId: 'lepus_europaeus', torch: 'curious', present: true },
+    ]);
+    const input = new ActionState();
+    input.press('Interact');
+    world.update(input, STEP_MS);
+    return interactions;
+  }
+
+  const HARE = { kind: 'spot', mapId: 'test_map', spotId: 'hare' };
+
+  it.each([
+    ['2 tiles', ['S.R']],
+    ['3 tiles', ['S..R']],
+  ])('reach an animal %s away over open ground', (_, rows) => {
+    expect(sight(rows, ['binoculars'])).toEqual([HARE]);
+  });
+
+  it.each([
+    ['without binoculars', ['S.R'], []],
+    ['beyond 3 tiles', ['S...R'], ['binoculars']],
+    ['behind something blocking', ['S#R'], ['binoculars']],
+    ['behind the signpost', ['S.PR'], ['binoculars']],
+  ])('do not reach an animal %s', (_, rows, tools) => {
+    expect(sight(rows, tools)).toEqual([]);
+  });
+});

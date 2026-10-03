@@ -39,6 +39,7 @@ describe('attachKeyboard', () => {
     ['ShiftLeft', 'Run'],
     ['KeyM', 'OpenMenu'],
     ['KeyL', 'Torch'],
+    ['KeyI', 'Inventory'],
   ])('maps %s to %s', (code, action) => {
     const keyboard = setup();
     detach = keyboard.detach;

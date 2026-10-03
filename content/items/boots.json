@@ -1,0 +1,10 @@
+{
+  "id": "boots",
+  "start": false,
+  "text": {
+    "sl": {
+      "name": "škornji",
+      "description": "V njih lahko prebrodiš plitev potok."
+    }
+  }
+}

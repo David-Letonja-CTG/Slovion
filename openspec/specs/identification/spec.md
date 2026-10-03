@@ -71,7 +71,7 @@ An answer for an encounter that does not exist, is closed, or belongs to another
 - **THEN** the response is `400` with code `bad_request` and the encounter can still be answered
 
 ### Requirement: Identification dialog
-The client SHALL show an observation dialog with a heading for the species group, the first clue, a button revealing the next clue (until all are shown), the candidates by Slovenian name, and a way to leave. `MoveUp`/`MoveDown` SHALL move the selection, `Confirm` SHALL activate it and `Cancel` SHALL leave. Leaving abandons the encounter but keeps the observation. The world SHALL receive no input while the dialog is open.
+The client SHALL show an observation dialog with a heading for the species group, the first clue (the first two for a plant or insect when the player has the magnifier, see `inventory`), a button revealing the next clue (until all are shown), the candidates by Slovenian name, and a way to leave. `MoveUp`/`MoveDown` SHALL move the selection, `Confirm` SHALL activate it and `Cancel` SHALL leave. Leaving abandons the encounter but keeps the observation. The world SHALL receive no input while the dialog is open.
 
 #### Scenario: Revealing clues
 - **WHEN** the dialog opens and the player chooses *Nov namig* twice

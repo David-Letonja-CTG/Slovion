@@ -9,7 +9,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { Action, Game, Interaction, ResidentInfo, WorldTime, worldTimeAt } from '../../engine';
 import {
@@ -37,6 +37,7 @@ import { MessageDialog } from './message-dialog';
 import { NatureDexPanel } from './naturedex-panel';
 import { QuestTracker } from './quest-tracker';
 import { TravelMap } from './travel-map';
+import { InventoryPanel } from './inventory-panel';
 import { LoadedPlace, WorldLoader } from './world-loader';
 
 /** How long the screen takes to fade out (and in again) when travelling; none for players who prefer reduced motion. */
@@ -91,6 +92,8 @@ type Overlay =
   | { readonly kind: 'dialogue'; readonly conversation: Conversation }
   /** The travel map opened at a signpost. */
   | { readonly kind: 'travel'; readonly regions: RegionsInfo }
+  /** The bag with the save's field tools. */
+  | { readonly kind: 'inventory' }
   | { readonly kind: 'error'; readonly code: ApiErrorCode };
 
 /** The game: the world on canvas plus UI overlays that take input while open. */
@@ -107,6 +110,7 @@ type Overlay =
     QuestTracker,
     TranslocoPipe,
     TravelMap,
+    InventoryPanel,
   ],
   templateUrl: './play-screen.html',
   styleUrl: './play-screen.css',
@@ -120,6 +124,7 @@ export class PlayScreen {
   private readonly natureDex = viewChild(NatureDexPanel);
   private readonly dialogue = viewChild(DialogueBox);
   private readonly travelMap = viewChild(TravelMap);
+  private readonly inventory = viewChild(InventoryPanel);
   private readonly fadeMs = inject(TRAVEL_FADE_MS);
   private game: Game | undefined;
   /** The map of the place the player is in. */
@@ -131,7 +136,10 @@ export class PlayScreen {
   protected readonly loadError = signal<LoadError | undefined>(undefined);
   protected readonly overlay = signal<Overlay>({ kind: 'none' });
   /** The save's flags and quests, as the server last reported them (D3). */
-  protected readonly progress = signal<PlayerProgress>({ flags: [], quests: [] });
+  protected readonly progress = signal<PlayerProgress>({ flags: [], quests: [], items: [] });
+  /** The IDs of the save's field tools, for the engine (binoculars, boots) and the magnifier's clues. */
+  protected readonly toolIds = computed(() => this.progress().items.map((item) => item.itemId));
+  private readonly transloco = inject(TranslocoService);
   /** The save's in-game clock at load, passed to the engine, which advances it (D8). */
   protected readonly worldTime = signal<WorldTimeInfo | undefined>(undefined);
   /** The current in-game time, as the engine reports it every in-game minute. */
@@ -419,14 +427,23 @@ export class PlayScreen {
   /** Applies what the conversation changed once the player has read it: the gate opens as the box closes. */
   protected onDialogueClosed(conversation: Conversation): void {
     this.game?.setOpenFlags(conversation.flags);
+    this.game?.setTools(conversation.items.map((item) => item.itemId));
+    const owned = new Set(this.toolIds());
+    const received = conversation.items.filter((item) => !owned.has(item.itemId));
     this.progress.update((progress) => ({
       flags: conversation.flags,
       quests: [
         ...progress.quests.filter((quest) => quest.questId !== conversation.quest.questId),
         conversation.quest,
       ],
+      items: conversation.items,
     }));
     this.close();
+    // A new tool is announced like a new place.
+    for (const item of received) {
+      const name = this.transloco.translate('inventory.received', { name: item.name });
+      this.banner.update((banner) => ({ key: (banner?.key ?? 0) + 1, name }));
+    }
   }
 
   /**
@@ -435,7 +452,10 @@ export class PlayScreen {
    */
   private refreshProgress(): void {
     this.api.progress().subscribe({
-      next: (progress) => this.progress.set(progress),
+      next: (progress) => {
+        this.progress.set(progress);
+        this.game?.setTools(progress.items.map((item) => item.itemId));
+      },
       // A failed reload keeps the tracker as it is; the next conversation or load corrects it.
       error: () => undefined,
     });
@@ -443,6 +463,17 @@ export class PlayScreen {
 
   protected onMenu(): void {
     this.open({ kind: 'naturedex' });
+  }
+
+  /** The bag, from the Inventory action or the button; focus returns to the game when it closes. */
+  protected openInventory(): void {
+    this.open({ kind: 'inventory' });
+  }
+
+  /** The magnifier shows two clues at once for plants and insects. */
+  protected initialCluesFor(encounter: Encounter): number {
+    const magnified = encounter.group === 'plant' || encounter.group === 'insect';
+    return magnified && this.toolIds().includes('magnifier') ? 2 : 1;
   }
 
   protected close(): void {
@@ -490,6 +521,8 @@ export class PlayScreen {
       this.dialogue()?.handleAction(action);
     } else if (kind === 'travel') {
       this.travelMap()?.handleAction(action);
+    } else if (kind === 'inventory') {
+      this.inventory()?.handleAction(action);
     }
   }
 }

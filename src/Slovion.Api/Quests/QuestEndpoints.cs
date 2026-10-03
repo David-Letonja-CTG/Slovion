@@ -11,10 +11,13 @@ public sealed record ConversationRequest(string? MapId, string? NpcId);
 /// <summary>A quest as the player sees it. <c>Status</c> is <c>active</c> or <c>completed</c>.</summary>
 public sealed record QuestResponse(string QuestId, string Title, string Summary, string ReturnHint, string Status, int Progress, int Goal);
 
-/// <summary>What the NPC says, the quest's state afterwards, and the save's flags afterwards.</summary>
-public sealed record ConversationResponse(string NpcName, IReadOnlyList<string> Lines, QuestResponse Quest, IReadOnlyList<string> Flags);
+/// <summary>A tool the save owns, in the request's language.</summary>
+public sealed record ItemResponse(string ItemId, string Name, string Description);
 
-public sealed record ProgressResponse(IReadOnlyList<string> Flags, IReadOnlyList<QuestResponse> Quests);
+/// <summary>What the NPC says, the quest's state afterwards, and the save's flags and tools afterwards.</summary>
+public sealed record ConversationResponse(string NpcName, IReadOnlyList<string> Lines, QuestResponse Quest, IReadOnlyList<string> Flags, IReadOnlyList<ItemResponse> Items);
+
+public sealed record ProgressResponse(IReadOnlyList<string> Flags, IReadOnlyList<QuestResponse> Quests, IReadOnlyList<ItemResponse> Items);
 
 public static class QuestEndpoints
 {
@@ -46,7 +49,7 @@ public static class QuestEndpoints
         var result = await quests.TalkAsync(slot.Id, request.MapId, request.NpcId, language, cancellationToken);
 
         return result is TalkResult.Conversation conversation
-            ? TypedResults.Ok(new ConversationResponse(conversation.NpcName, conversation.Lines, ToResponse(conversation.Quest), conversation.Flags))
+            ? TypedResults.Ok(new ConversationResponse(conversation.NpcName, conversation.Lines, ToResponse(conversation.Quest), conversation.Flags, conversation.Items.Select(ToResponse).ToList()))
             : ErrorCodes.Problem(StatusCodes.Status404NotFound, ErrorCodes.UnknownNpc);
     }
 
@@ -56,8 +59,10 @@ public static class QuestEndpoints
         var slot = SaveTokenFilter.CurrentSlot(httpContext);
         var progress = await quests.GetProgressAsync(slot.Id, language, cancellationToken);
 
-        return TypedResults.Ok(new ProgressResponse(progress.Flags, progress.Quests.Select(ToResponse).ToList()));
+        return TypedResults.Ok(new ProgressResponse(progress.Flags, progress.Quests.Select(ToResponse).ToList(), progress.Items.Select(ToResponse).ToList()));
     }
+
+    private static ItemResponse ToResponse(ItemView item) => new(item.ItemId, item.Name, item.Description);
 
     private static QuestResponse ToResponse(QuestView quest) => new(
         quest.QuestId,

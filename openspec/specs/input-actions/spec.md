@@ -7,7 +7,7 @@ Defines how physical input becomes logical game actions, so gameplay and UI neve
 ## Requirements
 
 ### Requirement: Logical action set
-The game SHALL expose exactly these logical actions: `MoveUp`, `MoveDown`, `MoveLeft`, `MoveRight`, `Run`, `Interact`, `Confirm`, `Cancel`, `OpenMenu`, `Torch`. Gameplay and UI code SHALL react only to these actions, never to physical keys.
+The game SHALL expose exactly these logical actions: `MoveUp`, `MoveDown`, `MoveLeft`, `MoveRight`, `Run`, `Interact`, `Confirm`, `Cancel`, `OpenMenu`, `Torch`, `Inventory`. Gameplay and UI code SHALL react only to these actions, never to physical keys.
 
 #### Scenario: Remapped key
 - **WHEN** a test supplies a mapping that binds `K` to `MoveUp` and presses `K`
@@ -21,6 +21,7 @@ The default keyboard mapping SHALL be:
 - `Escape` → `Cancel` and `OpenMenu`
 - `M` → `OpenMenu`
 - `L` → `Torch`
+- `I` → `Inventory`
 
 Mapping is by physical key position, so `W` `A` `S` `D` work on any keyboard layout.
 
@@ -37,6 +38,10 @@ Mapping is by physical key position, so `W` `A` `S` `D` work on any keyboard lay
 #### Scenario: Torch key
 - **WHEN** `L` is pressed while the world is active
 - **THEN** the world receives `Torch`
+
+#### Scenario: Inventory key
+- **WHEN** `I` is pressed while the world is active
+- **THEN** the world receives `Inventory`
 
 ### Requirement: Most recent direction wins
 When several movement actions are held, the most recently pressed one SHALL be active. Releasing it SHALL fall back to the most recent direction that is still held.
