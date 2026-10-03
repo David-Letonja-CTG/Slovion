@@ -15,15 +15,21 @@ Maps SHALL be loaded from content data (Tiled JSON). A map SHALL define:
 - area zones (rectangles naming an area) covering every walkable tile
 - optional NPCs (tile objects naming an NPC)
 - optional gates (tile objects naming the flag that opens them)
+- exactly one signpost (a tile object of class `signpost`)
 
 No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - NPCs naming an unknown NPC
 - gates whose flag no quest rewards
-- NPCs or gates outside the map
+- NPCs, gates or signposts outside the map
+- a map without exactly one signpost
 
 #### Scenario: Entering the meadow
-- **WHEN** a game starts or continues
+- **WHEN** a new game starts
 - **THEN** the map `dravsko_polje_meadow` is shown with the player on its spawn tile, facing the spawn's direction
+
+#### Scenario: Entering the current region
+- **WHEN** a game continues for a save whose current region is `kocevje`
+- **THEN** the map `kocevje_forest` is shown with the player on its spawn tile
 
 #### Scenario: Habitat zones
 - **WHEN** the meadow is loaded
@@ -42,6 +48,10 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - **WHEN** the meadow is loaded
 - **THEN** NPC `vera` stands next to the path near the spawn
 - **AND** a gate requiring flag `hedgerow_open` is the only opening in the southern hedge
+
+#### Scenario: A signpost near every spawn
+- **WHEN** any repository map is loaded
+- **THEN** it has exactly one signpost, which the player can reach from the spawn
 
 ### Requirement: Invalid map is reported
 If a map cannot be loaded or does not satisfy the supported format (orthogonal, fixed tile size, a spawn point, layers referenced by name), the game SHALL show a Slovenian error message instead of a broken or blank world.
@@ -105,15 +115,20 @@ The camera SHALL keep the player centred, but SHALL NOT show anything beyond the
 ### Requirement: Interacting with the faced tile
 When the player is not mid-step and `Interact` is pressed, the game SHALL act on the first of these that applies:
 1. If the player faces an NPC, it SHALL start a conversation with that NPC.
-2. Otherwise, if the player faces a resident animal, it SHALL interact with that resident's spot.
-3. Otherwise, if the player faces a plant spot, it SHALL interact with that spot.
-4. Otherwise, if the player stands in a habitat zone, it SHALL start a search of that habitat at the player's tile.
+2. Otherwise, if the player faces the signpost, it SHALL open the travel map.
+3. Otherwise, if the player faces a resident animal, it SHALL interact with that resident's spot.
+4. Otherwise, if the player faces a plant spot, it SHALL interact with that spot.
+5. Otherwise, if the player stands in a habitat zone, it SHALL start a search of that habitat at the player's tile.
 
-If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose species is an animal SHALL only be reachable through its resident, never as a fixed spot.
+If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose species is an animal SHALL only be reachable through its resident, never as a fixed spot. Signposts SHALL block movement.
 
 #### Scenario: Talking to Vera
 - **WHEN** the player stands next to Vera, faces her and presses `Interact`
 - **THEN** a conversation with NPC `vera` on map `dravsko_polje_meadow` is started
+
+#### Scenario: Reading the signpost
+- **WHEN** the player faces the meadow's signpost and presses `Interact`
+- **THEN** the travel map opens
 
 #### Scenario: Facing the meadow sage
 - **WHEN** the player stands next to the meadow sage spot, faces it and presses `Interact`
@@ -124,7 +139,7 @@ If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose
 - **THEN** an interaction with the hare's spot ID is started
 
 #### Scenario: Standing in tall grass
-- **WHEN** the player stands on a tile inside a `tall_grass` zone, faces no spot, animal or NPC and presses `Interact`
+- **WHEN** the player stands on a tile inside a `tall_grass` zone, faces no spot, animal, signpost or NPC and presses `Interact`
 - **THEN** a search of that tile on map `dravsko_polje_meadow` is started
 
 #### Scenario: A spot wins over the habitat
@@ -132,7 +147,7 @@ If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose
 - **THEN** the spot interaction is started, not a search
 
 #### Scenario: Facing empty grass
-- **WHEN** the player stands outside every habitat zone, faces a tile without a spot, animal or NPC and presses `Interact`
+- **WHEN** the player stands outside every habitat zone, faces a tile without a spot, animal, signpost or NPC and presses `Interact`
 - **THEN** nothing happens
 
 ### Requirement: Draw order

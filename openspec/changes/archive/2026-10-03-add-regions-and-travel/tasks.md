@@ -29,4 +29,4 @@
 - [x] 5.2 Run `dotnet format --verify-no-changes`, `dotnet test --solution Slovion.slnx`, `npm run check` and `npm run e2e`; all succeed
 - [x] 5.3 Manual check: travel map, locked hints, the fade, each region with its animal, *Nadaljuj* after travelling; capture screenshots
 - [x] 5.4 Review the changed files against non-goals and every spec scenario; record deviations in design.md
-- [ ] 5.5 Run `openspec validate add-regions-and-travel --strict`, push, and verify all CI jobs pass on the pull request
+- [x] 5.5 Run `openspec validate add-regions-and-travel --strict`, push, and verify all CI jobs pass on the pull request
