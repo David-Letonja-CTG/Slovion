@@ -1,0 +1,113 @@
+{
+  "id": "abies_alba",
+  "group": "plant",
+  "scientificName": {
+    "value": "Abies alba Mill.",
+    "sources": [
+      "gbif",
+      "bv"
+    ]
+  },
+  "sources": {
+    "wiki": {
+      "title": "Bela jelka",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Bela_jelka",
+      "accessed": "2026-10-03",
+      "licence": "CC BY-SA 4.0"
+    },
+    "bv": {
+      "title": "Abies alba (bela jelka)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/abies-alba",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Abies alba Mill. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2685484",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "navadna jelka",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "family": {
+        "value": "borovke (Pinaceae)",
+        "sources": [
+          "bv",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Mešani jelovo-bukovi gozdovi; potrebuje veliko vlage in toplote.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je je največ v mešanih jelovo-bukovih dinarskih gozdovih, ki se raztezajo od Trnovskega gozda čez Javornike in Snežnik do Gorskega kotarja.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "season": {
+        "value": "Cveti od maja do junija.",
+        "sources": [
+          "bv"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Iglasto drevo, ki zraste do 60 m visoko.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Ploščate iglice imajo na spodnji strani dve srebrno beli črti.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Storži so pokončni; ko dozorijo, razpadejo in na veji ostane le gola os.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Pri mladem drevesu je skorja gladka in sivkasto bela.",
+          "sources": [
+            "wiki"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "wiki"
+    ]
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

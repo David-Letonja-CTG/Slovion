@@ -324,3 +324,59 @@ test('the signpost takes the player to Kočevje once Vera is helped, and the gam
   await waitForTheWorld(page);
   await expect(page.locator('.conditions__location')).toHaveText('Kočevski gozd');
 });
+
+test('searching at a spruce on Pohorje finds a plant of the mountain forest', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Nova igra' }).click();
+  await waitForTheWorld(page);
+  // Six identified species open Pohorje; travel there through the API and continue the game.
+  for (const [spot, species] of [
+    ['meadow_sage_1', 'salvia_pratensis'],
+    ['meadow_dandelion_1', 'taraxacum_officinale'],
+    ['meadow_hare_1', 'lepus_europaeus'],
+    ['meadow_skylark_1', 'alauda_arvensis'],
+    ['meadow_swallowtail_1', 'papilio_machaon'],
+    ['hedgerow_hawthorn_1', 'crataegus_monogyna'],
+  ]) {
+    await identifyThroughApi(page, spot, species);
+  }
+  const travelled = await page.evaluate(async () => {
+    const token = localStorage.getItem('slovion.saveToken');
+    const response = await fetch('/api/save/travel', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ regionId: 'pohorje' }),
+    });
+    return response.status;
+  });
+  expect(travelled).toBe(200);
+  await page.reload();
+  await page.getByRole('button', { name: 'Nadaljuj' }).click();
+  await waitForTheWorld(page);
+  await expect(page.locator('.conditions__location')).toHaveText('Pohorski gozd');
+
+  // From the spawn (1,9) four steps along the path to (5,9), then face the spruce at (5,8).
+  await walk(page, 'ArrowRight', 4);
+  await step(page, 'ArrowUp');
+
+  const observation = page.getByRole('dialog', { name: 'Opaziš rastlino' });
+  let found = false;
+  // At a 60 % chance, eight tries almost surely find something; in spring that is a bilberry or a spruce.
+  for (let attempt = 0; attempt < 8 && !found; attempt++) {
+    await page.keyboard.press('KeyE');
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    if (await observation.isVisible()) {
+      found = true;
+      await observation.locator('[data-kind="candidate"]').first().click();
+      await expect(page.getByRole('dialog')).toContainText(/navadna borovnica|navadna smreka/);
+      await page.keyboard.press('Enter');
+    } else {
+      await expect(dialog).toContainText(/Tu ni ničesar\. Poskusi drugje\./);
+      await page.keyboard.press('Enter');
+    }
+    await expect(dialog).toHaveCount(0);
+  }
+
+  expect(found).toBe(true);
+});

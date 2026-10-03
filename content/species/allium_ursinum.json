@@ -1,0 +1,110 @@
+{
+  "id": "allium_ursinum",
+  "group": "plant",
+  "scientificName": {
+    "value": "Allium ursinum L.",
+    "sources": [
+      "gbif",
+      "bv"
+    ]
+  },
+  "sources": {
+    "nrp": {
+      "title": "Čemaž ali medvedji česen",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/aktualno/novice/cemaz-ali-medvedji-cesen",
+      "accessed": "2026-10-03",
+      "licence": "© Notranjski regijski park; facts paraphrased with attribution."
+    },
+    "bv": {
+      "title": "Allium ursinum (čemaž)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/allium-ursinum",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Allium ursinum L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2857601",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "čemaž",
+        "sources": [
+          "bv",
+          "nrp"
+        ]
+      },
+      "family": {
+        "value": "lukovke (Alliaceae)",
+        "sources": [
+          "bv"
+        ]
+      },
+      "habitat": {
+        "value": "Prebivalec starih gozdov; brez zavetja krošenj odraslih dreves ne preživi.",
+        "sources": [
+          "nrp"
+        ]
+      },
+      "distribution": {
+        "value": "Raste v Evropi in severni Aziji, tudi v Sloveniji.",
+        "sources": [
+          "bv"
+        ]
+      },
+      "season": {
+        "value": "Cveti od aprila do maja.",
+        "sources": [
+          "bv"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Iz čebulice izraščajo 2 do 3 mehki listi suličaste oblike.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Dobro vidno cvetno stebelce nosi bele zvezdaste cvetove.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Značilen je izrazit vonj po česnu.",
+          "sources": [
+            "nrp"
+          ]
+        },
+        {
+          "value": "Liste lahko zamenjamo s strupenimi listi šmarnice, jesenskega podleska ali bele čmerike.",
+          "sources": [
+            "nrp"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring"
+    ],
+    "sources": [
+      "bv"
+    ]
+  },
+  "identification": {
+    "clues": [
+      0,
+      1,
+      2
+    ]
+  }
+}

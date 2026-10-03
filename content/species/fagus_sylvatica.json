@@ -1,0 +1,121 @@
+{
+  "id": "fagus_sylvatica",
+  "group": "plant",
+  "scientificName": {
+    "value": "Fagus sylvatica L.",
+    "sources": [
+      "gbif",
+      "bv"
+    ]
+  },
+  "sources": {
+    "wiki": {
+      "title": "Navadna bukev",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Navadna_bukev",
+      "accessed": "2026-10-03",
+      "licence": "CC BY-SA 4.0"
+    },
+    "nrp": {
+      "title": "Bukev",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/rastlinski-svet/bukev",
+      "accessed": "2026-10-03",
+      "licence": "© Notranjski regijski park; facts paraphrased with attribution."
+    },
+    "bv": {
+      "title": "Fagus sylvatica (bukev)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/fagus-sylvatica",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Fagus sylvatica L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2882316",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "navadna bukev",
+        "sources": [
+          "wiki",
+          "nrp"
+        ]
+      },
+      "family": {
+        "value": "bukovke (Fagaceae)",
+        "sources": [
+          "wiki",
+          "bv"
+        ]
+      },
+      "habitat": {
+        "value": "Tvori čiste gozdove ali mešane, najpogosteje z jelko; pogostejša je v višjih legah, okoli 900 m.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "distribution": {
+        "value": "Je ena najbolj razširjenih listavcev v Sloveniji; imenujemo jo tudi mati slovenskih gozdov.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "season": {
+        "value": "Cveti od aprila do maja.",
+        "sources": [
+          "bv"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Listnato drevo, ki zraste do okoli 40 m visoko.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Lubje je tanko, gladko in pepelnato sive barve.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Listi so celorobi in bleščeče zeleni; pozimi jih odvrže.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Z žirom, bukovimi plodovi, redi medveda in druge gozdne prebivalce.",
+          "sources": [
+            "nrp"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "wiki"
+    ]
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

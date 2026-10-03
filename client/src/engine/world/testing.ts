@@ -5,7 +5,7 @@ import { AreaZone, Gate, HabitatZone, MapNpc, Signpost, WorldMap } from './world
  * A small test map drawn as text: `.` open, `#` blocked, `S` spawn, `*` spot (named `spot`),
  * `g` tall grass (habitat `tall_grass`), `G` spawn standing in tall grass, `N` the NPC `vera` (tile 5),
  * `D` a gate opened by flag `gate_open` (tile 6), `R` the home spot `hare` of a resident animal,
- * `P` the signpost (tile 7).
+ * `P` the signpost (tile 7), `T` a tree: a blocked tile inside a `tall_grass` zone.
  */
 export function textMap(
   rows: readonly string[],
@@ -26,7 +26,7 @@ export function textMap(
 
   rows.forEach((row, y) =>
     [...row].forEach((cell, x) => {
-      blocked.push(cell === '#');
+      blocked.push(cell === '#' || cell === 'T');
       if (cell === 'S' || cell === 'G') spawn = { x, y, facing };
       if (cell === '*') spots.push({ spotId: 'spot', x, y });
       if (cell === 'R') spots.push({ spotId: 'hare', x, y });
@@ -35,7 +35,7 @@ export function textMap(
       if (cell === 'P') signposts.push({ x, y, gid: 7 });
       const areaId = areaOf(x, y);
       if (areaId) areas.push({ areaId, minX: x, minY: y, maxX: x, maxY: y });
-      if (cell === 'g' || cell === 'G') {
+      if (cell === 'g' || cell === 'G' || cell === 'T') {
         habitats.push({ habitatId: 'tall_grass', minX: x, minY: y, maxX: x, maxY: y });
       }
     }),

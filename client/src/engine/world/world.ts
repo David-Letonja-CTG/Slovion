@@ -45,7 +45,7 @@ const STILL_NOON: WorldClock = { minutes: 12 * 60, gameMinutesPerSecond: 0 };
 /**
  * The world asks the host to handle an interaction; the server decides the outcome (D3): a conversation
  * with the NPC the player faces, the travel map at the signpost, the spot the player faces, or a search of the
- * habitat the player stands in.
+ * habitat at the tree (or other blocked tile) the player faces or the ground the player stands on.
  */
 export type Interaction =
   | { readonly kind: 'npc'; readonly mapId: string; readonly npcId: string }
@@ -264,6 +264,9 @@ export class World implements Obstacles {
       this.onInteract({ kind: 'spot', mapId: this.map.id, spotId: resident.spotId });
     } else if (spot) {
       this.onInteract({ kind: 'spot', mapId: this.map.id, spotId: spot.spotId });
+    } else if (this.map.isBlocked(x + dx, y + dy) && this.map.habitatAt(x + dx, y + dy)) {
+      // A tree, shrub or rock inside a habitat zone is searched like the grass around it.
+      this.onInteract({ kind: 'search', mapId: this.map.id, x: x + dx, y: y + dy });
     } else if (this.map.habitatAt(x, y)) {
       this.onInteract({ kind: 'search', mapId: this.map.id, x, y });
     }

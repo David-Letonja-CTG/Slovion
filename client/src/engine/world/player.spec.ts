@@ -231,6 +231,33 @@ describe('Interaction', () => {
     expect(interactions).toEqual([{ kind: 'spot', mapId: 'test_map', spotId: 'spot' }]);
   });
 
+  it('searches at a faced tree inside a habitat zone, from outside the zone', () => {
+    const { input, frames, interactions } = setup(['#ST#']);
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([{ kind: 'search', mapId: 'test_map', x: 2, y: 0 }]);
+  });
+
+  it('searches at the faced tree before the grass underfoot', () => {
+    const { input, frames, interactions } = setup(['#GT#']);
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([{ kind: 'search', mapId: 'test_map', x: 2, y: 0 }]);
+  });
+
+  it('does not search at a blocked tile outside every habitat zone', () => {
+    const { input, frames, interactions } = setup(['#S##']);
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([]);
+  });
+
   it('does not search when only the faced tile is grass', () => {
     const { input, frames, interactions } = setup(['#Sg.#']);
 

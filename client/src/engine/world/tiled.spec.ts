@@ -2,8 +2,10 @@ import kocevje from '../../../../content/maps/kocevje_forest.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import pohorje from '../../../../content/maps/pohorje_forest.json';
 import triglav from '../../../../content/maps/triglav_alps.json';
+import { STEP_MS } from '../game-loop';
+import { ActionState } from '../input/action-state';
 import { MapFormatError, parseTiledMap } from './tiled';
-import { World } from './world';
+import { Interaction, World } from './world';
 
 /** A deep copy of the real meadow, to break one detail at a time. */
 function meadowCopy(): Record<string, unknown> & { layers: Record<string, unknown>[] } {
@@ -141,7 +143,7 @@ describe('parseTiledMap', () => {
     ['pohorje_forest', pohorje, 'pohorje_wolf_1', 'pohorje_forest'],
     ['triglav_alps', triglav, 'triglav_chamois_1', 'triglav_slopes'],
   ])(
-    'parses the region map %s with a reachable signpost and animal home',
+    'parses the region map %s with a reachable signpost, spots and searchable trees',
     (id, json, spotId, area) => {
       const { map, reachable } = reachableFromSpawn([], id, json);
       const [signpost] = map.signposts;
@@ -155,9 +157,57 @@ describe('parseTiledMap', () => {
         area,
         area,
       ]);
-      expect(map.habitats).toEqual([]);
+      // The spawn, the tile beside it and the signpost lie outside the habitat zones.
+      for (const [x, y] of [
+        [1, 9],
+        [2, 9],
+        [2, 8],
+      ]) {
+        expect(map.habitatAt(x, y), `${x},${y}`).toBeUndefined();
+      }
+      expect(map.habitats.length).toBeGreaterThan(0);
+      for (const spot of map.spots) expect(reachable(spot.x, spot.y), spot.spotId).toBe(true);
+      // Some trees, shrubs or rocks stand inside the zones, so they can be searched.
+      const zonedBlocked = map.habitats.some((zone) => {
+        for (let y = zone.minY; y <= zone.maxY; y++) {
+          for (let x = zone.minX; x <= zone.maxX; x++) if (map.isBlocked(x, y)) return true;
+        }
+        return false;
+      });
+      expect(zonedBlocked).toBe(true);
     },
   );
+
+  it('searches at a spruce beside the Pohorje path, from outside the zones', () => {
+    // The spawn moved onto the path at (5, 9), facing the spruce at (5, 8).
+    const json = structuredClone(pohorje) as unknown as {
+      layers: {
+        name: string;
+        objects?: {
+          type: string;
+          x: number;
+          y: number;
+          properties?: { name: string; value: string }[];
+        }[];
+      }[];
+    };
+    const spawn = json.layers
+      .find((l) => l.name === 'objects')!
+      .objects!.find((o) => o.type === 'spawn')!;
+    Object.assign(spawn, { x: 5 * 16 + 8, y: 9 * 16 + 8 });
+    spawn.properties!.find((p) => p.name === 'facing')!.value = 'up';
+    const map = parseTiledMap('pohorje_forest', json);
+    const interactions: Interaction[] = [];
+    const world = new World(map, (interaction) => interactions.push(interaction));
+    const input = new ActionState();
+
+    input.press('Interact');
+    world.update(input, STEP_MS);
+
+    expect(map.habitatAt(5, 9)).toBeUndefined();
+    expect(map.isBlocked(5, 8)).toBe(true);
+    expect(interactions).toEqual([{ kind: 'search', mapId: 'pohorje_forest', x: 5, y: 8 }]);
+  });
 
   it('requires exactly one signpost, as a tile object inside the map', () => {
     const json = meadowCopy();

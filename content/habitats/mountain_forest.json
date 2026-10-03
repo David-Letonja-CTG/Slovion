@@ -2,8 +2,12 @@
   "id": "mountain_forest",
   "text": { "sl": { "name": "Gorski gozd" } },
   "order": 4,
-  "searchChancePercent": 50,
+  "searchChancePercent": 60,
   "species": [
-    { "speciesId": "canis_lupus", "weight": 1 }
+    { "speciesId": "canis_lupus", "weight": 1 },
+    { "speciesId": "sciurus_vulgaris", "weight": 1 },
+    { "speciesId": "vaccinium_myrtillus", "weight": 40 },
+    { "speciesId": "picea_abies", "weight": 35 },
+    { "speciesId": "drosera_rotundifolia", "weight": 25 }
   ]
 }

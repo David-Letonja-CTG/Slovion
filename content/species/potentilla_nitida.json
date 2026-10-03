@@ -1,0 +1,118 @@
+{
+  "id": "potentilla_nitida",
+  "group": "plant",
+  "scientificName": {
+    "value": "Potentilla nitida L.",
+    "sources": [
+      "gbif",
+      "bv"
+    ]
+  },
+  "sources": {
+    "tnp": {
+      "title": "Triglavska roža",
+      "publisher": "Javni zavod Triglavski narodni park (Triglavska zakladnica)",
+      "url": "https://www.triglavskazakladnica.si/sl/vsebine/podrobnosti-vsebine/109/triglavska-roza.html",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "bv": {
+      "title": "Potentilla nitida (triglavska roža)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/potentilla-nitida",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Potentilla nitida L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5367673",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "triglavska roža",
+        "sources": [
+          "tnp",
+          "bv"
+        ]
+      },
+      "family": {
+        "value": "rožnice (Rosaceae)",
+        "sources": [
+          "bv"
+        ]
+      },
+      "habitat": {
+        "value": "Sončne lege: grušč, skalnate trate in skalne razpoke.",
+        "sources": [
+          "tnp"
+        ]
+      },
+      "distribution": {
+        "value": "V Julijcih, redkeje v Karavankah in Kamniško-Savinjskih Alpah; je eden od simbolov Triglavskega narodnega parka.",
+        "sources": [
+          "tnp"
+        ]
+      },
+      "season": {
+        "value": "Cveti julija in avgusta.",
+        "sources": [
+          "tnp",
+          "bv"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Raste v nizkih blazinastih šopih.",
+          "sources": [
+            "tnp"
+          ]
+        },
+        {
+          "value": "Cvetovi so rožnatordeči; cvetno steblo ima enega ali dva cvetova.",
+          "sources": [
+            "tnp"
+          ]
+        },
+        {
+          "value": "Srebrnozelenkasti listi so tridelni in pri vrhu nazobčani.",
+          "sources": [
+            "tnp"
+          ]
+        },
+        {
+          "value": "Vsi zeleni deli so svilnato dlakavi, zato ji pravijo tudi bleščeči petoprstnik.",
+          "sources": [
+            "tnp"
+          ]
+        },
+        {
+          "value": "Po legendi je pognala iz kapelj krvi ustreljenega Zlatoroga.",
+          "sources": [
+            "tnp"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "summer"
+    ],
+    "sources": [
+      "tnp",
+      "bv"
+    ]
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

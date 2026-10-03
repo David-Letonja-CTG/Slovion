@@ -1,0 +1,106 @@
+{
+  "id": "vaccinium_myrtillus",
+  "group": "plant",
+  "scientificName": {
+    "value": "Vaccinium myrtillus L.",
+    "sources": [
+      "gbif",
+      "bv"
+    ]
+  },
+  "sources": {
+    "psa": {
+      "title": "Borovnica (Vaccinium myrtillus L.)",
+      "publisher": "Pater Simon Ašič (pater-simon-asic.si)",
+      "url": "https://pater-simon-asic.si/sl/zdravilne-rastline/borovnica/",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "bv": {
+      "title": "Vaccinium myrtillus (navadna borovnica)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/vaccinium-myrtillus",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Vaccinium myrtillus L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2882833",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "navadna borovnica",
+        "sources": [
+          "bv",
+          "psa"
+        ]
+      },
+      "family": {
+        "value": "vresovke (Ericaceae)",
+        "sources": [
+          "bv"
+        ]
+      },
+      "habitat": {
+        "value": "Podrast iglastih in mešanih gozdov, na kislih tleh.",
+        "sources": [
+          "psa"
+        ]
+      },
+      "distribution": {
+        "value": "Raste po Evropi, na jugu le v gorah; tudi v Sloveniji.",
+        "sources": [
+          "bv"
+        ]
+      },
+      "season": {
+        "value": "Cveti od aprila do julija; plodovi dozorijo julija in avgusta.",
+        "sources": [
+          "bv",
+          "psa"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Nizek grmiček z drobnimi listi.",
+          "sources": [
+            "psa"
+          ]
+        },
+        {
+          "value": "Plodovi so temno modri in poprhnjeni.",
+          "sources": [
+            "psa"
+          ]
+        },
+        {
+          "value": "Plodovi so tudi v notranjosti vijolični, ne beli; po tem jo ločimo od gojene ameriške borovnice.",
+          "sources": [
+            "psa"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "sources": [
+      "bv"
+    ]
+  },
+  "identification": {
+    "clues": [
+      0,
+      1,
+      2
+    ]
+  }
+}
