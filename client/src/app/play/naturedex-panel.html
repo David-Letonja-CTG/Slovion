@@ -51,10 +51,23 @@
                       [attr.data-species]="slot.speciesId"
                       [attr.data-status]="slot.status"
                       [attr.aria-disabled]="slot.status === 'unknown' ? 'true' : null"
-                      [attr.aria-label]="name ?? ('naturedex.unknown' | transloco)"
+                      [attr.aria-label]="
+                        name
+                          ? name +
+                            ' – ' +
+                            ('naturedex.research' | transloco: { level: slot.entry?.researchLevel })
+                          : ('naturedex.unknown' | transloco)
+                      "
                       (click)="select(s, i, slot)"
                     >
                       <img [src]="pictureUrl(slot.speciesId)" alt="" width="32" height="32" />
+                      @if (name) {
+                        @let gridStars = stars(slot.entry?.researchLevel);
+                        <span class="picture__stars" aria-hidden="true"
+                          >{{ gridStars.filled
+                          }}<span class="stars__empty">{{ gridStars.empty }}</span></span
+                        >
+                      }
                       <span class="picture__label" aria-hidden="true">{{
                         name ?? ('naturedex.unknownLabel' | transloco)
                       }}</span>
@@ -85,15 +98,33 @@
                   </p>
                 </div>
               </div>
+              @let level = opened.entry.researchLevel ?? 1;
+              <p class="entry__research">
+                {{ 'naturedex.research' | transloco: { level } }}
+                @let pageStars = stars(level);
+                <span class="entry__stars" aria-hidden="true"
+                  >{{ pageStars.filled
+                  }}<span class="stars__empty">{{ pageStars.empty }}</span></span
+                >
+              </p>
+              @if (level < 3) {
+                <p class="entry__hint">{{ 'naturedex.researchHint' | transloco }}</p>
+              }
               <dl class="entry__facts">
                 <dt>{{ 'naturedex.family' | transloco }}</dt>
                 <dd>{{ species.family }}</dd>
-                <dt>{{ 'naturedex.habitat.' + opened.entry.group | transloco }}</dt>
-                <dd>{{ species.habitat }}</dd>
-                <dt>{{ 'naturedex.distribution' | transloco }}</dt>
-                <dd>{{ species.distribution }}</dd>
-                <dt>{{ 'naturedex.season.' + opened.entry.group | transloco }}</dt>
-                <dd>{{ species.season }}</dd>
+                @if (species.habitat) {
+                  <dt>{{ 'naturedex.habitat.' + opened.entry.group | transloco }}</dt>
+                  <dd>{{ species.habitat }}</dd>
+                }
+                @if (species.distribution) {
+                  <dt>{{ 'naturedex.distribution' | transloco }}</dt>
+                  <dd>{{ species.distribution }}</dd>
+                }
+                @if (species.season) {
+                  <dt>{{ 'naturedex.season.' + opened.entry.group | transloco }}</dt>
+                  <dd>{{ species.season }}</dd>
+                }
                 <dt>{{ 'naturedex.discoveredAt' | transloco }}</dt>
                 <dd>{{ opened.entry.identifiedAt | date: 'longDate' }}</dd>
               </dl>

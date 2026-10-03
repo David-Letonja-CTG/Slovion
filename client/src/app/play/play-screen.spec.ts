@@ -206,17 +206,30 @@ describe('Identification flow', () => {
     expect(game.consumer).toBe('world');
   });
 
-  it('says when the species is already identified', async () => {
-    const { game, http, dialogText, settle: wait } = await openPlay();
+  it.each([
+    [
+      false,
+      1,
+      'Ta vrsta je že zapisana v Terenskem dnevniku: travniška kadulja. Več izveš, če jo opaziš ob drugem času dneva.',
+    ],
+    [true, 2, 'Raziskava napreduje: travniška kadulja (2/3). V Terenskem dnevniku je nov zapis.'],
+    [false, 3, 'Ta vrsta je v Terenskem dnevniku v celoti raziskana: travniška kadulja'],
+  ])(
+    'tells how research went when an identified species is seen again (researched %s, level %i)',
+    async (researched, level, message) => {
+      const { game, http, dialogText, settle: wait } = await openPlay();
 
-    game.options!.onInteract(SAGE);
-    http.expectOne(START).flush({ alreadyIdentified: true, entry: SAGE_ENTRY });
-    await wait();
+      game.options!.onInteract(SAGE);
+      http.expectOne(START).flush({
+        alreadyIdentified: true,
+        researched,
+        entry: { ...SAGE_ENTRY, researchLevel: level },
+      });
+      await wait();
 
-    expect(dialogText()).toContain(
-      'Ta vrsta je že zapisana v Terenskem dnevniku: travniška kadulja',
-    );
-  });
+      expect(dialogText()).toContain(message);
+    },
+  );
 
   it.each(['Confirm', 'Cancel'] as const)(
     'closes the result with %s and gives input back to the world',
@@ -336,7 +349,11 @@ describe('Search flow', () => {
     const { game, http, dialogText, settle: wait } = await openPlay();
 
     game.options!.onInteract(IN_GRASS);
-    http.expectOne(SEARCHES).flush({ alreadyIdentified: true, entry: SAGE_ENTRY });
+    http.expectOne(SEARCHES).flush({
+      alreadyIdentified: true,
+      researched: false,
+      entry: { ...SAGE_ENTRY, researchLevel: 1 },
+    });
     await wait();
 
     expect(dialogText()).toContain(
@@ -433,7 +450,13 @@ describe('Terenski dnevnik', () => {
     expect(label('salvia_pratensis')).toBe('travniška kadulja');
     expect(label('lepus_europaeus')).toBe(sl.naturedex.unknownLabel);
     expect(label('alauda_arvensis')).toBe(sl.naturedex.unknownLabel);
-    expect(picture('salvia_pratensis').getAttribute('aria-label')).toBe('travniška kadulja');
+    expect(picture('salvia_pratensis').getAttribute('aria-label')).toBe(
+      'travniška kadulja – Raziskano: 3/3',
+    );
+    expect(picture('salvia_pratensis').querySelector('.picture__stars')?.textContent?.trim()).toBe(
+      '★★★',
+    );
+    expect(picture('lepus_europaeus').querySelector('.picture__stars')).toBeNull();
     expect(picture('lepus_europaeus').getAttribute('aria-label')).toBe(sl.naturedex.unknown);
     expect(picture('alauda_arvensis').getAttribute('aria-disabled')).toBe('true');
   });
@@ -463,6 +486,39 @@ describe('Terenski dnevnik', () => {
     const source = entry.querySelector('.entry__sources li');
     expect(source?.textContent).toContain('Travniška kadulja');
     expect(source?.textContent).toContain('Notranjski regijski park');
+  });
+
+  it('shows the research level and leaves out facts research has not revealed yet', async () => {
+    const levelOne: NatureDexEntry = {
+      ...SAGE_ENTRY,
+      researchLevel: 1,
+      species: { ...SAGE_ENTRY.species!, habitat: null, distribution: null, season: null },
+    };
+    const { picture, page, settle: wait } = await openNatureDex(tallGrass(levelOne));
+
+    expect(picture('salvia_pratensis').querySelector('.picture__stars')?.textContent?.trim()).toBe(
+      '★☆☆',
+    );
+    picture('salvia_pratensis').click();
+    await wait();
+
+    const entry = page()!;
+    expect(entry.querySelector('.entry__research')?.textContent).toContain('Raziskano: 1/3');
+    expect(entry.querySelector('.entry__hint')?.textContent).toBe(sl.naturedex.researchHint);
+    expect(entry.textContent).toContain('Zraste od 30 do 60 cm visoko.');
+    expect(entry.textContent).not.toContain(sl.naturedex.habitat.plant);
+    expect(entry.textContent).not.toContain(sl.naturedex.distribution);
+    expect(entry.textContent).not.toContain(sl.naturedex.season.plant);
+  });
+
+  it('shows no research hint once a species is fully researched', async () => {
+    const { picture, page, settle: wait } = await openNatureDex();
+
+    picture('salvia_pratensis').click();
+    await wait();
+
+    expect(page()!.querySelector('.entry__research')?.textContent).toContain('Raziskano: 3/3');
+    expect(page()!.querySelector('.entry__hint')).toBeNull();
   });
 
   it('opens an observed species as unknown, with its group but without its name', async () => {

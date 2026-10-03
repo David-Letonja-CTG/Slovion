@@ -14,10 +14,11 @@ public sealed record AnswerRequest(string? SpeciesId);
 
 public sealed record SourceResponse(string Title, string Publisher, string Url, string Accessed, string Licence);
 
-public sealed record SpeciesResponse(string Name, string ScientificName, string Family, string Habitat, string Distribution, string Season, IReadOnlyList<string> Characteristics, IReadOnlyList<SourceResponse> Sources);
+/// <summary>Species facts revealed by the save's research: <c>Habitat</c> and <c>Distribution</c> from level 2, <c>Season</c> at 3.</summary>
+public sealed record SpeciesResponse(string Name, string ScientificName, string Family, string? Habitat, string? Distribution, string? Season, IReadOnlyList<string> Characteristics, IReadOnlyList<SourceResponse> Sources);
 
-/// <summary>A NatureDex entry. <c>Species</c> is present only when <c>Status</c> is <c>identified</c>.</summary>
-public sealed record NatureDexEntryResponse(string SpeciesId, string Group, string Status, DateTime ObservedAt, DateTime? IdentifiedAt, SpeciesResponse? Species);
+/// <summary>A NatureDex entry. <c>ResearchLevel</c> (1–3) and <c>Species</c> are present only when <c>Status</c> is <c>identified</c>.</summary>
+public sealed record NatureDexEntryResponse(string SpeciesId, string Group, string Status, DateTime ObservedAt, DateTime? IdentifiedAt, int? ResearchLevel, SpeciesResponse? Species);
 
 /// <summary>A species in a NatureDex section. <c>Entry</c> is present unless <c>Status</c> is <c>unknown</c>.</summary>
 public sealed record NatureDexSlotResponse(string SpeciesId, string Status, NatureDexEntryResponse? Entry);
@@ -32,7 +33,8 @@ public sealed record CandidateResponse(string SpeciesId, string Name);
 /// <summary>An open encounter. It never says which candidate is correct.</summary>
 public sealed record EncounterResponse(Guid EncounterId, string Group, IReadOnlyList<string> Clues, IReadOnlyList<CandidateResponse> Candidates);
 
-public sealed record AlreadyIdentifiedResponse(bool AlreadyIdentified, NatureDexEntryResponse Entry);
+/// <summary>A sighting of an identified species; <c>Researched</c> says whether it raised the research level.</summary>
+public sealed record AlreadyIdentifiedResponse(bool AlreadyIdentified, bool Researched, NatureDexEntryResponse Entry);
 
 public sealed record SearchRequest(string? MapId, int? X, int? Y);
 
@@ -123,7 +125,7 @@ public static class DiscoveryEndpoints
                 started.Encounter.Clues,
                 started.Encounter.Candidates.Select(ToResponse).ToList()),
             statusCode: StatusCodes.Status201Created),
-        StartEncounterResult.AlreadyIdentified known => TypedResults.Ok(new AlreadyIdentifiedResponse(true, ToResponse(known.Entry))),
+        StartEncounterResult.AlreadyIdentified known => TypedResults.Ok(new AlreadyIdentifiedResponse(true, known.Researched, ToResponse(known.Entry))),
         _ => throw new InvalidOperationException($"Unexpected result {result}."),
     };
 
@@ -177,6 +179,7 @@ public static class DiscoveryEndpoints
         StatusOf(entry),
         entry.ObservedAt.UtcDateTime,
         entry.IdentifiedAt?.UtcDateTime,
+        entry.ResearchLevel,
         entry.Species is null ? null : ToResponse(entry.Species));
 
     private static SpeciesResponse ToResponse(SpeciesView species) => new(

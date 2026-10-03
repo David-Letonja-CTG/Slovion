@@ -59,6 +59,34 @@ public class EncounterServiceTests
     }
 
     [Fact]
+    public async Task Sighting_an_identified_species_at_another_time_of_day_researches_it()
+    {
+        await Answer(await Start("salvia_pratensis"), "salvia_pratensis");
+        async Task<StartEncounterResult.AlreadyIdentified> Sight() =>
+            Assert.IsType<StartEncounterResult.AlreadyIdentified>(await service.StartAsync(Save, FakeContentCatalog.MapId, "salvia_pratensis", "sl", Token));
+
+        var atOnce = await Sight();
+        Assert.False(atOnce.Researched);
+        Assert.Equal(1, atOnce.Entry.ResearchLevel);
+        Assert.Null(atOnce.Entry.Species!.Habitat);
+        Assert.Null(atOnce.Entry.Species.Distribution);
+        Assert.Null(atOnce.Entry.Species.Season);
+        Assert.Equal("family", atOnce.Entry.Species.Family);
+
+        time.Advance(TimeSpan.FromSeconds(600)); // 18:00, evening
+        var evening = await Sight();
+        Assert.True(evening.Researched);
+        Assert.Equal((2, "habitat", "distribution", (string?)null), (evening.Entry.ResearchLevel, evening.Entry.Species!.Habitat, evening.Entry.Species.Distribution, evening.Entry.Species.Season));
+
+        time.Advance(TimeSpan.FromSeconds(60)); // 19:00, still evening
+        Assert.False((await Sight()).Researched);
+
+        time.Advance(TimeSpan.FromSeconds(180)); // 22:00, night
+        var night = await Sight();
+        Assert.Equal((true, 3, "season"), (night.Researched, night.Entry.ResearchLevel, night.Entry.Species!.Season));
+    }
+
+    [Fact]
     public async Task Starting_records_the_first_observation_only_once()
     {
         await Start("lepus_europaeus");

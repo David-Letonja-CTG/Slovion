@@ -32,6 +32,12 @@ internal sealed class InMemoryDiscoveryRepository : IDiscoveryRepository
         return Task.FromResult(discovery);
     }
 
+    public Task<(SpeciesDiscovery Stored, bool Researched)> ResearchAsync(Guid saveSlotId, SpeciesId speciesId, DateTimeOffset at, DateTimeOffset saveCreatedAt, CancellationToken cancellationToken)
+    {
+        var discovery = Find(saveSlotId, speciesId) ?? throw new InvalidOperationException("Not observed.");
+        return Task.FromResult((discovery, discovery.Research(at, saveCreatedAt)));
+    }
+
     public Task<IReadOnlyList<SpeciesDiscovery>> ListAsync(Guid saveSlotId, CancellationToken cancellationToken) =>
         Task.FromResult<IReadOnlyList<SpeciesDiscovery>>(stored.Where(d => d.SaveSlotId == saveSlotId).ToList());
 

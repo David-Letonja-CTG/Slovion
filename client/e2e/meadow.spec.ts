@@ -48,6 +48,12 @@ test('identify the meadow sage, read about it, and keep it after a reload', asyn
   await page.keyboard.press('Enter');
   await expect(message).toHaveCount(0);
 
+  // Seeing it again at once does not research it further; another time of day would.
+  await page.keyboard.press('KeyE');
+  await expect(message).toContainText('Več izveš, če jo opaziš ob drugem času dneva.');
+  await page.keyboard.press('Enter');
+  await expect(message).toHaveCount(0);
+
   await page.keyboard.press('KeyM');
   const natureDex = page.getByRole('dialog', { name: 'Terenski dnevnik' });
   await expect(natureDex.locator('[data-habitat="tall_grass"] h3')).toContainText('Visoka trava');
@@ -66,6 +72,7 @@ test('identify the meadow sage, read about it, and keep it after a reload', asyn
 
   await sage.click();
   await expect(natureDex.locator('article.entry')).toContainText('Salvia pratensis L.');
+  await expect(natureDex.locator('article.entry')).toContainText('Raziskano: 1/3');
   await expect(natureDex).toContainText('Viri');
   await page.keyboard.press('Escape');
   await expect(natureDex.locator('article.entry')).toHaveCount(0);
@@ -78,7 +85,9 @@ test('identify the meadow sage, read about it, and keep it after a reload', asyn
   await waitForTheWorld(page);
   await page.keyboard.press('KeyM');
   await expect(pictureOf(page, 'salvia_pratensis')).toHaveAttribute('data-status', 'identified');
-  await expect(pictureOf(page, 'salvia_pratensis')).toHaveAccessibleName('travniška kadulja');
+  await expect(pictureOf(page, 'salvia_pratensis')).toHaveAccessibleName(
+    'travniška kadulja – Raziskano: 1/3',
+  );
 });
 
 test('a wrong answer leaves the species unknown until it is identified', async ({ page }) => {

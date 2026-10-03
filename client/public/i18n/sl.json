@@ -22,8 +22,10 @@
   "play": {
     "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči, pogovori se, beri kažipot ali išči v visoki travi · L: svetilka · M: Terenski dnevnik"
   },
-  "discovery": {
-    "known": "Ta vrsta je že zapisana v Terenskem dnevniku: {{name}}"
+  "research": {
+    "advanced": "Raziskava napreduje: {{name}} ({{level}}/3). V Terenskem dnevniku je nov zapis.",
+    "later": "Ta vrsta je že zapisana v Terenskem dnevniku: {{name}}. Več izveš, če jo opaziš ob drugem času dneva.",
+    "complete": "Ta vrsta je v Terenskem dnevniku v celoti raziskana: {{name}}"
   },
   "naturedex": {
     "title": "Terenski dnevnik",
@@ -50,7 +52,9 @@
     "sources": "Viri",
     "progress": "{{identified}}/{{total}}",
     "unknownLabel": "???",
-    "back": "Nazaj"
+    "back": "Nazaj",
+    "research": "Raziskano: {{level}}/3",
+    "researchHint": "Opazuj to vrsto ob drugem času dneva, da izveš več."
   },
   "errors": {
     "invalid_save_token": "Shranjene igre ni bilo mogoče najti. Začni novo igro.",

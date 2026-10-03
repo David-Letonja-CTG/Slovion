@@ -36,10 +36,36 @@ internal sealed class DiscoveryRepository(SlovionDbContext db) : IDiscoveryRepos
         // Only the first identification counts, also when two answers race.
         await db.Discoveries
             .Where(stored => stored.SaveSlotId == saveSlotId && stored.SpeciesId == speciesId && stored.IdentifiedAt == null)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(stored => stored.IdentifiedAt, identifiedAt), cancellationToken);
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(stored => stored.IdentifiedAt, identifiedAt)
+                    .SetProperty(stored => stored.ResearchLevel, 1)
+                    .SetProperty(stored => stored.ResearchedAt, identifiedAt),
+                cancellationToken);
 
         return await FindAsync(saveSlotId, speciesId, cancellationToken)
             ?? throw new InvalidOperationException($"Species '{speciesId}' was identified without being observed.");
+    }
+
+    public async Task<(SpeciesDiscovery Stored, bool Researched)> ResearchAsync(Guid saveSlotId, SpeciesId speciesId, DateTimeOffset at, DateTimeOffset saveCreatedAt, CancellationToken cancellationToken)
+    {
+        var discovery = await FindAsync(saveSlotId, speciesId, cancellationToken)
+            ?? throw new InvalidOperationException($"Species '{speciesId}' was researched without being observed.");
+        var previousLevel = discovery.ResearchLevel;
+        if (!discovery.Research(at, saveCreatedAt))
+        {
+            return (discovery, false);
+        }
+
+        // Only one of two racing sightings raises the level.
+        var updated = await db.Discoveries
+            .Where(stored => stored.SaveSlotId == saveSlotId && stored.SpeciesId == speciesId && stored.ResearchLevel == previousLevel)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(stored => stored.ResearchLevel, discovery.ResearchLevel)
+                    .SetProperty(stored => stored.ResearchedAt, discovery.ResearchedAt),
+                cancellationToken);
+        return updated == 1 ? (discovery, true) : ((await FindAsync(saveSlotId, speciesId, cancellationToken))!, false);
     }
 
     public async Task<IReadOnlyList<SpeciesDiscovery>> ListAsync(Guid saveSlotId, CancellationToken cancellationToken) =>

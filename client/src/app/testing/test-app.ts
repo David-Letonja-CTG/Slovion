@@ -180,6 +180,7 @@ export const SAGE_ENTRY: NatureDexEntry = {
   status: 'identified',
   observedAt: '2026-06-01T10:00:00Z',
   identifiedAt: '2026-06-01T10:05:00Z',
+  researchLevel: 3,
   species: {
     name: 'travniška kadulja',
     scientificName: 'Salvia pratensis L.',
@@ -207,6 +208,7 @@ export const HARE_OBSERVED: NatureDexEntry = {
   status: 'observed',
   observedAt: '2026-06-02T08:00:00Z',
   identifiedAt: null,
+  researchLevel: null,
   species: null,
 };
 

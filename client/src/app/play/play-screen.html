@@ -72,7 +72,15 @@
     @case ('known') {
       @if (shown.kind === 'known') {
         <app-message-dialog (closed)="close()">
-          <p>{{ 'discovery.known' | transloco: { name: shown.name } }}</p>
+          <p>
+            @if (shown.researched) {
+              {{ 'research.advanced' | transloco: { name: shown.name, level: shown.level } }}
+            } @else if (shown.level >= 3) {
+              {{ 'research.complete' | transloco: { name: shown.name } }}
+            } @else {
+              {{ 'research.later' | transloco: { name: shown.name } }}
+            }
+          </p>
         </app-message-dialog>
       }
     }

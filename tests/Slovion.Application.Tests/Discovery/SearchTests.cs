@@ -94,6 +94,11 @@ public class SearchTests
 
         var known = Assert.IsType<StartEncounterResult.AlreadyIdentified>(Assert.IsType<SearchResult.Found>(result).Encounter);
         Assert.Equal("navadni regrat", known.Entry.Species?.Name);
+        Assert.False(known.Researched);
+
+        clock.Advance(TimeSpan.FromSeconds(600)); // evening: finding it again researches it
+        var later = Assert.IsType<StartEncounterResult.AlreadyIdentified>(Assert.IsType<SearchResult.Found>(await Search(Service(new ScriptedRandom(0, 0)))).Encounter);
+        Assert.Equal((true, 2), (later.Researched, later.Entry.ResearchLevel));
     }
 
     [Theory]
