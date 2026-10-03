@@ -24,4 +24,4 @@
 - [x] 5.2 Run `dotnet format --verify-no-changes`, `dotnet test --solution Slovion.slnx`, `npm run check` and `npm run e2e`; all succeed
 - [x] 5.3 Manual check: each region's plants and animals on the map, searching at a tree on Pohorje (found a bilberry), the journal sections; capture screenshots
 - [x] 5.4 Review the changed files against non-goals and every spec scenario; record deviations in design.md
-- [ ] 5.5 Run `openspec validate add-region-species --strict`, push, and verify all CI jobs pass on the pull request
+- [x] 5.5 Run `openspec validate add-region-species --strict`, push, and verify all CI jobs pass on the pull request

@@ -36,6 +36,21 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - **THEN** its tall-grass tiles belong to a zone of habitat `tall_grass` and the path does not
 - **AND** the hedgerow strip south of the meadow belongs to a zone of habitat `hedgerow`
 
+#### Scenario: Habitat zones in the regions
+- **WHEN** a region map is loaded
+- **THEN** part of its walkable ground belongs to zones of the region's habitat, and the path from the spawn to the signpost does not:
+
+  | Map | Habitat |
+  |---|---|
+  | `kocevje_forest` | `fir_beech_forest` |
+  | `pohorje_forest` | `mountain_forest` |
+  | `triglav_alps` | `alpine_grassland` |
+
+#### Scenario: Species of the regions on their maps
+- **WHEN** a region map is loaded
+- **THEN** it has a resident spot for each of the region's animals and a fixed spot for each of its ground plants, and the player can reach each spot from the spawn
+- **AND** some of its trees or shrubs lie inside the habitat zones
+
 #### Scenario: Areas of the meadow
 - **WHEN** the meadow is loaded
 - **THEN** the meadow, its southern hedge and the gate belong to area `meadow`, and the hedgerow strip belongs to area `south_hedgerow`
@@ -118,7 +133,8 @@ When the player is not mid-step and `Interact` is pressed, the game SHALL act on
 2. Otherwise, if the player faces the signpost, it SHALL open the travel map.
 3. Otherwise, if the player faces a resident animal, it SHALL interact with that resident's spot.
 4. Otherwise, if the player faces a plant spot, it SHALL interact with that spot.
-5. Otherwise, if the player stands in a habitat zone, it SHALL start a search of that habitat at the player's tile.
+5. Otherwise, if the player faces a blocked tile (a tree, shrub, rock or similar) inside a habitat zone, it SHALL start a search of that habitat at the faced tile.
+6. Otherwise, if the player stands in a habitat zone, it SHALL start a search of that habitat at the player's tile.
 
 If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose species is an animal SHALL only be reachable through its resident, never as a fixed spot. Signposts SHALL block movement.
 
@@ -142,6 +158,10 @@ If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose
 - **WHEN** the player stands on a tile inside a `tall_grass` zone, faces no spot, animal, signpost or NPC and presses `Interact`
 - **THEN** a search of that tile on map `dravsko_polje_meadow` is started
 
+#### Scenario: Searching at a tree
+- **WHEN** the player stands on the path in Pohorje, outside every habitat zone, faces a spruce inside a `mountain_forest` zone and presses `Interact`
+- **THEN** a search of the spruce's tile on map `pohorje_forest` is started
+
 #### Scenario: A spot wins over the habitat
 - **WHEN** the player stands in a habitat zone and faces a spot
 - **THEN** the spot interaction is started, not a search
@@ -149,6 +169,10 @@ If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose
 #### Scenario: Facing empty grass
 - **WHEN** the player stands outside every habitat zone, faces a tile without a spot, animal, signpost or NPC and presses `Interact`
 - **THEN** nothing happens
+
+#### Scenario: Facing walkable grass in a zone from outside
+- **WHEN** the player stands outside every habitat zone and faces a walkable tile inside one
+- **THEN** nothing happens; walkable ground is searched by standing on it
 
 ### Requirement: Draw order
 Map layers SHALL be drawn in their authored order, with animated tiles showing their current frame. Above the ground layers SHALL be drawn, in order:
