@@ -14,6 +14,7 @@ Each region SHALL be a content file with:
 - a position on the travel map, in percent of its width and height
 - an order on the travel map's list
 - an unlock rule: either none (always open), a progress flag, or a number of identified species
+- weather weights per season (see `weather`)
 
 Unlock rules are fictional gameplay data (D6). Content validation SHALL reject any of the following, naming the file:
 - an unknown map

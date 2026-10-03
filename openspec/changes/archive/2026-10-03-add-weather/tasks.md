@@ -21,4 +21,4 @@
 - [x] 4.2 Run `dotnet format --verify-no-changes`, `dotnet test --solution Slovion.slnx`, `npm run check` and `npm run e2e`; all succeed
 - [x] 4.3 Manual check: each weather on screen (desktop and phone), a salamander in rain; capture screenshots
 - [x] 4.4 Review the changed files against non-goals and every spec scenario; record deviations in design.md
-- [ ] 4.5 Run `openspec validate add-weather --strict`, push, and verify all CI jobs pass on the pull request
+- [x] 4.5 Run `openspec validate add-weather --strict`, push, and verify all CI jobs pass on the pull request
