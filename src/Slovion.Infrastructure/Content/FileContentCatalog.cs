@@ -10,7 +10,7 @@ namespace Slovion.Infrastructure.Content;
 
 /// <summary>
 /// Loads and validates content from <c>species/*.json</c>, <c>species-pictures/*.png</c>, <c>habitats/*.json</c>,
-/// <c>npcs/*.json</c>, <c>quests/*.json</c> and <c>maps/*.json</c> under a root folder.
+/// <c>npcs/*.json</c>, <c>quests/*.json</c>, <c>maps/*.json</c> and <c>regions/*.json</c> under a root folder.
 /// Validation collects every problem and fails once, so authors see all errors at the same time.
 /// </summary>
 public sealed partial class FileContentCatalog : IContentCatalog
@@ -43,6 +43,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
     private readonly Dictionary<string, List<MapZone>> zones;
     private readonly Dictionary<(string MapId, string NpcId), MapNpc> mapNpcs;
     private readonly Dictionary<string, Quest> quests;
+    private readonly Dictionary<string, Region> regions;
 
     public IReadOnlySet<string> Languages { get; }
 
@@ -50,7 +51,9 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
     public IReadOnlyList<Habitat> AllHabitats { get; }
 
-    private FileContentCatalog(Dictionary<SpeciesId, Species> species, Dictionary<(string, string), MapSpot> spots, Dictionary<string, Habitat> habitats, Dictionary<string, List<MapZone>> zones, Dictionary<(string, string), MapNpc> mapNpcs, Dictionary<string, Quest> quests, IReadOnlySet<string> languages)
+    public IReadOnlyList<Region> AllRegions { get; }
+
+    private FileContentCatalog(Dictionary<SpeciesId, Species> species, Dictionary<(string, string), MapSpot> spots, Dictionary<string, Habitat> habitats, Dictionary<string, List<MapZone>> zones, Dictionary<(string, string), MapNpc> mapNpcs, Dictionary<string, Quest> quests, Dictionary<string, Region> regions, IReadOnlySet<string> languages)
     {
         this.species = species;
         this.spots = spots;
@@ -58,8 +61,10 @@ public sealed partial class FileContentCatalog : IContentCatalog
         this.zones = zones;
         this.mapNpcs = mapNpcs;
         this.quests = quests;
+        this.regions = regions;
         Languages = languages;
         AllHabitats = habitats.Values.OrderBy(habitat => habitat.Order).ThenBy(habitat => habitat.Id, StringComparer.Ordinal).ToList();
+        AllRegions = regions.Values.OrderBy(region => region.Order).ThenBy(region => region.Id, StringComparer.Ordinal).ToList();
     }
 
     public Species? FindSpecies(SpeciesId id) => species.GetValueOrDefault(id);
@@ -72,6 +77,8 @@ public sealed partial class FileContentCatalog : IContentCatalog
     public MapNpc? FindNpcOnMap(string mapId, string npcId) => mapNpcs.GetValueOrDefault((mapId, npcId));
 
     public Quest? FindQuest(string questId) => quests.GetValueOrDefault(questId);
+
+    public Region? FindRegion(string regionId) => regions.GetValueOrDefault(regionId);
 
     public Quest? FindQuestByGiver(string npcId) => quests.Values.FirstOrDefault(quest => quest.GiverId == npcId);
 
@@ -109,6 +116,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
         var rewardFlags = quests.Values.Select(quest => quest.RewardFlag).ToHashSet(StringComparer.Ordinal);
         var areas = LoadAreas(Path.Combine(rootPath, AreasFolder), errors);
         var (spots, zones, mapNpcs) = LoadMaps(Path.Combine(rootPath, "maps"), species, habitats, areas, npcs, rewardFlags, errors);
+        var regions = LoadRegions(Path.Combine(rootPath, "regions"), zones.Keys.ToHashSet(StringComparer.Ordinal), rewardFlags, errors);
 
         if (errors.Count > 0)
         {
@@ -117,7 +125,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
         var languages = species.Values.SelectMany(item => item.Text.Keys).ToHashSet(StringComparer.Ordinal);
         languages.Add(IContentCatalog.DefaultLanguage);
-        return new FileContentCatalog(species, spots, habitats, zones, mapNpcs, quests, languages);
+        return new FileContentCatalog(species, spots, habitats, zones, mapNpcs, quests, regions, languages);
     }
 
     private static Dictionary<SpeciesId, Species> LoadSpecies(string folder, List<string> errors)

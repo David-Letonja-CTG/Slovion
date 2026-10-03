@@ -57,3 +57,24 @@
   padding: 1rem;
   text-align: center;
 }
+
+/* Travelling: the screen fades to dark and back. Above the world and banner, below dialogs. */
+.play__fade {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease-in-out;
+}
+
+.play__fade--dark {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .play__fade {
+    transition: none;
+  }
+}

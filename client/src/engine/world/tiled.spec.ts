@@ -1,4 +1,7 @@
+import kocevje from '../../../../content/maps/kocevje_forest.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
+import pohorje from '../../../../content/maps/pohorje_forest.json';
+import triglav from '../../../../content/maps/triglav_alps.json';
 import { MapFormatError, parseTiledMap } from './tiled';
 import { World } from './world';
 
@@ -37,6 +40,7 @@ describe('parseTiledMap', () => {
     expect(map.tileset.image).toBe('../tilesets/meadow.png');
     expect(map.npcs).toEqual([{ npcId: 'vera', x: 7, y: 9, gid: 20 }]);
     expect(map.gates).toEqual([{ flag: 'hedgerow_open', x: 20, y: 19, gid: 19 }]);
+    expect(map.signposts).toEqual([{ x: 12, y: 9, gid: 31 }]);
     // Trees (tile 5) and tall grass (tile 3) sway between two frames.
     expect(map.tileset.animations?.get(5)?.map((frame) => frame.tile)).toEqual([5, 20]);
     expect(map.tileset.animations?.get(3)?.map((frame) => frame.tile)).toEqual([3, 21]);
@@ -66,8 +70,12 @@ describe('parseTiledMap', () => {
   });
 
   /** Every tile the player can walk to from the spawn, with the given progress flags. */
-  function reachableFromSpawn(flags: readonly string[] = []) {
-    const map = parseTiledMap('dravsko_polje_meadow', meadow);
+  function reachableFromSpawn(
+    flags: readonly string[] = [],
+    id = 'dravsko_polje_meadow',
+    json: unknown = meadow,
+  ) {
+    const map = parseTiledMap(id, json);
     const world = new World(map, () => undefined);
     world.setOpenFlags(flags);
     const key = (x: number, y: number) => `${x},${y}`;
@@ -116,6 +124,61 @@ describe('parseTiledMap', () => {
     expect(reachable(20, 19)).toBe(true);
     const hawthorn = map.spots.find((spot) => spot.spotId === 'hedgerow_hawthorn_1')!;
     expect(reachable(hawthorn.x, hawthorn.y + 1)).toBe(true);
+  });
+
+  it('lets the player reach the signpost next to the spawn', () => {
+    const { map, reachable } = reachableFromSpawn();
+    const [signpost] = map.signposts;
+
+    expect(
+      Math.abs(signpost.x - map.spawn.x) + Math.abs(signpost.y - map.spawn.y),
+    ).toBeLessThanOrEqual(3);
+    expect(reachable(signpost.x, signpost.y + 1)).toBe(true); // stand below it, face up
+  });
+
+  it.each([
+    ['kocevje_forest', kocevje, 'kocevje_bear_1', 'kocevje_forest'],
+    ['pohorje_forest', pohorje, 'pohorje_wolf_1', 'pohorje_forest'],
+    ['triglav_alps', triglav, 'triglav_chamois_1', 'triglav_slopes'],
+  ])(
+    'parses the region map %s with a reachable signpost and animal home',
+    (id, json, spotId, area) => {
+      const { map, reachable } = reachableFromSpawn([], id, json);
+      const [signpost] = map.signposts;
+      const home = map.spots.find((spot) => spot.spotId === spotId)!;
+
+      expect(map.spawn).toEqual({ x: 1, y: 9, facing: 'right' });
+      expect(signpost).toEqual({ x: 2, y: 8, gid: 31 });
+      expect(reachable(2, 9)).toBe(true); // beside the spawn, below the signpost
+      expect(reachable(home.x, home.y)).toBe(true);
+      expect([map.areaAt(map.spawn.x, map.spawn.y), map.areaAt(home.x, home.y)]).toEqual([
+        area,
+        area,
+      ]);
+      expect(map.habitats).toEqual([]);
+    },
+  );
+
+  it('requires exactly one signpost, as a tile object inside the map', () => {
+    const json = meadowCopy();
+    const objects = json.layers.find((l) => l['name'] === 'objects')!['objects'] as Record<
+      string,
+      unknown
+    >[];
+    const signpost = objects.find((o) => o['type'] === 'signpost')!;
+    objects.push({ ...signpost, gid: 0 });
+
+    expect(problemsOf(json)).toEqual(
+      expect.arrayContaining([
+        'exactly one signpost is required (found 2)',
+        'the signpost must be a tile object',
+      ]),
+    );
+
+    json.layers.find((l) => l['name'] === 'objects')!['objects'] = objects.filter(
+      (o) => o['type'] !== 'signpost',
+    );
+    expect(problemsOf(json)).toContain('exactly one signpost is required (found 0)');
   });
 
   it('reports NPCs and gates that are not usable tile objects', () => {

@@ -37,6 +37,25 @@ public sealed class MigrationUpgradeTests(PostgresFixture database)
         Assert.Equal(discoveredAt, entry.IdentifiedAt);
     }
 
+    [Fact]
+    public async Task Existing_saves_start_on_dravsko_polje()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var connectionString = await CreateEmptyDatabaseAsync(cancellationToken);
+        await using var db = new SlovionDbContext(new DbContextOptionsBuilder<SlovionDbContext>().UseNpgsql(connectionString).Options);
+        var migrator = db.GetService<IMigrator>();
+
+        await migrator.MigrateAsync("20261002221318_AddQuests", cancellationToken);
+        var slot = Guid.NewGuid();
+        await db.Database.ExecuteSqlInterpolatedAsync(
+            $"INSERT INTO save_slots (id, token_hash, created_at) VALUES ({slot}, {new byte[] { 4, 5, 6 }}, {DateTimeOffset.UnixEpoch})",
+            cancellationToken);
+
+        await migrator.MigrateAsync(cancellationToken: cancellationToken);
+
+        Assert.Equal("dravsko_polje", (await db.SaveSlots.AsNoTracking().SingleAsync(s => s.Id == slot, cancellationToken)).RegionId);
+    }
+
     private async Task<string> CreateEmptyDatabaseAsync(CancellationToken cancellationToken)
     {
         var name = $"upgrade_{Guid.NewGuid():N}";

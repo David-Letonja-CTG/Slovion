@@ -1,0 +1,138 @@
+{
+  "id": "rupicapra_rupicapra",
+  "group": "mammal",
+  "scientificName": {
+    "value": "Rupicapra rupicapra (Linnaeus, 1758)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "lzs": {
+      "title": "Gams",
+      "publisher": "Lovska zveza Slovenije",
+      "url": "https://www.lovska-zveza.si/prostozivece-zivali/sesalci/gams/",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gis": {
+      "title": "Gams",
+      "publisher": "Gozdarski inštitut Slovenije (zdravgozd.si)",
+      "url": "https://www.zdravgozd.si/prirocnik/zapis.aspx?idso=822",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "tnp": {
+      "title": "Živalstvo",
+      "publisher": "Javni zavod Triglavski narodni park",
+      "url": "https://www.tnp.si/sl/park/narava/zivalstvo/",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Rupicapra rupicapra (Linnaeus, 1758) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5220170",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "gams",
+        "sources": [
+          "lzs",
+          "gis",
+          "tnp"
+        ]
+      },
+      "family": {
+        "value": "Bovidae",
+        "sources": [
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Odprti skalnati predeli nad gozdno mejo; pozimi se spušča nižje, tudi v gozdove.",
+        "sources": [
+          "lzs",
+          "tnp"
+        ]
+      },
+      "distribution": {
+        "value": "Pri nas živi v Alpah, predalpskem gričevju in Dinarskem gorstvu; je najznačilnejša žival alpskega sveta.",
+        "sources": [
+          "gis",
+          "tnp"
+        ]
+      },
+      "season": {
+        "value": "Aktiven je podnevi; poleti zlasti zjutraj in zvečer.",
+        "sources": [
+          "gis",
+          "lzs"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "V plečih je visok do 75 cm.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Poleti je svetlo rdečkasto rjav s temno progo po sredini hrbta, pozimi pa črno rjav.",
+          "sources": [
+            "gis"
+          ]
+        },
+        {
+          "value": "Rogove imata oba spola; so smolnato črni in na vrhu zakrivljeni.",
+          "sources": [
+            "lzs",
+            "gis"
+          ]
+        },
+        {
+          "value": "Prek oči do gobca se mu na vsaki strani glave vleče široka temna proga.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Dobro pleza in skače.",
+          "sources": [
+            "gis"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "times": [
+      "morning",
+      "day",
+      "evening"
+    ],
+    "sources": [
+      "gis"
+    ]
+  },
+  "wildlife": {
+    "torch": "calm"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

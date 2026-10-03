@@ -17,6 +17,9 @@ public interface IContentCatalog
     /// <summary>Every habitat in the catalog, ordered by their order, then by ID.</summary>
     IReadOnlyList<Habitat> AllHabitats { get; }
 
+    /// <summary>Every region in the catalog, ordered by their order, then by ID.</summary>
+    IReadOnlyList<Region> AllRegions { get; }
+
     Species? FindSpecies(SpeciesId id);
 
     MapSpot? FindSpot(string mapId, string spotId);
@@ -28,6 +31,8 @@ public interface IContentCatalog
     MapNpc? FindNpcOnMap(string mapId, string npcId);
 
     Quest? FindQuest(string questId);
+
+    Region? FindRegion(string regionId);
 
     /// <summary>The quest an NPC gives; every NPC gives exactly one.</summary>
     Quest? FindQuestByGiver(string npcId);

@@ -1,0 +1,8 @@
+{
+  "id": "dravsko_polje",
+  "mapId": "dravsko_polje_meadow",
+  "order": 1,
+  "position": { "x": 74, "y": 35 },
+  "unlock": {},
+  "text": { "sl": { "name": "Dravsko polje", "lockedHint": "Vedno odprto." } }
+}

@@ -20,7 +20,7 @@
     "loading": "Nalaganje …"
   },
   "play": {
-    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči, pogovori se ali išči v visoki travi · L: svetilka · M: Terenski dnevnik"
+    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči, pogovori se, beri kažipot ali išči v visoki travi · L: svetilka · M: Terenski dnevnik"
   },
   "discovery": {
     "known": "Ta vrsta je že zapisana v Terenskem dnevniku: {{name}}"
@@ -61,7 +61,9 @@
     "unknown_encounter": "To opazovanje ni več veljavno. Poskusi znova.",
     "unknown_habitat": "Tukaj ni mogoče iskati.",
     "unknown_npc": "Tukaj ni nikogar.",
-    "unknown_map": "Tega območja ni."
+    "unknown_map": "Tega območja ni.",
+    "unknown_region": "Te regije ni.",
+    "region_locked": "Ta regija je še zaklenjena."
   },
   "identification": {
     "heading": {
@@ -119,5 +121,19 @@
   },
   "area": {
     "label": "Lokacija"
+  },
+  "travel": {
+    "title": "Kažipot",
+    "question": "Kam greš?",
+    "mapLabel": "Zemljevid Slovenije",
+    "current": "Tukaj si",
+    "open": "Odprto",
+    "locked": "Zaklenjeno",
+    "remaining": {
+      "one": "Prepoznaj še {{count}} vrsto.",
+      "two": "Prepoznaj še {{count}} vrsti.",
+      "few": "Prepoznaj še {{count}} vrste.",
+      "other": "Prepoznaj še {{count}} vrst."
+    }
   }
 }

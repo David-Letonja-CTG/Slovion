@@ -1,10 +1,11 @@
 import { Direction } from '../input/actions';
-import { AreaZone, Gate, HabitatZone, MapNpc, WorldMap } from './world-map';
+import { AreaZone, Gate, HabitatZone, MapNpc, Signpost, WorldMap } from './world-map';
 
 /**
  * A small test map drawn as text: `.` open, `#` blocked, `S` spawn, `*` spot (named `spot`),
  * `g` tall grass (habitat `tall_grass`), `G` spawn standing in tall grass, `N` the NPC `vera` (tile 5),
- * `D` a gate opened by flag `gate_open` (tile 6), `R` the home spot `hare` of a resident animal.
+ * `D` a gate opened by flag `gate_open` (tile 6), `R` the home spot `hare` of a resident animal,
+ * `P` the signpost (tile 7).
  */
 export function textMap(
   rows: readonly string[],
@@ -21,6 +22,7 @@ export function textMap(
   const npcs: MapNpc[] = [];
   const gates: Gate[] = [];
   const areas: AreaZone[] = [];
+  const signposts: Signpost[] = [];
 
   rows.forEach((row, y) =>
     [...row].forEach((cell, x) => {
@@ -30,6 +32,7 @@ export function textMap(
       if (cell === 'R') spots.push({ spotId: 'hare', x, y });
       if (cell === 'N') npcs.push({ npcId: 'vera', x, y, gid: 5 });
       if (cell === 'D') gates.push({ flag: 'gate_open', x, y, gid: 6 });
+      if (cell === 'P') signposts.push({ x, y, gid: 7 });
       const areaId = areaOf(x, y);
       if (areaId) areas.push({ areaId, minX: x, minY: y, maxX: x, maxY: y });
       if (cell === 'g' || cell === 'G') {
@@ -51,5 +54,6 @@ export function textMap(
     npcs,
     gates,
     areas,
+    signposts,
   );
 }

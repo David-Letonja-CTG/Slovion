@@ -142,6 +142,14 @@ namespace Slovion.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasDefaultValue("dravsko_polje")
+                        .HasColumnName("region_id");
+
                     b.Property<byte[]>("TokenHash")
                         .IsRequired()
                         .HasColumnType("bytea")

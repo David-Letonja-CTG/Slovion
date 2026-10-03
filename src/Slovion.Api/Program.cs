@@ -3,11 +3,13 @@ using Slovion.Api.Discovery;
 using Slovion.Api.Errors;
 using Slovion.Api.Quests;
 using Slovion.Api.Saves;
+using Slovion.Api.Travel;
 using Slovion.Api.Wildlife;
 using Slovion.Api.World;
 using Slovion.Application.Discovery;
 using Slovion.Application.Quests;
 using Slovion.Application.Saves;
+using Slovion.Application.Travel;
 using Slovion.Application.Wildlife;
 using Slovion.Infrastructure;
 using Slovion.Infrastructure.Persistence;
@@ -21,7 +23,9 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<SaveSlotService>();
 builder.Services.AddScoped<EncounterService>();
 builder.Services.AddScoped<NatureDexService>();
+builder.Services.AddScoped<ProgressReader>();
 builder.Services.AddScoped<QuestService>();
+builder.Services.AddScoped<TravelService>();
 builder.Services.AddScoped<WildlifeService>();
 
 var app = builder.Build();
@@ -41,7 +45,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapHealthChecks("/health");
-app.MapSaveEndpoints().MapDiscoveryEndpoints().MapQuestEndpoints().MapTimeEndpoints().MapWildlifeEndpoints();
+app.MapSaveEndpoints().MapDiscoveryEndpoints().MapQuestEndpoints().MapTimeEndpoints().MapWildlifeEndpoints().MapTravelEndpoints();
 app.MapApiNotFoundFallback();
 
 await app.RunAsync();

@@ -42,7 +42,7 @@ export const TIME_TINT: Record<TimeOfDay, string | undefined> = {
 };
 
 /**
- * Draws the visible part of the map in authored layer order, then closed gates and NPCs, then the player, then
+ * Draws the visible part of the map in authored layer order, then closed gates, signposts and NPCs, then the player, then
  * the time-of-day tint over everything.
  */
 export function renderWorld(
@@ -107,6 +107,7 @@ export function renderWorld(
     );
   };
   for (const gate of world.closedGates) drawTile(gate.gid, gate.x, gate.y);
+  for (const signpost of map.signposts) drawTile(signpost.gid, signpost.x, signpost.y);
   for (const npc of map.npcs) {
     const sheet = images.npcSprites?.[npc.npcId];
     if (!sheet) {

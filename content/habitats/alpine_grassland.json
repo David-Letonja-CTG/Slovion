@@ -1,0 +1,9 @@
+{
+  "id": "alpine_grassland",
+  "text": { "sl": { "name": "Visokogorje" } },
+  "order": 5,
+  "searchChancePercent": 50,
+  "species": [
+    { "speciesId": "rupicapra_rupicapra", "weight": 1 }
+  ]
+}

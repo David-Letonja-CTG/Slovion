@@ -275,3 +275,52 @@ async function identifyThroughApi(page: Page, spotId: string, speciesId: string)
   );
   expect(correct).toBe(true);
 }
+
+/** Identifies three species and completes Vera's quest through the API; its flag opens Kočevje. */
+async function completeVerasQuestThroughApi(page: Page): Promise<void> {
+  const talk = () =>
+    page.evaluate(async () => {
+      const token = localStorage.getItem('slovion.saveToken');
+      await fetch('/api/save/conversations', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mapId: 'dravsko_polje_meadow', npcId: 'vera' }),
+      });
+    });
+  await talk();
+  await identifyThroughApi(page, 'meadow_sage_1', 'salvia_pratensis');
+  await identifyThroughApi(page, 'meadow_dandelion_1', 'taraxacum_officinale');
+  await identifyThroughApi(page, 'meadow_hare_1', 'lepus_europaeus');
+  await talk();
+}
+
+test('the signpost takes the player to Kočevje once Vera is helped, and the game continues there', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Nova igra' }).click();
+  await waitForTheWorld(page);
+  await completeVerasQuestThroughApi(page);
+
+  // The signpost stands at (12,9): two steps right of the spawn, then face up.
+  await walk(page, 'ArrowRight', 2);
+  await step(page, 'ArrowUp');
+  await page.keyboard.press('KeyE');
+  const travelMap = page.getByRole('dialog', { name: 'Kažipot' });
+  await expect(travelMap).toBeVisible();
+  await expect(travelMap.locator('[data-region="dravsko_polje"]')).toContainText('Tukaj si');
+  await expect(travelMap.locator('[data-region="kocevje"]')).toContainText('Odprto');
+  await expect(travelMap.locator('[data-region="pohorje"]')).toContainText('Prepoznaj še 3 vrste.');
+  await expect(travelMap.locator('[data-region="triglav"]')).toContainText('Zaklenjeno');
+
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('app-location-banner')).toHaveText('Kočevski gozd');
+  await expect(page.locator('.conditions__location')).toHaveText('Kočevski gozd');
+  await expect(travelMap).toHaveCount(0);
+
+  await page.reload();
+  await page.getByRole('button', { name: 'Nadaljuj' }).click();
+  await waitForTheWorld(page);
+  await expect(page.locator('.conditions__location')).toHaveText('Kočevski gozd');
+});

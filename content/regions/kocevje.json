@@ -1,0 +1,8 @@
+{
+  "id": "kocevje",
+  "mapId": "kocevje_forest",
+  "order": 2,
+  "position": { "x": 45, "y": 84 },
+  "unlock": { "flag": "hedgerow_open" },
+  "text": { "sl": { "name": "Kočevje", "lockedHint": "Pomagaj Veri na Dravskem polju." } }
+}

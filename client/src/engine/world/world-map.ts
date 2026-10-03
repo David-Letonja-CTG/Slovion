@@ -78,6 +78,13 @@ export interface Gate {
   readonly gid: number;
 }
 
+/** The signpost drawn with tileset tile `gid`: it blocks its tile and opens the travel map. */
+export interface Signpost {
+  readonly x: number;
+  readonly y: number;
+  readonly gid: number;
+}
+
 /** Anything that can say whether a tile can be entered. */
 export interface Obstacles {
   isBlocked(x: number, y: number): boolean;
@@ -104,13 +111,14 @@ export class WorldMap implements Obstacles {
     readonly npcs: readonly MapNpc[] = [],
     readonly gates: readonly Gate[] = [],
     readonly areas: readonly AreaZone[] = [],
+    readonly signposts: readonly Signpost[] = [],
   ) {}
 
   inBounds(x: number, y: number): boolean {
     return x >= 0 && y >= 0 && x < this.width && y < this.height;
   }
 
-  /** Tiles outside the map count as blocked. NPCs and gates are handled by the world, which knows the flags. */
+  /** Tiles outside the map count as blocked. NPCs, gates and signposts are handled by the world. */
   isBlocked(x: number, y: number): boolean {
     return !this.inBounds(x, y) || this.blocked[y * this.width + x];
   }
@@ -121,6 +129,10 @@ export class WorldMap implements Obstacles {
 
   gateAt(x: number, y: number): Gate | undefined {
     return this.gates.find((gate) => gate.x === x && gate.y === y);
+  }
+
+  signpostAt(x: number, y: number): Signpost | undefined {
+    return this.signposts.find((signpost) => signpost.x === x && signpost.y === y);
   }
 
   spotAt(x: number, y: number): Spot | undefined {

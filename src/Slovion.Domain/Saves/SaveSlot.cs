@@ -1,3 +1,5 @@
+using Slovion.Domain.Content;
+
 namespace Slovion.Domain.Saves;
 
 /// <summary>
@@ -12,11 +14,15 @@ public sealed class SaveSlot
 
     public DateTimeOffset CreatedAt { get; private set; }
 
-    private SaveSlot(Guid id, byte[] tokenHash, DateTimeOffset createdAt)
+    /// <summary>The region the player is in; the game continues there.</summary>
+    public string RegionId { get; private set; }
+
+    private SaveSlot(Guid id, byte[] tokenHash, DateTimeOffset createdAt, string regionId)
     {
         Id = id;
         TokenHash = tokenHash;
         CreatedAt = createdAt;
+        RegionId = regionId;
     }
 
     public static SaveSlot Create(Guid id, byte[] tokenHash, DateTimeOffset createdAt)
@@ -24,6 +30,13 @@ public sealed class SaveSlot
         ArgumentOutOfRangeException.ThrowIfEqual(id, Guid.Empty);
         ArgumentNullException.ThrowIfNull(tokenHash);
         ArgumentOutOfRangeException.ThrowIfZero(tokenHash.Length);
-        return new SaveSlot(id, tokenHash, createdAt);
+        return new SaveSlot(id, tokenHash, createdAt, Region.StartId);
+    }
+
+    /// <summary>Makes <paramref name="regionId"/> the current region. Whether it may be entered is decided by the caller.</summary>
+    public void TravelTo(string regionId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(regionId);
+        RegionId = regionId;
     }
 }

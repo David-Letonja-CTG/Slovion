@@ -1,0 +1,9 @@
+{
+  "id": "fir_beech_forest",
+  "text": { "sl": { "name": "Jelovo-bukov gozd" } },
+  "order": 3,
+  "searchChancePercent": 50,
+  "species": [
+    { "speciesId": "ursus_arctos", "weight": 1 }
+  ]
+}

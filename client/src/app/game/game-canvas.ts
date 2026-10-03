@@ -3,10 +3,11 @@ import {
   DestroyRef,
   ElementRef,
   InjectionToken,
-  afterNextRender,
+  afterRenderEffect,
   inject,
   input,
   output,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -26,7 +27,10 @@ export const GAME_FACTORY = new InjectionToken<typeof createGame>('GAME_FACTORY'
   factory: () => createGame,
 });
 
-/** Hosts the framework-free game engine. The engine sizes and centres the canvas itself. */
+/**
+ * Hosts the framework-free game engine. The engine sizes and centres the canvas itself. A new world (another
+ * region's map) stops the running game and starts a new one.
+ */
 @Component({
   selector: 'app-game-canvas',
   imports: [TranslocoPipe],
@@ -48,12 +52,13 @@ export const GAME_FACTORY = new InjectionToken<typeof createGame>('GAME_FACTORY'
   `,
 })
 export class GameCanvas {
+  /** The world to play; a new world starts a new game. */
   readonly world = input.required<LoadedWorld>();
-  /** The save's progress flags when the game starts; later changes go through `Game.setOpenFlags`. */
+  /** The save's progress flags when a game starts; later changes go through `Game.setOpenFlags`. */
   readonly openFlags = input<readonly string[]>([]);
-  /** The map's resident animals when the game starts; refreshes go through `Game.setResidents`. */
+  /** The map's resident animals when a game starts; refreshes go through `Game.setResidents`. */
   readonly residents = input<readonly ResidentInfo[]>([]);
-  /** The save's in-game clock when the game starts; later re-syncs go through `Game.setWorldTime`. */
+  /** The save's in-game clock when a game starts; later re-syncs go through `Game.setWorldTime`. */
   readonly worldTime = input<WorldClock | undefined>(undefined);
   /** A new in-game minute (once per in-game minute while playing, and after a re-sync). */
   readonly timeChanged = output<WorldTime>();
@@ -64,32 +69,39 @@ export class GameCanvas {
   readonly interaction = output<Interaction>();
   /** The player asked for the menu (OpenMenu) while in the world. */
   readonly menuRequested = output<void>();
-  /** Emitted once the engine runs, so the host can route input to overlays. */
+  /** Emitted whenever a game starts running, so the host can route input to overlays. */
   readonly started = output<Game>();
 
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
+  private game: Game | undefined;
 
   constructor() {
     const host = inject<ElementRef<HTMLElement>>(ElementRef);
     const destroyRef = inject(DestroyRef);
     const createGameFn = inject(GAME_FACTORY);
 
-    afterNextRender(() => {
-      const game = createGameFn(host.nativeElement, this.canvas().nativeElement, {
-        world: this.world(),
-        onInteract: (interaction) => this.interaction.emit(interaction),
-        onOpenMenu: () => this.menuRequested.emit(),
-        openFlags: this.openFlags(),
-        worldTime: this.worldTime(),
-        residents: this.residents(),
-        onTimeChange: (time) => this.timeChanged.emit(time),
-        onAreaChange: (area) => this.areaChanged.emit(area),
-        onTorchChange: (on) => this.torchChanged.emit(on),
+    // Runs after the first render and again whenever the world changes; the other inputs only matter at start.
+    afterRenderEffect(() => {
+      const world = this.world();
+      untracked(() => {
+        this.game?.stop();
+        const game = createGameFn(host.nativeElement, this.canvas().nativeElement, {
+          world,
+          onInteract: (interaction) => this.interaction.emit(interaction),
+          onOpenMenu: () => this.menuRequested.emit(),
+          openFlags: this.openFlags(),
+          worldTime: this.worldTime(),
+          residents: this.residents(),
+          onTimeChange: (time) => this.timeChanged.emit(time),
+          onAreaChange: (area) => this.areaChanged.emit(area),
+          onTorchChange: (on) => this.torchChanged.emit(on),
+        });
+        this.game = game;
+        game.start();
+        this.started.emit(game);
       });
-      game.start();
-      destroyRef.onDestroy(() => game.stop());
-      this.started.emit(game);
     });
+    destroyRef.onDestroy(() => this.game?.stop());
   }
 
   /** Gives keyboard focus back to the game, e.g. after closing a dialog. */
