@@ -17,4 +17,4 @@
 - [x] 3.2 Run `dotnet format --verify-no-changes`, `dotnet test --solution Slovion.slnx`, `npm run check` and `npm run e2e`; all succeed
 - [x] 3.3 Manual check: identify, sight again at once and later (advancing the clock in the database), the journal at levels 1–3; capture screenshots
 - [x] 3.4 Review the changed files against non-goals and every spec scenario; record deviations in design.md
-- [ ] 3.5 Run `openspec validate add-species-research --strict`, push, and verify all CI jobs pass on the pull request
+- [x] 3.5 Run `openspec validate add-species-research --strict`, push, and verify all CI jobs pass on the pull request
