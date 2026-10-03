@@ -21,6 +21,9 @@ public interface IContentCatalog
 
     MapSpot? FindSpot(string mapId, string spotId);
 
+    /// <summary>All spots of a map, or <c>null</c> when the map is unknown.</summary>
+    IReadOnlyList<MapSpot>? SpotsOn(string mapId);
+
     /// <summary>The NPC standing in a map, if any.</summary>
     MapNpc? FindNpcOnMap(string mapId, string npcId);
 

@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Season, TimeOfDay } from '../../engine';
+import { ResidentInfo, Season, TimeOfDay } from '../../engine';
 
 export interface SourceInfo {
   readonly title: string;
@@ -123,7 +123,7 @@ export interface AnswerResult {
 
 /**
  * Error codes the client shows messages for; each has a key `errors.<code>`, used dynamically:
- * t(errors.invalid_save_token, errors.unknown_spot, errors.unknown_encounter, errors.unknown_habitat, errors.unknown_npc, errors.network, errors.error)
+ * t(errors.invalid_save_token, errors.unknown_spot, errors.unknown_encounter, errors.unknown_habitat, errors.unknown_npc, errors.unknown_map, errors.network, errors.error)
  */
 export type ApiErrorCode =
   | 'invalid_save_token'
@@ -131,6 +131,7 @@ export type ApiErrorCode =
   | 'unknown_encounter'
   | 'unknown_habitat'
   | 'unknown_npc'
+  | 'unknown_map'
   | 'network'
   | 'error';
 
@@ -140,6 +141,7 @@ const KNOWN_CODES: readonly ApiErrorCode[] = [
   'unknown_encounter',
   'unknown_habitat',
   'unknown_npc',
+  'unknown_map',
 ];
 
 /** Maps any failure to a code with a translated message. */
@@ -173,6 +175,11 @@ export class GameApi {
       mapId,
       spotId,
     });
+  }
+
+  /** The map's resident animals and which are around at the save's in-game time (D3, D8). */
+  wildlife(mapId: string): Observable<{ animals: ResidentInfo[] }> {
+    return this.http.get<{ animals: ResidentInfo[] }>('/api/save/wildlife', { params: { mapId } });
   }
 
   time(): Observable<WorldTimeInfo> {

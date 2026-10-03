@@ -26,6 +26,7 @@ describe('parseTiledMap', () => {
     expect(map.spots).toContainEqual({ spotId: 'meadow_sage_1', x: 13, y: 10 });
     expect(map.spots.map((spot) => spot.spotId).sort()).toEqual([
       'hedgerow_hawthorn_1',
+      'hedgerow_shrike_1',
       'meadow_dandelion_1',
       'meadow_hare_1',
       'meadow_sage_1',
@@ -36,6 +37,9 @@ describe('parseTiledMap', () => {
     expect(map.tileset.image).toBe('../tilesets/meadow.png');
     expect(map.npcs).toEqual([{ npcId: 'vera', x: 7, y: 9, gid: 20 }]);
     expect(map.gates).toEqual([{ flag: 'hedgerow_open', x: 20, y: 19, gid: 19 }]);
+    // Trees (tile 5) and tall grass (tile 3) sway between two frames.
+    expect(map.tileset.animations?.get(5)?.map((frame) => frame.tile)).toEqual([5, 20]);
+    expect(map.tileset.animations?.get(3)?.map((frame) => frame.tile)).toEqual([3, 21]);
     expect([map.areaAt(10, 10), map.areaAt(20, 19), map.areaAt(20, 20)]).toEqual([
       'meadow',
       'meadow',

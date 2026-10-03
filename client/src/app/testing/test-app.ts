@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import sl from '../../../public/i18n/sl.json';
-import { Action, Game, GameOptions } from '../../engine';
+import { Action, ResidentInfo, Game, GameOptions } from '../../engine';
 import { AnswerResult, Encounter, NatureDexEntry } from '../api/game-api';
 import { gameApiInterceptor } from '../api/game-api.interceptor';
 import { routes } from '../app.routes';
@@ -24,6 +24,8 @@ export class FakeGame implements Game {
   worldMinutes: number | undefined;
   /** The torch state last given with `setTorch`. */
   torch: boolean | undefined;
+  /** The residents last given with `setResidents`. */
+  residents: readonly ResidentInfo[] | undefined;
   private readonly uiListeners = new Set<(action: Action) => void>();
 
   start = vi.fn();
@@ -40,6 +42,10 @@ export class FakeGame implements Game {
 
   setOpenFlags(flags: readonly string[]): void {
     this.openFlags = flags;
+  }
+
+  setResidents(residents: readonly ResidentInfo[]): void {
+    this.residents = residents;
   }
 
   setTorch(on: boolean): void {

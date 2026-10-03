@@ -14,6 +14,27 @@ export interface Tileset {
   readonly tileCount: number;
   /** Image path relative to the map file. */
   readonly image: string;
+  /** Frame animations by tile index (Tiled tile animations); tiles without one are still. */
+  readonly animations?: ReadonlyMap<number, readonly TileFrame[]>;
+}
+
+/** One frame of a tile animation: the tile index to show and for how long. */
+export interface TileFrame {
+  readonly tile: number;
+  readonly ms: number;
+}
+
+/** The tile index to draw for `index` at `elapsedMs` of game time. */
+export function animatedTile(tileset: Tileset, index: number, elapsedMs: number): number {
+  const frames = tileset.animations?.get(index);
+  if (!frames || frames.length === 0) return index;
+  const cycle = frames.reduce((sum, frame) => sum + frame.ms, 0);
+  let at = elapsedMs % cycle;
+  for (const frame of frames) {
+    if (at < frame.ms) return frame.tile;
+    at -= frame.ms;
+  }
+  return index;
 }
 
 /** An interactive place. The server decides what it holds (docs/decisions.md D3). */

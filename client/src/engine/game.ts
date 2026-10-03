@@ -5,6 +5,7 @@ import { Action } from './input/actions';
 import { GameEnvironment, Unsubscribe, browserEnvironment } from './platform';
 import { WorldImages, renderWorld } from './render/world-renderer';
 import { LOGICAL_WIDTH, ViewportLayout, computeViewport } from './viewport';
+import { ResidentInfo } from './world/resident';
 import { Interaction, World, WorldClock } from './world/world';
 import { WorldTime } from './world/world-time';
 import { WorldMap } from './world/world-map';
@@ -29,6 +30,8 @@ export interface Game {
   setWorldTime(minutes: number): void;
   /** Switches the player's torch; changes are reported through `onTorchChange`. */
   setTorch(on: boolean): void;
+  /** Replaces the map's resident animals as the server lists them (D3, D8). */
+  setResidents(residents: readonly ResidentInfo[]): void;
 }
 
 export interface GameOptions {
@@ -39,6 +42,8 @@ export interface GameOptions {
   readonly onOpenMenu?: () => void;
   /** The save's progress flags when the game starts. */
   readonly openFlags?: readonly string[];
+  /** The map's resident animals when the game starts. */
+  readonly residents?: readonly ResidentInfo[];
   /** The save's in-game clock as the server reported it; without it the world stands still at noon. */
   readonly worldTime?: WorldClock;
   /** Called once per in-game minute (and after a re-sync) with the current in-game time. */
@@ -80,6 +85,7 @@ export function createGame(
     },
   );
   world.setOpenFlags(options.openFlags ?? []);
+  world.setResidents(options.residents ?? []);
 
   let availableWidth = container.clientWidth;
   let availableHeight = container.clientHeight;
@@ -130,6 +136,7 @@ export function createGame(
     setOpenFlags: (flags) => world.setOpenFlags(flags),
     setWorldTime: (minutes) => world.setWorldTime(minutes),
     setTorch: (on) => world.setTorch(on),
+    setResidents: (residents) => world.setResidents(residents),
   };
 }
 

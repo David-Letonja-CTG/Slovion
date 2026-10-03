@@ -17,10 +17,20 @@ internal sealed record IdentificationFile(List<int>? Clues);
 /// <summary>When a species can be found: seasons, optional times of day (all when absent), and the sources behind them.</summary>
 internal sealed record AvailabilityFile(List<string>? Seasons, List<string>? Times, List<string>? Sources);
 
-internal sealed record SpeciesFile(string? Id, string? Group, FactFile? ScientificName, Dictionary<string, SourceFile>? Sources, Dictionary<string, SpeciesTextFile>? Text, AvailabilityFile? Availability, IdentificationFile? Identification);
+/// <summary>Fictional gameplay traits of an animal: its reaction to the torch.</summary>
+internal sealed record WildlifeFile(string? Torch);
+
+internal sealed record SpeciesFile(string? Id, string? Group, FactFile? ScientificName, Dictionary<string, SourceFile>? Sources, Dictionary<string, SpeciesTextFile>? Text, AvailabilityFile? Availability, WildlifeFile? Wildlife, IdentificationFile? Identification);
 
 /// <summary>The subset of the Tiled JSON map format that Slovion uses on the server.</summary>
-internal sealed record TiledMapFile(string? Orientation, int Width, int Height, int TileWidth, int TileHeight, List<TiledLayerFile>? Layers);
+internal sealed record TiledMapFile(string? Orientation, int Width, int Height, int TileWidth, int TileHeight, List<TiledLayerFile>? Layers, List<TiledTilesetFile>? Tilesets);
+
+internal sealed record TiledTilesetFile(int Tilecount, List<TiledTileFile>? Tiles);
+
+/// <summary>Per-tile data of a tileset; Slovion uses only frame animations.</summary>
+internal sealed record TiledTileFile(int Id, List<TiledFrameFile>? Animation);
+
+internal sealed record TiledFrameFile(int Tileid, int Duration);
 
 internal sealed record TiledLayerFile(string? Name, string? Type, List<int>? Data, List<TiledObjectFile>? Objects);
 

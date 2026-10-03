@@ -70,6 +70,20 @@ public sealed class ContentValidationTests
     }
 
     [Theory]
+    [InlineData("lepus_europaeus", TorchReaction.Curious)]
+    [InlineData("lanius_collurio", TorchReaction.Shy)]
+    [InlineData("alauda_arvensis", TorchReaction.Calm)]
+    [InlineData("papilio_machaon", TorchReaction.Calm)]
+    public void Repository_animals_have_their_torch_reaction(string id, TorchReaction torch)
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        Assert.Equal(torch, catalog.FindSpecies(SpeciesId.Parse(id))!.Wildlife?.Torch);
+        Assert.Null(catalog.FindSpecies(SpeciesId.Parse("salvia_pratensis"))!.Wildlife);
+        Assert.Equal(SpeciesId.Parse("lanius_collurio"), catalog.FindSpot("dravsko_polje_meadow", "hedgerow_shrike_1")?.SpeciesId);
+    }
+
+    [Theory]
     [InlineData("crataegus_monogyna", SpeciesGroup.Plant, "enovrati glog")]
     [InlineData("lanius_collurio", SpeciesGroup.Bird, "rjavi srakoper")]
     public void Repository_content_has_the_hedgerow_species(string id, SpeciesGroup group, string slName)
@@ -155,6 +169,13 @@ public sealed class ContentValidationTests
         { "overlapping area zones", c => Objects(c).Add(ContentFolder.AreaZone(name: "copy")), "area zone 'copy' overlaps another area zone" },
         { "area zone beyond the map", c => Objects(c).Add(ContentFolder.AreaZone(fromX: 4, toX: 5, name: "outside")), "area zone 'outside' extends beyond the map" },
         { "walkable tiles without an area", c => Objects(c)[3] = ContentFolder.AreaZone(fromX: 0, toX: 1), "6 walkable tile(s) lie in no area, e.g. (2, 0)" },
+        { "animal without wildlife traits", c => c.Species["group"] = "mammal", "'wildlife' traits are required for animals" },
+        { "plant with wildlife traits", c => c.Species["wildlife"] = new JsonObject { ["torch"] = "calm" }, "plants must not declare 'wildlife' traits" },
+        { "unknown torch reaction", c => { c.Species["group"] = "mammal"; c.Species["wildlife"] = new JsonObject { ["torch"] = "brave" }; }, "unknown torch reaction 'brave'" },
+        { "animal without a walk sprite", c => { c.Species["group"] = "mammal"; c.Species["wildlife"] = new JsonObject { ["torch"] = "shy" }; c.WildlifeSprite = null; }, "species 'salvia_pratensis' has no walk sprite" },
+        { "walk sprite of the wrong size", c => { c.Species["group"] = "mammal"; c.Species["wildlife"] = new JsonObject { ["torch"] = "shy" }; c.WildlifeSprite = ContentFolder.Png(16, 16); }, "walk sprite of species 'salvia_pratensis' must be 32×16 pixels (found 16×16)" },
+        { "NPC without a sprite", c => c.NpcSprite = null, "NPC 'vera' has no sprite" },
+        { "tile animation outside the tileset", c => c.Map["tilesets"] = new JsonArray(new JsonObject { ["tilecount"] = 8, ["tiles"] = new JsonArray(new JsonObject { ["id"] = 1, ["animation"] = new JsonArray(new JsonObject { ["tileid"] = 9, ["duration"] = 100 }) }) }), "the animation of tile 1 needs frames inside the tileset" },
         { "spot with unknown species", c => Objects(c)[1]!["properties"]![1]!["value"] = "vulpes_vulpes", "spot 'sage_1' references unknown species 'vulpes_vulpes'" },
     };
 

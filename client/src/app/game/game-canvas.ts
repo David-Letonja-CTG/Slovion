@@ -10,7 +10,15 @@ import {
   viewChild,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Game, Interaction, LoadedWorld, WorldClock, WorldTime, createGame } from '../../engine';
+import {
+  Game,
+  Interaction,
+  LoadedWorld,
+  ResidentInfo,
+  WorldClock,
+  WorldTime,
+  createGame,
+} from '../../engine';
 
 /** Creates the engine; replaceable in tests. */
 export const GAME_FACTORY = new InjectionToken<typeof createGame>('GAME_FACTORY', {
@@ -43,6 +51,8 @@ export class GameCanvas {
   readonly world = input.required<LoadedWorld>();
   /** The save's progress flags when the game starts; later changes go through `Game.setOpenFlags`. */
   readonly openFlags = input<readonly string[]>([]);
+  /** The map's resident animals when the game starts; refreshes go through `Game.setResidents`. */
+  readonly residents = input<readonly ResidentInfo[]>([]);
   /** The save's in-game clock when the game starts; later re-syncs go through `Game.setWorldTime`. */
   readonly worldTime = input<WorldClock | undefined>(undefined);
   /** A new in-game minute (once per in-game minute while playing, and after a re-sync). */
@@ -71,6 +81,7 @@ export class GameCanvas {
         onOpenMenu: () => this.menuRequested.emit(),
         openFlags: this.openFlags(),
         worldTime: this.worldTime(),
+        residents: this.residents(),
         onTimeChange: (time) => this.timeChanged.emit(time),
         onAreaChange: (area) => this.areaChanged.emit(area),
         onTorchChange: (on) => this.torchChanged.emit(on),

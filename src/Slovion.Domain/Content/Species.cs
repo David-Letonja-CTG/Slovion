@@ -15,7 +15,18 @@ public sealed record SpeciesText(Fact Name, Fact Family, Fact Habitat, Fact Dist
 /// Real-world species content. <see cref="Clues"/> is the only gameplay value: it chooses which
 /// sourced characteristics serve as identification clues, and in which order (docs/decisions.md D1, D6).
 /// </summary>
-public sealed record Species(SpeciesId Id, SpeciesGroup Group, Fact ScientificName, IReadOnlyDictionary<string, Source> Sources, IReadOnlyDictionary<string, SpeciesText> Text, IReadOnlyList<int> Clues, Availability Availability);
+public sealed record Species(SpeciesId Id, SpeciesGroup Group, Fact ScientificName, IReadOnlyDictionary<string, Source> Sources, IReadOnlyDictionary<string, SpeciesText> Text, IReadOnlyList<int> Clues, Availability Availability, WildlifeTraits? Wildlife);
+
+/// <summary>How a resident animal reacts to a lit torch in the dark. Fictional gameplay data (D6), never a fact.</summary>
+public enum TorchReaction
+{
+    Curious,
+    Shy,
+    Calm,
+}
+
+/// <summary>Gameplay traits of an animal living in the world; plants have none.</summary>
+public sealed record WildlifeTraits(TorchReaction Torch);
 
 /// <summary>
 /// When a species can be found: in which seasons and at which times of day. Derived from sourced facts (flowering,

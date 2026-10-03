@@ -4,7 +4,7 @@ import { AreaZone, Gate, HabitatZone, MapNpc, WorldMap } from './world-map';
 /**
  * A small test map drawn as text: `.` open, `#` blocked, `S` spawn, `*` spot (named `spot`),
  * `g` tall grass (habitat `tall_grass`), `G` spawn standing in tall grass, `N` the NPC `vera` (tile 5),
- * `D` a gate opened by flag `gate_open` (tile 6).
+ * `D` a gate opened by flag `gate_open` (tile 6), `R` the home spot `hare` of a resident animal.
  */
 export function textMap(
   rows: readonly string[],
@@ -27,6 +27,7 @@ export function textMap(
       blocked.push(cell === '#');
       if (cell === 'S' || cell === 'G') spawn = { x, y, facing };
       if (cell === '*') spots.push({ spotId: 'spot', x, y });
+      if (cell === 'R') spots.push({ spotId: 'hare', x, y });
       if (cell === 'N') npcs.push({ npcId: 'vera', x, y, gid: 5 });
       if (cell === 'D') gates.push({ flag: 'gate_open', x, y, gid: 6 });
       const areaId = areaOf(x, y);

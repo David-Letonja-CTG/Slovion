@@ -19,6 +19,7 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('IMAGE_LOADER', {
 });
 
 export const PLAYER_SPRITE_URL = '/sprites/player.png';
+export const LAMP_SPRITE_URL = '/sprites/lamp.png';
 
 /** A loaded map plus the names of its places in the player's language (content, D7). */
 export interface LoadedPlace extends LoadedWorld {
@@ -45,9 +46,12 @@ export class WorldLoader {
     // The tileset path in the map is relative to the map file.
     const tilesetUrl = new URL(map.tileset.image, new URL(mapUrl, this.document.baseURI)).pathname;
     const areaIds = [...new Set(map.areas.map((area) => area.areaId))];
-    const [tileset, playerSprite, ...areaFiles] = await Promise.all([
+    const npcIds = [...new Set(map.npcs.map((npc) => npc.npcId))];
+    const [tileset, playerSprite, lampSprite, npcSheets, ...areaFiles] = await Promise.all([
       this.loadImage(tilesetUrl),
       this.loadImage(PLAYER_SPRITE_URL),
+      this.loadImage(LAMP_SPRITE_URL),
+      this.loadImages('/content/npc-sprites', npcIds),
       ...areaIds.map((id) =>
         firstValueFrom(this.http.get<AreaFile>(`/content/areas/${encodeURIComponent(id)}.json`)),
       ),
@@ -61,6 +65,28 @@ export class WorldLoader {
         return [id, text?.[language]?.name ?? text?.['sl']?.name ?? id];
       }),
     );
-    return { map, tileset, playerSprite, areaNames };
+    return {
+      map,
+      tileset: tileset as CanvasImageSource,
+      playerSprite: playerSprite as CanvasImageSource,
+      lampSprite: lampSprite as CanvasImageSource,
+      npcSprites: npcSheets as Record<string, CanvasImageSource>,
+      areaNames,
+    };
+  }
+
+  /** The walk sprites of the given animal species. */
+  wildlifeSprites(speciesIds: readonly string[]): Promise<Record<string, CanvasImageSource>> {
+    return this.loadImages('/content/wildlife-sprites', [...new Set(speciesIds)]);
+  }
+
+  private async loadImages(
+    folder: string,
+    ids: readonly string[],
+  ): Promise<Record<string, CanvasImageSource>> {
+    const images = await Promise.all(
+      ids.map((id) => this.loadImage(`${folder}/${encodeURIComponent(id)}.png`)),
+    );
+    return Object.fromEntries(ids.map((id, i) => [id, images[i]]));
   }
 }

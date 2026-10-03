@@ -3,7 +3,7 @@ import { Component, DestroyRef, computed, inject, signal, viewChild } from '@ang
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
-import { Action, Game, Interaction, WorldTime, worldTimeAt } from '../../engine';
+import { Action, Game, Interaction, ResidentInfo, WorldTime, worldTimeAt } from '../../engine';
 import {
   AlreadyIdentified,
   AnswerResult,
@@ -98,6 +98,9 @@ export class PlayScreen {
     undefined,
   );
   protected readonly torchOn = signal(false);
+  /** The map's resident animals, as the server last listed them (D3, D8). */
+  protected readonly residents = signal<readonly ResidentInfo[]>([]);
+  private readonly loader = inject(WorldLoader);
   protected readonly activeQuest = computed(() =>
     this.progress().quests.find((quest) => quest.status === 'active'),
   );
@@ -105,20 +108,15 @@ export class PlayScreen {
   constructor() {
     // The world starts only with the save's progress, so gates are right from the first frame.
     Promise.all([
-      inject(WorldLoader)
-        .load(START_MAP)
-        .catch((cause: unknown) => {
-          // The player sees one message; developers get the cause (invalid map, missing file …).
-          console.error('The map could not be loaded.', cause);
-          return Promise.reject(MAP_FAILED);
-        }),
+      this.loadPlace(),
       firstValueFrom(this.api.progress()),
       firstValueFrom(this.api.time()),
     ]).then(
-      ([world, progress, time]) => {
+      ([{ world, residents }, progress, time]) => {
         this.progress.set(progress);
         this.worldTime.set(time);
         this.time.set(worldTimeAt(time.minutes));
+        this.residents.set(residents);
         this.world.set(world);
       },
       (error: unknown) => {
@@ -142,8 +140,40 @@ export class PlayScreen {
     );
   }
 
+  /** The map with its sprites, and its residents with their walk sprites. */
+  private async loadPlace(): Promise<{ world: LoadedPlace; residents: readonly ResidentInfo[] }> {
+    const [world, { animals }] = await Promise.all([
+      this.loader.load(START_MAP).catch((cause: unknown) => {
+        // The player sees one message; developers get the cause (invalid map, missing file …).
+        console.error('The map could not be loaded.', cause);
+        return Promise.reject(MAP_FAILED);
+      }),
+      firstValueFrom(this.api.wildlife(START_MAP)),
+    ]);
+    const wildlifeSprites = await this.loader
+      .wildlifeSprites(animals.map((animal) => animal.speciesId))
+      .catch((cause: unknown) => {
+        console.error('The animal sprites could not be loaded.', cause);
+        return Promise.reject(MAP_FAILED);
+      });
+    return { world: { ...world, wildlifeSprites }, residents: animals };
+  }
+
   protected onTimeChanged(time: WorldTime): void {
+    // A new time of day may bring other animals out (D8).
+    if (this.time() && this.time()!.timeOfDay !== time.timeOfDay) this.refreshResidents();
     this.time.set(time);
+  }
+
+  private refreshResidents(): void {
+    this.api.wildlife(START_MAP).subscribe({
+      next: ({ animals }) => {
+        this.residents.set(animals);
+        this.game?.setResidents(animals);
+      },
+      // A failed refresh keeps the animals as they are; the server still decides every encounter.
+      error: () => undefined,
+    });
   }
 
   /** A new place: show its name and announce it with the banner. */
@@ -168,6 +198,7 @@ export class PlayScreen {
   }
 
   private syncTime(): void {
+    this.refreshResidents();
     this.api.time().subscribe({
       next: (time) => {
         this.game?.setWorldTime(time.minutes);

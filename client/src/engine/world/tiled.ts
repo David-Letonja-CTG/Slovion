@@ -52,6 +52,7 @@ interface TiledTileset {
   columns?: number;
   tilecount?: number;
   image?: string;
+  tiles?: { id?: number; animation?: { tileid?: number; duration?: number }[] }[];
 }
 
 interface TiledMap {
@@ -191,6 +192,17 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     columns: tileset!.columns!,
     tileCount: tileset!.tilecount!,
     image: tileset!.image!,
+    animations: new Map(
+      (tileset!.tiles ?? [])
+        .filter((tile) => typeof tile.id === 'number' && (tile.animation?.length ?? 0) > 0)
+        .map((tile) => [
+          tile.id!,
+          tile.animation!.map((frame) => ({
+            tile: frame.tileid ?? tile.id!,
+            ms: frame.duration ?? 100,
+          })),
+        ]),
+    ),
   };
 
   return new WorldMap(

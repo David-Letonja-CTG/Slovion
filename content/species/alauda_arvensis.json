@@ -112,6 +112,9 @@
       "nrp"
     ]
   },
+  "wildlife": {
+    "torch": "calm"
+  },
   "identification": {
     "clues": [
       3,

@@ -7,6 +7,7 @@ export type { Clock, FrameScheduler, GameEnvironment, Unsubscribe } from './plat
 export { LOGICAL_HEIGHT, LOGICAL_WIDTH } from './viewport';
 export { MapFormatError, parseTiledMap } from './world/tiled';
 export type { Interaction, WorldClock } from './world/world';
+export type { ResidentInfo, TorchReaction } from './world/resident';
 export type { Season, TimeOfDay, WorldTime } from './world/world-time';
 export { worldTimeAt } from './world/world-time';
 export type { WorldMap } from './world/world-map';

@@ -2,7 +2,7 @@ import { Direction } from '../input/actions';
 import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../viewport';
 import { cameraOffset } from '../world/camera';
 import { World } from '../world/world';
-import { TILE_SIZE } from '../world/world-map';
+import { TILE_SIZE, animatedTile } from '../world/world-map';
 import { TimeOfDay } from '../world/world-time';
 
 /** Images the world needs. Loaded by the host; the engine never fetches (design §6). */
@@ -10,7 +10,21 @@ export interface WorldImages {
   readonly tileset: CanvasImageSource;
   /** 16×16 frames: columns are walk frames, rows are facing down, up, left, right. */
   readonly playerSprite: CanvasImageSource;
+  /** NPC sheets by NPC ID, in the player sprite's layout; NPCs without one are drawn as their map tile. */
+  readonly npcSprites?: Readonly<Record<string, CanvasImageSource>>;
+  /** Animal walk sprites by species ID: two 16×16 frames facing right. */
+  readonly wildlifeSprites?: Readonly<Record<string, CanvasImageSource>>;
+  /** The 8×8 lamp the player holds while the torch is on. */
+  readonly lampSprite?: CanvasImageSource;
 }
+
+/** Where the lamp hangs relative to the player's tile, by facing. */
+const LAMP_OFFSET: Record<Direction, { readonly x: number; readonly y: number }> = {
+  down: { x: 11, y: 7 },
+  up: { x: -2, y: 7 },
+  left: { x: -3, y: 6 },
+  right: { x: 11, y: 6 },
+};
 
 const BACKDROP = '#11161c';
 const PLAYER_ROW: Record<Direction, number> = { down: 0, up: 1, left: 2, right: 3 };
@@ -59,8 +73,9 @@ export function renderWorld(
   for (const layer of map.layers) {
     for (let y = firstY; y <= lastY; y++) {
       for (let x = firstX; x <= lastX; x++) {
-        const index = layer.tiles[y * map.width + x] - firstGid;
-        if (index < 0 || index >= tileCount) continue; // 0 = empty
+        const stored = layer.tiles[y * map.width + x] - firstGid;
+        if (stored < 0 || stored >= tileCount) continue; // 0 = empty
+        const index = animatedTile(map.tileset, stored, world.elapsedMs);
         context.drawImage(
           images.tileset,
           (index % columns) * TILE_SIZE,
@@ -92,7 +107,42 @@ export function renderWorld(
     );
   };
   for (const gate of world.closedGates) drawTile(gate.gid, gate.x, gate.y);
-  for (const npc of map.npcs) drawTile(npc.gid, npc.x, npc.y);
+  for (const npc of map.npcs) {
+    const sheet = images.npcSprites?.[npc.npcId];
+    if (!sheet) {
+      drawTile(npc.gid, npc.x, npc.y);
+      continue;
+    }
+    context.drawImage(
+      sheet,
+      0,
+      PLAYER_ROW[world.npcFacing(npc.npcId)] * TILE_SIZE,
+      TILE_SIZE,
+      TILE_SIZE,
+      npc.x * TILE_SIZE - camera.x,
+      npc.y * TILE_SIZE - camera.y,
+      TILE_SIZE,
+      TILE_SIZE,
+    );
+  }
+  for (const resident of world.residents) {
+    const sprite = images.wildlifeSprites?.[resident.speciesId];
+    if (!sprite) continue;
+    const at = resident.position;
+    const dx = Math.round(at.x * TILE_SIZE) - camera.x;
+    const dy = Math.round(at.y * TILE_SIZE) - camera.y;
+    const sx = resident.walkFrame * TILE_SIZE;
+    if (resident.facingLeft) {
+      // Sprites face right; mirror them for left.
+      context.save();
+      context.translate(dx + TILE_SIZE, dy);
+      context.scale(-1, 1);
+      context.drawImage(sprite, sx, 0, TILE_SIZE, TILE_SIZE, 0, 0, TILE_SIZE, TILE_SIZE);
+      context.restore();
+    } else {
+      context.drawImage(sprite, sx, 0, TILE_SIZE, TILE_SIZE, dx, dy, TILE_SIZE, TILE_SIZE);
+    }
+  }
 
   context.drawImage(
     images.playerSprite,
@@ -105,6 +155,21 @@ export function renderWorld(
     TILE_SIZE,
     TILE_SIZE,
   );
+
+  if (world.torchOn && images.lampSprite) {
+    const offset = LAMP_OFFSET[player.facing];
+    context.drawImage(
+      images.lampSprite,
+      0,
+      0,
+      8,
+      8,
+      playerX - camera.x + offset.x,
+      playerY - camera.y + offset.y,
+      8,
+      8,
+    );
+  }
 
   const timeOfDay = world.time.timeOfDay;
   const tint = TIME_TINT[timeOfDay];
