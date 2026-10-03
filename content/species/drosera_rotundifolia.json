@@ -1,0 +1,118 @@
+{
+  "id": "drosera_rotundifolia",
+  "group": "plant",
+  "scientificName": {
+    "value": "Drosera rotundifolia L.",
+    "sources": [
+      "gbif",
+      "bv"
+    ]
+  },
+  "sources": {
+    "mbl": {
+      "title": "Okroglolistna rosika (Drosera rotundifolia)",
+      "publisher": "Lekarne Maribor",
+      "url": "https://www.mb-lekarne.si/nasveti/zdravilne-rastline/okroglolistna-rosika-drosera-rotundifolia",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "bv": {
+      "title": "Drosera rotundifolia (okroglolistna rosika)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/drosera-rotundifolia",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Drosera rotundifolia L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/3191030",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "okroglolistna rosika",
+        "sources": [
+          "mbl"
+        ]
+      },
+      "family": {
+        "value": "rosikovke (Droseraceae)",
+        "sources": [
+          "bv"
+        ]
+      },
+      "habitat": {
+        "value": "Mokra, šotnata tla; je pogosta rastlina barij.",
+        "sources": [
+          "mbl"
+        ]
+      },
+      "distribution": {
+        "value": "Raste na severni polobli, tudi v Sloveniji. Je ogrožena in v Evropi strogo zavarovana.",
+        "sources": [
+          "bv",
+          "mbl"
+        ]
+      },
+      "season": {
+        "value": "Cveti od junija do avgusta.",
+        "sources": [
+          "bv",
+          "mbl"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Pritlična rozeta skoraj okroglih listov.",
+          "sources": [
+            "mbl"
+          ]
+        },
+        {
+          "value": "Listi so posuti z žleznimi laski in škrlatno rdečimi žlezami.",
+          "sources": [
+            "mbl"
+          ]
+        },
+        {
+          "value": "Žleze izločajo lepljiv sok, ki je videti kot rosa in privablja žuželke.",
+          "sources": [
+            "mbl"
+          ]
+        },
+        {
+          "value": "Ujeto žuželko list objame in prebavi; tako rastlina dobi dušik.",
+          "sources": [
+            "mbl"
+          ]
+        },
+        {
+          "value": "Iz sredine rozete poganjajo stebelca z belimi cvetnimi klasi.",
+          "sources": [
+            "mbl"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "summer"
+    ],
+    "sources": [
+      "bv",
+      "mbl"
+    ]
+  },
+  "identification": {
+    "clues": [
+      0,
+      1,
+      2
+    ]
+  }
+}

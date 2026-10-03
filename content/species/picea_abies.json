@@ -1,0 +1,113 @@
+{
+  "id": "picea_abies",
+  "group": "plant",
+  "scientificName": {
+    "value": "Picea abies (L.) H.Karst.",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "wiki": {
+      "title": "Navadna smreka",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Navadna_smreka",
+      "accessed": "2026-10-03",
+      "licence": "CC BY-SA 4.0"
+    },
+    "bv": {
+      "title": "Picea abies (navadna smreka)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/picea-abies",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Picea abies (L.) H.Karst. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5284884",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "navadna smreka",
+        "sources": [
+          "wiki",
+          "bv"
+        ]
+      },
+      "family": {
+        "value": "borovke (Pinaceae)",
+        "sources": [
+          "bv",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Gore srednje Evrope, od Alp do Karpatov in Balkana; pogosto jo tudi sadijo zaradi lesa.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "distribution": {
+        "value": "Raste po vsej Evropi; najvišja izmerjena navadna smreka, visoka 62,26 m, raste blizu Ribnice na Pohorju.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "season": {
+        "value": "Cveti od aprila do junija.",
+        "sources": [
+          "bv"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Hitro rastoče zimzeleno iglasto drevo, ki zraste od 35 do 55 m visoko.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Veje običajno visijo navzdol.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Iglice so štirioglate, dolge 12–14 mm in temno zelene.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Storži so dolgi od 9 do 17 cm, najdaljši med smrekami.",
+          "sources": [
+            "wiki"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "wiki"
+    ]
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "id": "pinus_mugo",
+  "group": "plant",
+  "scientificName": {
+    "value": "Pinus mugo Turra",
+    "sources": [
+      "gbif",
+      "bv"
+    ]
+  },
+  "sources": {
+    "wiki": {
+      "title": "Rušje",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Ru%C5%A1je",
+      "accessed": "2026-10-03",
+      "licence": "CC BY-SA 4.0"
+    },
+    "bv": {
+      "title": "Pinus mugo (rušje)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/pinus-mugo",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Pinus mugo Turra (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5285385",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "rušje",
+        "sources": [
+          "wiki",
+          "bv"
+        ]
+      },
+      "family": {
+        "value": "borovke (Pinaceae)",
+        "sources": [
+          "wiki",
+          "bv"
+        ]
+      },
+      "habitat": {
+        "value": "Subalpinski pas gora, kjer oblikuje goste združbe, imenovane ruševje.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "distribution": {
+        "value": "Gorati predeli srednje in južne Evrope, tudi v Sloveniji.",
+        "sources": [
+          "bv"
+        ]
+      },
+      "season": {
+        "value": "Cveti od maja do julija.",
+        "sources": [
+          "bv"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Najpogosteje raste kot grm z dolgimi, prožnimi vejami.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Iglice rastejo v parih, dolge so od 3 do 8 cm in živo do temno zelene.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Zreli storži so dolgi do 6 cm in bleščeče rjavi.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Imenujejo ga tudi planinski ali gorski bor.",
+          "sources": [
+            "wiki"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "wiki"
+    ]
+  },
+  "identification": {
+    "clues": [
+      0,
+      1,
+      2
+    ]
+  }
+}

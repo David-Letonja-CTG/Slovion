@@ -60,6 +60,26 @@ The API SHALL refuse to start when content is invalid, reporting every problem f
   | `canis_lupus` | `mammal` | *volk* | Pohorje |
   | `rupicapra_rupicapra` | `mammal` | *gams* | Triglav |
 
+#### Scenario: More species of the regions
+- **WHEN** the API starts with the repository's content
+- **THEN** the following are available, each with sourced Slovenian facts, three clues and a picture, and the animals also with a walk sprite and wildlife traits:
+
+  | Species | Group | Slovenian name | Region |
+  |---|---|---|---|
+  | `cervus_elaphus` | `mammal` | *navadni jelen* | Kočevje |
+  | `allium_ursinum` | `plant` | *čemaž* | Kočevje |
+  | `galium_odoratum` | `plant` | *dišeča lakota* | Kočevje |
+  | `sciurus_vulgaris` | `mammal` | *navadna veverica* | Pohorje |
+  | `drosera_rotundifolia` | `plant` | *okroglolistna rosika* | Pohorje |
+  | `vaccinium_myrtillus` | `plant` | *navadna borovnica* | Pohorje |
+  | `marmota_marmota` | `mammal` | *alpski svizec* | Triglav |
+  | `leontopodium_nivale` | `plant` | *planika* | Triglav |
+  | `potentilla_nitida` | `plant` | *triglavska roža* | Triglav |
+  | `abies_alba` | `plant` | *navadna jelka* | Kočevje |
+  | `fagus_sylvatica` | `plant` | *navadna bukev* | Kočevje |
+  | `picea_abies` | `plant` | *navadna smreka* | Pohorje |
+  | `pinus_mugo` | `plant` | *rušje* | Triglav |
+
 ### Requirement: Spots reference existing species
 Every interactive spot in a map that names a species SHALL reference an existing species ID.
 

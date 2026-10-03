@@ -1,0 +1,112 @@
+{
+  "id": "leontopodium_nivale",
+  "group": "plant",
+  "scientificName": {
+    "value": "Leontopodium nivale subsp. alpinum (Cass.) Greuter",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "tnp": {
+      "title": "Planika",
+      "publisher": "Javni zavod Triglavski narodni park (Triglavska zakladnica)",
+      "url": "https://www.triglavskazakladnica.si/sl/vsebine/podrobnosti-vsebine/39/planika.html",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "bv": {
+      "title": "Leontopodium alpinum (planika)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/leontopodium-alpinum",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Leontopodium nivale subsp. alpinum (Cass.) Greuter (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/4252246",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "planika",
+        "sources": [
+          "tnp",
+          "bv"
+        ]
+      },
+      "family": {
+        "value": "nebinovke (Asteraceae)",
+        "sources": [
+          "bv"
+        ]
+      },
+      "habitat": {
+        "value": "Grušč, skalne razpoke in kamnite trate na odmaknjenih krajih nad 1500 m nadmorske višine.",
+        "sources": [
+          "tnp"
+        ]
+      },
+      "distribution": {
+        "value": "Julijske in Kamniško-Savinjske Alpe, Karavanke, Ratitovec, Trnovski gozd in Snežnik. Je prva zavarovana rastlina v Sloveniji.",
+        "sources": [
+          "tnp"
+        ]
+      },
+      "season": {
+        "value": "Cveti od julija do septembra.",
+        "sources": [
+          "tnp",
+          "bv"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Trajnica s steblom, visokim od 5 do 20 cm.",
+          "sources": [
+            "tnp"
+          ]
+        },
+        {
+          "value": "Kar je videti kot cvet, so v resnici belkasto srebrni listi.",
+          "sources": [
+            "tnp"
+          ]
+        },
+        {
+          "value": "Pravi cvetovi so le rumeni del na sredini: 5 do 8 majhnih rumenih cvetov.",
+          "sources": [
+            "tnp"
+          ]
+        },
+        {
+          "value": "Celotna rastlina je porasla z belkastimi dlačicami, ki jo ščitijo pred mrazom in sušo.",
+          "sources": [
+            "tnp"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "sources": [
+      "tnp",
+      "bv"
+    ]
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

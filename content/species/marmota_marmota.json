@@ -1,0 +1,130 @@
+{
+  "id": "marmota_marmota",
+  "group": "mammal",
+  "scientificName": {
+    "value": "Marmota marmota (Linnaeus, 1758)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "lzs": {
+      "title": "Alpski svizec",
+      "publisher": "Lovska zveza Slovenije",
+      "url": "https://www.lovska-zveza.si/prostozivece-zivali/sesalci/alpski-svizec/",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "tnp": {
+      "title": "Alpski svizec",
+      "publisher": "Javni zavod Triglavski narodni park (Triglavska zakladnica)",
+      "url": "https://www.triglavskazakladnica.si/sl/vsebine/podrobnosti-vsebine/121/alpski-svizec.html",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Marmota marmota (Linnaeus, 1758) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2437377",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "alpski svizec",
+        "sources": [
+          "lzs",
+          "tnp"
+        ]
+      },
+      "family": {
+        "value": "Sciuridae",
+        "sources": [
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Odprti planinski travniki z dovolj globokimi tlemi, na višini od 1200 do 2800 m.",
+        "sources": [
+          "lzs"
+        ]
+      },
+      "distribution": {
+        "value": "Pri nas je izumrl in so ga ponovno naselili: v Julijske Alpe leta 1971, v Karavanke leta 1973.",
+        "sources": [
+          "lzs",
+          "tnp"
+        ]
+      },
+      "season": {
+        "value": "Je dnevna žival. Zimo prespi v globokih rovih; zimsko spanje traja 5–6 mesecev.",
+        "sources": [
+          "lzs",
+          "tnp"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Je eden največjih glodavcev; odrasel tehta do 8 kg.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Dlaka je rumenkasto rjava, glava siva, konica kratkega repa skoraj črna.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Glodači so oranžni.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Ob nevarnosti z glasnim piskom opozori vso skupnost.",
+          "sources": [
+            "lzs",
+            "tnp"
+          ]
+        },
+        {
+          "value": "Z močnimi kremplji koplje rove; brlog leži od 2 do 5 m pod površjem.",
+          "sources": [
+            "lzs",
+            "tnp"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "times": [
+      "morning",
+      "day",
+      "evening"
+    ],
+    "sources": [
+      "lzs",
+      "tnp"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

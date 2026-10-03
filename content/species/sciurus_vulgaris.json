@@ -1,0 +1,138 @@
+{
+  "id": "sciurus_vulgaris",
+  "group": "mammal",
+  "scientificName": {
+    "value": "Sciurus vulgaris Linnaeus, 1758",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "lzs": {
+      "title": "Veverica",
+      "publisher": "Lovska zveza Slovenije",
+      "url": "https://www.lovska-zveza.si/prostozivece-zivali/sesalci/veverica/",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "tnp": {
+      "title": "Navadna veverica",
+      "publisher": "Javni zavod Triglavski narodni park (Triglavska zakladnica)",
+      "url": "https://www.triglavskazakladnica.si/sl/vsebine/podrobnosti-vsebine/191/navadna-veverica.html",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gis": {
+      "title": "Navadna veverica",
+      "publisher": "Gozdarski inštitut Slovenije (zdravgozd.si)",
+      "url": "https://www.zdravgozd.si/prirocnik/zapis.aspx?idso=781",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Sciurus vulgaris Linnaeus, 1758 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/8211070",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "navadna veverica",
+        "sources": [
+          "tnp",
+          "gis"
+        ]
+      },
+      "family": {
+        "value": "Sciuridae",
+        "sources": [
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Vse vrste gozdov, od iglastih in mešanih do listnatih; najbolj ji ustrezajo večje sklenjene gozdne površine.",
+        "sources": [
+          "lzs"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je razširjena od obale pa vse do gozdne meje.",
+        "sources": [
+          "tnp"
+        ]
+      },
+      "season": {
+        "value": "Aktivna je podnevi, najbolj zjutraj ob zori ter pozno popoldne in ob mraku. Zime ne prespi.",
+        "sources": [
+          "lzs",
+          "tnp"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Trup je dolg od 22 do 25 cm, rep od 17 do 19 cm; tehta do 400 g.",
+          "sources": [
+            "gis",
+            "lzs"
+          ]
+        },
+        {
+          "value": "Kožuh je rdeč do rjav, trebuh je vedno bel.",
+          "sources": [
+            "tnp"
+          ]
+        },
+        {
+          "value": "Na uhljih ima čopke dlak, ki so pozimi daljši.",
+          "sources": [
+            "tnp",
+            "lzs"
+          ]
+        },
+        {
+          "value": "S košatim repom lovi ravnotežje, ko pleza in skače.",
+          "sources": [
+            "tnp",
+            "lzs"
+          ]
+        },
+        {
+          "value": "Z ostrimi sekalci razdira storže smrek, borov in jelk, da pride do semen.",
+          "sources": [
+            "tnp"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "times": [
+      "morning",
+      "day",
+      "evening"
+    ],
+    "sources": [
+      "lzs",
+      "tnp"
+    ]
+  },
+  "wildlife": {
+    "torch": "curious"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      4
+    ]
+  }
+}

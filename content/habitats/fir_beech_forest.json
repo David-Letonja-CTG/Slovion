@@ -2,8 +2,13 @@
   "id": "fir_beech_forest",
   "text": { "sl": { "name": "Jelovo-bukov gozd" } },
   "order": 3,
-  "searchChancePercent": 50,
+  "searchChancePercent": 60,
   "species": [
-    { "speciesId": "ursus_arctos", "weight": 1 }
+    { "speciesId": "ursus_arctos", "weight": 1 },
+    { "speciesId": "cervus_elaphus", "weight": 1 },
+    { "speciesId": "allium_ursinum", "weight": 40 },
+    { "speciesId": "galium_odoratum", "weight": 30 },
+    { "speciesId": "abies_alba", "weight": 15 },
+    { "speciesId": "fagus_sylvatica", "weight": 15 }
   ]
 }

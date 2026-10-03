@@ -1,0 +1,126 @@
+{
+  "id": "galium_odoratum",
+  "group": "plant",
+  "scientificName": {
+    "value": "Galium odoratum (L.) Scop.",
+    "sources": [
+      "gbif",
+      "bv"
+    ]
+  },
+  "sources": {
+    "bv": {
+      "title": "Galium odoratum (dišeča lakota)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/galium-odoratum",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "bcn": {
+      "title": "Dišeča lakota",
+      "publisher": "Biotehniški center Naklo (Terapevtski vrt)",
+      "url": "https://terapevtskivrt.splet.arnes.si/diseca-lakota/",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "wiki": {
+      "title": "Dišeča perla",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Di%C5%A1e%C4%8Da_perla",
+      "accessed": "2026-10-03",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Galium odoratum (L.) Scop. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2914642",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "dišeča lakota",
+        "sources": [
+          "bv",
+          "bcn"
+        ]
+      },
+      "family": {
+        "value": "broščevke (Rubiaceae)",
+        "sources": [
+          "bv"
+        ]
+      },
+      "habitat": {
+        "value": "Raste v svetlih bukovih in mešanih gozdovih.",
+        "sources": [
+          "bcn"
+        ]
+      },
+      "distribution": {
+        "value": "Raste v Evropi in severni Aziji, tudi v Sloveniji.",
+        "sources": [
+          "bv"
+        ]
+      },
+      "season": {
+        "value": "Cveti od aprila do julija.",
+        "sources": [
+          "bv"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Trajnica, ki zraste od 30 do 50 cm visoko.",
+          "sources": [
+            "bcn",
+            "wiki"
+          ]
+        },
+        {
+          "value": "Listi so nameščeni v krogih okoli stebla, po 6 do 9 skupaj.",
+          "sources": [
+            "bcn"
+          ]
+        },
+        {
+          "value": "Majhni beli zvezdasti cvetovi imajo po štiri venčne liste.",
+          "sources": [
+            "bcn",
+            "wiki"
+          ]
+        },
+        {
+          "value": "Rastlina prijetno sladkasto diši.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Okrogli plodovi so prekriti z drobnimi kaveljčki, s katerimi se oprimejo živalske dlake.",
+          "sources": [
+            "wiki"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "sources": [
+      "bv"
+    ]
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      4
+    ]
+  }
+}

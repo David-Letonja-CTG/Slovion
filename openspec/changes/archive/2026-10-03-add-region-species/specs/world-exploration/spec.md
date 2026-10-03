@@ -1,10 +1,4 @@
-# world-exploration Specification
-
-## Purpose
-
-Defines how the player moves through the game world: maps authored as data, tile-by-tile movement with walking and running, collision, a following camera, and interacting with what the player faces.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Maps are content
 Maps SHALL be loaded from content data (Tiled JSON). A map SHALL define:
@@ -68,65 +62,6 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - **WHEN** any repository map is loaded
 - **THEN** it has exactly one signpost, which the player can reach from the spawn
 
-### Requirement: Invalid map is reported
-If a map cannot be loaded or does not satisfy the supported format (orthogonal, fixed tile size, a spawn point, layers referenced by name), the game SHALL show a Slovenian error message instead of a broken or blank world.
-
-#### Scenario: Map without spawn
-- **WHEN** a map without a spawn object is loaded
-- **THEN** loading fails with an error identifying the missing spawn, and the player sees an error message
-
-### Requirement: Tile-by-tile movement
-The player SHALL occupy exactly one tile. Holding a movement action SHALL move the player tile by tile at 4 tiles per second, or 8 tiles per second while `Run` is held. A started step SHALL always complete, and movement between tiles SHALL be drawn smoothly.
-
-#### Scenario: Walking one second
-- **WHEN** the player holds `MoveRight` on open ground for exactly one second of simulated time
-- **THEN** the player has moved exactly 4 tiles right, at any display refresh rate
-
-#### Scenario: Running
-- **WHEN** the player holds `MoveRight` and `Run` for one second on open ground
-- **THEN** the player has moved exactly 8 tiles right
-
-#### Scenario: Short tap
-- **WHEN** the player taps `MoveDown` for a single frame
-- **THEN** the player completes exactly one step down
-
-### Requirement: Collision
-The player SHALL NOT enter any of these tiles:
-- a tile marked as blocked in the collision layer
-- a tile outside the map
-- a tile with an NPC
-- a tile with a resident animal
-- a tile with a gate whose flag the save does not have
-
-Pressing towards such a tile SHALL turn the player to face it without moving.
-
-#### Scenario: Walking into a fence
-- **WHEN** the player faces open ground and presses `MoveUp` towards a blocked tile
-- **THEN** the player turns to face up and stays on the same tile
-
-#### Scenario: Map edge
-- **WHEN** the player stands on the left edge of the map and holds `MoveLeft`
-- **THEN** the player does not leave the map
-
-#### Scenario: Closed gate
-- **WHEN** a save without `hedgerow_open` walks into the southern gate
-- **THEN** the player stays in front of it and the gate stays drawn
-
-#### Scenario: Open gate
-- **WHEN** a save with `hedgerow_open` walks into the gate's tile
-- **THEN** the player walks through, the gate is not drawn, and the player can reach the hedgerow strip
-
-### Requirement: Camera follows the player
-The camera SHALL keep the player centred, but SHALL NOT show anything beyond the map edges. Along a dimension where the map is smaller than the view, the map SHALL be centred.
-
-#### Scenario: Near a map corner
-- **WHEN** the player stands on the top-left tile
-- **THEN** the view shows the top-left corner of the map with no area outside the map
-
-#### Scenario: Middle of the map
-- **WHEN** the player stands far from all edges
-- **THEN** the player is drawn at the centre of the view
-
 ### Requirement: Interacting with the faced tile
 When the player is not mid-step and `Interact` is pressed, the game SHALL act on the first of these that applies:
 1. If the player faces an NPC, it SHALL start a conversation with that NPC.
@@ -173,31 +108,3 @@ If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose
 #### Scenario: Facing walkable grass in a zone from outside
 - **WHEN** the player stands outside every habitat zone and faces a walkable tile inside one
 - **THEN** nothing happens; walkable ground is searched by standing on it
-
-### Requirement: Draw order
-Map layers SHALL be drawn in their authored order, with animated tiles showing their current frame. Above the ground layers SHALL be drawn, in order:
-1. closed gates, NPCs and resident animals
-2. the player
-3. the player's lamp when the torch is on
-
-#### Scenario: Player on grass
-- **WHEN** the player stands on a grass tile
-- **THEN** the player sprite is visible on top of the grass
-
-#### Scenario: Vera on the meadow
-- **WHEN** Vera's tile is on screen
-- **THEN** her sprite is visible on top of the ground
-
-### Requirement: Animated tiles
-Tiles SHALL play the frame animations defined for them in the map's tileset (Tiled tile animations), using the game's clock. The meadow's trees and tall grass SHALL sway gently. Animation SHALL NOT affect collision, zones or interactions.
-
-#### Scenario: Swaying trees
-- **WHEN** a tree is on screen for a few seconds
-- **THEN** it is drawn alternating between its animation frames
-
-### Requirement: NPCs look around
-An NPC SHALL be drawn from its 4-facing sprite sheet. While idle it SHALL face a new direction from time to time (down, left or right). When the player starts a conversation with it, it SHALL turn to face the player. Each NPC sprite SHALL be a 32×64 PNG in `content/npc-sprites/<npcId>.png` with the same layout as the player sprite: two frames per row, rows facing down, up, left and right.
-
-#### Scenario: Vera turns to the player
-- **WHEN** the player talks to Vera from her left side
-- **THEN** Vera faces left, towards the player

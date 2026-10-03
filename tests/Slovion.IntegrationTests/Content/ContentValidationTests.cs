@@ -46,6 +46,7 @@ public sealed class ContentValidationTests
         Assert.Null(catalog.FindNpcOnMap("other_map", "vera"));
 
         Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland"], catalog.AllHabitats.Select(habitat => habitat.Id));
+        Assert.Equal([60, 60, 50], catalog.AllHabitats.Skip(2).Select(habitat => habitat.SearchChancePercent));
         Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
         Assert.Equal([1, 2, 3, 4, 5], catalog.AllHabitats.Select(habitat => habitat.Order));
     }
@@ -85,6 +86,56 @@ public sealed class ContentValidationTests
     }
 
     [Theory]
+    [InlineData("cervus_elaphus", SpeciesGroup.Mammal, "navadni jelen", "fir_beech_forest")]
+    [InlineData("allium_ursinum", SpeciesGroup.Plant, "čemaž", "fir_beech_forest")]
+    [InlineData("galium_odoratum", SpeciesGroup.Plant, "dišeča lakota", "fir_beech_forest")]
+    [InlineData("abies_alba", SpeciesGroup.Plant, "navadna jelka", "fir_beech_forest")]
+    [InlineData("fagus_sylvatica", SpeciesGroup.Plant, "navadna bukev", "fir_beech_forest")]
+    [InlineData("sciurus_vulgaris", SpeciesGroup.Mammal, "navadna veverica", "mountain_forest")]
+    [InlineData("drosera_rotundifolia", SpeciesGroup.Plant, "okroglolistna rosika", "mountain_forest")]
+    [InlineData("vaccinium_myrtillus", SpeciesGroup.Plant, "navadna borovnica", "mountain_forest")]
+    [InlineData("picea_abies", SpeciesGroup.Plant, "navadna smreka", "mountain_forest")]
+    [InlineData("marmota_marmota", SpeciesGroup.Mammal, "alpski svizec", "alpine_grassland")]
+    [InlineData("leontopodium_nivale", SpeciesGroup.Plant, "planika", "alpine_grassland")]
+    [InlineData("potentilla_nitida", SpeciesGroup.Plant, "triglavska roža", "alpine_grassland")]
+    [InlineData("pinus_mugo", SpeciesGroup.Plant, "rušje", "alpine_grassland")]
+    public void Repository_content_has_more_species_of_the_regions(string id, SpeciesGroup group, string slName, string habitatId)
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        var species = catalog.FindSpecies(SpeciesId.Parse(id));
+        Assert.NotNull(species);
+        Assert.Equal(group, species.Group);
+        Assert.Equal(slName, species.Text["sl"].Name.Value);
+        Assert.Equal(3, species.Clues.Count);
+        Assert.Equal(group != SpeciesGroup.Plant, species.Wildlife is not null);
+        Assert.Contains(catalog.AllHabitats.Single(habitat => habitat.Id == habitatId).Species, entry => entry.SpeciesId == species.Id);
+    }
+
+    [Theory]
+    [InlineData("kocevje_forest", "fir_beech_forest", new[] { "kocevje_garlic_1", "kocevje_woodruff_1", "kocevje_deer_1" })]
+    [InlineData("pohorje_forest", "mountain_forest", new[] { "pohorje_sundew_1", "pohorje_bilberry_1", "pohorje_squirrel_1" })]
+    [InlineData("triglav_alps", "alpine_grassland", new[] { "triglav_edelweiss_1", "triglav_rose_1", "triglav_marmot_1" })]
+    public void Region_maps_have_habitat_zones_and_spots(string mapId, string habitatId, string[] spotIds)
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        // The spawn (1, 9), the tile beside it and the signpost (2, 8) lie outside the zones; ground further away does not.
+        Assert.Null(catalog.FindHabitatAt(mapId, 1, 9));
+        Assert.Null(catalog.FindHabitatAt(mapId, 2, 9));
+        Assert.Null(catalog.FindHabitatAt(mapId, 2, 8));
+        Assert.Equal(habitatId, catalog.FindHabitatAt(mapId, 5, 16)?.Id);
+        Assert.All(spotIds, spotId => Assert.NotNull(catalog.FindSpot(mapId, spotId)));
+    }
+
+    [Theory]
+    [InlineData("cervus_elaphus", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("sciurus_vulgaris", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening })]
+    [InlineData("marmota_marmota", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening })]
+    [InlineData("allium_ursinum", new[] { Season.Spring }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("drosera_rotundifolia", new[] { Season.Summer }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("leontopodium_nivale", new[] { Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("pinus_mugo", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     [InlineData("ursus_arctos", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     [InlineData("canis_lupus", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Evening, TimeOfDay.Night })]
     [InlineData("rupicapra_rupicapra", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening })]

@@ -30,6 +30,16 @@ Content validation SHALL also reject map zones that name an unknown habitat.
 - **WHEN** the API starts with the repository content
 - **THEN** habitat `tall_grass` (*Visoka trava*, order 1) and habitat `hedgerow` (*Mejica*, order 2) are available with their weighted species
 
+#### Scenario: Region habitats
+- **WHEN** the API starts with the repository content
+- **THEN** the region habitats list their animals and plants:
+
+  | Habitat | Name | Order | Species |
+  |---|---|---|---|
+  | `fir_beech_forest` | *Jelovo-bukov gozd* | 3 | bear, red deer, wild garlic, sweet woodruff, silver fir, beech |
+  | `mountain_forest` | *Gorski gozd* | 4 | wolf, red squirrel, round-leaved sundew, bilberry, Norway spruce |
+  | `alpine_grassland` | *Visokogorje* | 5 | chamois, alpine marmot, edelweiss, *triglavska roža*, mountain pine (*rušje*) |
+
 #### Scenario: Unknown species in a habitat
 - **WHEN** a habitat lists species `vulpes_vulpes`, which does not exist
 - **THEN** content validation fails and names the habitat and the species

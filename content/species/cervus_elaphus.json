@@ -1,0 +1,129 @@
+{
+  "id": "cervus_elaphus",
+  "group": "mammal",
+  "scientificName": {
+    "value": "Cervus elaphus Linnaeus, 1758",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "tnp": {
+      "title": "Navadni jelen",
+      "publisher": "Javni zavod Triglavski narodni park (Triglavska zakladnica)",
+      "url": "https://www.triglavskazakladnica.si/sl/vsebine/podrobnosti-vsebine/193/navadni-jelen.html",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gis": {
+      "title": "Navadni jelen",
+      "publisher": "Gozdarski inštitut Slovenije (zdravgozd.si)",
+      "url": "https://www.zdravgozd.si/prirocnik/zapis.aspx?idso=821",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Cervus elaphus Linnaeus, 1758 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2440958",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "navadni jelen",
+        "sources": [
+          "tnp",
+          "gis"
+        ]
+      },
+      "family": {
+        "value": "Cervidae",
+        "sources": [
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Veliki sklenjeni bukovo-jelovi in mešani gozdovi, kjer se prepletata gozd in travnik.",
+        "sources": [
+          "tnp"
+        ]
+      },
+      "distribution": {
+        "value": "Pri nas živi v listopadnih in mešanih gozdovih, v gorah do drevesne meje; največ ga je v gorskih bukovo-jelovih gozdovih.",
+        "sources": [
+          "gis",
+          "tnp"
+        ]
+      },
+      "season": {
+        "value": "Večinoma je aktiven ponoči in v mraku. Čas parjenja, ruk, je septembra in oktobra.",
+        "sources": [
+          "gis",
+          "tnp"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Trup je dolg od 1,65 do 2,5 m; tehta od 100 do 340 kg.",
+          "sources": [
+            "gis"
+          ]
+        },
+        {
+          "value": "Poleti je rdečkast, pozimi sivo rjav; zrcalo je rumenkasto.",
+          "sources": [
+            "gis"
+          ]
+        },
+        {
+          "value": "Samci imajo razvejano rogovje, ki vsako leto marca ali aprila odpade in znova zraste.",
+          "sources": [
+            "tnp"
+          ]
+        },
+        {
+          "value": "Košute rogovja nimajo.",
+          "sources": [
+            "tnp"
+          ]
+        },
+        {
+          "value": "Mladiči, teleta, so belo pegasti.",
+          "sources": [
+            "gis",
+            "tnp"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "times": [
+      "evening",
+      "night"
+    ],
+    "sources": [
+      "gis",
+      "tnp"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      4
+    ]
+  }
+}
