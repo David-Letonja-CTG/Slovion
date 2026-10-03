@@ -26,8 +26,8 @@ No GPS: the player's real location never affects gameplay.
 |---|---|
 | NatureDex | Per species: Slovenian and scientific name, sprite, habitat, region, season, time of day, identification characteristics, facts, discovery/identification status, research level. Information is revealed gradually: unknown → observation → discovery → identification → entry → further research. |
 | Habitats | Forest, meadow, wetland, river, lake, mountain, cave, coast, field, urban. Data-driven, never hardcoded into maps. |
-| Seasons | Spring, summer, autumn, winter; affect species availability. Not before a spec exists. |
-| Time of day | Morning, day, evening, night; affects encounters. Deterministic and testable. |
+| Seasons | Spring, summer, autumn, winter; affect species availability (implemented: D8, `world-conditions`). |
+| Time of day | Morning, day, evening, night; affects encounters. Deterministic and testable (implemented: D8). |
 | Weather | Affects encounters, visuals, quests, activity. Deterministic for tests. Not over-engineered. |
 | Research stations | Original progression milestones built on observation challenges (trees, tracks, amphibians, alpine plants, birds, mushrooms). Not gym copies. |
 | Quests, inventory, progression | Introduced only when a slice needs them. |
@@ -68,10 +68,33 @@ Each step is one OpenSpec change and ends with something demonstrable.
 
 Steps 1–4 are implemented (see `openspec/changes/archive/`). Step 4 asks the player to *identify*, not just observe, three species (owner decision), and its new path leads into a hedgerow with two new species (`add-hedgerow-species`).
 
-Later candidates: world conditions (season/time/weather), inventory, research stations, additional regions, offline support, accounts/cloud save.
+## Roadmap — after the first slice
+
+Implemented:
+
+| Change | Demonstrates |
+|---|---|
+| `add-naturedex-habitat-grid` | *Terenski dnevnik* as a picture grid per habitat. |
+| `add-world-conditions` | In-game clock, times of day and seasons (D8) deciding which species are around. |
+| `add-areas-clock-and-torch` | Named places with a banner, a corner clock, and a torch at night. |
+| `add-moving-animals` | Animals wander and react to the torch; trees, grass and Vera move. |
+| `add-regions-and-travel` | Kočevje, Pohorje and Triglav, reached through a signpost's travel map. |
+| `add-region-species` | Animals, flowers and trees per region; trees can be searched. |
+| `add-region-quests` | A person and a quest per region; the quests open the regions in turn (a journey). |
+
+Next, in the order agreed with the owner, each as its own change:
+
+1. **Deeper journal entries:** research beyond identification reveals more about a species.
+2. **More habitats:** e.g. wetland, river, cave, coast, town.
+3. **Weather:** deterministic weather that affects which species are around.
+4. **Inventory:** only as far as a concrete feature needs it.
+
+Later candidates: research stations, an installable app (PWA) with offline play, English, accounts/cloud save.
 
 ## Capabilities (OpenSpec specs)
 
 First slice: `localization`, `game-viewport`, `input-actions`, `game-session`, `world-exploration`, `species-catalog`, `discovery`, `identification`, `naturedex`, `quests`, `player-progress`.
 
-Later: `world-conditions`, `inventory`, `research-stations`, `regions`.
+Added since: `habitat-search`, `world-conditions`, `map-areas`, `wildlife`, `regions`.
+
+Later: `weather`, `inventory`, `research-stations`.

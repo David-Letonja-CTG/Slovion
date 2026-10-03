@@ -31,7 +31,8 @@ public abstract record TalkResult
 
 /// <summary>
 /// Quests and progression (docs/decisions.md D3): the server decides what an NPC says and every quest change.
-/// Progress is the number of species the save has identified, whenever they were identified.
+/// Progress is the number of species the save has identified (of the goal's habitat, if it names one), whenever they
+/// were identified.
 /// </summary>
 public sealed class QuestService(IContentCatalog content, ProgressReader progressReader, IQuestRepository quests, TimeProvider time)
 {
@@ -44,7 +45,7 @@ public sealed class QuestService(IContentCatalog content, ProgressReader progres
         }
 
         var text = TextFor(quest, language);
-        var progress = Math.Min(await progressReader.IdentifiedCountAsync(saveSlotId, cancellationToken), quest.IdentifiedSpeciesGoal);
+        var progress = progressReader.ProgressOf(quest, await progressReader.IdentifiedSpeciesAsync(saveSlotId, cancellationToken));
         var now = time.GetUtcNow();
         var lines = new List<string>();
 
@@ -76,14 +77,14 @@ public sealed class QuestService(IContentCatalog content, ProgressReader progres
     /// <summary>The save's flags and started quests, for loading the game.</summary>
     public async Task<PlayerProgress> GetProgressAsync(Guid saveSlotId, string language, CancellationToken cancellationToken)
     {
-        var identified = await progressReader.IdentifiedCountAsync(saveSlotId, cancellationToken);
+        var identified = await progressReader.IdentifiedSpeciesAsync(saveSlotId, cancellationToken);
         var all = await quests.ListAsync(saveSlotId, cancellationToken);
         var views = all
             .OrderBy(stored => stored.StartedAt)
             .ThenBy(stored => stored.QuestId, StringComparer.Ordinal)
             .Select(stored => (stored, quest: content.FindQuest(stored.QuestId)))
             .Where(pair => pair.quest is not null) // content removed since: skip, keep the record
-            .Select(pair => ViewOf(pair.quest!, TextFor(pair.quest!, language), pair.stored, Math.Min(identified, pair.quest!.IdentifiedSpeciesGoal)))
+            .Select(pair => ViewOf(pair.quest!, TextFor(pair.quest!, language), pair.stored, progressReader.ProgressOf(pair.quest!, identified)))
             .ToList();
         return new PlayerProgress(progressReader.FlagsOf(all), views);
     }

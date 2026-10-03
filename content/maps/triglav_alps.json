@@ -1805,6 +1805,25 @@
      "width": 384,
      "x": 16,
      "y": 176
+    },
+    {
+     "gid": 20,
+     "height": 16,
+     "id": 11,
+     "name": "luka",
+     "properties": [
+      {
+       "name": "npcId",
+       "type": "string",
+       "value": "luka"
+      }
+     ],
+     "rotation": 0,
+     "type": "npc",
+     "visible": true,
+     "width": 16,
+     "x": 48,
+     "y": 176
     }
    ],
    "opacity": 1,
@@ -1815,7 +1834,7 @@
   }
  ],
  "nextlayerid": 5,
- "nextobjectid": 11,
+ "nextobjectid": 12,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.11.2",

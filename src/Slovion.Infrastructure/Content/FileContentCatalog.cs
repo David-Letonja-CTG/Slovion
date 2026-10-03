@@ -111,7 +111,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
         var npcs = LoadNpcs(Path.Combine(rootPath, "npcs"), errors);
         ValidateImages(Path.Combine(rootPath, NpcSpritesFolder), NpcSpritesFolder, npcs.Keys.ToList(), "NPC", "sprite", 32, 64, errors);
-        var quests = LoadQuests(Path.Combine(rootPath, "quests"), npcs, errors);
+        var quests = LoadQuests(Path.Combine(rootPath, "quests"), npcs, habitats, errors);
         ValidateQuestGivers(npcs, quests, errors);
         var rewardFlags = quests.Values.Select(quest => quest.RewardFlag).ToHashSet(StringComparer.Ordinal);
         var areas = LoadAreas(Path.Combine(rootPath, AreasFolder), errors);

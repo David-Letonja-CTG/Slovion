@@ -26,14 +26,14 @@ Unlock rules are fictional gameplay data (D6). Content validation SHALL reject a
 
 #### Scenario: Repository regions
 - **WHEN** the API starts with the repository content
-- **THEN** the regions are:
+- **THEN** the regions form a journey, each opened by the quest of the region before:
 
   | Region | Map | Unlocked by |
   |---|---|---|
   | `dravsko_polje` | `dravsko_polje_meadow` | always open |
-  | `kocevje` | `kocevje_forest` | flag `hedgerow_open` |
-  | `pohorje` | `pohorje_forest` | 6 identified species |
-  | `triglav` | `triglav_alps` | 8 identified species |
+  | `kocevje` | `kocevje_forest` | flag `hedgerow_open` (Vera) |
+  | `pohorje` | `pohorje_forest` | flag `pohorje_open` (Jure) |
+  | `triglav` | `triglav_alps` | flag `triglav_open` (Maja) |
 
 #### Scenario: Region with an unknown flag
 - **WHEN** a region requires flag `secret` and no quest rewards it
@@ -54,8 +54,12 @@ Requests without a valid save token SHALL respond `401` with code `invalid_save_
 - **THEN** the current region is `dravsko_polje`, Dravsko polje is unlocked, and the other three are locked
 
 #### Scenario: After Vera's quest
-- **WHEN** a save that completed Vera's quest and identified 3 species requests its regions
-- **THEN** Kočevje is unlocked, and Pohorje is locked with progress 3 of 6
+- **WHEN** a save that completed Vera's quest requests its regions
+- **THEN** Kočevje is unlocked, and Pohorje is locked with the hint to help Jure in Kočevje
+
+#### Scenario: After Jure's quest
+- **WHEN** a save that completed Jure's quest requests its regions
+- **THEN** Pohorje is unlocked, and Triglav is locked with the hint to help Maja on Pohorje
 
 ### Requirement: Travelling
 `POST /api/save/travel` with a region ID SHALL make that region the save's current region when the region is unlocked for the save, and respond `200` with the region. A locked region SHALL respond `409` with code `region_locked`. An unknown region SHALL respond `404` with code `unknown_region`. A missing region SHALL respond `400` with code `bad_request`. In all error cases the current region SHALL stay unchanged.

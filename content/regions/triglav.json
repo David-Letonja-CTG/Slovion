@@ -3,6 +3,6 @@
   "mapId": "triglav_alps",
   "order": 4,
   "position": { "x": 15, "y": 35 },
-  "unlock": { "identifiedSpecies": 8 },
-  "text": { "sl": { "name": "Triglav", "lockedHint": "V gore se odpravijo le izkušeni naravoslovci." } }
+  "unlock": { "flag": "triglav_open" },
+  "text": { "sl": { "name": "Triglav", "lockedHint": "Pomagaj Maji na Pohorju." } }
 }

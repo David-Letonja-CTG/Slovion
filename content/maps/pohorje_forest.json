@@ -1841,6 +1841,25 @@
      "width": 64,
      "x": 48,
      "y": 80
+    },
+    {
+     "gid": 20,
+     "height": 16,
+     "id": 13,
+     "name": "maja",
+     "properties": [
+      {
+       "name": "npcId",
+       "type": "string",
+       "value": "maja"
+      }
+     ],
+     "rotation": 0,
+     "type": "npc",
+     "visible": true,
+     "width": 16,
+     "x": 48,
+     "y": 176
     }
    ],
    "opacity": 1,
@@ -1851,7 +1870,7 @@
   }
  ],
  "nextlayerid": 5,
- "nextobjectid": 13,
+ "nextobjectid": 14,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.11.2",

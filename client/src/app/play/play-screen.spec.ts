@@ -727,29 +727,36 @@ describe('Quests', () => {
     expect(dialogText()).toContain(sl.errors.unknown_npc);
   });
 
-  it('moves the tracker on after a correct identification', async () => {
-    const {
-      game,
-      http,
-      root,
-      settle: wait,
-    } = await openPlay(meadow, {
-      flags: [],
-      quests: [quest(1)],
-    });
-
-    game.options!.onInteract(SAGE);
-    http
+  /** Identifies the sage, then answers the progress reload with `reload` (a status to fail with). */
+  async function identifyWithProgress(reload: PlayerProgress | number) {
+    const play = await openPlay(meadow, { flags: [], quests: [quest(1)] });
+    play.game.options!.onInteract(SAGE);
+    play.http
       .expectOne('/api/save/encounters')
       .flush(SAGE_ENCOUNTER, { status: 201, statusText: 'Created' });
-    await wait();
-    root().querySelector<HTMLButtonElement>('[data-kind="candidate"]')!.click();
-    http
+    await play.settle();
+    play.root().querySelector<HTMLButtonElement>('[data-kind="candidate"]')!.click();
+    play.http
       .expectOne(`/api/save/encounters/${SAGE_ENCOUNTER.encounterId}/identification`)
       .flush(sageAnswer(true));
-    await wait();
+    await play.settle();
+    const progress = play.http.expectOne('/api/save/progress');
+    if (typeof reload === 'number') progress.flush(null, { status: reload, statusText: 'Error' });
+    else progress.flush(reload);
+    await play.settle();
+    return play.root().querySelector('.tracker__progress')?.textContent?.trim();
+  }
 
-    expect(root().querySelector('.tracker__progress')?.textContent?.trim()).toBe('2/3');
+  it('moves the tracker on after a correct identification, as the server reports', async () => {
+    expect(await identifyWithProgress({ flags: [], quests: [quest(2)] })).toBe('2/3');
+  });
+
+  it('keeps the tracker when the identified species does not count for the quest', async () => {
+    expect(await identifyWithProgress({ flags: [], quests: [quest(1)] })).toBe('1/3');
+  });
+
+  it('keeps the tracker when the progress cannot be reloaded', async () => {
+    expect(await identifyWithProgress(500)).toBe('1/3');
   });
 });
 

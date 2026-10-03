@@ -1,10 +1,4 @@
-# quests Specification
-
-## Purpose
-
-Defines NPCs and quests: NPC and quest content, conversations whose dialogue and quest changes the server decides, the quest lifecycle (start, progress, completion), the dialogue box and the quest tracker.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: NPC and quest content
 Each NPC SHALL be a content file with a stable ID and a localized name, with Slovenian required.
@@ -98,17 +92,6 @@ A request without a valid save token SHALL respond `401` with code `invalid_save
 #### Scenario: Unknown NPC
 - **WHEN** a save talks to NPC `mojca` on the meadow
 - **THEN** the response is `404` with code `unknown_npc`
-
-### Requirement: Dialogue box
-A conversation SHALL open a dialogue box showing the NPC's name and one line at a time. `Confirm`, a click or a tap SHALL show the next line, and after the last line SHALL close the box. `Cancel` SHALL close the box at once. World input SHALL be blocked from the moment the conversation is requested until the box closes. Dialogue lines that address the player SHALL be gender-neutral Slovenian.
-
-#### Scenario: Reading Vera's offer
-- **WHEN** the player faces Vera and presses `Interact`
-- **THEN** a dialogue box with the name *Vera* shows her first line, and each `Enter` shows the next until the box closes
-
-#### Scenario: Skipping
-- **WHEN** a dialogue box is open and the player presses `Escape`
-- **THEN** the box closes and the player can move again
 
 ### Requirement: Quest tracker
 While a quest is active, the game SHALL show a tracker over the world with the quest's title and progress (for example *Oko za naravo 1/3*). Once the goal is met, the tracker SHALL show the quest's hint for returning to the giver. The tracker SHALL update after every identification and conversation, with the progress the server reports. It SHALL NOT show completed quests.

@@ -55,7 +55,7 @@ public sealed partial class FileContentCatalog
         return result;
     }
 
-    private static Dictionary<string, Quest> LoadQuests(string folder, Dictionary<string, Npc> npcs, List<string> errors)
+    private static Dictionary<string, Quest> LoadQuests(string folder, Dictionary<string, Npc> npcs, Dictionary<string, Habitat> habitats, List<string> errors)
     {
         var result = new Dictionary<string, Quest>(StringComparer.Ordinal);
         foreach (var file in JsonFiles(folder))
@@ -83,6 +83,11 @@ public sealed partial class FileContentCatalog
                 errors.Add($"{name}: 'goal.identifiedSpecies' must be a positive integer.");
             }
 
+            if (quest.Goal?.Habitat is { } habitatId && (!habitats.TryGetValue(habitatId, out var habitat) || habitat.Species.Count < quest.Goal.IdentifiedSpecies))
+            {
+                errors.Add($"{name}: 'goal.habitat' must be a habitat listing at least {quest.Goal.IdentifiedSpecies} species (found '{habitatId}').");
+            }
+
             if (quest.Reward?.Flag is not { } flag || !MapIdPattern().IsMatch(flag))
             {
                 errors.Add($"{name}: 'reward.flag' must be a lowercase snake_case flag ID (found '{quest.Reward?.Flag}').");
@@ -108,7 +113,7 @@ public sealed partial class FileContentCatalog
                 continue;
             }
 
-            var loaded = new Quest(quest.Id!, quest.Giver!, quest.Goal!.IdentifiedSpecies, quest.Reward!.Flag!, texts);
+            var loaded = new Quest(quest.Id!, quest.Giver!, quest.Goal!.IdentifiedSpecies, quest.Reward!.Flag!, texts, quest.Goal.Habitat);
             if (!result.TryAdd(loaded.Id, loaded))
             {
                 errors.Add($"{name}: duplicate quest ID '{loaded.Id}'.");
