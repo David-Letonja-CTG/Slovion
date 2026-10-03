@@ -3030,12 +3030,48 @@
      "width": 16,
      "x": 320,
      "y": 320
+    },
+    {
+     "height": 320,
+     "id": 15,
+     "name": "area_meadow",
+     "properties": [
+      {
+       "name": "areaId",
+       "type": "string",
+       "value": "meadow"
+      }
+     ],
+     "rotation": 0,
+     "type": "area",
+     "visible": true,
+     "width": 512,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "height": 128,
+     "id": 16,
+     "name": "area_south_hedgerow",
+     "properties": [
+      {
+       "name": "areaId",
+       "type": "string",
+       "value": "south_hedgerow"
+      }
+     ],
+     "rotation": 0,
+     "type": "area",
+     "visible": true,
+     "width": 512,
+     "x": 0,
+     "y": 320
     }
    ]
   }
  ],
  "nextlayerid": 5,
- "nextobjectid": 15,
+ "nextobjectid": 17,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.11.2",

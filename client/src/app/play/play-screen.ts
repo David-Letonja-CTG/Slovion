@@ -3,7 +3,7 @@ import { Component, DestroyRef, computed, inject, signal, viewChild } from '@ang
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
-import { Action, Game, Interaction, LoadedWorld, Season, TimeOfDay } from '../../engine';
+import { Action, Game, Interaction, WorldTime, worldTimeAt } from '../../engine';
 import {
   AlreadyIdentified,
   AnswerResult,
@@ -19,12 +19,13 @@ import {
 import { GameCanvas } from '../game/game-canvas';
 import { GameSession } from '../session/game-session';
 import { ConditionsIndicator } from './conditions-indicator';
+import { LocationBanner } from './location-banner';
 import { DialogueBox } from './dialogue-box';
 import { IdentificationDialog } from './identification-dialog';
 import { MessageDialog } from './message-dialog';
 import { NatureDexPanel } from './naturedex-panel';
 import { QuestTracker } from './quest-tracker';
-import { WorldLoader } from './world-loader';
+import { LoadedPlace, WorldLoader } from './world-loader';
 
 export const START_MAP = 'dravsko_polje_meadow';
 
@@ -59,6 +60,7 @@ type Overlay =
     DialogueBox,
     GameCanvas,
     IdentificationDialog,
+    LocationBanner,
     MessageDialog,
     NatureDexPanel,
     QuestTracker,
@@ -77,16 +79,25 @@ export class PlayScreen {
   private readonly dialogue = viewChild(DialogueBox);
   private game: Game | undefined;
 
-  protected readonly world = signal<LoadedWorld | undefined>(undefined);
+  protected readonly world = signal<LoadedPlace | undefined>(undefined);
   protected readonly loadError = signal<LoadError | undefined>(undefined);
   protected readonly overlay = signal<Overlay>({ kind: 'none' });
   /** The save's flags and quests, as the server last reported them (D3). */
   protected readonly progress = signal<PlayerProgress>({ flags: [], quests: [] });
   /** The save's in-game clock at load, passed to the engine, which advances it (D8). */
   protected readonly worldTime = signal<WorldTimeInfo | undefined>(undefined);
-  protected readonly conditions = signal<{ season: Season; timeOfDay: TimeOfDay } | undefined>(
+  /** The current in-game time, as the engine reports it every in-game minute. */
+  protected readonly time = signal<WorldTime | undefined>(undefined);
+  /** The place the player is in, and the banner announcing a newly entered place. */
+  protected readonly area = signal<string | undefined>(undefined);
+  protected readonly areaName = computed(() => {
+    const area = this.area();
+    return area === undefined ? undefined : this.world()?.areaNames[area];
+  });
+  protected readonly banner = signal<{ readonly key: number; readonly name: string } | undefined>(
     undefined,
   );
+  protected readonly torchOn = signal(false);
   protected readonly activeQuest = computed(() =>
     this.progress().quests.find((quest) => quest.status === 'active'),
   );
@@ -103,7 +114,7 @@ export class PlayScreen {
       ([world, progress, time]) => {
         this.progress.set(progress);
         this.worldTime.set(time);
-        this.conditions.set({ season: time.season, timeOfDay: time.timeOfDay });
+        this.time.set(worldTimeAt(time.minutes));
         this.world.set(world);
       },
       (error: unknown) => {
@@ -127,16 +138,35 @@ export class PlayScreen {
     );
   }
 
-  /** The world's season or time of day changed while playing. */
-  protected onConditionsChanged(conditions: { season: Season; timeOfDay: TimeOfDay }): void {
-    this.conditions.set(conditions);
+  protected onTimeChanged(time: WorldTime): void {
+    this.time.set(time);
+  }
+
+  /** A new place: show its name and announce it with the banner. */
+  protected onAreaChanged(area: string): void {
+    this.area.set(area);
+    const name = this.world()?.areaNames[area];
+    if (name) this.banner.update((banner) => ({ key: (banner?.key ?? 0) + 1, name }));
+  }
+
+  protected onBannerDone(key: number): void {
+    if (this.banner()?.key === key) this.banner.set(undefined);
+  }
+
+  protected onTorchChanged(on: boolean): void {
+    this.torchOn.set(on);
+  }
+
+  /** The on-screen torch button; keyboard players use the Torch action. Focus goes back to the game. */
+  protected toggleTorch(): void {
+    this.game?.setTorch(!this.torchOn());
+    this.canvas()?.focus();
   }
 
   private syncTime(): void {
     this.api.time().subscribe({
       next: (time) => {
         this.game?.setWorldTime(time.minutes);
-        this.conditions.set({ season: time.season, timeOfDay: time.timeOfDay });
       },
       // A failed re-sync keeps the local clock; the server still decides every encounter.
       error: () => undefined,

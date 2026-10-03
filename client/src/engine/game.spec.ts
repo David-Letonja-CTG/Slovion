@@ -1,5 +1,5 @@
 import { createGame } from './game';
-import { TIME_TINT } from './render/world-renderer';
+import { TIME_TINT, TORCH_INNER_RADIUS, TORCH_OUTER_RADIUS } from './render/world-renderer';
 import { STEP_MS } from './game-loop';
 import { Action } from './input/actions';
 import { FakeEnvironment } from './testing/fake-environment';
@@ -8,8 +8,8 @@ import { textMap } from './world/testing';
 
 interface Draw {
   image: string;
-  /** The fill style of a fillRect (backdrop or tint). */
-  style?: string;
+  /** The fill style of a fillRect: a colour, or a radial gradient for the torch. */
+  style?: unknown;
   sx: number;
   sy: number;
   dx: number;
@@ -25,6 +25,18 @@ function fakeContext() {
     draws: [] as Draw[],
     setTransform(...matrix: number[]) {
       this.transform = matrix;
+    },
+    createRadialGradient(x0: number, y0: number, r0: number, x1: number, y1: number, r1: number) {
+      const stops: [number, string][] = [];
+      return {
+        kind: 'radial',
+        x0,
+        y0,
+        r0,
+        r1,
+        stops,
+        addColorStop: (at: number, color: string) => stops.push([at, color]),
+      };
     },
     fillRect() {
       this.draws.push({ image: 'backdrop', style: this.fillStyle, sx: 0, sy: 0, dx: 0, dy: 0 });
@@ -195,6 +207,55 @@ describe('createGame', () => {
 
     game.setWorldTime(12 * 60); // noon: no tint
     environment.frames.frame(STEP_MS);
+    expect(context.draws.at(-1)?.image).toBe('player');
+  });
+
+  it('lights a circle around the player at night while the torch is on', () => {
+    const environment = new FakeEnvironment();
+    const canvas = document.createElement('canvas');
+    const context = fakeContext();
+    canvas.getContext = (() => context) as unknown as typeof canvas.getContext;
+    const game = createGame(document.createElement('div'), canvas, {
+      environment,
+      world: {
+        map: textMap(['#S.#']),
+        tileset: { name: 'tileset' } as unknown as CanvasImageSource,
+        playerSprite: { name: 'player' } as unknown as CanvasImageSource,
+      },
+      onInteract: () => undefined,
+      worldTime: { minutes: 22 * 60, gameMinutesPerSecond: 0 },
+    });
+    game.start();
+
+    game.setTorch(true);
+    environment.frames.frame(STEP_MS);
+    const player = [...context.draws].reverse().find((draw) => draw.image === 'player')!;
+    const light = context.draws.at(-1)!.style;
+
+    expect(light).toMatchObject({
+      kind: 'radial',
+      x0: player.dx + 8,
+      y0: player.dy + 8,
+      r0: TORCH_INNER_RADIUS,
+      r1: TORCH_OUTER_RADIUS,
+      stops: [
+        [0, 'rgba(0, 0, 0, 0)'],
+        [1, TIME_TINT.night],
+      ],
+    });
+
+    game.setTorch(false);
+    environment.frames.frame(STEP_MS);
+    expect(context.draws.at(-1)!.style).toBe(TIME_TINT.night);
+  });
+
+  it('shows no light by day even with the torch on', () => {
+    const { environment, context, game } = setup();
+    game.start();
+
+    game.setTorch(true);
+    environment.frames.frame(STEP_MS);
+
     expect(context.draws.at(-1)?.image).toBe('player');
   });
 

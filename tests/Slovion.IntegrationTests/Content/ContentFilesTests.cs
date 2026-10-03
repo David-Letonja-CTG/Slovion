@@ -9,6 +9,7 @@ public sealed class ContentFilesTests
     [InlineData("/content/maps/dravsko_polje_meadow.json", "application/json")]
     [InlineData("/content/tilesets/meadow.png", "image/png")]
     [InlineData("/content/species-pictures/lepus_europaeus.png", "image/png")]
+    [InlineData("/content/areas/meadow.json", "application/json")]
     public async Task Maps_tilesets_and_species_pictures_are_served(string path, string mediaType)
     {
         await using var factory = new SlovionApiFactory(SlovionApiFactory.UnreachableDatabase);

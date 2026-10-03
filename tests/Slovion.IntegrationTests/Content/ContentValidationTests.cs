@@ -149,6 +149,12 @@ public sealed class ContentValidationTests
         { "map NPC that is not a tile object", c => Objects(c).Add(ContentFolder.TileObject("npc", "npcId", "vera", gid: 0)), "must be a tile object" },
         { "map NPC outside the map", c => Objects(c).Add(ContentFolder.TileObject("npc", "npcId", "vera", tileX: 9)), "npc 'vera' lies outside the map" },
         { "gate whose flag no quest rewards", c => Objects(c).Add(ContentFolder.TileObject("gate", "requiresFlag", "secret_path")), "requires flag 'secret_path', which no quest rewards" },
+        { "area without a Slovenian name", c => c.Area.Remove("text"), "areas/test_field.json: Slovenian name ('text.sl.name') is required" },
+        { "invalid area ID", c => c.Area["id"] = "Test-Field", "invalid area ID 'Test-Field'" },
+        { "zone naming a missing area", c => Objects(c).Add(ContentFolder.AreaZone("swamp", 0, 0, "extra")), "area zone 'extra' refers to unknown area 'swamp'" },
+        { "overlapping area zones", c => Objects(c).Add(ContentFolder.AreaZone(name: "copy")), "area zone 'copy' overlaps another area zone" },
+        { "area zone beyond the map", c => Objects(c).Add(ContentFolder.AreaZone(fromX: 4, toX: 5, name: "outside")), "area zone 'outside' extends beyond the map" },
+        { "walkable tiles without an area", c => Objects(c)[3] = ContentFolder.AreaZone(fromX: 0, toX: 1), "6 walkable tile(s) lie in no area, e.g. (2, 0)" },
         { "spot with unknown species", c => Objects(c)[1]!["properties"]![1]!["value"] = "vulpes_vulpes", "spot 'sage_1' references unknown species 'vulpes_vulpes'" },
     };
 

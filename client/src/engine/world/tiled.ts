@@ -1,5 +1,6 @@
 import { Direction } from '../input/actions';
 import {
+  AreaZone,
   Gate,
   HabitatZone,
   MapNpc,
@@ -68,7 +69,7 @@ const DIRECTIONS: readonly Direction[] = ['up', 'down', 'left', 'right'];
 /**
  * Parses the Tiled JSON subset Slovion supports (design §4): orthogonal, 16×16 tiles, one embedded
  * tileset, tile layers `ground` (+ optional others) and `collision`, object layer `objects` with one
- * `spawn`, any number of `spot` objects, habitat zones, and NPC and gate tile objects.
+ * `spawn`, any number of `spot` objects, habitat and area zones, and NPC and gate tile objects.
  */
 export function parseTiledMap(id: string, json: unknown): WorldMap {
   const map = (json ?? {}) as TiledMap;
@@ -104,13 +105,10 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
   )?.objects;
   if (!objects) problems.push('object layer "objects" is required');
 
-  const classOf = (object: TiledObject) => object.type || object.class;
   const tileOf = (object: TiledObject) => ({
     x: Math.floor((object.x ?? -1) / TILE_SIZE),
     y: Math.floor((object.y ?? -1) / TILE_SIZE),
   });
-  const property = (object: TiledObject, name: string) =>
-    object.properties?.find((p) => p.name === name)?.value;
 
   const spawns = objects?.filter((object) => classOf(object) === 'spawn') ?? [];
   if (objects && spawns.length !== 1) {
@@ -132,32 +130,29 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
   }
 
   // Habitat zones: a tile belongs to a zone when its centre lies inside the rectangle (design §1).
-  const habitats: HabitatZone[] = [];
-  for (const object of objects?.filter((o) => classOf(o) === 'habitat') ?? []) {
-    const habitatId = property(object, 'habitatId');
-    const label = `habitat zone "${object.name ?? habitatId}"`;
-    if (typeof habitatId !== 'string' || habitatId === '') {
-      problems.push(`${label} is missing its "habitatId"`);
-      continue;
-    }
-    const half = TILE_SIZE / 2;
-    const x = object.x ?? 0;
-    const y = object.y ?? 0;
-    const zone: HabitatZone = {
-      habitatId,
-      minX: Math.ceil((x - half) / TILE_SIZE),
-      minY: Math.ceil((y - half) / TILE_SIZE),
-      maxX: Math.ceil((x + (object.width ?? 0) - half) / TILE_SIZE) - 1,
-      maxY: Math.ceil((y + (object.height ?? 0) - half) / TILE_SIZE) - 1,
-    };
-    if (zone.maxX < zone.minX || zone.maxY < zone.minY) {
-      problems.push(`${label} covers no tiles`);
-    } else if (zone.minX < 0 || zone.minY < 0 || zone.maxX >= width || zone.maxY >= height) {
-      problems.push(`${label} extends beyond the map`);
-    } else if (habitats.some((other) => overlaps(other, zone))) {
-      problems.push(`${label} overlaps another habitat zone`);
-    } else {
-      habitats.push(zone);
+  const habitats: HabitatZone[] = parseZones(
+    objects,
+    'habitat',
+    'habitatId',
+    width,
+    height,
+    problems,
+  ).map(({ id, ...tiles }) => ({ habitatId: id, ...tiles }));
+  const areas: AreaZone[] = parseZones(objects, 'area', 'areaId', width, height, problems).map(
+    ({ id, ...tiles }) => ({ areaId: id, ...tiles }),
+  );
+
+  // Every walkable tile lies in an area, so the player always has a location (as on the server).
+  const collisionData = tileLayers.find((layer) => layer.name === 'collision')?.data;
+  if (collisionData?.length === width * height) {
+    const uncovered = collisionData
+      .map((gid, i) => ({ gid, x: i % width, y: Math.floor(i / width) }))
+      .filter(({ gid, x, y }) => gid === 0 && !areas.some((a) => inZone(a, x, y)));
+    if (uncovered.length > 0) {
+      const first = uncovered[0];
+      problems.push(
+        `${uncovered.length} walkable tile(s) lie in no area, e.g. (${first.x}, ${first.y})`,
+      );
     }
   }
 
@@ -210,9 +205,74 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     habitats,
     npcs,
     gates,
+    areas,
   );
 }
 
-function overlaps(a: HabitatZone, b: HabitatZone): boolean {
+interface Zone {
+  readonly id: string;
+  readonly minX: number;
+  readonly minY: number;
+  readonly maxX: number;
+  readonly maxY: number;
+}
+
+/**
+ * Zones of one kind (`habitat` or `area`): rectangles naming an ID; a tile belongs to a zone if its
+ * centre lies inside. Zones of a kind must not overlap.
+ */
+function parseZones(
+  objects: readonly TiledObject[] | undefined,
+  kind: string,
+  idProperty: string,
+  width: number,
+  height: number,
+  problems: string[],
+): Zone[] {
+  const zones: Zone[] = [];
+  for (const object of objects?.filter((o) => classOf(o) === kind) ?? []) {
+    const id = property(object, idProperty);
+    const label = `${kind} zone "${object.name ?? id}"`;
+    if (typeof id !== 'string' || id === '') {
+      problems.push(`${label} is missing its "${idProperty}"`);
+      continue;
+    }
+    const half = TILE_SIZE / 2;
+    const x = object.x ?? 0;
+    const y = object.y ?? 0;
+    const zone: Zone = {
+      id,
+      minX: Math.ceil((x - half) / TILE_SIZE),
+      minY: Math.ceil((y - half) / TILE_SIZE),
+      maxX: Math.ceil((x + (object.width ?? 0) - half) / TILE_SIZE) - 1,
+      maxY: Math.ceil((y + (object.height ?? 0) - half) / TILE_SIZE) - 1,
+    };
+    if (zone.maxX < zone.minX || zone.maxY < zone.minY) {
+      problems.push(`${label} covers no tiles`);
+    } else if (zone.minX < 0 || zone.minY < 0 || zone.maxX >= width || zone.maxY >= height) {
+      problems.push(`${label} extends beyond the map`);
+    } else if (zones.some((other) => overlaps(other, zone))) {
+      problems.push(`${label} overlaps another ${kind} zone`);
+    } else {
+      zones.push(zone);
+    }
+  }
+  return zones;
+}
+
+function inZone(zone: Omit<Zone, 'id'>, x: number, y: number): boolean {
+  return x >= zone.minX && x <= zone.maxX && y >= zone.minY && y <= zone.maxY;
+}
+
+function overlaps(a: Omit<Zone, 'id'>, b: Omit<Zone, 'id'>): boolean {
   return a.minX <= b.maxX && b.minX <= a.maxX && a.minY <= b.maxY && b.minY <= a.maxY;
+}
+
+/** Tiled writes the object class as `type` in JSON; `class` is accepted too. */
+function classOf(object: TiledObject): string | undefined {
+  return object.type || object.class;
+}
+
+function property(object: TiledObject, name: string): unknown {
+  return object.properties?.find((p) => p.name === name)?.value;
 }

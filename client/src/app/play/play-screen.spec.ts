@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import sl from '../../../public/i18n/sl.json';
-import { Action } from '../../engine';
+import { Action, worldTimeAt } from '../../engine';
 import {
   NatureDexEntry,
   NatureDexSection,
@@ -26,6 +26,10 @@ const MAP_URL = '/content/maps/dravsko_polje_meadow.json';
 const SAGE = { kind: 'spot', mapId: 'dravsko_polje_meadow', spotId: 'meadow_sage_1' } as const;
 
 const NO_PROGRESS: PlayerProgress = { flags: [], quests: [] };
+const AREA_NAMES: Record<string, string> = {
+  meadow: 'Travnik na Dravskem polju',
+  south_hedgerow: 'Južna mejica',
+};
 const SPRING_MORNING = {
   minutes: 480,
   day: 1,
@@ -61,6 +65,12 @@ async function openPlay(
     map.flush(null, { status: 404, statusText: 'Not Found' });
   } else {
     map.flush(mapResponse);
+  }
+  await settle(harness.fixture);
+  // The loader then fetches the names of the map's places.
+  for (const request of app.http.match((r) => r.url.startsWith('/content/areas/'))) {
+    const id = request.request.url.replace('/content/areas/', '').replace('.json', '');
+    request.flush({ id, text: { sl: { name: AREA_NAMES[id] } } });
   }
   await settle(harness.fixture);
 
@@ -732,27 +742,34 @@ describe('Quests', () => {
 describe('World conditions', () => {
   afterEach(() => TestBed.inject(Router).dispose());
 
-  const indicator = (root: () => HTMLElement) =>
-    root().querySelector('app-conditions-indicator')?.textContent?.replace(/\s+/g, ' ').trim();
+  const now = (root: () => HTMLElement) =>
+    root().querySelector('.conditions__now')?.textContent?.replace(/\s+/g, ' ').trim();
+  const location = (root: () => HTMLElement) =>
+    root().querySelector('.conditions__location')?.textContent?.trim();
+  const banners = (root: () => HTMLElement) =>
+    [...root().querySelectorAll('app-location-banner')].map((b) => b.textContent?.trim());
 
-  it('starts the game with the save clock and shows the season and time of day', async () => {
+  it('starts the game with the save clock and shows season, time of day and clock', async () => {
     const { game, root } = await openPlay();
 
     expect(game.options?.worldTime).toMatchObject({ minutes: 480, gameMinutesPerSecond: 1 });
-    expect(indicator(root)).toBe('Pomlad · jutro');
+    expect(now(root)).toBe('Pomlad · jutro · 08:00');
   });
 
-  it('updates the indicator when the world reports a change', async () => {
+  it('ticks the clock and updates the conditions as the world reports time', async () => {
     const { game, root, settle: wait } = await openPlay();
 
-    game.options!.onConditionsChange!('summer', 'night');
+    game.options!.onTimeChange!(worldTimeAt(495));
     await wait();
+    expect(now(root)).toBe('Pomlad · jutro · 08:15');
 
-    expect(indicator(root)).toBe('Poletje · noč');
+    game.options!.onTimeChange!(worldTimeAt(4320 + 22 * 60));
+    await wait();
+    expect(now(root)).toBe('Poletje · noč · 22:00');
   });
 
   it('re-syncs the clock when the page becomes visible again', async () => {
-    const { game, http, root, settle: wait } = await openPlay();
+    const { game, http, settle: wait } = await openPlay();
     Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
 
     document.dispatchEvent(new Event('visibilitychange'));
@@ -766,7 +783,65 @@ describe('World conditions', () => {
     await wait();
 
     expect(game.worldMinutes).toBe(13440);
-    expect(indicator(root)).toBe('Zima · jutro');
+  });
+
+  it('shows the place and announces it with a banner', async () => {
+    const { game, root, settle: wait } = await openPlay();
+
+    game.options!.onAreaChange!('meadow');
+    await wait();
+
+    expect(location(root)).toBe('Travnik na Dravskem polju');
+    expect(banners(root)).toEqual(['Travnik na Dravskem polju']);
+  });
+
+  it('replaces the banner when the player enters another place', async () => {
+    const { game, root, settle: wait } = await openPlay();
+
+    game.options!.onAreaChange!('meadow');
+    await wait();
+    game.options!.onAreaChange!('south_hedgerow');
+    await wait();
+
+    expect(location(root)).toBe('Južna mejica');
+    expect(banners(root)).toEqual(['Južna mejica']);
+  });
+
+  it('removes the banner once its animation ends', async () => {
+    const { game, root, settle: wait } = await openPlay();
+    game.options!.onAreaChange!('meadow');
+    await wait();
+
+    root().querySelector('.banner')!.dispatchEvent(new Event('animationend'));
+    await wait();
+
+    expect(banners(root)).toEqual([]);
+  });
+
+  it('switches the torch with the button and shows its state', async () => {
+    const { game, root, settle: wait } = await openPlay();
+    const button = () => root().querySelector<HTMLButtonElement>('.play__torch')!;
+    expect(button().getAttribute('aria-pressed')).toBe('false');
+
+    button().click();
+    expect(game.torch).toBe(true);
+    game.options!.onTorchChange!(true);
+    await wait();
+
+    expect(button().getAttribute('aria-pressed')).toBe('true');
+    expect(root().querySelector('.play__torch-status')?.textContent?.trim()).toBe(sl.torch.on);
+  });
+
+  it('ignores the torch key while a dialog is open', async () => {
+    const { game, http, settle: wait } = await openPlay();
+    game.options!.onInteract(SAGE);
+    http.expectOne('/api/save/encounters').flush({ found: false });
+    await wait();
+
+    game.pressUi('Torch');
+    await wait();
+
+    expect(game.torch).toBeUndefined();
   });
 
   it('says to come back later when a spot has nothing right now', async () => {

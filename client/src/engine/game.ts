@@ -6,7 +6,7 @@ import { GameEnvironment, Unsubscribe, browserEnvironment } from './platform';
 import { WorldImages, renderWorld } from './render/world-renderer';
 import { LOGICAL_WIDTH, ViewportLayout, computeViewport } from './viewport';
 import { Interaction, World, WorldClock } from './world/world';
-import { Season, TimeOfDay } from './world/world-time';
+import { WorldTime } from './world/world-time';
 import { WorldMap } from './world/world-map';
 
 /** Everything needed to show a map: loaded by the host, never fetched by the engine. */
@@ -27,6 +27,8 @@ export interface Game {
   setOpenFlags(flags: readonly string[]): void;
   /** Re-syncs the in-game clock with the server (D8). */
   setWorldTime(minutes: number): void;
+  /** Switches the player's torch; changes are reported through `onTorchChange`. */
+  setTorch(on: boolean): void;
 }
 
 export interface GameOptions {
@@ -39,8 +41,12 @@ export interface GameOptions {
   readonly openFlags?: readonly string[];
   /** The save's in-game clock as the server reported it; without it the world stands still at noon. */
   readonly worldTime?: WorldClock;
-  /** Called when the season or the time of day changes. */
-  readonly onConditionsChange?: (season: Season, timeOfDay: TimeOfDay) => void;
+  /** Called once per in-game minute (and after a re-sync) with the current in-game time. */
+  readonly onTimeChange?: (time: WorldTime) => void;
+  /** Called when the player's tile lies in another area, including at the start. */
+  readonly onAreaChange?: (areaId: string) => void;
+  /** Called when the torch is switched on or off. */
+  readonly onTorchChange?: (on: boolean) => void;
   /** Platform services. Defaults to the browser. */
   readonly environment?: GameEnvironment;
 }
@@ -67,7 +73,11 @@ export function createGame(
     options.onInteract,
     options.onOpenMenu,
     options.worldTime,
-    options.onConditionsChange,
+    {
+      onTimeChange: options.onTimeChange,
+      onAreaChange: options.onAreaChange,
+      onTorchChange: options.onTorchChange,
+    },
   );
   world.setOpenFlags(options.openFlags ?? []);
 
@@ -119,6 +129,7 @@ export function createGame(
     onUiAction: (listener) => dispatcher.onUiAction(listener),
     setOpenFlags: (flags) => world.setOpenFlags(flags),
     setWorldTime: (minutes) => world.setWorldTime(minutes),
+    setTorch: (on) => world.setTorch(on),
   };
 }
 

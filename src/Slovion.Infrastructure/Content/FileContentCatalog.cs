@@ -21,6 +21,9 @@ public sealed partial class FileContentCatalog : IContentCatalog
     /// <summary>Content folder with one picture per species, served to clients as-is.</summary>
     public const string PicturesFolder = "species-pictures";
 
+    /// <summary>Content folder with the named places of the maps, served to clients as-is.</summary>
+    public const string AreasFolder = "areas";
+
     private static readonly byte[] PngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
@@ -31,7 +34,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
     private readonly Dictionary<SpeciesId, Species> species;
     private readonly Dictionary<(string MapId, string SpotId), MapSpot> spots;
     private readonly Dictionary<string, Habitat> habitats;
-    private readonly Dictionary<string, List<HabitatZone>> zones;
+    private readonly Dictionary<string, List<MapZone>> zones;
     private readonly Dictionary<(string MapId, string NpcId), MapNpc> mapNpcs;
     private readonly Dictionary<string, Quest> quests;
 
@@ -41,7 +44,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
     public IReadOnlyList<Habitat> AllHabitats { get; }
 
-    private FileContentCatalog(Dictionary<SpeciesId, Species> species, Dictionary<(string, string), MapSpot> spots, Dictionary<string, Habitat> habitats, Dictionary<string, List<HabitatZone>> zones, Dictionary<(string, string), MapNpc> mapNpcs, Dictionary<string, Quest> quests, IReadOnlySet<string> languages)
+    private FileContentCatalog(Dictionary<SpeciesId, Species> species, Dictionary<(string, string), MapSpot> spots, Dictionary<string, Habitat> habitats, Dictionary<string, List<MapZone>> zones, Dictionary<(string, string), MapNpc> mapNpcs, Dictionary<string, Quest> quests, IReadOnlySet<string> languages)
     {
         this.species = species;
         this.spots = spots;
@@ -65,7 +68,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
     public Habitat? FindHabitatAt(string mapId, int x, int y) =>
         zones.GetValueOrDefault(mapId)?.FirstOrDefault(zone => zone.Contains(x, y)) is { } zone
-            ? habitats[zone.HabitatId]
+            ? habitats[zone.Id]
             : null;
 
     /// <exception cref="ContentValidationException">The content is missing or invalid.</exception>
@@ -91,7 +94,8 @@ public sealed partial class FileContentCatalog : IContentCatalog
         var quests = LoadQuests(Path.Combine(rootPath, "quests"), npcs, errors);
         ValidateQuestGivers(npcs, quests, errors);
         var rewardFlags = quests.Values.Select(quest => quest.RewardFlag).ToHashSet(StringComparer.Ordinal);
-        var (spots, zones, mapNpcs) = LoadMaps(Path.Combine(rootPath, "maps"), species, habitats, npcs, rewardFlags, errors);
+        var areas = LoadAreas(Path.Combine(rootPath, AreasFolder), errors);
+        var (spots, zones, mapNpcs) = LoadMaps(Path.Combine(rootPath, "maps"), species, habitats, areas, npcs, rewardFlags, errors);
 
         if (errors.Count > 0)
         {
@@ -474,10 +478,10 @@ public sealed partial class FileContentCatalog : IContentCatalog
         return result;
     }
 
-    private static (Dictionary<(string, string), MapSpot> Spots, Dictionary<string, List<HabitatZone>> Zones, Dictionary<(string, string), MapNpc> Npcs) LoadMaps(string folder, Dictionary<SpeciesId, Species> species, Dictionary<string, Habitat> habitats, Dictionary<string, Npc> npcs, IReadOnlySet<string> rewardFlags, List<string> errors)
+    private static (Dictionary<(string, string), MapSpot> Spots, Dictionary<string, List<MapZone>> Zones, Dictionary<(string, string), MapNpc> Npcs) LoadMaps(string folder, Dictionary<SpeciesId, Species> species, Dictionary<string, Habitat> habitats, IReadOnlySet<string> areas, Dictionary<string, Npc> npcs, IReadOnlySet<string> rewardFlags, List<string> errors)
     {
         var result = new Dictionary<(string, string), MapSpot>();
-        var zones = new Dictionary<string, List<HabitatZone>>(StringComparer.Ordinal);
+        var zones = new Dictionary<string, List<MapZone>>(StringComparer.Ordinal);
         var mapNpcs = new Dictionary<(string, string), MapNpc>();
         foreach (var file in JsonFiles(folder))
         {
@@ -497,7 +501,8 @@ public sealed partial class FileContentCatalog : IContentCatalog
                     result[(spot.MapId, spot.SpotId)] = spot;
                 }
 
-                zones[mapId] = ValidateZones(map, name, habitats, errors);
+                zones[mapId] = ValidateZones(map, name, "habitat", "habitatId", habitats.Keys.ToHashSet(StringComparer.Ordinal), errors);
+                ValidateAreaCoverage(map, name, ValidateZones(map, name, "area", "areaId", areas, errors), errors);
                 foreach (var placed in ValidateMapActors(map, mapId, name, npcs, rewardFlags, errors))
                 {
                     mapNpcs[(mapId, placed.Npc.Id)] = placed;
@@ -508,25 +513,28 @@ public sealed partial class FileContentCatalog : IContentCatalog
         return (result, zones, mapNpcs);
     }
 
-    /// <summary>Habitat zones: rectangles of class <c>habitat</c>; a tile belongs to a zone if its centre is inside.</summary>
-    private static List<HabitatZone> ValidateZones(TiledMapFile map, string name, Dictionary<string, Habitat> habitats, List<string> errors)
+    /// <summary>
+    /// Zones of one kind (<c>habitat</c> or <c>area</c>): rectangles of that class naming a known ID in
+    /// <paramref name="property"/>; a tile belongs to a zone if its centre is inside. Zones of a kind must not overlap.
+    /// </summary>
+    private static List<MapZone> ValidateZones(TiledMapFile map, string name, string kind, string property, IReadOnlySet<string> known, List<string> errors)
     {
-        var result = new List<HabitatZone>();
+        var result = new List<MapZone>();
         var objects = map.Layers?.FirstOrDefault(l => l.Name == "objects" && l.Type == "objectgroup")?.Objects ?? [];
-        foreach (var zone in objects.Where(o => o.ObjectClass == "habitat"))
+        foreach (var zone in objects.Where(o => o.ObjectClass == kind))
         {
-            var habitatId = zone.StringProperty("habitatId");
-            var at = $"{name}: habitat zone '{zone.Name ?? habitatId}'";
-            if (habitatId is null || !habitats.ContainsKey(habitatId))
+            var id = zone.StringProperty(property);
+            var at = $"{name}: {kind} zone '{zone.Name ?? id}'";
+            if (id is null || !known.Contains(id))
             {
-                errors.Add($"{at} refers to unknown habitat '{habitatId}'.");
+                errors.Add($"{at} refers to unknown {kind} '{id}'.");
                 continue;
             }
 
             // Tile x is covered when its centre (16x + 8) lies in [X, X + Width).
             const double HalfTile = TileSize / 2.0;
-            var tiles = new HabitatZone(
-                habitatId,
+            var tiles = new MapZone(
+                id,
                 (int)Math.Ceiling((zone.X - HalfTile) / TileSize),
                 (int)Math.Ceiling((zone.Y - HalfTile) / TileSize),
                 (int)Math.Ceiling((zone.X + zone.Width - HalfTile) / TileSize) - 1,
@@ -542,11 +550,71 @@ public sealed partial class FileContentCatalog : IContentCatalog
             }
             else if (result.Any(other => other.Overlaps(tiles)))
             {
-                errors.Add($"{at} overlaps another habitat zone.");
+                errors.Add($"{at} overlaps another {kind} zone.");
             }
             else
             {
                 result.Add(tiles);
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>Every walkable tile (collision 0) must lie in an area, so the player always has a location.</summary>
+    private static void ValidateAreaCoverage(TiledMapFile map, string name, List<MapZone> areas, List<string> errors)
+    {
+        var collision = map.Layers?.FirstOrDefault(l => l.Name == "collision" && l.Type == "tilelayer")?.Data;
+        if (collision is null || collision.Count != map.Width * map.Height)
+        {
+            return; // reported by the map validation
+        }
+
+        var uncovered = Enumerable.Range(0, collision.Count)
+            .Where(i => collision[i] == 0)
+            .Select(i => (X: i % map.Width, Y: i / map.Width))
+            .Where(tile => !areas.Any(area => area.Contains(tile.X, tile.Y)))
+            .ToList();
+        if (uncovered.Count > 0)
+        {
+            errors.Add($"{name}: {uncovered.Count} walkable tile(s) lie in no area, e.g. ({uncovered[0].X}, {uncovered[0].Y}).");
+        }
+    }
+
+    private static HashSet<string> LoadAreas(string folder, List<string> errors)
+    {
+        var result = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var file in JsonFiles(folder))
+        {
+            var name = $"{AreasFolder}/{Path.GetFileName(file)}";
+            var area = Read<AreaFile>(file, name, errors);
+            if (area is null)
+            {
+                continue;
+            }
+
+            var errorCount = errors.Count;
+            if (area.Id is null || !MapIdPattern().IsMatch(area.Id))
+            {
+                errors.Add($"{name}: invalid area ID '{area.Id}' (expected lowercase snake_case).");
+            }
+
+            foreach (var (language, text) in area.Text ?? [])
+            {
+                if (string.IsNullOrWhiteSpace(text?.Name))
+                {
+                    errors.Add($"{name}: 'text.{language}.name' is missing.");
+                }
+            }
+
+            if (area.Text is null || !area.Text.ContainsKey(IContentCatalog.DefaultLanguage))
+            {
+                errors.Add($"{name}: Slovenian name ('text.{IContentCatalog.DefaultLanguage}.name') is required.");
+            }
+
+            if (errors.Count == errorCount && !result.Add(area.Id!))
+            {
+                errors.Add($"{name}: duplicate area ID '{area.Id}'.");
             }
         }
 
