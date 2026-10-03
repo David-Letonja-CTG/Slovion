@@ -1,6 +1,8 @@
 {
   "app": {
-    "title": "Slovion"
+    "title": "Slovion",
+    "updateReady": "Na voljo je nova različica igre.",
+    "reload": "Osveži"
   },
   "shell": {
     "tagline": "Odkrij živo naravo Slovenije"
@@ -12,7 +14,8 @@
     "newGame": "Nova igra",
     "continue": "Nadaljuj",
     "confirmReplace": "Začneš novo igro? Obstoječa igra na tej napravi bo izgubljena.",
-    "confirmReplaceYes": "Da, začni novo igro"
+    "confirmReplaceYes": "Da, začni novo igro",
+    "offline": "Ni internetne povezave. Za igranje jo potrebuješ."
   },
   "common": {
     "cancel": "Prekliči",

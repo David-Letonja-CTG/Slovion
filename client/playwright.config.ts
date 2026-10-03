@@ -4,6 +4,8 @@ const ci = !!process.env['CI'];
 // Ports are configurable so the tests can run next to a developer's own servers.
 const apiPort = process.env['E2E_API_PORT'] ?? '5080';
 const clientPort = process.env['E2E_CLIENT_PORT'] ?? '4200';
+// The production build with its service worker, for the installable-app test.
+const distPort = process.env['E2E_DIST_PORT'] ?? String(Number(clientPort) + 1);
 const apiUrl = `http://localhost:${apiPort}`;
 
 /**
@@ -23,7 +25,17 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      testIgnore: 'installable.spec.ts',
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
+    },
+    {
+      name: 'installable',
+      testMatch: 'installable.spec.ts',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 720 },
+        baseURL: `http://localhost:${distPort}`,
+      },
     },
   ],
   webServer: [
@@ -40,6 +52,14 @@ export default defineConfig({
     {
       command: `npm start -- --port ${clientPort}`,
       url: `http://localhost:${clientPort}`,
+      env: { SLOVION_API_URL: apiUrl },
+      reuseExistingServer: !ci,
+      timeout: 180_000,
+    },
+    {
+      // The dev server never registers the service worker, so this one serves a production build.
+      command: `npm run build && node e2e/serve-dist.mjs ${distPort}`,
+      url: `http://localhost:${distPort}`,
       env: { SLOVION_API_URL: apiUrl },
       reuseExistingServer: !ci,
       timeout: 180_000,

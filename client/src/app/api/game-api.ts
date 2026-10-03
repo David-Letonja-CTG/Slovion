@@ -201,7 +201,9 @@ const KNOWN_CODES: readonly ApiErrorCode[] = [
 /** Maps any failure to a code with a translated message. */
 export function apiErrorCode(error: unknown): ApiErrorCode {
   if (error instanceof HttpErrorResponse) {
-    if (error.status === 0) return 'network';
+    // No response, or a gateway that couldn't reach the server: the service worker answers
+    // requests it can't send while offline with 504, and a proxy in front of a stopped API with 502.
+    if (error.status === 0 || error.status === 502 || error.status === 504) return 'network';
     const code = (error.error as { code?: unknown } | null)?.code;
     return KNOWN_CODES.find((known) => known === code) ?? 'error';
   }

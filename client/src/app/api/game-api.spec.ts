@@ -160,6 +160,10 @@ describe('GameApi encounters', () => {
 describe('apiErrorCode', () => {
   it.each([
     [new HttpErrorResponse({ status: 0 }), 'network'],
+    // The service worker answers a request it can't send (offline) with 504.
+    [new HttpErrorResponse({ status: 504, statusText: 'Gateway Timeout' }), 'network'],
+    [new HttpErrorResponse({ status: 502, statusText: 'Bad Gateway' }), 'network'],
+    [new HttpErrorResponse({ status: 503 }), 'error'],
     [
       new HttpErrorResponse({ status: 401, error: { code: 'invalid_save_token' } }),
       'invalid_save_token',

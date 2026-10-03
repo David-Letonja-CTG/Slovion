@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ApiErrorCode } from '../api/game-api';
+import { ConnectionStatus } from '../pwa/connection-status';
 import { GameSession } from '../session/game-session';
 
 @Component({
@@ -13,6 +14,9 @@ import { GameSession } from '../session/game-session';
 export class TitleScreen {
   private readonly session = inject(GameSession);
   private readonly router = inject(Router);
+
+  /** The browser's connection report; offline, the title screen says a connection is needed. */
+  protected readonly online = inject(ConnectionStatus).online;
 
   protected readonly hasSave = signal(this.session.hasSavedGame());
   protected readonly confirming = signal(false);
