@@ -7,17 +7,34 @@
       [world]="loaded"
       [openFlags]="progress().flags"
       [worldTime]="worldTime()"
-      (conditionsChanged)="onConditionsChanged($event)"
+      (timeChanged)="onTimeChanged($event)"
+      (areaChanged)="onAreaChanged($event)"
+      (torchChanged)="onTorchChanged($event)"
       (started)="onStarted($event)"
       (interaction)="onInteraction($event)"
       (menuRequested)="onMenu()"
     />
-    @if (conditions(); as now) {
-      <app-conditions-indicator
-        class="play__conditions"
-        [season]="now.season"
-        [timeOfDay]="now.timeOfDay"
-      />
+    @if (time(); as now) {
+      <div class="play__conditions">
+        <app-conditions-indicator [time]="now" [location]="areaName()" />
+        <button
+          type="button"
+          class="button play__torch"
+          [class.button--primary]="torchOn()"
+          [attr.aria-pressed]="torchOn()"
+          (click)="toggleTorch()"
+        >
+          {{ 'torch.button' | transloco }}
+        </button>
+        <p class="play__torch-status" aria-live="polite">
+          {{ (torchOn() ? 'torch.on' : 'torch.off') | transloco }}
+        </p>
+      </div>
+    }
+    @if (banner(); as shown) {
+      @for (item of [shown]; track item.key) {
+        <app-location-banner [name]="item.name" (done)="onBannerDone(item.key)" />
+      }
     }
     @if (activeQuest(); as quest) {
       <app-quest-tracker class="play__tracker" [quest]="quest" />

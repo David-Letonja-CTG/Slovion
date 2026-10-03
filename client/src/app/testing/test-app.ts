@@ -22,6 +22,8 @@ export class FakeGame implements Game {
   openFlags: readonly string[] = [];
   /** The in-game minutes last given with `setWorldTime`. */
   worldMinutes: number | undefined;
+  /** The torch state last given with `setTorch`. */
+  torch: boolean | undefined;
   private readonly uiListeners = new Set<(action: Action) => void>();
 
   start = vi.fn();
@@ -38,6 +40,10 @@ export class FakeGame implements Game {
 
   setOpenFlags(flags: readonly string[]): void {
     this.openFlags = flags;
+  }
+
+  setTorch(on: boolean): void {
+    this.torch = on;
   }
 
   setWorldTime(minutes: number): void {

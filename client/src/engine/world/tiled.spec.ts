@@ -36,6 +36,11 @@ describe('parseTiledMap', () => {
     expect(map.tileset.image).toBe('../tilesets/meadow.png');
     expect(map.npcs).toEqual([{ npcId: 'vera', x: 7, y: 9, gid: 20 }]);
     expect(map.gates).toEqual([{ flag: 'hedgerow_open', x: 20, y: 19, gid: 19 }]);
+    expect([map.areaAt(10, 10), map.areaAt(20, 19), map.areaAt(20, 20)]).toEqual([
+      'meadow',
+      'meadow',
+      'south_hedgerow',
+    ]);
   });
 
   it('knows which tiles are blocked, including everything outside the map', () => {
@@ -170,6 +175,21 @@ describe('parseTiledMap', () => {
     objects.push({ ...objects.find((o) => o['type'] === 'habitat')!, name: 'copy' });
 
     expect(problemsOf(json)).toContain('habitat zone "copy" overlaps another habitat zone');
+  });
+
+  it('reports walkable tiles that lie in no area', () => {
+    const json = meadowCopy();
+    const objects = json.layers.find((l) => l['name'] === 'objects')!['objects'] as Record<
+      string,
+      unknown
+    >[];
+    json.layers.find((l) => l['name'] === 'objects')!['objects'] = objects.filter(
+      (o) => o['name'] !== 'area_south_hedgerow',
+    );
+
+    expect(problemsOf(json).join('\n')).toMatch(
+      /walkable tile\(s\) lie in no area, e\.g\. \(\d+, 2\d\)/,
+    );
   });
 
   it('reports a missing spawn', () => {

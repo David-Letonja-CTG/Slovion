@@ -15,6 +15,8 @@ public sealed class ContentFolder : IDisposable
 
     public JsonObject Npc { get; }
 
+    public JsonObject Area { get; }
+
     public JsonObject Quest { get; }
 
     /// <summary>The picture written for the species; <c>null</c> writes none.</summary>
@@ -28,11 +30,13 @@ public sealed class ContentFolder : IDisposable
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "habitats"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "species-pictures"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "npcs"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "areas"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "quests"));
         Species = ValidSpecies();
         Map = ValidMap();
         Habitat = ValidHabitat();
         Npc = ValidNpc();
+        Area = new JsonObject { ["id"] = "test_field", ["text"] = new JsonObject { ["sl"] = new JsonObject { ["name"] = "Testno polje" } } };
         Quest = ValidQuest();
     }
 
@@ -40,6 +44,7 @@ public sealed class ContentFolder : IDisposable
     public string Write(string speciesFile = "salvia_pratensis.json", string mapFile = "test_meadow.json", string habitatFile = "tall_grass.json", string npcFile = "vera.json", string questFile = "eye_for_nature.json")
     {
         File.WriteAllText(System.IO.Path.Combine(Path, "npcs", npcFile), Npc.ToJsonString());
+        File.WriteAllText(System.IO.Path.Combine(Path, "areas", "test_field.json"), Area.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "quests", questFile), Quest.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "species", speciesFile), Species.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "maps", mapFile), Map.ToJsonString());
@@ -171,6 +176,18 @@ public sealed class ContentFolder : IDisposable
         ["properties"] = new JsonArray(new JsonObject { ["name"] = property, ["type"] = "string", ["value"] = value }),
     };
 
+    /// <summary>An area rectangle covering the whole 4×3 test map, or the given tile columns.</summary>
+    public static JsonObject AreaZone(string areaId = "test_field", int fromX = 0, int toX = 3, string name = "field") => new()
+    {
+        ["type"] = "area",
+        ["name"] = name,
+        ["x"] = fromX * 16,
+        ["y"] = 0,
+        ["width"] = (toX - fromX + 1) * 16,
+        ["height"] = 48,
+        ["properties"] = new JsonArray(new JsonObject { ["name"] = "areaId", ["type"] = "string", ["value"] = areaId }),
+    };
+
     /// <summary>A habitat rectangle covering tiles x 1–2, y 0–2 of the 4×3 test map.</summary>
     public static JsonObject HabitatZone(string habitatId = "tall_grass") => new()
     {
@@ -216,7 +233,8 @@ public sealed class ContentFolder : IDisposable
                         Point("spot", 2, 1, new JsonArray(
                             Property("spotId", "sage_1"),
                             Property("speciesId", "salvia_pratensis"))),
-                        HabitatZone()),
+                        HabitatZone(),
+                        AreaZone()),
                 }),
         };
     }

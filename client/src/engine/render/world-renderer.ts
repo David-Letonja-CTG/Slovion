@@ -15,12 +15,16 @@ export interface WorldImages {
 const BACKDROP = '#11161c';
 const PLAYER_ROW: Record<Direction, number> = { down: 0, up: 1, left: 2, right: 3 };
 
+/** The torch's light: fully clear within 2 tiles of the player, fading to the tint at 3.5 tiles. */
+export const TORCH_INNER_RADIUS = 2 * TILE_SIZE;
+export const TORCH_OUTER_RADIUS = 3.5 * TILE_SIZE;
+
 /** A tint over the whole view by time of day; none by day. */
 export const TIME_TINT: Record<TimeOfDay, string | undefined> = {
   morning: 'rgba(255, 196, 140, 0.10)',
   day: undefined,
   evening: 'rgba(255, 128, 48, 0.20)',
-  night: 'rgba(16, 24, 72, 0.45)',
+  night: 'rgba(10, 14, 40, 0.68)',
 };
 
 /**
@@ -102,9 +106,26 @@ export function renderWorld(
     TILE_SIZE,
   );
 
-  const tint = TIME_TINT[world.time.timeOfDay];
-  if (tint) {
+  const timeOfDay = world.time.timeOfDay;
+  const tint = TIME_TINT[timeOfDay];
+  if (!tint) return;
+  if (world.torchOn && (timeOfDay === 'evening' || timeOfDay === 'night')) {
+    // The torch clears the tint in a soft circle around the player; the gradient pads with the tint.
+    const centreX = playerX - camera.x + TILE_SIZE / 2;
+    const centreY = playerY - camera.y + TILE_SIZE / 2;
+    const light = context.createRadialGradient(
+      centreX,
+      centreY,
+      TORCH_INNER_RADIUS,
+      centreX,
+      centreY,
+      TORCH_OUTER_RADIUS,
+    );
+    light.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    light.addColorStop(1, tint);
+    context.fillStyle = light;
+  } else {
     context.fillStyle = tint;
-    context.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
   }
+  context.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
 }

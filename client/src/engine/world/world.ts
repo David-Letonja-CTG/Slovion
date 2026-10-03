@@ -2,12 +2,21 @@ import { ActionState } from '../input/action-state';
 import { directionOf, stepOf } from '../input/actions';
 import { Player } from './player';
 import { Gate, Obstacles, WorldMap } from './world-map';
-import { Season, TimeOfDay, WorldTime, worldTimeAt } from './world-time';
+import { WorldTime, worldTimeAt } from './world-time';
 
 /** The in-game clock as the server reported it. */
 export interface WorldClock {
   readonly minutes: number;
   readonly gameMinutesPerSecond: number;
+}
+
+/** What the world tells its host. */
+export interface WorldListeners {
+  /** The in-game minute changed (once per in-game minute, and after a re-sync). */
+  readonly onTimeChange?: (time: WorldTime) => void;
+  /** The player's tile lies in another area (also reported on the first update). */
+  readonly onAreaChange?: (areaId: string) => void;
+  readonly onTorchChange?: (on: boolean) => void;
 }
 
 /** Without a server clock the world stands still at noon: daylight, no tint. */
@@ -32,19 +41,33 @@ export class World implements Obstacles {
   private minutes: number;
   private readonly gameMinutesPerSecond: number;
   private conditions: WorldTime;
+  private torch = false;
+  /** The area of the player's tile when last checked; `null` before the first update. */
+  private area: string | undefined | null = null;
 
   constructor(
     readonly map: WorldMap,
     private readonly onInteract: (interaction: Interaction) => void,
     private readonly onOpenMenu: () => void = () => undefined,
     clock: WorldClock = STILL_NOON,
-    private readonly onConditionsChange: (season: Season, timeOfDay: TimeOfDay) => void = () =>
-      undefined,
+    private readonly listeners: WorldListeners = {},
   ) {
     this.player = new Player(map.spawn);
     this.minutes = clock.minutes;
     this.gameMinutesPerSecond = clock.gameMinutesPerSecond;
     this.conditions = worldTimeAt(this.minutes);
+  }
+
+  /** Whether the player's torch is lit; it only shows in the evening and at night. */
+  get torchOn(): boolean {
+    return this.torch;
+  }
+
+  /** Switches the torch, e.g. from an on-screen button; the host hears back through `onTorchChange`. */
+  setTorch(on: boolean): void {
+    if (this.torch === on) return;
+    this.torch = on;
+    this.listeners.onTorchChange?.(on);
   }
 
   /** The current in-game time. */
@@ -89,6 +112,10 @@ export class World implements Obstacles {
       this.onOpenMenu();
     }
 
+    if (presses.includes('Torch')) {
+      this.setTorch(!this.torch);
+    }
+
     if (presses.includes('Interact') && !this.player.isStepping) {
       this.interact();
     }
@@ -102,17 +129,21 @@ export class World implements Obstacles {
       stepMs,
       this,
     );
+
+    // The location follows the player's tile: report it on the first update and whenever it changes.
+    const area = this.map.areaAt(this.player.tileX, this.player.tileY);
+    if (area !== this.area) {
+      this.area = area;
+      if (area !== undefined) this.listeners.onAreaChange?.(area);
+    }
   }
 
-  /** Recomputes the time and tells the host when the season or the time of day changed. */
+  /** Recomputes the time and tells the host whenever the in-game minute changed. */
   private refreshConditions(): void {
     const previous = this.conditions;
     this.conditions = worldTimeAt(this.minutes);
-    if (
-      previous.season !== this.conditions.season ||
-      previous.timeOfDay !== this.conditions.timeOfDay
-    ) {
-      this.onConditionsChange(this.conditions.season, this.conditions.timeOfDay);
+    if (previous.minutes !== this.conditions.minutes) {
+      this.listeners.onTimeChange?.(this.conditions);
     }
   }
 

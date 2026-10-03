@@ -8,7 +8,8 @@ export type Action =
   | 'Interact'
   | 'Confirm'
   | 'Cancel'
-  | 'OpenMenu';
+  | 'OpenMenu'
+  | 'Torch';
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 

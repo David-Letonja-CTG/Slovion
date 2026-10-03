@@ -32,6 +32,15 @@ export interface HabitatZone {
   readonly maxY: number;
 }
 
+/** Tiles (inclusive) belonging to a named place; its name is content, loaded by the host (D7). */
+export interface AreaZone {
+  readonly areaId: string;
+  readonly minX: number;
+  readonly minY: number;
+  readonly maxX: number;
+  readonly maxY: number;
+}
+
 /** A non-player character standing on a tile, drawn with tileset tile `gid`. It blocks its tile. */
 export interface MapNpc {
   readonly npcId: string;
@@ -73,6 +82,7 @@ export class WorldMap implements Obstacles {
     readonly habitats: readonly HabitatZone[] = [],
     readonly npcs: readonly MapNpc[] = [],
     readonly gates: readonly Gate[] = [],
+    readonly areas: readonly AreaZone[] = [],
   ) {}
 
   inBounds(x: number, y: number): boolean {
@@ -94,6 +104,13 @@ export class WorldMap implements Obstacles {
 
   spotAt(x: number, y: number): Spot | undefined {
     return this.spots.find((spot) => spot.x === x && spot.y === y);
+  }
+
+  /** The area whose zone contains the tile, if any. */
+  areaAt(x: number, y: number): string | undefined {
+    return this.areas.find(
+      (zone) => x >= zone.minX && x <= zone.maxX && y >= zone.minY && y <= zone.maxY,
+    )?.areaId;
   }
 
   /** The habitat whose zone contains the tile, if any. */

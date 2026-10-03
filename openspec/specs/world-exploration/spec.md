@@ -12,6 +12,7 @@ Maps SHALL be loaded from content data (Tiled JSON). A map SHALL define:
 - a spawn point
 - interactive spots
 - optional habitat zones (rectangles naming a habitat)
+- area zones (rectangles naming an area) covering every walkable tile
 - optional NPCs (tile objects naming an NPC)
 - optional gates (tile objects naming the flag that opens them)
 
@@ -28,6 +29,10 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - **WHEN** the meadow is loaded
 - **THEN** its tall-grass tiles belong to a zone of habitat `tall_grass` and the path does not
 - **AND** the hedgerow strip south of the meadow belongs to a zone of habitat `hedgerow`
+
+#### Scenario: Areas of the meadow
+- **WHEN** the meadow is loaded
+- **THEN** the meadow, its southern hedge and the gate belong to area `meadow`, and the hedgerow strip belongs to area `south_hedgerow`
 
 #### Scenario: The hedgerow is closed off
 - **WHEN** a save without flag `hedgerow_open` walks along the southern hedge of the meadow

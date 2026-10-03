@@ -36,7 +36,8 @@ const pictureOf = (page: Page, speciesId: string) =>
 test('identify the meadow sage, read about it, and keep it after a reload', async ({ page }) => {
   const observation = await observeTheSage(page);
   // A new save starts on a spring morning (docs/decisions.md D8).
-  await expect(page.locator('app-conditions-indicator')).toHaveText(/Pomlad\s*·\s*jutro/);
+  await expect(page.locator('.conditions__now')).toHaveText(/Pomlad\s*·\s*jutro\s*·\s*08:\d\d/);
+  await expect(page.locator('.conditions__location')).toHaveText('Travnik na Dravskem polju');
 
   await observation.getByRole('button', { name: 'Nov namig' }).click();
   await expect(observation.locator('li')).toHaveCount(2);
@@ -175,6 +176,9 @@ async function readDialogue(page: Page): Promise<void> {
 async function walkIntoTheHedgerow(page: Page): Promise<void> {
   await walk(page, 'ArrowRight', 10);
   await walk(page, 'ArrowDown', 10);
+  // Through the gate the player enters another place, announced by the banner.
+  await expect(page.locator('app-location-banner')).toHaveText('Južna mejica');
+  await expect(page.locator('.conditions__location')).toHaveText('Južna mejica');
   await walk(page, 'ArrowLeft', 1);
   // (19, 20) lies in a hedgerow zone: searching there proves the player got through.
   await page.keyboard.press('KeyE');
@@ -235,4 +239,19 @@ test('Vera opens the hedgerow once three species are identified', async ({ page 
   await waitForTheWorld(page);
   await expect(tracker).toHaveCount(0);
   await walkIntoTheHedgerow(page);
+});
+
+test('a new game announces the meadow and the torch switches with L', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Nova igra' }).click();
+  await waitForTheWorld(page);
+
+  await expect(page.locator('app-location-banner')).toHaveText('Travnik na Dravskem polju');
+  const torch = page.getByRole('button', { name: 'Svetilka' });
+  await expect(torch).toHaveAttribute('aria-pressed', 'false');
+
+  await page.keyboard.press('KeyL');
+  await expect(torch).toHaveAttribute('aria-pressed', 'true');
+  await torch.click();
+  await expect(torch).toHaveAttribute('aria-pressed', 'false');
 });

@@ -7,10 +7,10 @@ namespace Slovion.Api.Content;
 public static class ContentFilesSetup
 {
     /// <summary>Folders of the content root that clients may download as-is.</summary>
-    private static readonly string[] PublicFolders = ["maps", "tilesets", FileContentCatalog.PicturesFolder];
+    private static readonly string[] PublicFolders = ["maps", "tilesets", FileContentCatalog.PicturesFolder, FileContentCatalog.AreasFolder];
 
     /// <summary>
-    /// Serves maps, tilesets and species pictures as static files under <c>/content</c>. Species files are deliberately not
+    /// Serves maps, tilesets, species pictures and area names as static files under <c>/content</c>. Species files are deliberately not
     /// served: players receive species text only through localized endpoints (docs/decisions.md D7).
     /// </summary>
     public static IApplicationBuilder UsePublicContentFiles(this WebApplication app)
@@ -22,6 +22,10 @@ public static class ContentFilesSetup
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(root, folder)),
                 RequestPath = $"/content/{folder}",
+
+                // Content changes with every release; without this, browsers may reuse an old map or picture
+                // heuristically and pair it with newer code. ETags keep the revalidation cheap (304).
+                OnPrepareResponse = context => context.Context.Response.Headers.CacheControl = "no-cache",
             });
         }
 

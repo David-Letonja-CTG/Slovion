@@ -27,6 +27,7 @@ export const DEFAULT_KEY_MAP: KeyMap = {
   Space: CONFIRM_KEYS,
   Escape: ['Cancel', 'OpenMenu'],
   KeyM: ['OpenMenu'],
+  KeyL: ['Torch'],
 };
 
 /**

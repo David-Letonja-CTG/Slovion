@@ -20,7 +20,7 @@
     "loading": "Nalaganje …"
   },
   "play": {
-    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči, pogovori se ali išči v visoki travi · M: Terenski dnevnik"
+    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči, pogovori se ali išči v visoki travi · L: svetilka · M: Terenski dnevnik"
   },
   "discovery": {
     "known": "Ta vrsta je že zapisana v Terenskem dnevniku: {{name}}"
@@ -110,5 +110,13 @@
   },
   "spot": {
     "notNow": "Tukaj zdaj ni ničesar. Poskusi ob drugem času."
+  },
+  "torch": {
+    "button": "Svetilka",
+    "on": "Svetilka je prižgana.",
+    "off": "Svetilka je ugasnjena."
+  },
+  "area": {
+    "label": "Lokacija"
   }
 }

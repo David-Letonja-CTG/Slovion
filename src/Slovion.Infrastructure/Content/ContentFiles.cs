@@ -59,11 +59,16 @@ internal sealed record HabitatTextFile(string? Name);
 /// <summary>A habitat's localized display name and fictional gameplay values (search chance, species weights).</summary>
 internal sealed record HabitatFile(string? Id, Dictionary<string, HabitatTextFile>? Text, int? Order, int SearchChancePercent, List<HabitatSpeciesFile>? Species);
 
-/// <summary>Tiles (inclusive) covered by a habitat zone: those whose centre lies inside the rectangle.</summary>
-internal sealed record HabitatZone(string HabitatId, int MinX, int MinY, int MaxX, int MaxY)
+internal sealed record AreaTextFile(string? Name);
+
+/// <summary>A named place in the world (a game label, not a fact).</summary>
+internal sealed record AreaFile(string? Id, Dictionary<string, AreaTextFile>? Text);
+
+/// <summary>Tiles (inclusive) covered by a map zone (habitat or area): those whose centre lies inside the rectangle.</summary>
+internal sealed record MapZone(string Id, int MinX, int MinY, int MaxX, int MaxY)
 {
     public bool Contains(int x, int y) => x >= MinX && x <= MaxX && y >= MinY && y <= MaxY;
 
-    public bool Overlaps(HabitatZone other) =>
+    public bool Overlaps(MapZone other) =>
         MinX <= other.MaxX && other.MinX <= MaxX && MinY <= other.MaxY && other.MinY <= MaxY;
 }
