@@ -1,6 +1,7 @@
 using System.Globalization;
 using Slovion.Application.Content;
 using Slovion.Domain.Content;
+using Slovion.Domain.World;
 
 namespace Slovion.Infrastructure.Content;
 
@@ -44,13 +45,14 @@ public sealed partial class FileContentCatalog
 
             var unlock = ValidateUnlock(region, name, rewardFlags, errors);
             var texts = ValidateRegionTexts(region.Text, name, errors);
+            var weather = ValidateWeather(region.Weather, name, errors);
 
             if (errors.Count > errorCount)
             {
                 continue;
             }
 
-            var loaded = new Region(region.Id!, region.MapId!, region.Order!.Value, region.Position!.X!.Value, region.Position.Y!.Value, unlock!, texts);
+            var loaded = new Region(region.Id!, region.MapId!, region.Order!.Value, region.Position!.X!.Value, region.Position.Y!.Value, unlock!, texts, weather);
             if (!result.TryAdd(loaded.Id, loaded))
             {
                 errors.Add($"{name}: duplicate region ID '{loaded.Id}'.");
@@ -94,6 +96,48 @@ public sealed partial class FileContentCatalog
         }
 
         return new UnlockRule.Always();
+    }
+
+    /// <summary>Positive weights for one or more weather kinds in every season (fictional gameplay data, D11).</summary>
+    private static Dictionary<Season, IReadOnlyDictionary<Weather, int>> ValidateWeather(Dictionary<string, Dictionary<string, int>>? file, string name, List<string> errors)
+    {
+        var result = new Dictionary<Season, IReadOnlyDictionary<Weather, int>>();
+        var seasons = Enum.GetValues<Season>().ToDictionary(season => season.ToString().ToLowerInvariant(), StringComparer.Ordinal);
+        var kinds = Enum.GetValues<Weather>().ToDictionary(kind => kind.ToString().ToLowerInvariant(), StringComparer.Ordinal);
+        foreach (var (seasonName, season) in seasons)
+        {
+            if (file?.GetValueOrDefault(seasonName) is not { Count: > 0 } weights)
+            {
+                errors.Add($"{name}: 'weather.{seasonName}' needs weights for one or more weather kinds.");
+                continue;
+            }
+
+            var parsed = new Dictionary<Weather, int>();
+            foreach (var (kindName, weight) in weights)
+            {
+                if (!kinds.TryGetValue(kindName, out var kind))
+                {
+                    errors.Add($"{name}: 'weather.{seasonName}' has unknown weather '{kindName}' (expected clear, cloudy, rain, fog or snow).");
+                }
+                else if (weight <= 0)
+                {
+                    errors.Add($"{name}: 'weather.{seasonName}.{kindName}' must be a positive weight (found {weight}).");
+                }
+                else
+                {
+                    parsed[kind] = weight;
+                }
+            }
+
+            result[season] = parsed;
+        }
+
+        foreach (var unknown in (file?.Keys.AsEnumerable() ?? []).Where(key => !seasons.ContainsKey(key)))
+        {
+            errors.Add($"{name}: 'weather' has unknown season '{unknown}'.");
+        }
+
+        return result;
     }
 
     private static Dictionary<string, RegionText> ValidateRegionTexts(Dictionary<string, RegionTextFile>? files, string name, List<string> errors)

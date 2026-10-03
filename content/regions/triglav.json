@@ -4,5 +4,11 @@
   "order": 4,
   "position": { "x": 15, "y": 35 },
   "unlock": { "flag": "triglav_open" },
+  "weather": {
+    "spring": { "clear": 3, "cloudy": 2, "rain": 1, "fog": 2, "snow": 2 },
+    "summer": { "clear": 4, "cloudy": 2, "rain": 2, "fog": 2 },
+    "autumn": { "clear": 3, "cloudy": 2, "rain": 1, "fog": 2, "snow": 2 },
+    "winter": { "clear": 2, "cloudy": 2, "fog": 1, "snow": 5 }
+  },
   "text": { "sl": { "name": "Triglav", "lockedHint": "Pomagaj Maji na Pohorju." } }
 }

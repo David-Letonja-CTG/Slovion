@@ -1,0 +1,141 @@
+{
+  "id": "salamandra_atra",
+  "group": "amphibian",
+  "scientificName": {
+    "value": "Salamandra atra Laurenti, 1768",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "ckff": {
+      "title": "Planinski močerad (Salamandra atra) – Dvoživke Slovenije",
+      "publisher": "Center za kartografijo favne in flore (CKFF)",
+      "url": "https://www.ckff.si/projekti/interreg/dvozivke_salamandra_atra.php",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "atlas": {
+      "title": "Planinski močerad – Vrste dvoživk",
+      "publisher": "Center za kartografijo favne in flore (CKFF)",
+      "url": "https://www.ckff.si/icvds/vrste-dvozivk/salamandra-atra",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "tnp": {
+      "title": "Planinski močerad",
+      "publisher": "Javni zavod Triglavski narodni park (Triglavska zakladnica)",
+      "url": "https://www.triglavskazakladnica.si/sl/vsebine/podrobnosti-vsebine/253/planinski-mocerad.html",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Salamandra atra Laurenti, 1768 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2431781",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "planinski močerad",
+        "sources": [
+          "ckff",
+          "tnp"
+        ]
+      },
+      "family": {
+        "value": "Salamandridae",
+        "sources": [
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Nad gozdno mejo alpinska in subalpinska travišča in kamniti pašniki s skalovjem in podrtimi debli, niže mešani gozdovi.",
+        "sources": [
+          "ckff",
+          "atlas"
+        ]
+      },
+      "distribution": {
+        "value": "Julijske Alpe, Karavanke in Snežnik, od 500 do 2300 metrov nadmorske višine.",
+        "sources": [
+          "atlas"
+        ]
+      },
+      "season": {
+        "value": "Aktiven je od konca aprila do začetka oktobra; skrivališča zapusti zgodaj zjutraj ali ponoči, podnevi pa, kadar dežuje.",
+        "sources": [
+          "ckff",
+          "tnp"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Skupaj z repom meri od 9 do 14 cm.",
+          "sources": [
+            "ckff"
+          ]
+        },
+        {
+          "value": "Telo je enobarvno bleščeče črno, brez rumenih lis.",
+          "sources": [
+            "ckff",
+            "atlas"
+          ]
+        },
+        {
+          "value": "Rebra tvorijo izrazite prečne gube, rebrne loke.",
+          "sources": [
+            "ckff",
+            "atlas"
+          ]
+        },
+        {
+          "value": "Za očmi ima dve izraziti veliki zaušesni žlezi.",
+          "sources": [
+            "ckff",
+            "atlas"
+          ]
+        },
+        {
+          "value": "Je živoroden: samica po dveh ali več letih skoti popolnoma preobražene mladiče.",
+          "sources": [
+            "ckff",
+            "tnp"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "times": [
+      "morning",
+      "night"
+    ],
+    "alsoInWeather": [
+      "rain"
+    ],
+    "sources": [
+      "ckff",
+      "tnp"
+    ]
+  },
+  "wildlife": {
+    "torch": "calm"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

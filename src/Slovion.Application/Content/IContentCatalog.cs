@@ -34,6 +34,9 @@ public interface IContentCatalog
 
     Region? FindRegion(string regionId);
 
+    /// <summary>The region whose map this is, if any.</summary>
+    Region? FindRegionOfMap(string mapId);
+
     /// <summary>The quest an NPC gives; every NPC gives exactly one.</summary>
     Quest? FindQuestByGiver(string npcId);
 

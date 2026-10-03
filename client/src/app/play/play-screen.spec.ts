@@ -36,6 +36,9 @@ const AREA_NAMES: Record<string, string> = {
   south_hedgerow: 'Južna mejica',
   kocevje_forest: 'Kočevski gozd',
 };
+/** The meadow's weather on a new save: the period 06:00–11:59, changing at 12:00. */
+const CLEAR_MORNING = { weather: 'clear', changesAtMinutes: 720 } as const;
+
 const SPRING_MORNING = {
   minutes: 480,
   day: 1,
@@ -52,6 +55,7 @@ async function openPlay(
   mapResponse: object | 404 = meadow,
   progressResponse: PlayerProgress | number = NO_PROGRESS,
   regions: RegionsInfo = REGIONS,
+  weather: object | number = CLEAR_MORNING,
 ) {
   const app = await setupTestApp();
   TestBed.inject(SaveTokenStore).set('play-token');
@@ -63,6 +67,10 @@ async function openPlay(
   const current = regions.regions.find((region) => region.regionId === regions.currentRegionId)!;
   app.http.expectOne('/api/save/time').flush(SPRING_MORNING);
   app.http.expectOne((r) => r.url === '/api/save/wildlife').flush({ animals: RESIDENTS });
+  const weatherRequest = app.http.expectOne((r) => r.url === '/api/save/weather');
+  if (typeof weather === 'number')
+    weatherRequest.flush(null, { status: weather, statusText: 'Error' });
+  else weatherRequest.flush(weather);
   const progress = app.http.expectOne('/api/save/progress');
   if (typeof progressResponse === 'number' && progressResponse === 0) {
     progress.error(new ProgressEvent('error'), { status: 0 });
@@ -830,7 +838,7 @@ describe('World conditions', () => {
     const { game, root } = await openPlay();
 
     expect(game.options?.worldTime).toMatchObject({ minutes: 480, gameMinutesPerSecond: 1 });
-    expect(now(root)).toBe('Pomlad · jutro · 08:00');
+    expect(now(root)).toBe('Pomlad · jutro · 08:00 · jasno');
   });
 
   it('ticks the clock and updates the conditions as the world reports time', async () => {
@@ -838,11 +846,11 @@ describe('World conditions', () => {
 
     game.options!.onTimeChange!(worldTimeAt(495));
     await wait();
-    expect(now(root)).toBe('Pomlad · jutro · 08:15');
+    expect(now(root)).toBe('Pomlad · jutro · 08:15 · jasno');
 
     game.options!.onTimeChange!(worldTimeAt(4320 + 22 * 60));
     await wait();
-    expect(now(root)).toBe('Poletje · noč · 22:00');
+    expect(now(root)).toBe('Poletje · noč · 22:00 · jasno'); // the last known weather until the reload answers
   });
 
   it('re-syncs the clock when the page becomes visible again', async () => {
@@ -959,6 +967,47 @@ describe('Resident animals', () => {
   });
 });
 
+describe('Weather', () => {
+  afterEach(() => TestBed.inject(Router).dispose());
+
+  it("starts the game with the region's weather and names it in the indicator", async () => {
+    const { game, root } = await openPlay(meadow, NO_PROGRESS, REGIONS, {
+      weather: 'rain',
+      changesAtMinutes: 720,
+    });
+
+    expect(game.options?.weather).toBe('rain');
+    expect(root().querySelector('.conditions__weather')?.textContent).toBe(sl.weather.rain);
+  });
+
+  it('reloads the weather and then the animals when the weather period ends', async () => {
+    const { game, http, root, settle: wait } = await openPlay();
+
+    game.options!.onTimeChange!(worldTimeAt(11 * 60 + 59)); // day: the animals are reloaded, the weather is not
+    http.expectNone((r) => r.url === '/api/save/weather');
+    http.expectOne((r) => r.url === '/api/save/wildlife').flush({ animals: RESIDENTS });
+    game.options!.onTimeChange!(worldTimeAt(12 * 60));
+    const request = http.expectOne((r) => r.url === '/api/save/weather');
+    expect(request.request.params.get('mapId')).toBe('dravsko_polje_meadow');
+    request.flush({ weather: 'fog', changesAtMinutes: 1080 });
+    await wait();
+    http.expectOne((r) => r.url === '/api/save/wildlife').flush({ animals: [] });
+    await wait();
+
+    expect(game.weather).toBe('fog');
+    expect(game.residents).toEqual([]);
+    expect(root().querySelector('.conditions__weather')?.textContent).toBe(sl.weather.fog);
+  });
+
+  it('starts with clear weather when the weather cannot be loaded', async () => {
+    const { game, root } = await openPlay(meadow, NO_PROGRESS, REGIONS, 500);
+
+    expect(game.start).toHaveBeenCalled();
+    expect(game.options?.weather).toBe('clear');
+    expect(root().querySelector('.conditions__weather')).toBeNull();
+  });
+});
+
 describe('Travel', () => {
   afterEach(() => TestBed.inject(Router).dispose());
 
@@ -990,6 +1039,7 @@ describe('Travel', () => {
     const wildlife = play.http.expectOne((r) => r.url === '/api/save/wildlife');
     expect(wildlife.request.params.get('mapId')).toBe('kocevje_forest');
     wildlife.flush({ animals: [] });
+    play.http.expectOne((r) => r.url === '/api/save/weather').flush(CLEAR_MORNING);
     play.http.expectOne('/content/maps/kocevje_forest.json').flush(kocevje);
     await play.settle();
     for (const request of play.http.match((r) => r.url.startsWith('/content/areas/'))) {
@@ -1050,6 +1100,7 @@ describe('Travel', () => {
     expect(play.root().querySelector('.play__fade--dark')).not.toBeNull();
     play.http.expectOne('/api/save/time').flush(SPRING_MORNING);
     play.http.expectOne((r) => r.url === '/api/save/wildlife').flush({ animals: [] });
+    play.http.expectOne((r) => r.url === '/api/save/weather').flush(CLEAR_MORNING);
     play.http.expectOne('/content/maps/kocevje_forest.json').flush(kocevje);
     await play.settle();
     for (const request of play.http.match((r) => r.url.startsWith('/content/areas/'))) {
@@ -1137,6 +1188,7 @@ describe('Travel', () => {
     await play.settle();
     play.http.expectOne('/api/save/time').flush(SPRING_MORNING);
     play.http.expectOne((r) => r.url === '/api/save/wildlife').flush({ animals: [] });
+    play.http.expectOne((r) => r.url === '/api/save/weather').flush(CLEAR_MORNING);
     play.http
       .expectOne('/content/maps/kocevje_forest.json')
       .flush(null, { status: 404, statusText: 'Not Found' });

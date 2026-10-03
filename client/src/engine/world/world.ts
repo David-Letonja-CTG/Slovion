@@ -1,3 +1,4 @@
+import { Weather } from '../render/weather';
 import { ActionState } from '../input/action-state';
 import { Direction, directionOf, stepOf } from '../input/actions';
 import { Player } from './player';
@@ -64,6 +65,9 @@ export class World implements Obstacles {
   private readonly gameMinutesPerSecond: number;
   private conditions: WorldTime;
   private torch = false;
+  private currentWeather: Weather = 'clear';
+  /** Weather particles stand still for players who prefer reduced motion. */
+  reducedMotion = false;
   /** The area of the player's tile when last checked; `null` before the first update. */
   private area: string | undefined | null = null;
   private residentList: Resident[] = [];
@@ -122,6 +126,15 @@ export class World implements Obstacles {
   }
 
   /** Whether the player's torch is lit; it only shows in the evening and at night. */
+  /** The current region's weather, as the server reported it (D11). */
+  get weather(): Weather {
+    return this.currentWeather;
+  }
+
+  setWeather(weather: Weather): void {
+    this.currentWeather = weather;
+  }
+
   get torchOn(): boolean {
     return this.torch;
   }

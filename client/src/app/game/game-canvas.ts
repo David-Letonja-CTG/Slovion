@@ -16,6 +16,7 @@ import {
   Interaction,
   LoadedWorld,
   ResidentInfo,
+  Weather,
   WorldClock,
   WorldTime,
   createGame,
@@ -60,6 +61,10 @@ export class GameCanvas {
   readonly residents = input<readonly ResidentInfo[]>([]);
   /** The save's in-game clock when a game starts; later re-syncs go through `Game.setWorldTime`. */
   readonly worldTime = input<WorldClock | undefined>(undefined);
+  /** The current region's weather when a game starts; changes go through `Game.setWeather`. */
+  readonly weather = input<Weather>('clear');
+  /** Draws weather without movement, for players who prefer reduced motion. */
+  readonly reducedMotion = input(false);
   /** A new in-game minute (once per in-game minute while playing, and after a re-sync). */
   readonly timeChanged = output<WorldTime>();
   /** The player's tile lies in another place, including at the start. */
@@ -92,6 +97,8 @@ export class GameCanvas {
           openFlags: this.openFlags(),
           worldTime: this.worldTime(),
           residents: this.residents(),
+          weather: this.weather(),
+          reducedMotion: this.reducedMotion(),
           onTimeChange: (time) => this.timeChanged.emit(time),
           onAreaChange: (area) => this.areaChanged.emit(area),
           onTorchChange: (on) => this.torchChanged.emit(on),

@@ -85,6 +85,37 @@ public sealed class ContentValidationTests
         Assert.Contains(catalog.AllHabitats.Single(habitat => habitat.Id == habitatId).Species, entry => entry.SpeciesId == species.Id);
     }
 
+    [Fact]
+    public void Repository_regions_have_weather_with_snow_only_in_winter_except_on_triglav()
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        foreach (var region in catalog.AllRegions)
+        {
+            Assert.NotNull(region.WeatherWeights);
+            Assert.Equal(Enum.GetValues<Season>().Order(), region.WeatherWeights.Keys.Order());
+            var snowySeasons = region.WeatherWeights.Where(pair => pair.Value.ContainsKey(Weather.Snow)).Select(pair => pair.Key).Order();
+            Assert.Equal(region.Id == "triglav" ? [Season.Spring, Season.Autumn, Season.Winter] : [Season.Winter], snowySeasons);
+        }
+    }
+
+    [Theory]
+    [InlineData("salamandra_salamandra", "navadni močerad", "kocevje_forest", "kocevje_salamander_1", "fir_beech_forest")]
+    [InlineData("salamandra_atra", "planinski močerad", "triglav_alps", "triglav_salamander_1", "alpine_grassland")]
+    public void Repository_content_has_the_salamanders(string id, string slName, string mapId, string spotId, string habitatId)
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        var species = catalog.FindSpecies(SpeciesId.Parse(id));
+        Assert.NotNull(species);
+        Assert.Equal((SpeciesGroup.Amphibian, slName, 3), (species.Group, species.Text["sl"].Name.Value, species.Clues.Count));
+        Assert.Equal(TorchReaction.Calm, species.Wildlife?.Torch);
+        Assert.Equal([Weather.Rain], species.Availability.AlsoInWeather!.Order());
+        Assert.DoesNotContain(TimeOfDay.Day, species.Availability.Times);
+        Assert.Equal(species.Id, catalog.FindSpot(mapId, spotId)?.SpeciesId);
+        Assert.Contains(catalog.AllHabitats.Single(habitat => habitat.Id == habitatId).Species, entry => entry.SpeciesId == species.Id);
+    }
+
     [Theory]
     [InlineData("jure", "Jure", "kocevje_forest", "in_the_shade_of_firs", "fir_beech_forest", "pohorje_open")]
     [InlineData("maja", "Maja", "pohorje_forest", "secrets_of_the_bog", "mountain_forest", "triglav_open")]
@@ -304,6 +335,13 @@ public sealed class ContentValidationTests
         { "region without an order", c => c.Region.Remove("order"), "regions/dravsko_polje.json: 'order' must be a positive integer (found none)" },
         { "invalid region ID", c => c.Region["id"] = "Dravsko-Polje", "invalid region ID 'Dravsko-Polje'" },
         { "no start region", c => c.Region["id"] = "elsewhere", "the start region 'dravsko_polje' is required" },
+        { "region without weather", c => c.Region.Remove("weather"), "'weather.spring' needs weights for one or more weather kinds" },
+        { "region missing a season's weather", c => c.Region["weather"]!.AsObject().Remove("winter"), "'weather.winter' needs weights" },
+        { "region with unknown weather", c => c.Region["weather"]!["spring"]!["hail"] = 1, "'weather.spring' has unknown weather 'hail'" },
+        { "region with a non-positive weather weight", c => c.Region["weather"]!["summer"]!["clear"] = 0, "'weather.summer.clear' must be a positive weight (found 0)" },
+        { "region with an unknown weather season", c => c.Region["weather"]!["monsoon"] = new JsonObject { ["rain"] = 1 }, "'weather' has unknown season 'monsoon'" },
+        { "species with unknown weather", c => c.Species["availability"]!["alsoInWeather"] = new JsonArray("hail"), "availability.alsoInWeather: unknown weather 'hail'" },
+        { "species with empty weather", c => c.Species["availability"]!["alsoInWeather"] = new JsonArray(), "availability.alsoInWeather must list at least one weather" },
         { "spot with unknown species", c => Objects(c)[1]!["properties"]![1]!["value"] = "vulpes_vulpes", "spot 'sage_1' references unknown species 'vulpes_vulpes'" },
     };
 
@@ -388,6 +426,9 @@ public sealed class ContentValidationTests
         var region = Assert.Single(catalog.AllRegions);
         Assert.Equal(("dravsko_polje", "test_meadow", 78, 34), (region.Id, region.MapId, region.X, region.Y));
         Assert.IsType<UnlockRule.Always>(region.Unlock);
+        Assert.Equal(new Dictionary<Weather, int> { [Weather.Clear] = 3, [Weather.Rain] = 1 }, region.WeatherWeights![Season.Spring]);
+        Assert.Same(region, catalog.FindRegionOfMap("test_meadow"));
+        Assert.Null(catalog.FindRegionOfMap("other_map"));
         Assert.Same(region, catalog.FindRegion("dravsko_polje"));
         Assert.Null(catalog.FindRegion("atlantis"));
     }

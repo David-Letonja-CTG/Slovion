@@ -80,6 +80,8 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
     public Region? FindRegion(string regionId) => regions.GetValueOrDefault(regionId);
 
+    public Region? FindRegionOfMap(string mapId) => regions.Values.FirstOrDefault(region => region.MapId == mapId);
+
     public Quest? FindQuestByGiver(string npcId) => quests.Values.FirstOrDefault(quest => quest.GiverId == npcId);
 
     public Habitat? FindHabitatAt(string mapId, int x, int y) =>
@@ -166,7 +168,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
         if (!SpeciesGroups.TryParse(file.Group, out var group))
         {
-            errors.Add($"{name}: unknown group '{file.Group}' (expected plant, mammal, bird or insect).");
+            errors.Add($"{name}: unknown group '{file.Group}' (expected plant, mammal, bird, insect or amphibian).");
         }
 
         var sources = ValidateSources(file.Sources, name, errors);
@@ -238,6 +240,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
         var errorCount = errors.Count;
         var seasons = ParseNames<Season>(file.Seasons, $"{name}: availability.seasons", "season", errors);
         var times = file.Times is null ? Enum.GetValues<TimeOfDay>().ToHashSet() : ParseNames<TimeOfDay>(file.Times, $"{name}: availability.times", "time of day", errors);
+        var weather = file.AlsoInWeather is null ? null : ParseNames<Weather>(file.AlsoInWeather, $"{name}: availability.alsoInWeather", "weather", errors);
 
         if (file.Sources is null || file.Sources.Count == 0)
         {
@@ -248,7 +251,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
             errors.Add($"{name}: availability references unknown source(s): {string.Join(", ", unknown)}.");
         }
 
-        return errors.Count > errorCount ? null : new Availability(seasons, times, file.Sources!);
+        return errors.Count > errorCount ? null : new Availability(seasons, times, file.Sources!, weather);
     }
 
     /// <summary>A non-empty set of enum values written as lowercase names (e.g. <c>spring</c>, <c>night</c>).</summary>

@@ -1,0 +1,145 @@
+{
+  "id": "salamandra_salamandra",
+  "group": "amphibian",
+  "scientificName": {
+    "value": "Salamandra salamandra (Linnaeus, 1758)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "ckff": {
+      "title": "Navadni močerad (Salamandra salamandra) – Dvoživke Slovenije",
+      "publisher": "Center za kartografijo favne in flore (CKFF)",
+      "url": "https://www.ckff.si/projekti/interreg/dvozivke_salamandra_salamandra.php",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "atlas": {
+      "title": "Navadni močerad – Vrste dvoživk",
+      "publisher": "Center za kartografijo favne in flore (CKFF)",
+      "url": "https://www.ckff.si/icvds/vrste-dvozivk/salamandra-salamandra",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "nrp": {
+      "title": "Navadni močerad",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/zivalski-svet/dvozivke/repati-krkoni/pupki-in-moceradi/navadni-mocerad",
+      "accessed": "2026-10-03",
+      "licence": "© Notranjski regijski park; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Salamandra salamandra (Linnaeus, 1758) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2431776",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "navadni močerad",
+        "sources": [
+          "ckff",
+          "nrp"
+        ]
+      },
+      "family": {
+        "value": "Salamandridae",
+        "sources": [
+          "gbif",
+          "nrp"
+        ]
+      },
+      "habitat": {
+        "value": "Senčni in vlažni listnati in mešani gozdovi, pogosto blizu čistih potokov in mlak; skriva se pod odmrlim lesom, kamni in v špranjah.",
+        "sources": [
+          "ckff",
+          "atlas"
+        ]
+      },
+      "distribution": {
+        "value": "Gričevnata, hribovita in gorska območja pod gozdno mejo po vsej Sloveniji.",
+        "sources": [
+          "ckff",
+          "atlas"
+        ]
+      },
+      "season": {
+        "value": "Aktiven je predvsem ponoči in po dežju, ko je zrak dovolj vlažen; proti večeru ali v deževnih dneh gre po gozdnih tleh iskat hrano.",
+        "sources": [
+          "atlas",
+          "nrp"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Skupaj z repom meri od 11 do 20 cm.",
+          "sources": [
+            "ckff",
+            "nrp"
+          ]
+        },
+        {
+          "value": "Bleščeče črno telo ima nepravilne rumene lise, ki so pri vsakem osebku drugačne.",
+          "sources": [
+            "atlas",
+            "nrp"
+          ]
+        },
+        {
+          "value": "Za očmi ima veliki zaušesni žlezi.",
+          "sources": [
+            "atlas",
+            "nrp"
+          ]
+        },
+        {
+          "value": "Rep je v prerezu okrogel in nekoliko krajši od telesa.",
+          "sources": [
+            "atlas",
+            "nrp"
+          ]
+        },
+        {
+          "value": "Je živoroden: samica v tolmune gozdnih potokov odloži že razvite ličinke.",
+          "sources": [
+            "atlas",
+            "nrp"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "times": [
+      "evening",
+      "night"
+    ],
+    "alsoInWeather": [
+      "rain"
+    ],
+    "sources": [
+      "atlas",
+      "nrp"
+    ]
+  },
+  "wildlife": {
+    "torch": "calm"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

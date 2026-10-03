@@ -14,8 +14,11 @@ internal sealed record SpeciesTextFile(FactFile? Name, FactFile? Family, FactFil
 /// <summary>Gameplay data: indices into <c>characteristics</c> used as identification clues.</summary>
 internal sealed record IdentificationFile(List<int>? Clues);
 
-/// <summary>When a species can be found: seasons, optional times of day (all when absent), and the sources behind them.</summary>
-internal sealed record AvailabilityFile(List<string>? Seasons, List<string>? Times, List<string>? Sources);
+/// <summary>
+/// When a species can be found: seasons, optional times of day (all when absent), optional weathers in which it is also
+/// found at any time of day, and the sources behind them.
+/// </summary>
+internal sealed record AvailabilityFile(List<string>? Seasons, List<string>? Times, List<string>? AlsoInWeather, List<string>? Sources);
 
 /// <summary>Fictional gameplay traits of an animal: its reaction to the torch.</summary>
 internal sealed record WildlifeFile(string? Torch);
@@ -77,8 +80,11 @@ internal sealed record RegionPositionFile(int? X, int? Y);
 /// <summary>At most one rule: a flag, or a number of identified species. None means always open.</summary>
 internal sealed record RegionUnlockFile(string? Flag, int? IdentifiedSpecies);
 
-/// <summary>A travel destination: its map, travel-map position and list order, unlock rule, and texts per language.</summary>
-internal sealed record RegionFile(string? Id, string? MapId, int? Order, RegionPositionFile? Position, RegionUnlockFile? Unlock, Dictionary<string, RegionTextFile>? Text);
+/// <summary>
+/// A travel destination: its map, travel-map position and list order, unlock rule, texts per language, and weather
+/// weights per season (season → weather kind → weight; fictional gameplay data).
+/// </summary>
+internal sealed record RegionFile(string? Id, string? MapId, int? Order, RegionPositionFile? Position, RegionUnlockFile? Unlock, Dictionary<string, RegionTextFile>? Text, Dictionary<string, Dictionary<string, int>>? Weather);
 
 internal sealed record AreaTextFile(string? Name);
 

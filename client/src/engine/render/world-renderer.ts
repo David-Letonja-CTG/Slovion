@@ -1,5 +1,6 @@
 import { Direction } from '../input/actions';
 import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../viewport';
+import { drawWeather } from './weather';
 import { cameraOffset } from '../world/camera';
 import { World } from '../world/world';
 import { TILE_SIZE, animatedTile } from '../world/world-map';
@@ -174,17 +175,29 @@ export function renderWorld(
 
   const timeOfDay = world.time.timeOfDay;
   const tint = TIME_TINT[timeOfDay];
-  if (!tint) return;
-  if (world.torchOn && (timeOfDay === 'evening' || timeOfDay === 'night')) {
-    // The torch clears the tint in a soft circle around the player; the gradient pads with the tint.
-    const centreX = playerX - camera.x + TILE_SIZE / 2;
-    const centreY = playerY - camera.y + TILE_SIZE / 2;
+  if (tint) {
+    drawTint(context, tint, world.torchOn && (timeOfDay === 'evening' || timeOfDay === 'night'), {
+      x: playerX - camera.x + TILE_SIZE / 2,
+      y: playerY - camera.y + TILE_SIZE / 2,
+    });
+  }
+  drawWeather(context, world.weather, world.elapsedMs, world.reducedMotion);
+}
+
+/** The time-of-day tint; with the torch lit it clears a soft circle around `torch`, padding with the tint. */
+function drawTint(
+  context: CanvasRenderingContext2D,
+  tint: string,
+  torchLit: boolean,
+  torch: { readonly x: number; readonly y: number },
+): void {
+  if (torchLit) {
     const light = context.createRadialGradient(
-      centreX,
-      centreY,
+      torch.x,
+      torch.y,
       TORCH_INNER_RADIUS,
-      centreX,
-      centreY,
+      torch.x,
+      torch.y,
       TORCH_OUTER_RADIUS,
     );
     light.addColorStop(0, 'rgba(0, 0, 0, 0)');

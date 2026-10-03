@@ -4,5 +4,11 @@
   "order": 2,
   "position": { "x": 45, "y": 84 },
   "unlock": { "flag": "hedgerow_open" },
+  "weather": {
+    "spring": { "clear": 3, "cloudy": 3, "rain": 3, "fog": 1 },
+    "summer": { "clear": 4, "cloudy": 3, "rain": 3 },
+    "autumn": { "clear": 2, "cloudy": 3, "rain": 3, "fog": 2 },
+    "winter": { "clear": 2, "cloudy": 3, "fog": 2, "snow": 3 }
+  },
   "text": { "sl": { "name": "Kočevje", "lockedHint": "Pomagaj Veri na Dravskem polju." } }
 }

@@ -22,6 +22,7 @@ import {
   NothingFound,
   PlayerProgress,
   RegionInfo,
+  WeatherInfo,
   RegionsInfo,
   WorldTimeInfo,
   apiErrorCode,
@@ -57,6 +58,8 @@ interface Place {
   readonly mapId: string;
   readonly world: LoadedPlace;
   readonly residents: readonly ResidentInfo[];
+  /** The region's weather, or undefined when it could not be loaded (drawn as clear). */
+  readonly weather: WeatherInfo | undefined;
 }
 
 /** Marks a failed map load, as opposed to a failed progress request. */
@@ -143,6 +146,12 @@ export class PlayScreen {
     undefined,
   );
   protected readonly torchOn = signal(false);
+  /** The current region's weather and when it next changes, as the server last reported it (D11). */
+  protected readonly weather = signal<WeatherInfo | undefined>(undefined);
+  /** Weather is drawn without movement for players who prefer reduced motion. */
+  protected readonly reducedMotion =
+    inject(DOCUMENT).defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  private weatherLoading = false;
   /** The screen is dark while travelling to another region. */
   protected readonly fading = signal(false);
   /** The map's resident animals, as the server last listed them (D3, D8). */
@@ -189,13 +198,15 @@ export class PlayScreen {
 
   /** The map with its sprites, and its residents with their walk sprites. */
   private async loadPlace(mapId: string): Promise<Place> {
-    const [world, { animals }] = await Promise.all([
+    const [world, { animals }, weather] = await Promise.all([
       this.loader.load(mapId).catch((cause: unknown) => {
         // The player sees one message; developers get the cause (invalid map, missing file …).
         console.error('The map could not be loaded.', cause);
         return Promise.reject(MAP_FAILED);
       }),
       firstValueFrom(this.api.wildlife(mapId)),
+      // Weather only changes how the world looks and which animals are listed; without it the world stays clear.
+      firstValueFrom(this.api.weather(mapId)).catch(() => undefined),
     ]);
     const wildlifeSprites = await this.loader
       .wildlifeSprites(animals.map((animal) => animal.speciesId))
@@ -203,7 +214,7 @@ export class PlayScreen {
         console.error('The animal sprites could not be loaded.', cause);
         return Promise.reject(MAP_FAILED);
       });
-    return { mapId, world: { ...world, wildlifeSprites }, residents: animals };
+    return { mapId, world: { ...world, wildlifeSprites }, residents: animals, weather };
   }
 
   /** Shows a loaded place with the clock as the server reported it; a new place starts a new game. */
@@ -212,13 +223,42 @@ export class PlayScreen {
     this.worldTime.set(time);
     this.time.set(worldTimeAt(time.minutes));
     this.residents.set(place.residents);
+    this.weather.set(place.weather);
     this.world.set(place.world); // a new place starts a new game
   }
 
   protected onTimeChanged(time: WorldTime): void {
-    // A new time of day may bring other animals out (D8).
-    if (this.time() && this.time()!.timeOfDay !== time.timeOfDay) this.refreshResidents();
+    // A new time of day may bring other animals out (D8); new weather may too, and changes the sky (D11).
+    const weather = this.weather();
+    if (weather && time.minutes >= weather.changesAtMinutes) {
+      this.refreshWeather();
+    } else if (this.time() && this.time()!.timeOfDay !== time.timeOfDay) {
+      this.refreshResidents();
+    }
     this.time.set(time);
+  }
+
+  /** Reloads the region's weather, then the animals, which may come out in it. */
+  private refreshWeather(): void {
+    if (this.weatherLoading) return;
+    this.weatherLoading = true;
+    const mapId = this.mapId;
+    this.api.weather(mapId).subscribe({
+      next: (weather) => {
+        this.weatherLoading = false;
+        if (mapId !== this.mapId) return; // travelled meanwhile
+        this.weather.set(weather);
+        this.game?.setWeather(weather.weather);
+        this.refreshResidents();
+      },
+      error: () => {
+        // Keep the current weather and try again in an in-game hour; the server still decides every encounter.
+        this.weatherLoading = false;
+        this.weather.update((weather) =>
+          weather ? { ...weather, changesAtMinutes: weather.changesAtMinutes + 60 } : weather,
+        );
+      },
+    });
   }
 
   private refreshResidents(): void {
@@ -256,7 +296,7 @@ export class PlayScreen {
   }
 
   private syncTime(): void {
-    this.refreshResidents();
+    this.refreshWeather();
     this.api.time().subscribe({
       next: (time) => {
         this.game?.setWorldTime(time.minutes);

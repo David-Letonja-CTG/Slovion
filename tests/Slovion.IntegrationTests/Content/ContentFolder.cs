@@ -159,6 +159,13 @@ public sealed class ContentFolder : IDisposable
         ["position"] = new JsonObject { ["x"] = 78, ["y"] = 34 },
         ["unlock"] = new JsonObject(),
         ["text"] = new JsonObject { ["sl"] = new JsonObject { ["name"] = "Dravsko polje", ["lockedHint"] = "Vedno odprto." } },
+        ["weather"] = new JsonObject
+        {
+            ["spring"] = new JsonObject { ["clear"] = 3, ["rain"] = 1 },
+            ["summer"] = new JsonObject { ["clear"] = 1 },
+            ["autumn"] = new JsonObject { ["fog"] = 1 },
+            ["winter"] = new JsonObject { ["snow"] = 1 },
+        },
     };
 
     private static JsonObject ValidNpc() => new()

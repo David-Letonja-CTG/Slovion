@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ResidentInfo, Season, TimeOfDay } from '../../engine';
+import { ResidentInfo, Season, TimeOfDay, Weather } from '../../engine';
 
 export interface SourceInfo {
   readonly title: string;
@@ -29,12 +29,12 @@ export interface SpeciesInfo {
 
 /**
  * Species groups; labels are looked up dynamically:
- * t(species.group.plant, species.group.mammal, species.group.bird, species.group.insect)
- * t(identification.heading.plant, identification.heading.mammal, identification.heading.bird, identification.heading.insect)
- * t(naturedex.season.plant, naturedex.season.mammal, naturedex.season.bird, naturedex.season.insect)
- * t(naturedex.habitat.plant, naturedex.habitat.mammal, naturedex.habitat.bird, naturedex.habitat.insect)
+ * t(species.group.plant, species.group.mammal, species.group.bird, species.group.insect, species.group.amphibian)
+ * t(identification.heading.plant, identification.heading.mammal, identification.heading.bird, identification.heading.insect, identification.heading.amphibian)
+ * t(naturedex.season.plant, naturedex.season.mammal, naturedex.season.bird, naturedex.season.insect, naturedex.season.amphibian)
+ * t(naturedex.habitat.plant, naturedex.habitat.mammal, naturedex.habitat.bird, naturedex.habitat.insect, naturedex.habitat.amphibian)
  */
-export type SpeciesGroup = 'plant' | 'mammal' | 'bird' | 'insect';
+export type SpeciesGroup = 'plant' | 'mammal' | 'bird' | 'insect' | 'amphibian';
 
 /** A species in the save's NatureDex; `species` is only present once identified. */
 export interface NatureDexEntry {
@@ -138,6 +138,15 @@ export interface RegionInfo {
   readonly lockedHint: string | null;
 }
 
+/**
+ * The weather of a map's region now (D11), and the in-game minute (counted from day 1 00:00, like
+ * `WorldTimeInfo.minutes`) at which it next changes.
+ */
+export interface WeatherInfo {
+  readonly weather: Weather;
+  readonly changesAtMinutes: number;
+}
+
 /** The save's current region and every region in travel-list order. */
 export interface RegionsInfo {
   readonly currentRegionId: string;
@@ -214,6 +223,11 @@ export class GameApi {
   /** The map's resident animals and which are around at the save's in-game time (D3, D8). */
   wildlife(mapId: string): Observable<{ animals: ResidentInfo[] }> {
     return this.http.get<{ animals: ResidentInfo[] }>('/api/save/wildlife', { params: { mapId } });
+  }
+
+  /** The weather of the map's region now; the server decides it (D3, D11). */
+  weather(mapId: string): Observable<WeatherInfo> {
+    return this.http.get<WeatherInfo>('/api/save/weather', { params: { mapId } });
   }
 
   time(): Observable<WorldTimeInfo> {

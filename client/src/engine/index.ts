@@ -11,3 +11,4 @@ export type { ResidentInfo, TorchReaction } from './world/resident';
 export type { Season, TimeOfDay, WorldTime } from './world/world-time';
 export { worldTimeAt } from './world/world-time';
 export type { WorldMap } from './world/world-map';
+export type { Weather } from './render/weather';

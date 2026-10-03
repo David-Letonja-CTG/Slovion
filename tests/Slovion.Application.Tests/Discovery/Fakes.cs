@@ -130,6 +130,8 @@ internal sealed class FakeContentCatalog(params Species[] initial) : IContentCat
 
     public Region? FindRegion(string regionId) => Regions.FirstOrDefault(region => region.Id == regionId);
 
+    public Region? FindRegionOfMap(string mapId) => Regions.FirstOrDefault(region => region.MapId == mapId);
+
     public Quest? FindQuestByGiver(string npcId) => Quests.FirstOrDefault(quest => quest.GiverId == npcId);
 
     public Habitat? FindHabitatAt(string mapId, int x, int y) => mapId == MapId && x >= 10 ? Grass : null;

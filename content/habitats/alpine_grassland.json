@@ -6,6 +6,7 @@
   "species": [
     { "speciesId": "rupicapra_rupicapra", "weight": 1 },
     { "speciesId": "marmota_marmota", "weight": 1 },
+    { "speciesId": "salamandra_atra", "weight": 1 },
     { "speciesId": "leontopodium_nivale", "weight": 35 },
     { "speciesId": "potentilla_nitida", "weight": 35 },
     { "speciesId": "pinus_mugo", "weight": 30 }

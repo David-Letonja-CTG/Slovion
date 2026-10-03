@@ -45,8 +45,8 @@ public class WorldTimeTests
     {
         var daytimeInSummer = new Availability(new HashSet<Season> { Season.Summer }, new HashSet<TimeOfDay> { TimeOfDay.Morning, TimeOfDay.Day }, ["src"]);
 
-        Assert.True(daytimeInSummer.IsAvailableAt(WorldTime.Since(Created, Created.AddSeconds(4320 + 120))));
-        Assert.False(daytimeInSummer.IsAvailableAt(WorldTime.Since(Created, Created.AddSeconds(3840)))); // summer night
-        Assert.False(daytimeInSummer.IsAvailableAt(WorldTime.Since(Created, Created)));                // spring morning
+        Assert.True(daytimeInSummer.IsAvailableAt(WorldTime.Since(Created, Created.AddSeconds(4320 + 120)), Weather.Clear));
+        Assert.False(daytimeInSummer.IsAvailableAt(WorldTime.Since(Created, Created.AddSeconds(3840)), Weather.Clear)); // summer night
+        Assert.False(daytimeInSummer.IsAvailableAt(WorldTime.Since(Created, Created), Weather.Clear));                // spring morning
     }
 }
