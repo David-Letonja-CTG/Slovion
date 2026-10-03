@@ -92,5 +92,23 @@
   "quest": {
     "trackerLabel": "Naloga",
     "progress": "{{progress}}/{{goal}}"
+  },
+  "time": {
+    "label": "Čas v igri",
+    "season": {
+      "spring": "Pomlad",
+      "summer": "Poletje",
+      "autumn": "Jesen",
+      "winter": "Zima"
+    },
+    "timeOfDay": {
+      "morning": "jutro",
+      "day": "dan",
+      "evening": "večer",
+      "night": "noč"
+    }
+  },
+  "spot": {
+    "notNow": "Tukaj zdaj ni ničesar. Poskusi ob drugem času."
   }
 }

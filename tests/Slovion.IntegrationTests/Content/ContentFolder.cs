@@ -110,6 +110,7 @@ public sealed class ContentFolder : IDisposable
                     Fact("Listna rozeta.", "src")),
             },
         },
+        ["availability"] = new JsonObject { ["seasons"] = new JsonArray("spring", "summer"), ["sources"] = new JsonArray("src") },
         ["identification"] = new JsonObject { ["clues"] = new JsonArray(1, 0, 2) },
     };
 

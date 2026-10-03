@@ -2,6 +2,16 @@ import { ActionState } from '../input/action-state';
 import { directionOf, stepOf } from '../input/actions';
 import { Player } from './player';
 import { Gate, Obstacles, WorldMap } from './world-map';
+import { Season, TimeOfDay, WorldTime, worldTimeAt } from './world-time';
+
+/** The in-game clock as the server reported it. */
+export interface WorldClock {
+  readonly minutes: number;
+  readonly gameMinutesPerSecond: number;
+}
+
+/** Without a server clock the world stands still at noon: daylight, no tint. */
+const STILL_NOON: WorldClock = { minutes: 12 * 60, gameMinutesPerSecond: 0 };
 
 /**
  * The world asks the host to handle an interaction; the server decides the outcome (D3): a conversation
@@ -12,17 +22,40 @@ export type Interaction =
   | { readonly kind: 'spot'; readonly mapId: string; readonly spotId: string }
   | { readonly kind: 'search'; readonly mapId: string; readonly x: number; readonly y: number };
 
-/** Simulation of one map: the player, movement, interaction, and which gates the save's flags open. */
+/**
+ * Simulation of one map: the player, movement, interaction, which gates the save's flags open, and the in-game
+ * clock between server syncs (docs/decisions.md D8; the server decides what can be found).
+ */
 export class World implements Obstacles {
   readonly player: Player;
   private openFlags: ReadonlySet<string> = new Set();
+  private minutes: number;
+  private readonly gameMinutesPerSecond: number;
+  private conditions: WorldTime;
 
   constructor(
     readonly map: WorldMap,
     private readonly onInteract: (interaction: Interaction) => void,
     private readonly onOpenMenu: () => void = () => undefined,
+    clock: WorldClock = STILL_NOON,
+    private readonly onConditionsChange: (season: Season, timeOfDay: TimeOfDay) => void = () =>
+      undefined,
   ) {
     this.player = new Player(map.spawn);
+    this.minutes = clock.minutes;
+    this.gameMinutesPerSecond = clock.gameMinutesPerSecond;
+    this.conditions = worldTimeAt(this.minutes);
+  }
+
+  /** The current in-game time. */
+  get time(): WorldTime {
+    return this.conditions;
+  }
+
+  /** Re-syncs the clock with the server, e.g. after the page was hidden. */
+  setWorldTime(minutes: number): void {
+    this.minutes = minutes;
+    this.refreshConditions();
   }
 
   /** The save's progress flags, as the server reported them; they open gates. */
@@ -47,6 +80,9 @@ export class World implements Obstacles {
 
   /** Advances one fixed simulation step using the actions gathered since the last step. */
   update(input: ActionState, stepMs: number): void {
+    this.minutes += (stepMs / 1000) * this.gameMinutesPerSecond;
+    this.refreshConditions();
+
     const presses = input.takePresses();
 
     if (presses.includes('OpenMenu')) {
@@ -66,6 +102,18 @@ export class World implements Obstacles {
       stepMs,
       this,
     );
+  }
+
+  /** Recomputes the time and tells the host when the season or the time of day changed. */
+  private refreshConditions(): void {
+    const previous = this.conditions;
+    this.conditions = worldTimeAt(this.minutes);
+    if (
+      previous.season !== this.conditions.season ||
+      previous.timeOfDay !== this.conditions.timeOfDay
+    ) {
+      this.onConditionsChange(this.conditions.season, this.conditions.timeOfDay);
+    }
   }
 
   private interact(): void {

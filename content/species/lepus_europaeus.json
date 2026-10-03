@@ -101,6 +101,18 @@
       ]
     }
   },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "gis",
+      "lzs"
+    ]
+  },
   "identification": {
     "clues": [
       1,

@@ -3,6 +3,7 @@ import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../viewport';
 import { cameraOffset } from '../world/camera';
 import { World } from '../world/world';
 import { TILE_SIZE } from '../world/world-map';
+import { TimeOfDay } from '../world/world-time';
 
 /** Images the world needs. Loaded by the host; the engine never fetches (design §6). */
 export interface WorldImages {
@@ -14,7 +15,18 @@ export interface WorldImages {
 const BACKDROP = '#11161c';
 const PLAYER_ROW: Record<Direction, number> = { down: 0, up: 1, left: 2, right: 3 };
 
-/** Draws the visible part of the map in authored layer order, then closed gates and NPCs, then the player on top. */
+/** A tint over the whole view by time of day; none by day. */
+export const TIME_TINT: Record<TimeOfDay, string | undefined> = {
+  morning: 'rgba(255, 196, 140, 0.10)',
+  day: undefined,
+  evening: 'rgba(255, 128, 48, 0.20)',
+  night: 'rgba(16, 24, 72, 0.45)',
+};
+
+/**
+ * Draws the visible part of the map in authored layer order, then closed gates and NPCs, then the player, then
+ * the time-of-day tint over everything.
+ */
 export function renderWorld(
   context: CanvasRenderingContext2D,
   world: World,
@@ -89,4 +101,10 @@ export function renderWorld(
     TILE_SIZE,
     TILE_SIZE,
   );
+
+  const tint = TIME_TINT[world.time.timeOfDay];
+  if (tint) {
+    context.fillStyle = tint;
+    context.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+  }
 }

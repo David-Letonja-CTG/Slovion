@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Season, TimeOfDay } from '../../engine';
 
 export interface SourceInfo {
   readonly title: string;
@@ -73,7 +74,16 @@ export interface AlreadyIdentified {
   readonly entry: NatureDexEntry;
 }
 
-/** A search that found nothing. */
+/** The save's in-game time (docs/decisions.md D8); `minutes` count from day 1 00:00. */
+export interface WorldTimeInfo {
+  readonly minutes: number;
+  readonly day: number;
+  readonly season: Season;
+  readonly timeOfDay: TimeOfDay;
+  readonly gameMinutesPerSecond: number;
+}
+
+/** A search that found nothing, or a spot whose species is not around right now. */
 export interface NothingFound {
   readonly found: false;
 }
@@ -151,9 +161,22 @@ export class GameApi {
     return this.http.post<{ token: string }>('/api/saves', null);
   }
 
-  /** Observes the species at a spot; already identified species open no encounter. */
-  startEncounter(mapId: string, spotId: string): Observable<Encounter | AlreadyIdentified> {
-    return this.http.post<Encounter | AlreadyIdentified>('/api/save/encounters', { mapId, spotId });
+  /**
+   * Observes the species at a spot; already identified species open no encounter, and species that are not
+   * around at the save's in-game time answer `found: false`.
+   */
+  startEncounter(
+    mapId: string,
+    spotId: string,
+  ): Observable<Encounter | AlreadyIdentified | NothingFound> {
+    return this.http.post<Encounter | AlreadyIdentified | NothingFound>('/api/save/encounters', {
+      mapId,
+      spotId,
+    });
+  }
+
+  time(): Observable<WorldTimeInfo> {
+    return this.http.get<WorldTimeInfo>('/api/save/time');
   }
 
   /** Searches the habitat at a tile; the server decides whether and what is found. */

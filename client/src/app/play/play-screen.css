@@ -17,6 +17,13 @@
   z-index: 5;
 }
 
+.play__conditions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 5;
+}
+
 .play__hint {
   margin: 0;
   padding: 0.35rem 1rem 0.5rem;

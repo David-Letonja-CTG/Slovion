@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Time.Testing;
 using Slovion.Application.Discovery;
 using Slovion.Domain.Content;
+using Slovion.Domain.Saves;
 
 namespace Slovion.Application.Tests.Discovery;
 
@@ -35,7 +36,7 @@ public class NatureDexServiceTests
     }
 
     private async Task<StartEncounterResult.Started> Observe(string spotId) =>
-        Assert.IsType<StartEncounterResult.Started>(await encounters.StartAsync(slot, FakeContentCatalog.MapId, spotId, "sl", Token));
+        Assert.IsType<StartEncounterResult.Started>(await encounters.StartAsync(SaveSlot.Create(slot, [1], June1), FakeContentCatalog.MapId, spotId, "sl", Token));
 
     private async Task Identify(string speciesId)
     {

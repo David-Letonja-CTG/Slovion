@@ -14,7 +14,10 @@ internal sealed record SpeciesTextFile(FactFile? Name, FactFile? Family, FactFil
 /// <summary>Gameplay data: indices into <c>characteristics</c> used as identification clues.</summary>
 internal sealed record IdentificationFile(List<int>? Clues);
 
-internal sealed record SpeciesFile(string? Id, string? Group, FactFile? ScientificName, Dictionary<string, SourceFile>? Sources, Dictionary<string, SpeciesTextFile>? Text, IdentificationFile? Identification);
+/// <summary>When a species can be found: seasons, optional times of day (all when absent), and the sources behind them.</summary>
+internal sealed record AvailabilityFile(List<string>? Seasons, List<string>? Times, List<string>? Sources);
+
+internal sealed record SpeciesFile(string? Id, string? Group, FactFile? ScientificName, Dictionary<string, SourceFile>? Sources, Dictionary<string, SpeciesTextFile>? Text, AvailabilityFile? Availability, IdentificationFile? Identification);
 
 /// <summary>The subset of the Tiled JSON map format that Slovion uses on the server.</summary>
 internal sealed record TiledMapFile(string? Orientation, int Width, int Height, int TileWidth, int TileHeight, List<TiledLayerFile>? Layers);

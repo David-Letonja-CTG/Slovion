@@ -26,6 +26,13 @@ const MAP_URL = '/content/maps/dravsko_polje_meadow.json';
 const SAGE = { kind: 'spot', mapId: 'dravsko_polje_meadow', spotId: 'meadow_sage_1' } as const;
 
 const NO_PROGRESS: PlayerProgress = { flags: [], quests: [] };
+const SPRING_MORNING = {
+  minutes: 480,
+  day: 1,
+  season: 'spring',
+  timeOfDay: 'morning',
+  gameMinutesPerSecond: 1,
+};
 
 /** Opens the play screen; the progress response is a body, or an HTTP status to fail with (0 = network). */
 async function openPlay(
@@ -37,6 +44,7 @@ async function openPlay(
   TestBed.inject(GameSession).active.set(true);
 
   const harness = await RouterTestingHarness.create('/play');
+  app.http.expectOne('/api/save/time').flush(SPRING_MORNING);
   const progress = app.http.expectOne('/api/save/progress');
   if (typeof progressResponse === 'number' && progressResponse === 0) {
     progress.error(new ProgressEvent('error'), { status: 0 });
@@ -718,5 +726,59 @@ describe('Quests', () => {
     await wait();
 
     expect(root().querySelector('.tracker__progress')?.textContent?.trim()).toBe('2/3');
+  });
+});
+
+describe('World conditions', () => {
+  afterEach(() => TestBed.inject(Router).dispose());
+
+  const indicator = (root: () => HTMLElement) =>
+    root().querySelector('app-conditions-indicator')?.textContent?.replace(/\s+/g, ' ').trim();
+
+  it('starts the game with the save clock and shows the season and time of day', async () => {
+    const { game, root } = await openPlay();
+
+    expect(game.options?.worldTime).toMatchObject({ minutes: 480, gameMinutesPerSecond: 1 });
+    expect(indicator(root)).toBe('Pomlad · jutro');
+  });
+
+  it('updates the indicator when the world reports a change', async () => {
+    const { game, root, settle: wait } = await openPlay();
+
+    game.options!.onConditionsChange!('summer', 'night');
+    await wait();
+
+    expect(indicator(root)).toBe('Poletje · noč');
+  });
+
+  it('re-syncs the clock when the page becomes visible again', async () => {
+    const { game, http, root, settle: wait } = await openPlay();
+    Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
+
+    document.dispatchEvent(new Event('visibilitychange'));
+    http.expectOne('/api/save/time').flush({
+      minutes: 13440,
+      day: 10,
+      season: 'winter',
+      timeOfDay: 'morning',
+      gameMinutesPerSecond: 1,
+    });
+    await wait();
+
+    expect(game.worldMinutes).toBe(13440);
+    expect(indicator(root)).toBe('Zima · jutro');
+  });
+
+  it('says to come back later when a spot has nothing right now', async () => {
+    const { game, http, dialogText, settle: wait } = await openPlay();
+
+    game.options!.onInteract(SAGE);
+    http.expectOne('/api/save/encounters').flush({ found: false });
+    await wait();
+    expect(dialogText()).toContain(sl.spot.notNow);
+
+    game.pressUi('Cancel');
+    await wait();
+    expect(game.consumer).toBe('world');
   });
 });

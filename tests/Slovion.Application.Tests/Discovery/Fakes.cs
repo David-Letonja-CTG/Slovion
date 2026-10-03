@@ -2,6 +2,7 @@ using Slovion.Application.Content;
 using Slovion.Application.Discovery;
 using Slovion.Domain.Content;
 using Slovion.Domain.Discovery;
+using Slovion.Domain.World;
 
 namespace Slovion.Application.Tests.Discovery;
 
@@ -79,8 +80,10 @@ internal sealed class SeededRandom(int seed) : IRandomSource
     public int NextIndex(int maxExclusive) => random.Next(maxExclusive);
 }
 
-internal sealed class FakeContentCatalog(params Species[] species) : IContentCatalog
+internal sealed class FakeContentCatalog(params Species[] initial) : IContentCatalog
 {
+    private readonly List<Species> species = [.. initial];
+
     public const string MapId = "test_meadow";
 
     public IReadOnlySet<string> Languages { get; } = new HashSet<string> { "sl", "en" };
@@ -101,6 +104,13 @@ internal sealed class FakeContentCatalog(params Species[] species) : IContentCat
     public IReadOnlyList<Habitat> AllHabitats => Habitats.OrderBy(habitat => habitat.Order).ThenBy(habitat => habitat.Id, StringComparer.Ordinal).ToList();
 
     public Species? FindSpecies(SpeciesId id) => species.FirstOrDefault(s => s.Id == id);
+
+    /// <summary>Replaces the species with the same ID.</summary>
+    public void Replace(Species replacement)
+    {
+        species.RemoveAll(s => s.Id == replacement.Id);
+        species.Add(replacement);
+    }
 
     public MapNpc? FindNpcOnMap(string mapId, string npcId) =>
         mapId == MapId && Npcs.FirstOrDefault(npc => npc.Id == npcId) is { } match ? new MapNpc(mapId, match) : null;
@@ -129,8 +139,11 @@ internal sealed class FakeContentCatalog(params Species[] species) : IContentCat
         return new Habitat(id, names, order, 100, species.Select(speciesId => new HabitatSpecies(speciesId, 1)).ToList());
     }
 
-    /// <summary>A species whose characteristics are "{slName} trait 0..3" and whose clues are 3, 0, 1.</summary>
-    public static Species Species(string id, string slName, string? enName = null, SpeciesGroup group = SpeciesGroup.Plant)
+    /// <summary>
+    /// A species whose characteristics are "{slName} trait 0..3" and whose clues are 3, 0, 1. It is available in
+    /// <paramref name="seasons"/> (default: all) at every time of day.
+    /// </summary>
+    public static Species Species(string id, string slName, string? enName = null, SpeciesGroup group = SpeciesGroup.Plant, params Season[] seasons)
     {
         static Fact F(string value) => new(value, ["src"]);
         static SpeciesText Text(string name) => new(
@@ -153,6 +166,10 @@ internal sealed class FakeContentCatalog(params Species[] species) : IContentCat
                 ["unused"] = new("unused", "Unused", "Nobody", new Uri("https://example.org/unused"), new DateOnly(2026, 10, 2), "CC BY 4.0"),
             },
             text,
-            [3, 0, 1]);
+            [3, 0, 1],
+            new Availability(
+                (seasons.Length > 0 ? seasons : Enum.GetValues<Season>()).ToHashSet(),
+                Enum.GetValues<TimeOfDay>().ToHashSet(),
+                ["src"]));
     }
 }

@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Time.Testing;
 using Slovion.Application.Discovery;
 using Slovion.Domain.Content;
+using Slovion.Domain.Saves;
+using Slovion.Domain.World;
 
 namespace Slovion.Application.Tests.Discovery;
 
@@ -12,13 +14,16 @@ public class EncounterServiceTests
     private readonly Guid slot = Guid.NewGuid();
     private readonly EncounterService service;
 
+    /// <summary>The save, created when the test clock starts: spring, 08:00 in-game.</summary>
+    private SaveSlot Save => SaveSlot.Create(slot, [1], June1);
+
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     public EncounterServiceTests()
     {
         var catalog = new FakeContentCatalog(
             FakeContentCatalog.Species("salvia_pratensis", "travniška kadulja", "meadow clary"),
-            FakeContentCatalog.Species("taraxacum_officinale", "navadni regrat"),
+            FakeContentCatalog.Species("taraxacum_officinale", "navadni regrat", null, SpeciesGroup.Plant, Season.Spring, Season.Autumn),
             FakeContentCatalog.Species("lepus_europaeus", "poljski zajec", group: SpeciesGroup.Mammal),
             FakeContentCatalog.Species("alauda_arvensis", "poljski škrjanec", group: SpeciesGroup.Bird),
             FakeContentCatalog.Species("papilio_machaon", "lastovičar", group: SpeciesGroup.Insect));
@@ -27,7 +32,7 @@ public class EncounterServiceTests
 
     private async Task<EncounterView> Start(string spotId, string language = "sl") =>
         Assert.IsType<StartEncounterResult.Started>(
-            await service.StartAsync(slot, FakeContentCatalog.MapId, spotId, language, Token)).Encounter;
+            await service.StartAsync(Save, FakeContentCatalog.MapId, spotId, language, Token)).Encounter;
 
     private async Task<AnswerResult.Answered> Answer(EncounterView encounter, string speciesId) =>
         Assert.IsType<AnswerResult.Answered>(await service.AnswerAsync(slot, encounter.EncounterId, speciesId, "sl", Token));
@@ -66,6 +71,25 @@ public class EncounterServiceTests
     }
 
     [Fact]
+    public async Task A_spot_whose_species_is_out_of_season_opens_nothing()
+    {
+        time.Advance(TimeSpan.FromSeconds(3840)); // day 4: summer; the dandelion flowers in spring and autumn
+
+        var result = await service.StartAsync(Save, FakeContentCatalog.MapId, "taraxacum_officinale", "sl", Token);
+
+        Assert.IsType<StartEncounterResult.NotNow>(result);
+        Assert.Empty(await discoveries.ListAsync(slot, Token));
+    }
+
+    [Fact]
+    public async Task The_same_spot_opens_again_when_its_season_returns()
+    {
+        time.Advance(TimeSpan.FromSeconds(8640)); // day 7: autumn
+
+        Assert.IsType<StartEncounterResult.Started>(await service.StartAsync(Save, FakeContentCatalog.MapId, "taraxacum_officinale", "sl", Token));
+    }
+
+    [Fact]
     public async Task Correct_answer_identifies_with_server_time()
     {
         var encounter = await Start("taraxacum_officinale");
@@ -98,7 +122,7 @@ public class EncounterServiceTests
     {
         await Answer(await Start("salvia_pratensis"), "salvia_pratensis");
 
-        var result = await service.StartAsync(slot, FakeContentCatalog.MapId, "salvia_pratensis", "sl", Token);
+        var result = await service.StartAsync(Save, FakeContentCatalog.MapId, "salvia_pratensis", "sl", Token);
 
         var known = Assert.IsType<StartEncounterResult.AlreadyIdentified>(result);
         Assert.Equal("travniška kadulja", known.Entry.Species?.Name);
@@ -154,7 +178,7 @@ public class EncounterServiceTests
     [InlineData("other_map", "salvia_pratensis")]
     public async Task Unknown_spot_records_nothing(string mapId, string spotId)
     {
-        var result = await service.StartAsync(slot, mapId, spotId, "sl", Token);
+        var result = await service.StartAsync(Save, mapId, spotId, "sl", Token);
 
         Assert.IsType<StartEncounterResult.UnknownSpot>(result);
         Assert.Empty(await discoveries.ListAsync(slot, Token));

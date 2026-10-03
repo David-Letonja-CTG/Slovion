@@ -3,6 +3,7 @@ using Slovion.Api.Discovery;
 using Slovion.Api.Errors;
 using Slovion.Api.Quests;
 using Slovion.Api.Saves;
+using Slovion.Api.World;
 using Slovion.Application.Discovery;
 using Slovion.Application.Quests;
 using Slovion.Application.Saves;
@@ -37,7 +38,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapHealthChecks("/health");
-app.MapSaveEndpoints().MapDiscoveryEndpoints().MapQuestEndpoints();
+app.MapSaveEndpoints().MapDiscoveryEndpoints().MapQuestEndpoints().MapTimeEndpoints();
 app.MapApiNotFoundFallback();
 
 await app.RunAsync();

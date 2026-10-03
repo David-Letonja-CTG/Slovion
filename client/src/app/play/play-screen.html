@@ -6,10 +6,19 @@
       class="play__game"
       [world]="loaded"
       [openFlags]="progress().flags"
+      [worldTime]="worldTime()"
+      (conditionsChanged)="onConditionsChanged($event)"
       (started)="onStarted($event)"
       (interaction)="onInteraction($event)"
       (menuRequested)="onMenu()"
     />
+    @if (conditions(); as now) {
+      <app-conditions-indicator
+        class="play__conditions"
+        [season]="now.season"
+        [timeOfDay]="now.timeOfDay"
+      />
+    }
     @if (activeQuest(); as quest) {
       <app-quest-tracker class="play__tracker" [quest]="quest" />
     }
@@ -51,6 +60,11 @@
     @case ('nothing') {
       <app-message-dialog (closed)="close()">
         <p>{{ 'search.nothing' | transloco }}</p>
+      </app-message-dialog>
+    }
+    @case ('notNow') {
+      <app-message-dialog (closed)="close()">
+        <p>{{ 'spot.notNow' | transloco }}</p>
       </app-message-dialog>
     }
     @case ('error') {

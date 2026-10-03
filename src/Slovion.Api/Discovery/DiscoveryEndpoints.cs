@@ -36,7 +36,7 @@ public sealed record AlreadyIdentifiedResponse(bool AlreadyIdentified, NatureDex
 
 public sealed record SearchRequest(string? MapId, int? X, int? Y);
 
-/// <summary>A search that found nothing.</summary>
+/// <summary>A search that found nothing, or a spot whose species is not around right now.</summary>
 public sealed record NothingFoundResponse(bool Found);
 
 public sealed record AnswerResponse(bool Correct, CandidateResponse Species, NatureDexEntryResponse? Entry);
@@ -57,6 +57,7 @@ public static class DiscoveryEndpoints
             .WithName("StartEncounter")
             .Produces<EncounterResponse>(StatusCodes.Status201Created)
             .Produces<AlreadyIdentifiedResponse>(StatusCodes.Status200OK)
+            .Produces<NothingFoundResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -82,11 +83,14 @@ public static class DiscoveryEndpoints
 
         var language = ContentLanguage.Negotiate(httpContext, content);
         var slot = SaveTokenFilter.CurrentSlot(httpContext);
-        var result = await encounters.StartAsync(slot.Id, request.MapId, request.SpotId, language, cancellationToken);
+        var result = await encounters.StartAsync(slot, request.MapId, request.SpotId, language, cancellationToken);
 
-        return result is StartEncounterResult.UnknownSpot
-            ? ErrorCodes.Problem(StatusCodes.Status404NotFound, ErrorCodes.UnknownSpot)
-            : ToResult(result);
+        return result switch
+        {
+            StartEncounterResult.UnknownSpot => ErrorCodes.Problem(StatusCodes.Status404NotFound, ErrorCodes.UnknownSpot),
+            StartEncounterResult.NotNow => TypedResults.Ok(new NothingFoundResponse(false)),
+            _ => ToResult(result),
+        };
     }
 
     /// <summary>Searches the habitat at a tile; the server decides whether and what is found (D3).</summary>
@@ -99,7 +103,7 @@ public static class DiscoveryEndpoints
 
         var language = ContentLanguage.Negotiate(httpContext, content);
         var slot = SaveTokenFilter.CurrentSlot(httpContext);
-        var result = await encounters.SearchAsync(slot.Id, request.MapId, x, y, language, cancellationToken);
+        var result = await encounters.SearchAsync(slot, request.MapId, x, y, language, cancellationToken);
 
         return result switch
         {

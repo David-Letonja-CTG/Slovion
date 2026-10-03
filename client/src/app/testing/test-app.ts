@@ -20,6 +20,8 @@ export class FakeGame implements Game {
   consumer: 'world' | 'ui' = 'world';
   /** The flags last given with `setOpenFlags`. */
   openFlags: readonly string[] = [];
+  /** The in-game minutes last given with `setWorldTime`. */
+  worldMinutes: number | undefined;
   private readonly uiListeners = new Set<(action: Action) => void>();
 
   start = vi.fn();
@@ -36,6 +38,10 @@ export class FakeGame implements Game {
 
   setOpenFlags(flags: readonly string[]): void {
     this.openFlags = flags;
+  }
+
+  setWorldTime(minutes: number): void {
+    this.worldMinutes = minutes;
   }
 
   /** Simulates the player pressing a key while the UI has input. */
