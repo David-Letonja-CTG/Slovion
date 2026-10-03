@@ -60,8 +60,8 @@ public sealed class ContentValidationTests
             [
                 ("dravsko_polje", "dravsko_polje_meadow", (UnlockRule)new UnlockRule.Always()),
                 ("kocevje", "kocevje_forest", new UnlockRule.Flag("hedgerow_open")),
-                ("pohorje", "pohorje_forest", new UnlockRule.IdentifiedSpecies(6)),
-                ("triglav", "triglav_alps", new UnlockRule.IdentifiedSpecies(8)),
+                ("pohorje", "pohorje_forest", new UnlockRule.Flag("pohorje_open")),
+                ("triglav", "triglav_alps", new UnlockRule.Flag("triglav_open")),
             ],
             catalog.AllRegions.Select(region => (region.Id, region.MapId, region.Unlock)));
         Assert.Equal(["Dravsko polje", "Kočevje", "Pohorje", "Triglav"], catalog.AllRegions.Select(region => region.Text["sl"].Name));
@@ -83,6 +83,21 @@ public sealed class ContentValidationTests
         Assert.Equal(torch, species.Wildlife?.Torch);
         Assert.Equal(species.Id, catalog.FindSpot(mapId, spotId)?.SpeciesId);
         Assert.Contains(catalog.AllHabitats.Single(habitat => habitat.Id == habitatId).Species, entry => entry.SpeciesId == species.Id);
+    }
+
+    [Theory]
+    [InlineData("jure", "Jure", "kocevje_forest", "in_the_shade_of_firs", "fir_beech_forest", "pohorje_open")]
+    [InlineData("maja", "Maja", "pohorje_forest", "secrets_of_the_bog", "mountain_forest", "triglav_open")]
+    [InlineData("luka", "Luka", "triglav_alps", "below_the_peaks", "alpine_grassland", "alps_explored")]
+    public void Repository_content_has_the_people_of_the_regions(string npcId, string name, string mapId, string questId, string habitatId, string flag)
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        Assert.Equal(name, catalog.FindNpcOnMap(mapId, npcId)?.Npc.Names["sl"]);
+        var quest = catalog.FindQuestByGiver(npcId);
+        Assert.NotNull(quest);
+        Assert.Equal((questId, 3, habitatId, flag), (quest.Id, quest.IdentifiedSpeciesGoal, quest.GoalHabitatId, quest.RewardFlag));
+        Assert.Null(catalog.FindHabitatAt(mapId, 3, 10));
     }
 
     [Theory]
@@ -248,6 +263,8 @@ public sealed class ContentValidationTests
         { "blank habitat name", c => c.Habitat["text"]!["sl"]!["name"] = " ", "'text.sl.name' is missing" },
         { "quest from an unknown NPC", c => c.Quest["giver"] = "mojca", "quest 'eye_for_nature' is given by unknown NPC 'mojca'" },
         { "quest without a goal", c => c.Quest["goal"]!["identifiedSpecies"] = 0, "'goal.identifiedSpecies' must be a positive integer" },
+        { "quest goal in an unknown habitat", c => c.Quest["goal"]!["habitat"] = "swamp", "'goal.habitat' must be a habitat listing at least 3 species (found 'swamp')" },
+        { "quest goal habitat too small", c => c.Quest["goal"]!["habitat"] = "tall_grass", "'goal.habitat' must be a habitat listing at least 3 species (found 'tall_grass')" },
         { "quest without a reward flag", c => c.Quest["reward"]!["flag"] = "Hedgerow-Open", "'reward.flag' must be a lowercase snake_case flag ID" },
         { "quest without Slovenian text", c => c.Quest["text"] = new JsonObject(), "Slovenian text ('text.sl') is required" },
         { "missing dialogue state", c => QuestSl(c)["dialogue"]!.AsObject().Remove("ready"), "text.sl.dialogue.ready needs at least one line" },

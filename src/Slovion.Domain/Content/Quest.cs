@@ -19,7 +19,8 @@ public enum QuestDialogue
 public sealed record QuestText(string Title, string Summary, string ReturnHint, IReadOnlyDictionary<QuestDialogue, IReadOnlyList<string>> Dialogue);
 
 /// <summary>
-/// A quest given by an NPC: identify <see cref="IdentifiedSpeciesGoal"/> species to earn <see cref="RewardFlag"/>.
+/// A quest given by an NPC: identify <see cref="IdentifiedSpeciesGoal"/> species to earn <see cref="RewardFlag"/>. When
+/// <see cref="GoalHabitatId"/> is set, only identified species of that habitat count.
 /// The goal and the reward are gameplay data (docs/decisions.md D6).
 /// </summary>
-public sealed record Quest(string Id, string GiverId, int IdentifiedSpeciesGoal, string RewardFlag, IReadOnlyDictionary<string, QuestText> Text);
+public sealed record Quest(string Id, string GiverId, int IdentifiedSpeciesGoal, string RewardFlag, IReadOnlyDictionary<string, QuestText> Text, string? GoalHabitatId = null);

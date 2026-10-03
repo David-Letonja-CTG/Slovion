@@ -254,15 +254,20 @@ test('a new game announces the meadow and the torch switches with L', async ({ p
 });
 
 /** Opens and answers a spot's encounter through the API with the page's save token. */
-async function identifyThroughApi(page: Page, spotId: string, speciesId: string): Promise<void> {
+async function identifyThroughApi(
+  page: Page,
+  spotId: string,
+  speciesId: string,
+  mapId = 'dravsko_polje_meadow',
+): Promise<void> {
   const correct = await page.evaluate(
-    async ([spot, species]) => {
+    async ([spot, species, map]) => {
       const token = localStorage.getItem('slovion.saveToken');
       const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
       const started = await fetch('/api/save/encounters', {
         method: 'POST',
         headers,
-        body: JSON.stringify({ mapId: 'dravsko_polje_meadow', spotId: spot }),
+        body: JSON.stringify({ mapId: map, spotId: spot }),
       }).then((r) => r.json());
       const answer = await fetch(`/api/save/encounters/${started.encounterId}/identification`, {
         method: 'POST',
@@ -271,7 +276,7 @@ async function identifyThroughApi(page: Page, spotId: string, speciesId: string)
       }).then((r) => r.json());
       return answer.correct as boolean;
     },
-    [spotId, speciesId],
+    [spotId, speciesId, mapId],
   );
   expect(correct).toBe(true);
 }
@@ -310,7 +315,9 @@ test('the signpost takes the player to Kočevje once Vera is helped, and the gam
   await expect(travelMap).toBeVisible();
   await expect(travelMap.locator('[data-region="dravsko_polje"]')).toContainText('Tukaj si');
   await expect(travelMap.locator('[data-region="kocevje"]')).toContainText('Odprto');
-  await expect(travelMap.locator('[data-region="pohorje"]')).toContainText('Prepoznaj še 3 vrste.');
+  await expect(travelMap.locator('[data-region="pohorje"]')).toContainText(
+    'Pomagaj Juretu v Kočevju.',
+  );
   await expect(travelMap.locator('[data-region="triglav"]')).toContainText('Zaklenjeno');
 
   await page.keyboard.press('ArrowDown');
@@ -329,16 +336,24 @@ test('searching at a spruce on Pohorje finds a plant of the mountain forest', as
   await page.goto('/');
   await page.getByRole('button', { name: 'Nova igra' }).click();
   await waitForTheWorld(page);
-  // Six identified species open Pohorje; travel there through the API and continue the game.
+  // Jure's quest opens Pohorje: help Vera, identify three Kočevje species and talk to Jure, all through the API.
+  await completeVerasQuestThroughApi(page);
   for (const [spot, species] of [
-    ['meadow_sage_1', 'salvia_pratensis'],
-    ['meadow_dandelion_1', 'taraxacum_officinale'],
-    ['meadow_hare_1', 'lepus_europaeus'],
-    ['meadow_skylark_1', 'alauda_arvensis'],
-    ['meadow_swallowtail_1', 'papilio_machaon'],
-    ['hedgerow_hawthorn_1', 'crataegus_monogyna'],
+    ['kocevje_garlic_1', 'allium_ursinum'],
+    ['kocevje_woodruff_1', 'galium_odoratum'],
+    ['kocevje_bear_1', 'ursus_arctos'],
   ]) {
-    await identifyThroughApi(page, spot, species);
+    await identifyThroughApi(page, spot, species, 'kocevje_forest');
+  }
+  for (let talk = 0; talk < 2; talk++) {
+    await page.evaluate(async () => {
+      const token = localStorage.getItem('slovion.saveToken');
+      await fetch('/api/save/conversations', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mapId: 'kocevje_forest', npcId: 'jure' }),
+      });
+    });
   }
   const travelled = await page.evaluate(async () => {
     const token = localStorage.getItem('slovion.saveToken');

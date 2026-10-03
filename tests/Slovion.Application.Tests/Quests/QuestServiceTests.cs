@@ -73,6 +73,26 @@ public class QuestServiceTests
     }
 
     [Fact]
+    public async Task A_habitat_goal_counts_only_that_habitat_s_species()
+    {
+        // The forest lists the hare and the skylark; the first three identified species are sage, dandelion and hare.
+        catalog.Habitats.Add(FakeContentCatalog.Habitat("forest", 3, "Gozd", null, SpeciesId.Parse("lepus_europaeus"), SpeciesId.Parse("alauda_arvensis")));
+        catalog.Npcs.Add(new Npc("jure", new Dictionary<string, string> { ["sl"] = "Jure" }));
+        catalog.Quests.Add(new Quest("in_the_shade_of_firs", "jure", 2, "pohorje_open", catalog.Quests[0].Text, "forest"));
+        await Identify(3);
+
+        var first = Assert.IsType<TalkResult.Conversation>(await service.TalkAsync(slot, FakeContentCatalog.MapId, "jure", "sl", Token));
+        Assert.Equal((QuestStatus.Active, 1, 2), (first.Quest.Status, first.Quest.Progress, first.Quest.Goal));
+        Assert.Equal(1, (await service.GetProgressAsync(slot, "sl", Token)).Quests.Single(quest => quest.QuestId == "in_the_shade_of_firs").Progress);
+
+        await Identify(4);
+        var second = Assert.IsType<TalkResult.Conversation>(await service.TalkAsync(slot, FakeContentCatalog.MapId, "jure", "sl", Token));
+
+        Assert.Equal((QuestStatus.Completed, 2), (second.Quest.Status, second.Quest.Progress));
+        Assert.Contains("pohorje_open", second.Flags);
+    }
+
+    [Fact]
     public async Task Observed_species_do_not_count()
     {
         await Talk();

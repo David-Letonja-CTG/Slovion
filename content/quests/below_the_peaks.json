@@ -1,0 +1,36 @@
+{
+  "id": "below_the_peaks",
+  "giver": "luka",
+  "goal": {
+    "identifiedSpecies": 3,
+    "habitat": "alpine_grassland"
+  },
+  "reward": {
+    "flag": "alps_explored"
+  },
+  "text": {
+    "sl": {
+      "title": "Pod vrhovi",
+      "summary": "Prepoznaj tri vrste visokogorja.",
+      "returnHint": "Vrni se k Luki.",
+      "dialogue": {
+        "offer": [
+          "Živijo! Jaz sem Luka, gorski vodnik.",
+          "V gorah hodimo počasi in gledamo pozorno, saj se marsikaj skriva med skalami.",
+          "Prepoznaj tri vrste visokogorja, pa bo tvoja pot od Dravskega polja do Triglava končana."
+        ],
+        "active": [
+          "Prepoznane vrste: {identified} od {goal}.",
+          "Namig: gorske cvetlice cvetijo poleti, rušje in skale pa lahko preiščeš vedno."
+        ],
+        "ready": [
+          "Čestitam! Tvoj terenski dnevnik je zdaj pravi zaklad.",
+          "Pot od Dravskega polja do Triglava je za tabo."
+        ],
+        "completed": [
+          "Gore so vedno tu. Vrni se, kadar želiš."
+        ]
+      }
+    }
+  }
+}

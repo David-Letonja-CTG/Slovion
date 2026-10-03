@@ -1,0 +1,36 @@
+{
+  "id": "in_the_shade_of_firs",
+  "giver": "jure",
+  "goal": {
+    "identifiedSpecies": 3,
+    "habitat": "fir_beech_forest"
+  },
+  "reward": {
+    "flag": "pohorje_open"
+  },
+  "text": {
+    "sl": {
+      "title": "V senci jelk",
+      "summary": "Prepoznaj tri vrste jelovo-bukovega gozda.",
+      "returnHint": "Vrni se k Juretu.",
+      "dialogue": {
+        "offer": [
+          "Živijo! Jaz sem Jure, gozdar v Kočevskem gozdu.",
+          "Tukaj rastejo jelke in bukve, med njimi pa živijo tudi velike živali.",
+          "Prepoznaj tri vrste tega gozda, pa ti povem, kako priti na Pohorje."
+        ],
+        "active": [
+          "Prepoznane vrste tega gozda: {identified} od {goal}.",
+          "Namig: preišči drevesa in gozdna tla, zvečer pa opazuj tudi živali."
+        ],
+        "ready": [
+          "Odlično! Ta gozd zdaj poznaš.",
+          "Pot na Pohorje je odprta. Tam te pričakuje Maja."
+        ],
+        "completed": [
+          "Kako je na Pohorju? Pozdravi Majo!"
+        ]
+      }
+    }
+  }
+}

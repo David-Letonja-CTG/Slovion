@@ -3,6 +3,6 @@
   "mapId": "pohorje_forest",
   "order": 3,
   "position": { "x": 62, "y": 27 },
-  "unlock": { "identifiedSpecies": 6 },
-  "text": { "sl": { "name": "Pohorje", "lockedHint": "Za pot na Pohorje moraš bolje poznati naravo." } }
+  "unlock": { "flag": "pohorje_open" },
+  "text": { "sl": { "name": "Pohorje", "lockedHint": "Pomagaj Juretu v Kočevju." } }
 }

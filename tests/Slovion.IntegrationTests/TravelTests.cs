@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Slovion.IntegrationTests.Infrastructure;
 using static Slovion.IntegrationTests.Infrastructure.GameApiClient;
+using GameApi = Slovion.IntegrationTests.Infrastructure.GameApiClient;
 
 namespace Slovion.IntegrationTests;
 
@@ -37,6 +38,16 @@ public sealed class TravelTests(PostgresFixture database)
     private static JsonElement Region(JsonElement regions, string id) =>
         regions.GetProperty("regions").EnumerateArray().Single(region => region.GetProperty("regionId").GetString() == id);
 
+    /// <summary>Observes and correctly identifies the species at a spot of any map.</summary>
+    private static async Task IdentifyOnMapAsync(HttpClient client, string token, string spotId, string speciesId, string mapId)
+    {
+        using var started = await GameApi.StartEncounterAsync(client, token, spotId, mapId);
+        Assert.Equal(HttpStatusCode.Created, started.StatusCode);
+        using var body = await ReadJsonAsync(started);
+        using var answer = await AnswerAsync(client, token, body.RootElement.GetProperty("encounterId").GetGuid(), speciesId);
+        answer.EnsureSuccessStatusCode();
+    }
+
     /// <summary>Identifies three species and completes Vera's quest, which earns the flag that opens Kočevje.</summary>
     private static async Task CompleteVerasQuestAsync(HttpClient client, string token)
     {
@@ -66,7 +77,8 @@ public sealed class TravelTests(PostgresFixture database)
         Assert.Equal("Pomagaj Veri na Dravskem polju.", kocevje.GetProperty("lockedHint").GetString());
         Assert.Equal(JsonValueKind.Null, kocevje.GetProperty("required").ValueKind);
         var pohorje = Region(regions, "pohorje");
-        Assert.Equal((false, 0, 6), (pohorje.GetProperty("unlocked").GetBoolean(), pohorje.GetProperty("identified").GetInt32(), pohorje.GetProperty("required").GetInt32()));
+        Assert.Equal((false, "Pomagaj Juretu v Kočevju."), (pohorje.GetProperty("unlocked").GetBoolean(), pohorje.GetProperty("lockedHint").GetString()));
+        Assert.Equal(JsonValueKind.Null, pohorje.GetProperty("required").ValueKind);
         Assert.Equal((62, 27), (pohorje.GetProperty("x").GetInt32(), pohorje.GetProperty("y").GetInt32()));
         Assert.False(Region(regions, "triglav").GetProperty("unlocked").GetBoolean());
     }
@@ -84,7 +96,7 @@ public sealed class TravelTests(PostgresFixture database)
             var regions = await RegionsAsync(client, token);
             Assert.True(Region(regions, "kocevje").GetProperty("unlocked").GetBoolean());
             var pohorje = Region(regions, "pohorje");
-            Assert.Equal((false, 3, 6), (pohorje.GetProperty("unlocked").GetBoolean(), pohorje.GetProperty("identified").GetInt32(), pohorje.GetProperty("required").GetInt32()));
+            Assert.Equal((false, "Pomagaj Juretu v Kočevju."), (pohorje.GetProperty("unlocked").GetBoolean(), pohorje.GetProperty("lockedHint").GetString()));
 
             var (status, travelled) = await SendAsync(client, token, HttpMethod.Post, "/api/save/travel", new { regionId = "kocevje" });
             Assert.Equal(HttpStatusCode.OK, status);
@@ -94,6 +106,33 @@ public sealed class TravelTests(PostgresFixture database)
         await using var after = Factory();
         using var restarted = after.CreateClient();
         Assert.Equal("kocevje", (await RegionsAsync(restarted, token)).GetProperty("currentRegionId").GetString());
+    }
+
+    [Fact]
+    public async Task Only_the_region_s_species_count_for_Jure_and_his_quest_opens_pohorje()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+        await CompleteVerasQuestAsync(client, token);
+        await IdentifyOnMapAsync(client, token, "meadow_skylark_1", "alauda_arvensis", "dravsko_polje_meadow");
+        await IdentifyOnMapAsync(client, token, "meadow_swallowtail_1", "papilio_machaon", "dravsko_polje_meadow");
+        await IdentifyOnMapAsync(client, token, "kocevje_garlic_1", "allium_ursinum", "kocevje_forest");
+
+        var (_, offer) = await SendAsync(client, token, HttpMethod.Post, "/api/save/conversations", new { mapId = "kocevje_forest", npcId = "jure" });
+        Assert.Equal("Jure", offer.GetProperty("npcName").GetString());
+        var quest = offer.GetProperty("quest");
+        Assert.Equal(("in_the_shade_of_firs", "active", 1, 3), (quest.GetProperty("questId").GetString(), quest.GetProperty("status").GetString(), quest.GetProperty("progress").GetInt32(), quest.GetProperty("goal").GetInt32()));
+
+        await IdentifyOnMapAsync(client, token, "kocevje_woodruff_1", "galium_odoratum", "kocevje_forest");
+        await IdentifyOnMapAsync(client, token, "kocevje_bear_1", "ursus_arctos", "kocevje_forest");
+        var (_, ready) = await SendAsync(client, token, HttpMethod.Post, "/api/save/conversations", new { mapId = "kocevje_forest", npcId = "jure" });
+
+        Assert.Equal("completed", ready.GetProperty("quest").GetProperty("status").GetString());
+        Assert.Contains("pohorje_open", ready.GetProperty("flags").EnumerateArray().Select(flag => flag.GetString()));
+        var regions = await RegionsAsync(client, token);
+        Assert.True(Region(regions, "pohorje").GetProperty("unlocked").GetBoolean());
+        Assert.Equal((false, "Pomagaj Maji na Pohorju."), (Region(regions, "triglav").GetProperty("unlocked").GetBoolean(), Region(regions, "triglav").GetProperty("lockedHint").GetString()));
     }
 
     [Theory]

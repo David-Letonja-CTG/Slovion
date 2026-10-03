@@ -51,7 +51,8 @@ internal sealed record NpcTextFile(string? Name);
 
 internal sealed record NpcFile(string? Id, Dictionary<string, NpcTextFile>? Text);
 
-internal sealed record QuestGoalFile(int IdentifiedSpecies);
+/// <summary>How many species to identify, optionally only species of one habitat.</summary>
+internal sealed record QuestGoalFile(int IdentifiedSpecies, string? Habitat);
 
 internal sealed record QuestRewardFile(string? Flag);
 

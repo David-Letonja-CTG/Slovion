@@ -358,7 +358,7 @@ export class PlayScreen {
     this.overlay.set({ kind: 'pending' });
     this.api.answer(encounter.encounterId, speciesId).subscribe({
       next: (result) => {
-        if (result.correct) this.countIdentification();
+        if (result.correct) this.refreshProgress();
         this.overlay.set({ kind: 'result', result });
       },
       error: (error: unknown) => this.onError(error),
@@ -379,18 +379,15 @@ export class PlayScreen {
   }
 
   /**
-   * A new identification moves active quests on. This only updates the tracker; the server stays
-   * authoritative and confirms progress on the next conversation or load.
+   * A new identification may move a quest on; only the server knows whether the species counts for it (a quest may
+   * count only one habitat's species), so the tracker shows the progress the server reports (D3).
    */
-  private countIdentification(): void {
-    this.progress.update((progress) => ({
-      ...progress,
-      quests: progress.quests.map((quest) =>
-        quest.status === 'active'
-          ? { ...quest, progress: Math.min(quest.goal, quest.progress + 1) }
-          : quest,
-      ),
-    }));
+  private refreshProgress(): void {
+    this.api.progress().subscribe({
+      next: (progress) => this.progress.set(progress),
+      // A failed reload keeps the tracker as it is; the next conversation or load corrects it.
+      error: () => undefined,
+    });
   }
 
   protected onMenu(): void {
