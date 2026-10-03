@@ -13,7 +13,7 @@ Each quest SHALL be a content file with:
 - a stable ID
 - the ID of the NPC who gives it
 - a goal: the number of species the save must have identified, a positive integer, and optionally a habitat whose species alone count
-- a reward flag ID in lowercase snake_case
+- a reward flag ID in lowercase snake_case, and optionally tools the reward gives (see `inventory`)
 - localized texts, with Slovenian required:
   - a title
   - a summary for the tracker
@@ -25,6 +25,7 @@ In the current scope every NPC SHALL give exactly one quest. Content validation 
 - an NPC without a quest, or with more than one
 - a missing Slovenian text or an empty dialogue state
 - a non-positive goal
+- a reward tool that does not exist
 - a goal habitat that does not exist, or that lists fewer species than the goal
 - duplicate IDs
 
@@ -62,6 +63,7 @@ Quest texts are game dialogue, not species facts. They SHALL NOT state biologica
 - the dialogue lines for the save's state of that NPC's quest
 - the quest's resulting state: ID, title, summary, status, progress and goal
 - the save's flags after the conversation
+- the save's tools after the conversation, each with its ID and localized name and description
 
 The server SHALL decide the dialogue and every quest change (D3). Quest progress SHALL be the number of species the save has identified, counting only species of the goal's habitat when the goal names one, capped at the goal, whenever those species were identified. The conversation SHALL depend on the quest's state:
 
@@ -70,7 +72,7 @@ The server SHALL decide the dialogue and every quest change (D3). Quest progress
 | Not started, goal not yet met | The quest starts | `offer` |
 | Not started, goal already met | The quest starts and completes | `offer`, then `ready` |
 | Active, goal not met | No change | `active`, with progress and goal filled in |
-| Active, goal met | The quest completes and its reward flag is set | `ready` |
+| Active, goal met | The quest completes; its reward flag is set and its reward tools are given | `ready` |
 | Completed | No change | `completed` |
 
 A request without a valid save token SHALL respond `401` with code `invalid_save_token`. A request without a map or NPC SHALL respond `400` with code `bad_request`. An NPC that is not on that map SHALL respond `404` with code `unknown_npc` and change nothing.
