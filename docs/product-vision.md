@@ -83,11 +83,11 @@ Implemented:
 | `add-region-quests` | A person and a quest per region; the quests open the regions in turn (a journey). |
 | `add-species-research` | Research levels: seeing a species again at other times reveals more of its journal page. |
 | `add-weather` | Weather per region, drawn over the map; salamanders come out in the rain. |
+| `add-field-tools` | A bag of field tools from quests: lamp, binoculars, magnifier, rubber boots. |
 
 Next candidates, each as its own change once the owner chooses:
 
 1. **More habitats:** e.g. wetland, river, cave, coast, town.
-2. **Inventory:** only as far as a concrete feature needs it.
 
 Later candidates: research stations, an installable app (PWA) with offline play, English, accounts/cloud save.
 
@@ -97,4 +97,4 @@ First slice: `localization`, `game-viewport`, `input-actions`, `game-session`, `
 
 Added since: `habitat-search`, `world-conditions`, `map-areas`, `wildlife`, `regions`.
 
-Later: `inventory`, `research-stations`.
+Later: `research-stations`.

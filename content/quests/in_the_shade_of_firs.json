@@ -6,7 +6,10 @@
     "habitat": "fir_beech_forest"
   },
   "reward": {
-    "flag": "pohorje_open"
+    "flag": "pohorje_open",
+    "items": [
+      "magnifier"
+    ]
   },
   "text": {
     "sl": {

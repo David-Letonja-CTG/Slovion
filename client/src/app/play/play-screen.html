@@ -10,6 +10,8 @@
       [residents]="residents()"
       [weather]="weather()?.weather ?? 'clear'"
       [reducedMotion]="reducedMotion"
+      [tools]="toolIds()"
+      (inventoryRequested)="openInventory()"
       (timeChanged)="onTimeChanged($event)"
       (areaChanged)="onAreaChanged($event)"
       (torchChanged)="onTorchChanged($event)"
@@ -32,6 +34,9 @@
           (click)="toggleTorch()"
         >
           {{ 'torch.button' | transloco }}
+        </button>
+        <button type="button" class="button play__torch play__bag" (click)="openInventory()">
+          {{ 'inventory.button' | transloco }}
         </button>
         <p class="play__torch-status" aria-live="polite">
           {{ (torchOn() ? 'torch.on' : 'torch.off') | transloco }}
@@ -58,6 +63,7 @@
       @if (shown.kind === 'encounter') {
         <app-identification-dialog
           [encounter]="shown.encounter"
+          [initialClues]="initialCluesFor(shown.encounter)"
           (answered)="onAnswer(shown.encounter, $event)"
           (left)="close()"
         />
@@ -125,6 +131,9 @@
           (closed)="close()"
         />
       }
+    }
+    @case ('inventory') {
+      <app-inventory-panel [items]="progress().items" (closed)="close()" />
     }
     @case ('naturedex') {
       <app-naturedex-panel (closed)="close()" (saveLost)="onSaveLost()" />

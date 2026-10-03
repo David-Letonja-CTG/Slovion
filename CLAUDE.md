@@ -37,7 +37,7 @@ C# style (owner preference):
 
 **Frontend** — Angular (mandatory for all UI: menus, dialogs, NatureDex, quests, settings, navigation, API calls, app state, localization). Never replace Angular with another framework.
 
-**Game engine** — `client/src/engine/`, framework-free TypeScript rendering to HTML Canvas. Never render tiles/entities as Angular components. No `@angular/*` or `rxjs` imports in the engine (lint-enforced). Game logic uses logical actions (`MoveUp`, `MoveDown`, `MoveLeft`, `MoveRight`, `Interact`, `Confirm`, `Cancel`, `OpenMenu`, `Run`, `Torch`), never raw keys.
+**Game engine** — `client/src/engine/`, framework-free TypeScript rendering to HTML Canvas. Never render tiles/entities as Angular components. No `@angular/*` or `rxjs` imports in the engine (lint-enforced). Game logic uses logical actions (`MoveUp`, `MoveDown`, `MoveLeft`, `MoveRight`, `Interact`, `Confirm`, `Cancel`, `OpenMenu`, `Run`, `Torch`, `Inventory`), never raw keys.
 
 **Content** — species, habitats, maps (Tiled JSON), quests, dialogue live as versioned files in `content/`; PostgreSQL stores player state only (D7). Habitat files hold fictional gameplay values (search chance, species weights); map zones of class `habitat` say where they apply.
 

@@ -406,3 +406,26 @@ test('searching at a spruce on Pohorje finds a plant of the mountain forest', as
 
   expect(found).toBe(true);
 });
+
+test("the bag holds the lamp from the start and the binoculars after Vera's quest", async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Nova igra' }).click();
+  await waitForTheWorld(page);
+
+  await page.keyboard.press('KeyI');
+  const bag = page.getByRole('dialog', { name: 'Nahrbtnik' });
+  await expect(bag.locator('.inventory__item')).toHaveCount(1);
+  await expect(bag).toContainText('svetilka');
+  await page.keyboard.press('Escape');
+  await expect(bag).toHaveCount(0);
+
+  await completeVerasQuestThroughApi(page);
+  await page.reload();
+  await page.getByRole('button', { name: 'Nadaljuj' }).click();
+  await waitForTheWorld(page);
+  await page.getByRole('button', { name: 'Nahrbtnik' }).click();
+  await expect(bag.locator('.inventory__item')).toHaveCount(2);
+  await expect(bag).toContainText('daljnogled');
+});

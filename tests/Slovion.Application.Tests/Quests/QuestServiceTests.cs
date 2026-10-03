@@ -73,6 +73,22 @@ public class QuestServiceTests
     }
 
     [Fact]
+    public async Task Tools_are_the_start_tools_then_the_rewards_of_completed_quests()
+    {
+        static Dictionary<string, ItemText> Text(string name) => new() { ["sl"] = new(name, name + " opis"), ["en"] = new(name + " (en)", "description") };
+        catalog.Items.AddRange([new Item("lamp", true, Text("svetilka")), new Item("binoculars", false, Text("daljnogled"))]);
+        catalog.Quests[0] = catalog.Quests[0] with { RewardItems = ["binoculars"] };
+
+        Assert.Equal(["lamp"], (await service.GetProgressAsync(slot, "sl", Token)).Items.Select(item => item.ItemId));
+        await Talk();
+        await Identify(3);
+        var completed = await Talk();
+
+        Assert.Equal(["lamp", "binoculars"], completed.Items.Select(item => item.ItemId));
+        Assert.Equal(new ItemView("binoculars", "daljnogled (en)", "description"), (await service.GetProgressAsync(slot, "en", Token)).Items[1]);
+    }
+
+    [Fact]
     public async Task A_habitat_goal_counts_only_that_habitat_s_species()
     {
         // The forest lists the hare and the skylark; the first three identified species are sage, dandelion and hare.

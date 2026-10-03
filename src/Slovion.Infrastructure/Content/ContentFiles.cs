@@ -57,7 +57,13 @@ internal sealed record NpcFile(string? Id, Dictionary<string, NpcTextFile>? Text
 /// <summary>How many species to identify, optionally only species of one habitat.</summary>
 internal sealed record QuestGoalFile(int IdentifiedSpecies, string? Habitat);
 
-internal sealed record QuestRewardFile(string? Flag);
+/// <summary>A quest's reward: a flag and optionally tools.</summary>
+internal sealed record QuestRewardFile(string? Flag, List<string>? Items);
+
+internal sealed record ItemTextFile(string? Name, string? Description);
+
+/// <summary>A field tool: whether every save starts with it, and its texts per language.</summary>
+internal sealed record ItemFile(string? Id, bool? Start, Dictionary<string, ItemTextFile>? Text);
 
 internal sealed record QuestDialogueFile(List<string>? Offer, List<string>? Active, List<string>? Ready, List<string>? Completed);
 

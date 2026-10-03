@@ -1876,7 +1876,28 @@
    "tilecount": 48,
    "tileheight": 16,
    "tilewidth": 16,
-   "tiles": []
+   "tiles": [
+    {
+     "id": 46,
+     "animation": [
+      {
+       "tileid": 46,
+       "duration": 600
+      },
+      {
+       "tileid": 47,
+       "duration": 600
+      }
+     ],
+     "properties": [
+      {
+       "name": "wadeable",
+       "type": "bool",
+       "value": true
+      }
+     ]
+    }
+   ]
   }
  ],
  "tilewidth": 16,

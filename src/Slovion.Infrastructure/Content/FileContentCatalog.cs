@@ -44,6 +44,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
     private readonly Dictionary<(string MapId, string NpcId), MapNpc> mapNpcs;
     private readonly Dictionary<string, Quest> quests;
     private readonly Dictionary<string, Region> regions;
+    private readonly List<Item> items;
 
     public IReadOnlySet<string> Languages { get; }
 
@@ -53,7 +54,9 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
     public IReadOnlyList<Region> AllRegions { get; }
 
-    private FileContentCatalog(Dictionary<SpeciesId, Species> species, Dictionary<(string, string), MapSpot> spots, Dictionary<string, Habitat> habitats, Dictionary<string, List<MapZone>> zones, Dictionary<(string, string), MapNpc> mapNpcs, Dictionary<string, Quest> quests, Dictionary<string, Region> regions, IReadOnlySet<string> languages)
+    public IReadOnlyList<Item> AllItems => items;
+
+    private FileContentCatalog(Dictionary<SpeciesId, Species> species, Dictionary<(string, string), MapSpot> spots, Dictionary<string, Habitat> habitats, Dictionary<string, List<MapZone>> zones, Dictionary<(string, string), MapNpc> mapNpcs, Dictionary<string, Quest> quests, Dictionary<string, Region> regions, List<Item> items, IReadOnlySet<string> languages)
     {
         this.species = species;
         this.spots = spots;
@@ -62,6 +65,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
         this.mapNpcs = mapNpcs;
         this.quests = quests;
         this.regions = regions;
+        this.items = items;
         Languages = languages;
         AllHabitats = habitats.Values.OrderBy(habitat => habitat.Order).ThenBy(habitat => habitat.Id, StringComparer.Ordinal).ToList();
         AllRegions = regions.Values.OrderBy(region => region.Order).ThenBy(region => region.Id, StringComparer.Ordinal).ToList();
@@ -79,6 +83,8 @@ public sealed partial class FileContentCatalog : IContentCatalog
     public Quest? FindQuest(string questId) => quests.GetValueOrDefault(questId);
 
     public Region? FindRegion(string regionId) => regions.GetValueOrDefault(regionId);
+
+    public Item? FindItem(string itemId) => items.FirstOrDefault(item => item.Id == itemId);
 
     public Region? FindRegionOfMap(string mapId) => regions.Values.FirstOrDefault(region => region.MapId == mapId);
 
@@ -113,7 +119,10 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
         var npcs = LoadNpcs(Path.Combine(rootPath, "npcs"), errors);
         ValidateImages(Path.Combine(rootPath, NpcSpritesFolder), NpcSpritesFolder, npcs.Keys.ToList(), "NPC", "sprite", 32, 64, errors);
-        var quests = LoadQuests(Path.Combine(rootPath, "quests"), npcs, habitats, errors);
+        var items = LoadItems(Path.Combine(rootPath, "items"), errors);
+        ValidateImages(Path.Combine(rootPath, ItemIconsFolder), ItemIconsFolder, items.Select(item => item.Id).ToList(), "tool", "icon", ItemIconSize, ItemIconSize, errors);
+        var quests = LoadQuests(Path.Combine(rootPath, "quests"), npcs, habitats, items, errors);
+        ValidateItemRewards(items, quests, errors);
         ValidateQuestGivers(npcs, quests, errors);
         var rewardFlags = quests.Values.Select(quest => quest.RewardFlag).ToHashSet(StringComparer.Ordinal);
         var areas = LoadAreas(Path.Combine(rootPath, AreasFolder), errors);
@@ -127,7 +136,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
         var languages = species.Values.SelectMany(item => item.Text.Keys).ToHashSet(StringComparer.Ordinal);
         languages.Add(IContentCatalog.DefaultLanguage);
-        return new FileContentCatalog(species, spots, habitats, zones, mapNpcs, quests, regions, languages);
+        return new FileContentCatalog(species, spots, habitats, zones, mapNpcs, quests, regions, items, languages);
     }
 
     private static Dictionary<SpeciesId, Species> LoadSpecies(string folder, List<string> errors)

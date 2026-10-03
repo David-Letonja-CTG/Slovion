@@ -29,6 +29,8 @@ export class FakeGame implements Game {
   residents: readonly ResidentInfo[] | undefined;
   /** The weather last given with `setWeather`. */
   weather: Weather | undefined;
+  /** The tools last given with `setTools`. */
+  tools: readonly string[] | undefined;
   private readonly uiListeners = new Set<(action: Action) => void>();
 
   start = vi.fn();
@@ -49,6 +51,10 @@ export class FakeGame implements Game {
 
   setResidents(residents: readonly ResidentInfo[]): void {
     this.residents = residents;
+  }
+
+  setTools(tools: readonly string[]): void {
+    this.tools = tools;
   }
 
   setWeather(weather: Weather): void {

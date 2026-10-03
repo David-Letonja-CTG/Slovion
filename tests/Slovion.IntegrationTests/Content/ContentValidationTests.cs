@@ -42,6 +42,7 @@ public sealed class ContentValidationTests
         var quest = catalog.FindQuestByGiver("vera");
         Assert.NotNull(quest);
         Assert.Equal(("eye_for_nature", 3, "hedgerow_open"), (quest.Id, quest.IdentifiedSpeciesGoal, quest.RewardFlag));
+        Assert.Equal(["binoculars"], quest.RewardItems);
         Assert.Equal("Oko za naravo", quest.Text["sl"].Title);
         Assert.Null(catalog.FindNpcOnMap("other_map", "vera"));
 
@@ -83,6 +84,20 @@ public sealed class ContentValidationTests
         Assert.Equal(torch, species.Wildlife?.Torch);
         Assert.Equal(species.Id, catalog.FindSpot(mapId, spotId)?.SpeciesId);
         Assert.Contains(catalog.AllHabitats.Single(habitat => habitat.Id == habitatId).Species, entry => entry.SpeciesId == species.Id);
+    }
+
+    [Fact]
+    public void Repository_content_has_the_field_tools()
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        Assert.Equal(
+            [("lamp", true, "svetilka"), ("binoculars", false, "daljnogled"), ("boots", false, "škornji"), ("magnifier", false, "povečevalno steklo")],
+            catalog.AllItems.Select(item => (item.Id, item.IsStart, item.Text["sl"].Name)).OrderBy(item => item.Item1 == "lamp" ? 0 : 1).ThenBy(item => item.Item1, StringComparer.Ordinal));
+        Assert.Equal(["binoculars"], catalog.FindQuest("eye_for_nature")!.RewardItems);
+        Assert.Equal(["magnifier"], catalog.FindQuest("in_the_shade_of_firs")!.RewardItems);
+        Assert.Equal(["boots"], catalog.FindQuest("secrets_of_the_bog")!.RewardItems);
+        Assert.Null(catalog.FindQuest("below_the_peaks")!.RewardItems);
     }
 
     [Fact]
@@ -342,6 +357,12 @@ public sealed class ContentValidationTests
         { "region with an unknown weather season", c => c.Region["weather"]!["monsoon"] = new JsonObject { ["rain"] = 1 }, "'weather' has unknown season 'monsoon'" },
         { "species with unknown weather", c => c.Species["availability"]!["alsoInWeather"] = new JsonArray("hail"), "availability.alsoInWeather: unknown weather 'hail'" },
         { "species with empty weather", c => c.Species["availability"]!["alsoInWeather"] = new JsonArray(), "availability.alsoInWeather must list at least one weather" },
+        { "tool without Slovenian text", c => c.Item["text"] = new JsonObject(), "items/lamp.json: Slovenian text ('text.sl') is required" },
+        { "tool without a description", c => c.Item["text"]!["sl"]!.AsObject().Remove("description"), "'text.sl' needs a 'name' and a 'description'" },
+        { "tool without an icon", c => c.ItemIcon = null, "tool 'lamp' has no icon" },
+        { "tool icon of the wrong size", c => c.ItemIcon = ContentFolder.Png(32, 32), "icon of tool 'lamp' must be 16×16 pixels (found 32×32)" },
+        { "quest rewarding an unknown tool", c => c.Quest["reward"]!["items"] = new JsonArray("compass"), "quest 'eye_for_nature' rewards unknown tool 'compass'" },
+        { "tool nobody can get", c => c.Item["start"] = false, "tool 'lamp' is neither a start tool nor any quest's reward" },
         { "spot with unknown species", c => Objects(c)[1]!["properties"]![1]!["value"] = "vulpes_vulpes", "spot 'sage_1' references unknown species 'vulpes_vulpes'" },
     };
 

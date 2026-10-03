@@ -1,0 +1,10 @@
+{
+  "id": "lamp",
+  "start": true,
+  "text": {
+    "sl": {
+      "name": "svetilka",
+      "description": "Ponoči osvetli okolico."
+    }
+  }
+}

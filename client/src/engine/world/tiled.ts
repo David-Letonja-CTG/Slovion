@@ -53,7 +53,11 @@ interface TiledTileset {
   columns?: number;
   tilecount?: number;
   image?: string;
-  tiles?: { id?: number; animation?: { tileid?: number; duration?: number }[] }[];
+  tiles?: {
+    id?: number;
+    animation?: { tileid?: number; duration?: number }[];
+    properties?: TiledProperty[];
+  }[];
 }
 
 interface TiledMap {
@@ -221,6 +225,15 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
             ms: frame.duration ?? 100,
           })),
         ]),
+    ),
+    wadeable: new Set(
+      (tileset!.tiles ?? [])
+        .filter(
+          (tile) =>
+            typeof tile.id === 'number' &&
+            tile.properties?.some((p) => p.name === 'wadeable' && p.value === true),
+        )
+        .map((tile) => tile.id!),
     ),
   };
 

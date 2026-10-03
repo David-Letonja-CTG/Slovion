@@ -20,6 +20,11 @@ public interface IContentCatalog
     /// <summary>Every region in the catalog, ordered by their order, then by ID.</summary>
     IReadOnlyList<Region> AllRegions { get; }
 
+    /// <summary>Every field tool in content order.</summary>
+    IReadOnlyList<Item> AllItems { get; }
+
+    Item? FindItem(string itemId);
+
     Species? FindSpecies(SpeciesId id);
 
     MapSpot? FindSpot(string mapId, string spotId);

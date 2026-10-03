@@ -3151,6 +3151,26 @@
        "duration": 900
       }
      ]
+    },
+    {
+     "id": 46,
+     "animation": [
+      {
+       "tileid": 46,
+       "duration": 600
+      },
+      {
+       "tileid": 47,
+       "duration": 600
+      }
+     ],
+     "properties": [
+      {
+       "name": "wadeable",
+       "type": "bool",
+       "value": true
+      }
+     ]
     }
    ]
   }

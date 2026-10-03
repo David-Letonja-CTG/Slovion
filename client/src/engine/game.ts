@@ -35,6 +35,8 @@ export interface Game {
   setResidents(residents: readonly ResidentInfo[]): void;
   /** Sets the current region's weather as the server reported it (D11). */
   setWeather(weather: Weather): void;
+  /** Replaces the save's field tools as the server reported them (D3). */
+  setTools(tools: readonly string[]): void;
 }
 
 export interface GameOptions {
@@ -43,6 +45,10 @@ export interface GameOptions {
   readonly onInteract: (interaction: Interaction) => void;
   /** Called when the player opens the menu from the world. */
   readonly onOpenMenu?: () => void;
+  /** Called when the player opens the bag from the world (the Inventory action). */
+  readonly onOpenInventory?: () => void;
+  /** The save's field tools when the game starts. */
+  readonly tools?: readonly string[];
   /** The save's progress flags when the game starts. */
   readonly openFlags?: readonly string[];
   /** The map's resident animals when the game starts. */
@@ -89,11 +95,13 @@ export function createGame(
       onTimeChange: options.onTimeChange,
       onAreaChange: options.onAreaChange,
       onTorchChange: options.onTorchChange,
+      onOpenInventory: options.onOpenInventory,
     },
   );
   world.setOpenFlags(options.openFlags ?? []);
   world.setResidents(options.residents ?? []);
   world.setWeather(options.weather ?? 'clear');
+  world.setTools(options.tools ?? []);
   world.reducedMotion = options.reducedMotion ?? false;
 
   let availableWidth = container.clientWidth;
@@ -147,6 +155,7 @@ export function createGame(
     setTorch: (on) => world.setTorch(on),
     setResidents: (residents) => world.setResidents(residents),
     setWeather: (weather) => world.setWeather(weather),
+    setTools: (tools) => world.setTools(tools),
   };
 }
 

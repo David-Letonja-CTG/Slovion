@@ -108,18 +108,29 @@ export interface QuestInfo {
 }
 
 /** What an NPC says; the server decided it and any quest change (D3). */
+/** A field tool the save owns, in the request's language (D3). */
+export interface ItemInfo {
+  readonly itemId: string;
+  readonly name: string;
+  readonly description: string;
+}
+
 export interface Conversation {
   readonly npcName: string;
   readonly lines: readonly string[];
   readonly quest: QuestInfo;
   /** The save's progress flags after the conversation. */
   readonly flags: readonly string[];
+  /** The save's tools after the conversation. */
+  readonly items: readonly ItemInfo[];
 }
 
-/** The save's progress flags (they open gates) and its started quests. */
+/** The save's progress flags (they open gates), its started quests and its tools. */
 export interface PlayerProgress {
   readonly flags: readonly string[];
   readonly quests: readonly QuestInfo[];
+  /** The save's field tools: start tools, then quest rewards. */
+  readonly items: readonly ItemInfo[];
 }
 
 /**

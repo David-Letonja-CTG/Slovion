@@ -1,0 +1,10 @@
+{
+  "id": "binoculars",
+  "start": false,
+  "text": {
+    "sl": {
+      "name": "daljnogled",
+      "description": "Živali prepoznaš tudi do tri polja daleč, če ti nič ne zakriva pogleda."
+    }
+  }
+}
