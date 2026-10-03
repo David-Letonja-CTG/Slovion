@@ -2,6 +2,10 @@
   <h1 class="title__name">{{ 'app.title' | transloco }}</h1>
   <p class="title__tagline">{{ 'shell.tagline' | transloco }}</p>
 
+  @if (!online()) {
+    <p class="title__offline" role="status">{{ 'title.offline' | transloco }}</p>
+  }
+
   @if (error(); as code) {
     <p class="title__error" role="alert">{{ 'errors.' + code | transloco }}</p>
   }

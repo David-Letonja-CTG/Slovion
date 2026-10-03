@@ -166,3 +166,41 @@ describe('Title screen', () => {
     expect(TestBed.inject(Router).url).toBe('/');
   });
 });
+
+describe('Title screen without a connection', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  const offline = () => vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+
+  it('says a connection is needed and still offers the buttons', async () => {
+    offline();
+
+    const { root, button } = await openTitle(withSavedGame());
+
+    expect(root().querySelector('.title__offline')?.textContent).toBe(sl.title.offline);
+    expect(button('continue')).not.toBeNull();
+    expect(button('new-game')).not.toBeNull();
+  });
+
+  it('hides the notice when the connection returns', async () => {
+    const onLine = offline();
+    const { root, harness } = await openTitle();
+
+    onLine.mockReturnValue(true);
+    window.dispatchEvent(new Event('online'));
+    await settle(harness.fixture);
+
+    expect(root().querySelector('.title__offline')).toBeNull();
+  });
+
+  it('shows the notice when the connection drops', async () => {
+    const { root, harness } = await openTitle();
+    expect(root().querySelector('.title__offline')).toBeNull();
+
+    offline();
+    window.dispatchEvent(new Event('offline'));
+    await settle(harness.fixture);
+
+    expect(root().querySelector('.title__offline')?.textContent).toBe(sl.title.offline);
+  });
+});

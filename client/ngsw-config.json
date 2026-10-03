@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js",
+          "/fonts/*.ttf",
+          "/i18n/**",
+          "/sprites/**",
+          "/images/**",
+          "/icons/**"
+        ]
+      }
+    }
+  ],
+  "navigationUrls": ["/**", "!/api/**", "!/content/**", "!/health", "!/openapi/**", "!/**/*.*"]
+}

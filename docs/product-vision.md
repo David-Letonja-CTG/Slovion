@@ -84,12 +84,13 @@ Implemented:
 | `add-species-research` | Research levels: seeing a species again at other times reveals more of its journal page. |
 | `add-weather` | Weather per region, drawn over the map; salamanders come out in the rain. |
 | `add-field-tools` | A bag of field tools from quests: lamp, binoculars, magnifier, rubber boots. |
+| `add-installable-app` | An installable app (PWA) that opens without a connection and offers new versions. |
 
 Next candidates, each as its own change once the owner chooses:
 
 1. **More habitats:** e.g. wetland, river, cave, coast, town.
 
-Later candidates: research stations, an installable app (PWA) with offline play, English, accounts/cloud save.
+Later candidates: research stations, offline play (needs D3 revisited), English, accounts/cloud save.
 
 ## Capabilities (OpenSpec specs)
 
