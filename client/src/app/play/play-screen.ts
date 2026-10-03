@@ -74,7 +74,13 @@ type Overlay =
   | { readonly kind: 'pending' }
   | { readonly kind: 'encounter'; readonly encounter: Encounter }
   | { readonly kind: 'result'; readonly result: AnswerResult }
-  | { readonly kind: 'known'; readonly name: string }
+  /** A sighting of an identified species: whether it advanced the research, and the level now. */
+  | {
+      readonly kind: 'known';
+      readonly name: string;
+      readonly level: number;
+      readonly researched: boolean;
+    }
   | { readonly kind: 'nothing' }
   /** A spot whose species is not around at the save's in-game time (D8). */
   | { readonly kind: 'notNow' }
@@ -349,7 +355,12 @@ export class PlayScreen {
   ): Overlay {
     if ('found' in result) return { kind: interaction === 'spot' ? 'notNow' : 'nothing' };
     if ('alreadyIdentified' in result) {
-      return { kind: 'known', name: result.entry.species?.name ?? '' };
+      return {
+        kind: 'known',
+        name: result.entry.species?.name ?? '',
+        level: result.entry.researchLevel ?? 1,
+        researched: result.researched,
+      };
     }
     return { kind: 'encounter', encounter: result };
   }

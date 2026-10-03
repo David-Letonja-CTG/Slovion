@@ -23,6 +23,8 @@ internal sealed class SpeciesDiscoveryConfiguration : IEntityTypeConfiguration<S
         builder.Property(discovery => discovery.HabitatId).HasColumnName("habitat_id");
         builder.Property(discovery => discovery.ObservedAt).HasColumnName("observed_at");
         builder.Property(discovery => discovery.IdentifiedAt).HasColumnName("identified_at");
+        builder.Property(discovery => discovery.ResearchLevel).HasColumnName("research_level");
+        builder.Property(discovery => discovery.ResearchedAt).HasColumnName("researched_at");
         builder.Ignore(discovery => discovery.IsIdentified);
 
         builder.HasOne<SaveSlot>()

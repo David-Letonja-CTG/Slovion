@@ -23,8 +23,11 @@ public abstract record StartEncounterResult
     /// <summary>The spot's species is not available at the save's in-game time (D8); nothing is recorded.</summary>
     public sealed record NotNow : StartEncounterResult;
 
-    /// <summary>The save already identified this species; no encounter is opened.</summary>
-    public sealed record AlreadyIdentified(NatureDexEntry Entry) : StartEncounterResult;
+    /// <summary>
+    /// The save already identified this species; no encounter is opened. <see cref="Researched"/> says whether this
+    /// sighting raised its research level.
+    /// </summary>
+    public sealed record AlreadyIdentified(NatureDexEntry Entry, bool Researched) : StartEncounterResult;
 
     public sealed record Started(EncounterView Encounter) : StartEncounterResult;
 }
@@ -82,7 +85,7 @@ public sealed class EncounterService(IContentCatalog content, IDiscoveryReposito
             return new StartEncounterResult.NotNow();
         }
 
-        return await StartAsync(save.Id, Sighting.AtSpot(spot), species, language, cancellationToken);
+        return await SightAsync(save, Sighting.AtSpot(spot), species, language, cancellationToken);
     }
 
     /// <summary>
@@ -115,7 +118,7 @@ public sealed class EncounterService(IContentCatalog content, IDiscoveryReposito
 
         var species = content.FindSpecies(PickByWeight(available))!;
         var sighting = Sighting.InHabitat(mapId, habitat.Id, species.Id);
-        return new SearchResult.Found(await StartAsync(save.Id, sighting, species, language, cancellationToken));
+        return new SearchResult.Found(await SightAsync(save, sighting, species, language, cancellationToken));
     }
 
     /// <summary>The save's in-game time now (docs/decisions.md D8).</summary>
@@ -137,12 +140,16 @@ public sealed class EncounterService(IContentCatalog content, IDiscoveryReposito
         throw new InvalidOperationException("Weighted roll out of range.");
     }
 
-    private async Task<StartEncounterResult> StartAsync(Guid saveSlotId, Sighting sighting, Species species, string language, CancellationToken cancellationToken)
+    /// <summary>A sighting of a species: opens an encounter for an unidentified one, or researches an identified one.</summary>
+    private async Task<StartEncounterResult> SightAsync(SaveSlot save, Sighting sighting, Species species, string language, CancellationToken cancellationToken)
     {
+        var saveSlotId = save.Id;
         var known = await discoveries.FindAsync(saveSlotId, species.Id, cancellationToken);
         if (known is { IsIdentified: true })
         {
-            return new StartEncounterResult.AlreadyIdentified(NatureDexService.ToEntry(known, species, language));
+            // Sighting an identified species again may research it further.
+            var (researched, advanced) = await discoveries.ResearchAsync(saveSlotId, species.Id, time.GetUtcNow(), save.CreatedAt, cancellationToken);
+            return new StartEncounterResult.AlreadyIdentified(NatureDexService.ToEntry(researched, species, language), advanced);
         }
 
         var now = time.GetUtcNow();

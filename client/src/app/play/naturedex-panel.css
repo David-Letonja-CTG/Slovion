@@ -47,6 +47,7 @@
 }
 
 .picture {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -198,4 +199,35 @@
 .entry__hint {
   margin: 0.75rem 0 0;
   color: var(--color-warning);
+}
+
+/* Research level of an identified species: small stars in the picture's top corner. */
+.picture__stars {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.25rem;
+  color: #e8c94a;
+  font-size: 0.65rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.entry__research {
+  margin: 0.25rem 0 0;
+}
+
+.entry__stars {
+  color: #e8c94a;
+}
+
+/* Stars not yet earned are dim, so the level reads at a glance even at the grid's small size. */
+.stars__empty {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+.entry__hint {
+  margin: 0.25rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
 }

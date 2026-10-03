@@ -14,8 +14,14 @@ public interface IDiscoveryRepository
 
     Task<SpeciesDiscovery?> FindAsync(Guid saveSlotId, SpeciesId speciesId, CancellationToken cancellationToken);
 
-    /// <summary>Marks an observed species identified, keeping an earlier identification time. Returns the record.</summary>
+    /// <summary>Marks an observed species identified at research level 1, keeping an earlier identification. Returns the record.</summary>
     Task<SpeciesDiscovery> IdentifyAsync(Guid saveSlotId, SpeciesId speciesId, DateTimeOffset identifiedAt, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// A sighting of an identified species at <paramref name="at"/>: raises its research level when the domain rule allows
+    /// it (<see cref="SpeciesDiscovery.Research"/>). Returns the record and whether the level rose.
+    /// </summary>
+    Task<(SpeciesDiscovery Stored, bool Researched)> ResearchAsync(Guid saveSlotId, SpeciesId speciesId, DateTimeOffset at, DateTimeOffset saveCreatedAt, CancellationToken cancellationToken);
 
     Task<IReadOnlyList<SpeciesDiscovery>> ListAsync(Guid saveSlotId, CancellationToken cancellationToken);
 }

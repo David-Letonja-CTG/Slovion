@@ -12,13 +12,17 @@ export interface SourceInfo {
 }
 
 /** Localized, sourced species information as served by the API. */
+/**
+ * Localized, sourced species information as far as the save's research has revealed it: `habitat` and
+ * `distribution` from research level 2, `season` at level 3. The sources are those of the revealed facts.
+ */
 export interface SpeciesInfo {
   readonly name: string;
   readonly scientificName: string;
   readonly family: string;
-  readonly habitat: string;
-  readonly distribution: string;
-  readonly season: string;
+  readonly habitat: string | null;
+  readonly distribution: string | null;
+  readonly season: string | null;
   readonly characteristics: readonly string[];
   readonly sources: readonly SourceInfo[];
 }
@@ -39,6 +43,8 @@ export interface NatureDexEntry {
   readonly status: 'observed' | 'identified';
   readonly observedAt: string;
   readonly identifiedAt: string | null;
+  /** 1–3 once identified, null before. */
+  readonly researchLevel: number | null;
   readonly species: SpeciesInfo | null;
 }
 
@@ -69,8 +75,10 @@ export interface Encounter {
   readonly candidates: readonly Candidate[];
 }
 
+/** A sighting of an identified species; `researched` says whether it raised the research level. */
 export interface AlreadyIdentified {
   readonly alreadyIdentified: true;
+  readonly researched: boolean;
   readonly entry: NatureDexEntry;
 }
 

@@ -86,6 +86,15 @@ export class NatureDexPanel {
   }
 
   /** Keyboard input routed from the play screen while the journal is open. */
+  /** The research level as filled and empty stars, e.g. ★★ and ☆ for level 2 of 3. */
+  protected stars(level: number | null | undefined): {
+    readonly filled: string;
+    readonly empty: string;
+  } {
+    const filled = Math.max(0, Math.min(3, level ?? 0));
+    return { filled: '★'.repeat(filled), empty: '☆'.repeat(3 - filled) };
+  }
+
   handleAction(action: Action): void {
     if (this.view().kind !== 'grid') {
       if (action === 'Cancel' || action === 'Confirm') this.back();

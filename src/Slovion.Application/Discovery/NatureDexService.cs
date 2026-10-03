@@ -34,7 +34,8 @@ public sealed class NatureDexService(IContentCatalog content, IDiscoveryReposito
             species.Group,
             discovery.ObservedAt,
             discovery.IdentifiedAt,
-            discovery.IsIdentified ? SpeciesView.For(species, language) : null);
+            discovery.IsIdentified ? discovery.ResearchLevel : null,
+            discovery.IsIdentified ? SpeciesView.For(species, language, discovery.ResearchLevel) : null);
 
     /// <summary>The habitat name in <paramref name="language"/>, falling back to Slovenian.</summary>
     private static string NameOf(Habitat habitat, string language) =>
