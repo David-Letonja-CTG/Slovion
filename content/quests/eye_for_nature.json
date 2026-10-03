@@ -1,0 +1,31 @@
+{
+  "id": "eye_for_nature",
+  "giver": "vera",
+  "goal": { "identifiedSpecies": 3 },
+  "reward": { "flag": "hedgerow_open" },
+  "text": {
+    "sl": {
+      "title": "Oko za naravo",
+      "summary": "Prepoznaj tri vrste.",
+      "returnHint": "Vrni se k Veri.",
+      "dialogue": {
+        "offer": [
+          "Živijo! Jaz sem Vera in skrbim za travnike in mejice na Dravskem polju.",
+          "Za južno mejico živita ptica in grm, ki ju na tem travniku ne najdeš.",
+          "Pot tja odprem, ko vidim, da znaš opazovati naravo: prepoznaj tri vrste in se vrni k meni."
+        ],
+        "active": [
+          "Prepoznane vrste: {identified} od {goal}. Kar tako naprej!",
+          "Namig: išči v visoki travi in natančno beri znake v dnevniku."
+        ],
+        "ready": [
+          "Odlično! Tri vrste, prepoznane po pravih znakih.",
+          "Vrata v južni mejici so odprta. Poglej, kdo živi tam!"
+        ],
+        "completed": [
+          "Kako je pri mejici? Ne pozabi pogledati v grmovje."
+        ]
+      }
+    }
+  }
+}

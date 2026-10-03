@@ -1,5 +1,5 @@
 import { Direction, stepOf } from '../input/actions';
-import { Spawn, WorldMap } from './world-map';
+import { Obstacles, Spawn } from './world-map';
 
 export const WALK_TILES_PER_SECOND = 4;
 export const RUN_TILES_PER_SECOND = 8;
@@ -60,7 +60,7 @@ export class Player {
     return Math.floor((this.distance + (this.step?.progress ?? 0)) * 2) % 2 === 1 ? 1 : 0;
   }
 
-  update(input: MovementInput, stepMs: number, map: WorldMap): void {
+  update(input: MovementInput, stepMs: number, map: Obstacles): void {
     if (!this.step) {
       const direction = input.heldDirection ?? input.tappedDirection;
       if (!direction || !this.tryStart(direction, map)) return;
@@ -84,7 +84,7 @@ export class Player {
   }
 
   /** Faces `direction` and starts a step if the target tile is free. */
-  private tryStart(direction: Direction, map: WorldMap): boolean {
+  private tryStart(direction: Direction, map: Obstacles): boolean {
     this.facing = direction;
     const { dx, dy } = stepOf(direction);
     if (map.isBlocked(this.tile.x + dx, this.tile.y + dy)) return false;

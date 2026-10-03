@@ -4,7 +4,13 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import sl from '../../../public/i18n/sl.json';
 import { Action } from '../../engine';
-import { NatureDexEntry, NatureDexSection, NatureDexSlot } from '../api/game-api';
+import {
+  NatureDexEntry,
+  NatureDexSection,
+  NatureDexSlot,
+  PlayerProgress,
+  QuestInfo,
+} from '../api/game-api';
 import { GameSession } from '../session/game-session';
 import { SaveTokenStore } from '../session/save-token-store';
 import {
@@ -19,12 +25,29 @@ import {
 const MAP_URL = '/content/maps/dravsko_polje_meadow.json';
 const SAGE = { kind: 'spot', mapId: 'dravsko_polje_meadow', spotId: 'meadow_sage_1' } as const;
 
-async function openPlay(mapResponse: object | 404 = meadow) {
+const NO_PROGRESS: PlayerProgress = { flags: [], quests: [] };
+
+/** Opens the play screen; the progress response is a body, or an HTTP status to fail with (0 = network). */
+async function openPlay(
+  mapResponse: object | 404 = meadow,
+  progressResponse: PlayerProgress | number = NO_PROGRESS,
+) {
   const app = await setupTestApp();
   TestBed.inject(SaveTokenStore).set('play-token');
   TestBed.inject(GameSession).active.set(true);
 
   const harness = await RouterTestingHarness.create('/play');
+  const progress = app.http.expectOne('/api/save/progress');
+  if (typeof progressResponse === 'number' && progressResponse === 0) {
+    progress.error(new ProgressEvent('error'), { status: 0 });
+  } else if (typeof progressResponse === 'number') {
+    progress.flush(
+      { code: 'invalid_save_token' },
+      { status: progressResponse, statusText: 'Error' },
+    );
+  } else {
+    progress.flush(progressResponse);
+  }
   const map = app.http.expectOne(MAP_URL);
   if (mapResponse === 404) {
     map.flush(null, { status: 404, statusText: 'Not Found' });
@@ -516,5 +539,184 @@ describe('Terenski dnevnik', () => {
     const { panel } = await openNatureDex();
 
     expect(panel()?.querySelector('.naturedex__empty')).toBeNull();
+  });
+});
+
+describe('Quests', () => {
+  afterEach(() => TestBed.inject(Router).dispose());
+
+  const TALK = '/api/save/conversations';
+  const VERA = { kind: 'npc', mapId: 'dravsko_polje_meadow', npcId: 'vera' } as const;
+  const quest = (progress: number, status: 'active' | 'completed' = 'active'): QuestInfo => ({
+    questId: 'eye_for_nature',
+    title: 'Oko za naravo',
+    summary: 'Prepoznaj tri vrste.',
+    returnHint: 'Vrni se k Veri.',
+    status,
+    progress,
+    goal: 3,
+  });
+  const conversation = (lines: string[], flags: string[] = [], info = quest(0)) => ({
+    npcName: 'Vera',
+    lines,
+    quest: info,
+    flags,
+  });
+
+  it('starts the world with the flags of the loaded progress', async () => {
+    const { game } = await openPlay(meadow, { flags: ['hedgerow_open'], quests: [] });
+
+    expect(game.options?.openFlags).toEqual(['hedgerow_open']);
+  });
+
+  it('shows no tracker before a quest is started', async () => {
+    const { root } = await openPlay();
+
+    expect(root().querySelector('app-quest-tracker')).toBeNull();
+  });
+
+  it('tracks an active quest with its title and progress', async () => {
+    const { root } = await openPlay(meadow, { flags: [], quests: [quest(1)] });
+    const tracker = root().querySelector('app-quest-tracker')!;
+
+    expect(tracker.textContent).toContain('Oko za naravo');
+    expect(tracker.querySelector('.tracker__progress')?.textContent?.trim()).toBe('1/3');
+  });
+
+  it('says to return to the giver once the goal is met', async () => {
+    const { root } = await openPlay(meadow, { flags: [], quests: [quest(3)] });
+
+    expect(root().querySelector('.tracker__hint')?.textContent?.trim()).toBe('Vrni se k Veri.');
+  });
+
+  it('hides completed quests', async () => {
+    const { root } = await openPlay(meadow, {
+      flags: ['hedgerow_open'],
+      quests: [quest(3, 'completed')],
+    });
+
+    expect(root().querySelector('app-quest-tracker')).toBeNull();
+  });
+
+  it('does not start without progress when the server is unreachable', async () => {
+    const { game, root } = await openPlay(meadow, 0);
+
+    expect(root().querySelector('[role="alert"]')?.textContent).toBe(sl.errors.network);
+    expect(game.options).toBeUndefined();
+  });
+
+  it('returns to the title screen when the save is gone', async () => {
+    await openPlay(meadow, 401);
+
+    expect(TestBed.inject(Router).url).toBe('/');
+  });
+
+  it('talks to Vera one line at a time and opens the gate when the box closes', async () => {
+    const {
+      game,
+      http,
+      root,
+      dialogText,
+      settle: wait,
+    } = await openPlay(meadow, {
+      flags: [],
+      quests: [quest(3)],
+    });
+
+    game.options!.onInteract(VERA);
+    expect(game.consumer).toBe('ui');
+    const request = http.expectOne({ method: 'POST', url: TALK });
+    expect(request.request.body).toEqual({ mapId: 'dravsko_polje_meadow', npcId: 'vera' });
+    request.flush(
+      conversation(['Odlično!', 'Vrata so odprta.'], ['hedgerow_open'], quest(3, 'completed')),
+    );
+    await wait();
+
+    expect(root().querySelector('#dialogue-name')?.textContent).toBe('Vera');
+    expect(dialogText()).toContain('Odlično!');
+    expect(game.openFlags).toEqual([]);
+
+    game.pressUi('Confirm');
+    await wait();
+    expect(dialogText()).toContain('Vrata so odprta.');
+
+    game.pressUi('Confirm');
+    await wait();
+    expect(root().querySelector('app-dialogue-box')).toBeNull();
+    expect(game.consumer).toBe('world');
+    expect(game.openFlags).toEqual(['hedgerow_open']);
+    expect(root().querySelector('app-quest-tracker')).toBeNull(); // the quest is completed
+  });
+
+  it('starts tracking a quest Vera offers', async () => {
+    const { game, http, root, settle: wait } = await openPlay();
+
+    game.options!.onInteract(VERA);
+    http.expectOne(TALK).flush(conversation(['Živijo!']));
+    await wait();
+    game.pressUi('Cancel');
+    await wait();
+
+    expect(root().querySelector('.tracker__progress')?.textContent?.trim()).toBe('0/3');
+  });
+
+  it('skips the rest of the dialogue with Cancel', async () => {
+    const { game, http, root, settle: wait } = await openPlay();
+
+    game.options!.onInteract(VERA);
+    http.expectOne(TALK).flush(conversation(['Ena.', 'Dva.', 'Tri.']));
+    await wait();
+    game.pressUi('Cancel');
+    await wait();
+
+    expect(root().querySelector('app-dialogue-box')).toBeNull();
+    expect(game.consumer).toBe('world');
+  });
+
+  it('advances with a click on the button', async () => {
+    const { game, http, root, dialogText, settle: wait } = await openPlay();
+
+    game.options!.onInteract(VERA);
+    http.expectOne(TALK).flush(conversation(['Ena.', 'Dva.']));
+    await wait();
+    root().querySelector<HTMLButtonElement>('.dialogue__next')!.click();
+    await wait();
+
+    expect(dialogText()).toContain('Dva.');
+  });
+
+  it('explains when nobody is there', async () => {
+    const { game, http, dialogText, settle: wait } = await openPlay();
+
+    game.options!.onInteract(VERA);
+    http.expectOne(TALK).flush({ code: 'unknown_npc' }, { status: 404, statusText: 'Not Found' });
+    await wait();
+
+    expect(dialogText()).toContain(sl.errors.unknown_npc);
+  });
+
+  it('moves the tracker on after a correct identification', async () => {
+    const {
+      game,
+      http,
+      root,
+      settle: wait,
+    } = await openPlay(meadow, {
+      flags: [],
+      quests: [quest(1)],
+    });
+
+    game.options!.onInteract(SAGE);
+    http
+      .expectOne('/api/save/encounters')
+      .flush(SAGE_ENCOUNTER, { status: 201, statusText: 'Created' });
+    await wait();
+    root().querySelector<HTMLButtonElement>('[data-kind="candidate"]')!.click();
+    http
+      .expectOne(`/api/save/encounters/${SAGE_ENCOUNTER.encounterId}/identification`)
+      .flush(sageAnswer(true));
+    await wait();
+
+    expect(root().querySelector('.tracker__progress')?.textContent?.trim()).toBe('2/3');
   });
 });

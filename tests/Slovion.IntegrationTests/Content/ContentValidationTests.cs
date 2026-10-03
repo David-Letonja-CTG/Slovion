@@ -36,6 +36,14 @@ public sealed class ContentValidationTests
         Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 20, 19));
         Assert.Equal(SpeciesId.Parse("crataegus_monogyna"), catalog.FindSpot("dravsko_polje_meadow", "hedgerow_hawthorn_1")?.SpeciesId);
 
+        // Vera stands on the meadow and gives the first quest, whose flag opens the hedgerow gate.
+        Assert.Equal("Vera", catalog.FindNpcOnMap("dravsko_polje_meadow", "vera")?.Npc.Names["sl"]);
+        var quest = catalog.FindQuestByGiver("vera");
+        Assert.NotNull(quest);
+        Assert.Equal(("eye_for_nature", 3, "hedgerow_open"), (quest.Id, quest.IdentifiedSpeciesGoal, quest.RewardFlag));
+        Assert.Equal("Oko za naravo", quest.Text["sl"].Title);
+        Assert.Null(catalog.FindNpcOnMap("other_map", "vera"));
+
         Assert.Equal(["tall_grass", "hedgerow"], catalog.AllHabitats.Select(habitat => habitat.Id));
         Assert.Equal(["Visoka trava", "Mejica"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
         Assert.Equal([1, 2], catalog.AllHabitats.Select(habitat => habitat.Order));
@@ -100,6 +108,20 @@ public sealed class ContentValidationTests
         { "habitat without order", c => c.Habitat.Remove("order"), "'order' must be a positive integer (found none)" },
         { "non-positive habitat order", c => c.Habitat["order"] = 0, "'order' must be a positive integer (found 0)" },
         { "blank habitat name", c => c.Habitat["text"]!["sl"]!["name"] = " ", "'text.sl.name' is missing" },
+        { "quest from an unknown NPC", c => c.Quest["giver"] = "mojca", "quest 'eye_for_nature' is given by unknown NPC 'mojca'" },
+        { "quest without a goal", c => c.Quest["goal"]!["identifiedSpecies"] = 0, "'goal.identifiedSpecies' must be a positive integer" },
+        { "quest without a reward flag", c => c.Quest["reward"]!["flag"] = "Hedgerow-Open", "'reward.flag' must be a lowercase snake_case flag ID" },
+        { "quest without Slovenian text", c => c.Quest["text"] = new JsonObject(), "Slovenian text ('text.sl') is required" },
+        { "missing dialogue state", c => QuestSl(c)["dialogue"]!.AsObject().Remove("ready"), "text.sl.dialogue.ready needs at least one line" },
+        { "empty dialogue line", c => QuestSl(c)["dialogue"]!["completed"] = new JsonArray(" "), "text.sl.dialogue.completed needs at least one line and no empty lines" },
+        { "unknown placeholder", c => QuestSl(c)["dialogue"]!["active"] = new JsonArray("Živijo, {name}!"), "uses unknown placeholder '{name}'" },
+        { "quest without a title", c => QuestSl(c).Remove("title"), "text.sl.title is missing" },
+        { "NPC without a Slovenian name", c => c.Npc.Remove("text"), "Slovenian name ('text.sl.name') is required" },
+        { "NPC without a quest", c => c.Quest["giver"] = "mojca", "NPC 'vera' must give exactly one quest (found 0)" },
+        { "map NPC that does not exist", c => Objects(c).Add(ContentFolder.TileObject("npc", "npcId", "mojca")), "refers to unknown NPC 'mojca'" },
+        { "map NPC that is not a tile object", c => Objects(c).Add(ContentFolder.TileObject("npc", "npcId", "vera", gid: 0)), "must be a tile object" },
+        { "map NPC outside the map", c => Objects(c).Add(ContentFolder.TileObject("npc", "npcId", "vera", tileX: 9)), "npc 'vera' lies outside the map" },
+        { "gate whose flag no quest rewards", c => Objects(c).Add(ContentFolder.TileObject("gate", "requiresFlag", "secret_path")), "requires flag 'secret_path', which no quest rewards" },
         { "spot with unknown species", c => Objects(c)[1]!["properties"]![1]!["value"] = "vulpes_vulpes", "spot 'sage_1' references unknown species 'vulpes_vulpes'" },
     };
 
@@ -151,6 +173,30 @@ public sealed class ContentValidationTests
     }
 
     [Fact]
+    public void Valid_fixture_places_an_NPC_and_a_gate()
+    {
+        using var content = new ContentFolder();
+        Objects(content).Add(ContentFolder.TileObject("npc", "npcId", "vera"));
+        Objects(content).Add(ContentFolder.TileObject("gate", "requiresFlag", "hedgerow_open", tileY: 2));
+
+        var catalog = FileContentCatalog.Load(content.Write());
+
+        Assert.NotNull(catalog.FindNpcOnMap("test_meadow", "vera"));
+        Assert.Equal("eye_for_nature", catalog.FindQuest("eye_for_nature")?.Id);
+    }
+
+    [Fact]
+    public void Duplicate_quest_IDs_are_rejected()
+    {
+        using var content = new ContentFolder();
+        content.Write();
+
+        var error = Assert.Throws<ContentValidationException>(() => FileContentCatalog.Load(content.Write(questFile: "copy.json")));
+
+        Assert.Contains(error.Errors, message => message.Contains("duplicate quest ID 'eye_for_nature'", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void All_problems_are_reported_together()
     {
         using var content = new ContentFolder();
@@ -163,6 +209,8 @@ public sealed class ContentValidationTests
     }
 
     private static JsonObject Sl(ContentFolder content) => content.Species["text"]!["sl"]!.AsObject();
+
+    private static JsonObject QuestSl(ContentFolder content) => content.Quest["text"]!["sl"]!.AsObject();
 
     private static JsonArray Objects(ContentFolder content) => content.Map["layers"]![2]!["objects"]!.AsArray();
 }

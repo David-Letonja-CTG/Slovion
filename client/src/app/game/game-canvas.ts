@@ -41,7 +41,9 @@ export const GAME_FACTORY = new InjectionToken<typeof createGame>('GAME_FACTORY'
 })
 export class GameCanvas {
   readonly world = input.required<LoadedWorld>();
-  /** The player interacted with a spot; the host asks the server what happens. */
+  /** The save's progress flags when the game starts; later changes go through `Game.setOpenFlags`. */
+  readonly openFlags = input<readonly string[]>([]);
+  /** The player interacted with an NPC, a spot or a habitat; the host asks the server what happens. */
   readonly interaction = output<Interaction>();
   /** The player asked for the menu (OpenMenu) while in the world. */
   readonly menuRequested = output<void>();
@@ -60,6 +62,7 @@ export class GameCanvas {
         world: this.world(),
         onInteract: (interaction) => this.interaction.emit(interaction),
         onOpenMenu: () => this.menuRequested.emit(),
+        openFlags: this.openFlags(),
       });
       game.start();
       destroyRef.onDestroy(() => game.stop());

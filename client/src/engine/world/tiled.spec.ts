@@ -1,5 +1,6 @@
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import { MapFormatError, parseTiledMap } from './tiled';
+import { World } from './world';
 
 /** A deep copy of the real meadow, to break one detail at a time. */
 function meadowCopy(): Record<string, unknown> & { layers: Record<string, unknown>[] } {
@@ -33,6 +34,8 @@ describe('parseTiledMap', () => {
     ]);
     expect(map.layers.map((layer) => layer.name)).toEqual(['ground', 'decor']);
     expect(map.tileset.image).toBe('../tilesets/meadow.png');
+    expect(map.npcs).toEqual([{ npcId: 'vera', x: 7, y: 9, gid: 20 }]);
+    expect(map.gates).toEqual([{ flag: 'hedgerow_open', x: 20, y: 19, gid: 19 }]);
   });
 
   it('knows which tiles are blocked, including everything outside the map', () => {
@@ -53,9 +56,11 @@ describe('parseTiledMap', () => {
     expect(map.spotAt(12, 10)).toBeUndefined();
   });
 
-  /** Every tile the player can walk to from the spawn. */
-  function reachableFromSpawn() {
+  /** Every tile the player can walk to from the spawn, with the given progress flags. */
+  function reachableFromSpawn(flags: readonly string[] = []) {
     const map = parseTiledMap('dravsko_polje_meadow', meadow);
+    const world = new World(map, () => undefined);
+    world.setOpenFlags(flags);
     const key = (x: number, y: number) => `${x},${y}`;
     const seen = new Set([key(map.spawn.x, map.spawn.y)]);
     const queue = [{ x: map.spawn.x, y: map.spawn.y }];
@@ -68,7 +73,7 @@ describe('parseTiledMap', () => {
         [0, -1],
       ]) {
         const next = { x: x + dx, y: y + dy };
-        if (!map.isBlocked(next.x, next.y) && !seen.has(key(next.x, next.y))) {
+        if (!world.isBlocked(next.x, next.y) && !seen.has(key(next.x, next.y))) {
           seen.add(key(next.x, next.y));
           queue.push(next);
         }
@@ -86,7 +91,7 @@ describe('parseTiledMap', () => {
     }
   });
 
-  it('keeps the hedgerow strip closed off behind the southern hedge', () => {
+  it('keeps the hedgerow strip closed off behind the gate until the quest opens it', () => {
     const { map, reachable } = reachableFromSpawn();
 
     for (let y = 19; y < map.height; y++) {
@@ -94,6 +99,35 @@ describe('parseTiledMap', () => {
         expect(reachable(x, y), `${x},${y}`).toBe(false);
       }
     }
+  });
+
+  it('lets the player reach the hedgerow and its spot once the gate is open', () => {
+    const { map, reachable } = reachableFromSpawn(['hedgerow_open']);
+
+    expect(reachable(20, 19)).toBe(true);
+    const hawthorn = map.spots.find((spot) => spot.spotId === 'hedgerow_hawthorn_1')!;
+    expect(reachable(hawthorn.x, hawthorn.y + 1)).toBe(true);
+  });
+
+  it('reports NPCs and gates that are not usable tile objects', () => {
+    const json = meadowCopy();
+    const objects = json.layers.find((l) => l['name'] === 'objects')!['objects'] as Record<
+      string,
+      unknown
+    >[];
+    const vera = objects.find((o) => o['type'] === 'npc')!;
+    const gate = objects.find((o) => o['type'] === 'gate')!;
+    objects.push({ ...vera, name: 'no_gid', gid: 0 });
+    objects.push({ ...vera, name: 'far_away', x: 9999 });
+    objects.push({ ...gate, name: 'flagless', properties: [] });
+
+    expect(problemsOf(json)).toEqual(
+      expect.arrayContaining([
+        'npc "no_gid" must be a tile object',
+        'npc "far_away" lies outside the map',
+        'gate "flagless" is missing its "requiresFlag"',
+      ]),
+    );
   });
 
   it('reads the habitat zones (same tiles as the server)', () => {

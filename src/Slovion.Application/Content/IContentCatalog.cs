@@ -21,6 +21,14 @@ public interface IContentCatalog
 
     MapSpot? FindSpot(string mapId, string spotId);
 
+    /// <summary>The NPC standing in a map, if any.</summary>
+    MapNpc? FindNpcOnMap(string mapId, string npcId);
+
+    Quest? FindQuest(string questId);
+
+    /// <summary>The quest an NPC gives; every NPC gives exactly one.</summary>
+    Quest? FindQuestByGiver(string npcId);
+
     /// <summary>The habitat whose zone contains tile (<paramref name="x"/>, <paramref name="y"/>) of a map, if any.</summary>
     Habitat? FindHabitatAt(string mapId, int x, int y);
 }

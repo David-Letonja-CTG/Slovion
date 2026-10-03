@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Slovion.Domain.Discovery;
+using Slovion.Domain.Quests;
 using Slovion.Domain.Saves;
 
 namespace Slovion.Infrastructure.Persistence;
@@ -12,6 +13,8 @@ public sealed class SlovionDbContext(DbContextOptions<SlovionDbContext> options)
     public DbSet<SpeciesDiscovery> Discoveries => Set<SpeciesDiscovery>();
 
     public DbSet<Encounter> Encounters => Set<Encounter>();
+
+    public DbSet<QuestProgress> QuestProgress => Set<QuestProgress>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(SlovionDbContext).Assembly);

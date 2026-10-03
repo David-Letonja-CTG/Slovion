@@ -66,6 +66,8 @@ Each step is one OpenSpec change and ends with something demonstrable.
 | 3b | `add-habitat-search` | Searching habitat patches, habitat-based seeded random encounters and rarity. |
 | 4 | `add-first-quest` | One NPC with dialogue, quest "observe 3 meadow species", progression flag unlocking a new path. |
 
+Steps 1–4 are implemented (see `openspec/changes/archive/`). Step 4 asks the player to *identify*, not just observe, three species (owner decision), and its new path leads into a hedgerow with two new species (`add-hedgerow-species`).
+
 Later candidates: world conditions (season/time/weather), inventory, research stations, additional regions, offline support, accounts/cloud save.
 
 ## Capabilities (OpenSpec specs)

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Slovion.Application.Content;
 using Slovion.Application.Discovery;
+using Slovion.Application.Quests;
 using Slovion.Application.Saves;
 using Slovion.Infrastructure.Content;
 using Slovion.Infrastructure.Persistence;
@@ -25,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<ISaveSlotRepository, SaveSlotRepository>();
         services.AddScoped<IDiscoveryRepository, DiscoveryRepository>();
         services.AddScoped<IEncounterRepository, EncounterRepository>();
+        services.AddScoped<IQuestRepository, QuestRepository>();
         services.AddSingleton<IRandomSource, SystemRandomSource>();
 
         services.AddHealthChecks()

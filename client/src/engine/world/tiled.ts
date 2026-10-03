@@ -1,5 +1,14 @@
 import { Direction } from '../input/actions';
-import { HabitatZone, Spot, TILE_SIZE, TileLayer, Tileset, WorldMap } from './world-map';
+import {
+  Gate,
+  HabitatZone,
+  MapNpc,
+  Spot,
+  TILE_SIZE,
+  TileLayer,
+  Tileset,
+  WorldMap,
+} from './world-map';
 
 /** The map does not satisfy the supported Tiled subset. Lists every problem found. */
 export class MapFormatError extends Error {
@@ -18,6 +27,7 @@ interface TiledProperty {
 }
 
 interface TiledObject {
+  gid?: number;
   type?: string;
   class?: string;
   name?: string;
@@ -58,7 +68,7 @@ const DIRECTIONS: readonly Direction[] = ['up', 'down', 'left', 'right'];
 /**
  * Parses the Tiled JSON subset Slovion supports (design §4): orthogonal, 16×16 tiles, one embedded
  * tileset, tile layers `ground` (+ optional others) and `collision`, object layer `objects` with one
- * `spawn` and any number of `spot` objects.
+ * `spawn`, any number of `spot` objects, habitat zones, and NPC and gate tile objects.
  */
 export function parseTiledMap(id: string, json: unknown): WorldMap {
   const map = (json ?? {}) as TiledMap;
@@ -151,6 +161,29 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     }
   }
 
+  // NPCs and gates are tile objects (with a gid), anchored at their bottom-left corner; each covers
+  // the tile under its centre, as on the server.
+  const npcs: MapNpc[] = [];
+  const gates: Gate[] = [];
+  for (const object of objects?.filter((o) => ['npc', 'gate'].includes(classOf(o) ?? '')) ?? []) {
+    const kind = classOf(object)!;
+    const value = property(object, kind === 'npc' ? 'npcId' : 'requiresFlag');
+    const label = `${kind} "${object.name ?? value}"`;
+    const x = Math.floor(((object.x ?? 0) + (object.width ?? 0) / 2) / TILE_SIZE);
+    const y = Math.floor(((object.y ?? 0) - (object.height ?? 0) / 2) / TILE_SIZE);
+    if (typeof value !== 'string' || value === '') {
+      problems.push(`${label} is missing its "${kind === 'npc' ? 'npcId' : 'requiresFlag'}"`);
+    } else if (!object.gid || object.gid <= 0) {
+      problems.push(`${label} must be a tile object`);
+    } else if (x < 0 || y < 0 || x >= width || y >= height) {
+      problems.push(`${label} lies outside the map`);
+    } else if (kind === 'npc') {
+      npcs.push({ npcId: value, x, y, gid: object.gid });
+    } else {
+      gates.push({ flag: value, x, y, gid: object.gid });
+    }
+  }
+
   if (problems.length > 0) throw new MapFormatError(id, problems);
 
   const spawnTile = tileOf(spawns[0]);
@@ -175,6 +208,8 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     spots,
     set,
     habitats,
+    npcs,
+    gates,
   );
 }
 

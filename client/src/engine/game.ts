@@ -22,6 +22,8 @@ export interface Game {
   setActionConsumer(consumer: ActionConsumer): void;
   /** UI overlays receive actions here while they are the consumer. */
   onUiAction(listener: (action: Action) => void): Unsubscribe;
+  /** Replaces the save's progress flags, which open gates (the server sets them, D3). */
+  setOpenFlags(flags: readonly string[]): void;
 }
 
 export interface GameOptions {
@@ -30,6 +32,8 @@ export interface GameOptions {
   readonly onInteract: (interaction: Interaction) => void;
   /** Called when the player opens the menu from the world. */
   readonly onOpenMenu?: () => void;
+  /** The save's progress flags when the game starts. */
+  readonly openFlags?: readonly string[];
   /** Platform services. Defaults to the browser. */
   readonly environment?: GameEnvironment;
 }
@@ -52,6 +56,7 @@ export function createGame(
   const input = new ActionState();
   const dispatcher = new ActionDispatcher(input);
   const world = new World(options.world.map, options.onInteract, options.onOpenMenu);
+  world.setOpenFlags(options.openFlags ?? []);
 
   let availableWidth = container.clientWidth;
   let availableHeight = container.clientHeight;
@@ -99,6 +104,7 @@ export function createGame(
 
     setActionConsumer: (consumer) => dispatcher.setConsumer(consumer),
     onUiAction: (listener) => dispatcher.onUiAction(listener),
+    setOpenFlags: (flags) => world.setOpenFlags(flags),
   };
 }
 

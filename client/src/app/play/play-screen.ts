@@ -1,24 +1,38 @@
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { firstValueFrom } from 'rxjs';
 import { Action, Game, Interaction, LoadedWorld } from '../../engine';
 import {
   AlreadyIdentified,
   AnswerResult,
   ApiErrorCode,
+  Conversation,
   Encounter,
   GameApi,
   NothingFound,
+  PlayerProgress,
   apiErrorCode,
 } from '../api/game-api';
 import { GameCanvas } from '../game/game-canvas';
 import { GameSession } from '../session/game-session';
+import { DialogueBox } from './dialogue-box';
 import { IdentificationDialog } from './identification-dialog';
 import { MessageDialog } from './message-dialog';
 import { NatureDexPanel } from './naturedex-panel';
+import { QuestTracker } from './quest-tracker';
 import { WorldLoader } from './world-loader';
 
 export const START_MAP = 'dravsko_polje_meadow';
+
+/** Marks a failed map load, as opposed to a failed progress request. */
+const MAP_FAILED = Symbol('map');
+
+/**
+ * Why the game could not start; each has a key `errors.<reason>`, used dynamically:
+ * t(errors.map)
+ */
+type LoadError = 'map' | ApiErrorCode;
 
 type Overlay =
   | { readonly kind: 'none' }
@@ -29,12 +43,21 @@ type Overlay =
   | { readonly kind: 'known'; readonly name: string }
   | { readonly kind: 'nothing' }
   | { readonly kind: 'naturedex' }
+  | { readonly kind: 'dialogue'; readonly conversation: Conversation }
   | { readonly kind: 'error'; readonly code: ApiErrorCode };
 
 /** The game: the world on canvas plus UI overlays that take input while open. */
 @Component({
   selector: 'app-play-screen',
-  imports: [GameCanvas, IdentificationDialog, MessageDialog, NatureDexPanel, TranslocoPipe],
+  imports: [
+    DialogueBox,
+    GameCanvas,
+    IdentificationDialog,
+    MessageDialog,
+    NatureDexPanel,
+    QuestTracker,
+    TranslocoPipe,
+  ],
   templateUrl: './play-screen.html',
   styleUrl: './play-screen.css',
 })
@@ -45,19 +68,39 @@ export class PlayScreen {
   private readonly canvas = viewChild(GameCanvas);
   private readonly identification = viewChild(IdentificationDialog);
   private readonly natureDex = viewChild(NatureDexPanel);
+  private readonly dialogue = viewChild(DialogueBox);
   private game: Game | undefined;
 
   protected readonly world = signal<LoadedWorld | undefined>(undefined);
-  protected readonly loadFailed = signal(false);
+  protected readonly loadError = signal<LoadError | undefined>(undefined);
   protected readonly overlay = signal<Overlay>({ kind: 'none' });
+  /** The save's flags and quests, as the server last reported them (D3). */
+  protected readonly progress = signal<PlayerProgress>({ flags: [], quests: [] });
+  protected readonly activeQuest = computed(() =>
+    this.progress().quests.find((quest) => quest.status === 'active'),
+  );
 
   constructor() {
-    inject(WorldLoader)
-      .load(START_MAP)
-      .then(
-        (world) => this.world.set(world),
-        () => this.loadFailed.set(true),
-      );
+    // The world starts only with the save's progress, so gates are right from the first frame.
+    Promise.all([
+      inject(WorldLoader)
+        .load(START_MAP)
+        .catch(() => Promise.reject(MAP_FAILED)),
+      firstValueFrom(this.api.progress()),
+    ]).then(
+      ([world, progress]) => {
+        this.progress.set(progress);
+        this.world.set(world);
+      },
+      (error: unknown) => {
+        const reason = error === MAP_FAILED ? 'map' : apiErrorCode(error);
+        if (reason === 'invalid_save_token') {
+          this.onSaveLost();
+        } else {
+          this.loadError.set(reason);
+        }
+      },
+    );
   }
 
   protected onStarted(game: Game): void {
@@ -65,10 +108,18 @@ export class PlayScreen {
     game.onUiAction((action) => this.onUiAction(action));
   }
 
-  /** A spot starts an observation; a search may find something. The server decides both (D3). */
+  /** An NPC talks; a spot starts an observation; a search may find something. The server decides (D3). */
   protected onInteraction(interaction: Interaction): void {
     // Block the world right away, so the player cannot walk off while the server answers.
     this.open({ kind: 'pending' });
+    if (interaction.kind === 'npc') {
+      this.api.talk(interaction.mapId, interaction.npcId).subscribe({
+        next: (conversation) => this.overlay.set({ kind: 'dialogue', conversation }),
+        error: (error: unknown) => this.onError(error),
+      });
+      return;
+    }
+
     const request =
       interaction.kind === 'spot'
         ? this.api.startEncounter(interaction.mapId, interaction.spotId)
@@ -90,9 +141,40 @@ export class PlayScreen {
   protected onAnswer(encounter: Encounter, speciesId: string): void {
     this.overlay.set({ kind: 'pending' });
     this.api.answer(encounter.encounterId, speciesId).subscribe({
-      next: (result) => this.overlay.set({ kind: 'result', result }),
+      next: (result) => {
+        if (result.correct) this.countIdentification();
+        this.overlay.set({ kind: 'result', result });
+      },
       error: (error: unknown) => this.onError(error),
     });
+  }
+
+  /** Applies what the conversation changed once the player has read it: the gate opens as the box closes. */
+  protected onDialogueClosed(conversation: Conversation): void {
+    this.game?.setOpenFlags(conversation.flags);
+    this.progress.update((progress) => ({
+      flags: conversation.flags,
+      quests: [
+        ...progress.quests.filter((quest) => quest.questId !== conversation.quest.questId),
+        conversation.quest,
+      ],
+    }));
+    this.close();
+  }
+
+  /**
+   * A new identification moves active quests on. This only updates the tracker; the server stays
+   * authoritative and confirms progress on the next conversation or load.
+   */
+  private countIdentification(): void {
+    this.progress.update((progress) => ({
+      ...progress,
+      quests: progress.quests.map((quest) =>
+        quest.status === 'active'
+          ? { ...quest, progress: Math.min(quest.goal, quest.progress + 1) }
+          : quest,
+      ),
+    }));
   }
 
   protected onMenu(): void {
@@ -134,6 +216,8 @@ export class PlayScreen {
       if (action === 'Confirm' || action === 'Cancel') this.close();
     } else if (kind === 'naturedex') {
       this.natureDex()?.handleAction(action);
+    } else if (kind === 'dialogue') {
+      this.dialogue()?.handleAction(action);
     }
   }
 }

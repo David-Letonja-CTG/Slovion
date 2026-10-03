@@ -19,6 +19,7 @@ public static class ErrorCodes
     public const string UnknownSpot = "unknown_spot";
     public const string UnknownEncounter = "unknown_encounter";
     public const string UnknownHabitat = "unknown_habitat";
+    public const string UnknownNpc = "unknown_npc";
 
     public static string FromStatusCode(int? statusCode) => statusCode switch
     {

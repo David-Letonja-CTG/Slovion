@@ -143,3 +143,94 @@ test('searching the tall grass finds something sooner or later', async ({ page }
 
   expect(found).toBe(true);
 });
+
+/** Taps `key` `count` times, one finished step each. */
+async function walk(page: Page, key: string, count: number): Promise<void> {
+  for (let i = 0; i < count; i++) await step(page, key);
+}
+
+/** Faces the spot ahead, observes it and names it correctly. */
+async function identifyAhead(page: Page, heading: string, name: string): Promise<void> {
+  await page.keyboard.press('KeyE');
+  const observation = page.getByRole('dialog', { name: heading });
+  await observation.getByRole('button', { name }).click();
+  await expect(page.getByRole('dialog')).toContainText('Pravilno!');
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+}
+
+/** Reads a conversation to its end with Enter. */
+async function readDialogue(page: Page): Promise<void> {
+  const dialogue = page.getByRole('dialog', { name: 'Vera' });
+  await expect(dialogue).toBeVisible();
+  while ((await dialogue.count()) > 0) {
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(100);
+  }
+}
+
+/** From the spawn (10,10): to the gate column, down through the southern hedge, one step into the hedgerow. */
+async function walkIntoTheHedgerow(page: Page): Promise<void> {
+  await walk(page, 'ArrowRight', 10);
+  await walk(page, 'ArrowDown', 10);
+  await walk(page, 'ArrowLeft', 1);
+  // (19, 20) lies in a hedgerow zone: searching there proves the player got through.
+  await page.keyboard.press('KeyE');
+  await expect(page.getByRole('dialog')).toContainText(/Opaziš |Tu ni ničesar/);
+  await page.keyboard.press('Escape');
+}
+
+test('Vera opens the hedgerow once three species are identified', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Nova igra' }).click();
+  await waitForTheWorld(page);
+  const tracker = page.locator('app-quest-tracker');
+  await expect(tracker).toHaveCount(0);
+
+  // Vera stands at (7,9): three steps left, then face up.
+  await walk(page, 'ArrowLeft', 3);
+  await step(page, 'ArrowUp');
+  await page.keyboard.press('KeyE');
+  await expect(page.getByRole('dialog', { name: 'Vera' })).toContainText('Jaz sem Vera');
+  await readDialogue(page);
+  await expect(tracker).toContainText('Oko za naravo');
+  await expect(tracker).toContainText('0/3');
+
+  // Meadow sage (13,10): from (7,10) five steps right, facing it.
+  await walk(page, 'ArrowRight', 5);
+  await identifyAhead(page, 'Opaziš rastlino', 'travniška kadulja');
+  await expect(tracker).toContainText('1/3');
+
+  // Dandelion (7,12): back to (7,10), one step down, facing it.
+  await walk(page, 'ArrowLeft', 5);
+  await step(page, 'ArrowDown');
+  await identifyAhead(page, 'Opaziš rastlino', 'navadni regrat');
+
+  // Brown hare (24,12): up to the path, east to (24,10), one step down, facing it.
+  await step(page, 'ArrowUp');
+  await walk(page, 'ArrowRight', 17);
+  await step(page, 'ArrowDown');
+  await identifyAhead(page, 'Opaziš sesalca', 'poljski zajec');
+  await expect(tracker).toContainText('Vrni se k Veri.');
+
+  // Back to Vera, who completes the quest; the gate opens as the dialogue closes.
+  await step(page, 'ArrowUp');
+  await walk(page, 'ArrowLeft', 17);
+  await step(page, 'ArrowUp');
+  await page.keyboard.press('KeyE');
+  await expect(page.getByRole('dialog', { name: 'Vera' })).toContainText('Odlično!');
+  await readDialogue(page);
+  await expect(tracker).toHaveCount(0);
+
+  // From (7,10): to the spawn column, then the usual route into the hedgerow.
+  await walk(page, 'ArrowRight', 3);
+  await walkIntoTheHedgerow(page);
+
+  // After a reload the gate is still open.
+  await page.reload();
+  await page.getByRole('button', { name: 'Nadaljuj' }).click();
+  await waitForTheWorld(page);
+  await expect(tracker).toHaveCount(0);
+  await walkIntoTheHedgerow(page);
+});
