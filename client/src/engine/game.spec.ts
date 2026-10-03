@@ -115,6 +115,61 @@ describe('createGame', () => {
     expect(order.filter((image) => image === 'tileset')).toHaveLength(8); // 4×2 map, all tiles
   });
 
+  it('draws closed gates and NPCs above the map and below the player', () => {
+    const { environment, context, game } = setup(['#SND', '....']);
+    game.start();
+
+    environment.frames.frame(STEP_MS);
+
+    // Tile 6 (gate) is the 6th tile of an 8-column tileset, tile 5 (NPC) the 5th; positions are
+    // relative to the map's first tile, since the camera centres a map smaller than the view.
+    const origin = context.draws.find((draw) => draw.image === 'tileset')!.dx;
+    const tail = context.draws.slice(-3).map((draw) => [draw.image, draw.sx, draw.dx - origin]);
+    expect(tail).toEqual([
+      ['tileset', 5 * 16, 3 * 16],
+      ['tileset', 4 * 16, 2 * 16],
+      ['player', 0, 16],
+    ]);
+  });
+
+  it('stops drawing a gate once its flag is open', () => {
+    const { environment, context, game } = setup(['#SND', '....']);
+    game.start();
+
+    game.setOpenFlags(['gate_open']);
+    environment.frames.frame(STEP_MS);
+
+    expect(context.draws.filter((draw) => draw.image === 'tileset' && draw.sx === 5 * 16)).toEqual(
+      [],
+    );
+  });
+
+  it('starts with the flags it is given', () => {
+    const environment = new FakeEnvironment();
+    const canvas = document.createElement('canvas');
+    const context = fakeContext();
+    canvas.getContext = (() => context) as unknown as typeof canvas.getContext;
+    const game = createGame(document.createElement('div'), canvas, {
+      environment,
+      world: {
+        map: textMap(['#SD.']),
+        tileset: { name: 'tileset' } as unknown as CanvasImageSource,
+        playerSprite: { name: 'player' } as unknown as CanvasImageSource,
+      },
+      onInteract: () => undefined,
+      openFlags: ['gate_open'],
+    });
+    game.start();
+    environment.input.press('MoveRight');
+
+    for (let i = 0; i < 40; i++) environment.frames.frame(STEP_MS);
+
+    const lastFrameStart = context.draws.map((draw) => draw.image).lastIndexOf('backdrop');
+    const frame = context.draws.slice(lastFrameStart);
+    const firstTile = frame.find((draw) => draw.image === 'tileset')!.dx;
+    expect(frame.at(-1)!.dx - firstTile).toBe(3 * 16); // walked through the open gate
+  });
+
   it('draws at whole pixel positions while walking', () => {
     const { environment, context, game } = setup(['S.......', '........']);
     game.start();

@@ -13,6 +13,10 @@ public sealed class ContentFolder : IDisposable
 
     public JsonObject Habitat { get; }
 
+    public JsonObject Npc { get; }
+
+    public JsonObject Quest { get; }
+
     /// <summary>The picture written for the species; <c>null</c> writes none.</summary>
     public byte[]? Picture { get; set; } = Png(32, 32);
 
@@ -23,14 +27,20 @@ public sealed class ContentFolder : IDisposable
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "maps"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "habitats"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "species-pictures"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "npcs"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "quests"));
         Species = ValidSpecies();
         Map = ValidMap();
         Habitat = ValidHabitat();
+        Npc = ValidNpc();
+        Quest = ValidQuest();
     }
 
-    /// <summary>Writes the species, its picture, the map and the habitat, and returns the folder path.</summary>
-    public string Write(string speciesFile = "salvia_pratensis.json", string mapFile = "test_meadow.json", string habitatFile = "tall_grass.json")
+    /// <summary>Writes the species, its picture, the map, the habitat, the NPC and the quest, and returns the folder path.</summary>
+    public string Write(string speciesFile = "salvia_pratensis.json", string mapFile = "test_meadow.json", string habitatFile = "tall_grass.json", string npcFile = "vera.json", string questFile = "eye_for_nature.json")
     {
+        File.WriteAllText(System.IO.Path.Combine(Path, "npcs", npcFile), Npc.ToJsonString());
+        File.WriteAllText(System.IO.Path.Combine(Path, "quests", questFile), Quest.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "species", speciesFile), Species.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "maps", mapFile), Map.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "habitats", habitatFile), Habitat.ToJsonString());
@@ -110,6 +120,54 @@ public sealed class ContentFolder : IDisposable
         ["order"] = 1,
         ["searchChancePercent"] = 70,
         ["species"] = new JsonArray(new JsonObject { ["speciesId"] = "salvia_pratensis", ["weight"] = 5 }),
+    };
+
+    private static JsonObject ValidNpc() => new()
+    {
+        ["id"] = "vera",
+        ["text"] = new JsonObject { ["sl"] = new JsonObject { ["name"] = "Vera" } },
+    };
+
+    private static JsonObject ValidQuest()
+    {
+        static JsonArray Lines(params string[] lines) => new(lines.Select(line => (JsonNode)line).ToArray());
+
+        return new JsonObject
+        {
+            ["id"] = "eye_for_nature",
+            ["giver"] = "vera",
+            ["goal"] = new JsonObject { ["identifiedSpecies"] = 3 },
+            ["reward"] = new JsonObject { ["flag"] = "hedgerow_open" },
+            ["text"] = new JsonObject
+            {
+                ["sl"] = new JsonObject
+                {
+                    ["title"] = "Oko za naravo",
+                    ["summary"] = "Prepoznaj tri vrste.",
+                    ["returnHint"] = "Vrni se k Veri.",
+                    ["dialogue"] = new JsonObject
+                    {
+                        ["offer"] = Lines("Živijo!"),
+                        ["active"] = Lines("Prepoznane vrste: {identified} od {goal}."),
+                        ["ready"] = Lines("Odlično!"),
+                        ["completed"] = Lines("Kako je pri mejici?"),
+                    },
+                },
+            },
+        };
+    }
+
+    /// <summary>A Tiled tile object (bottom-left anchored) of class <paramref name="type"/> on tile (<paramref name="tileX"/>, <paramref name="tileY"/>).</summary>
+    public static JsonObject TileObject(string type, string property, string value, int tileX = 3, int tileY = 0, int gid = 1) => new()
+    {
+        ["type"] = type,
+        ["name"] = value,
+        ["gid"] = gid,
+        ["x"] = tileX * 16,
+        ["y"] = (tileY + 1) * 16,
+        ["width"] = 16,
+        ["height"] = 16,
+        ["properties"] = new JsonArray(new JsonObject { ["name"] = property, ["type"] = "string", ["value"] = value }),
     };
 
     /// <summary>A habitat rectangle covering tiles x 1–2, y 0–2 of the 4×3 test map.</summary>

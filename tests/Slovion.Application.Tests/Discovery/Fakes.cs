@@ -93,9 +93,21 @@ internal sealed class FakeContentCatalog(params Species[] species) : IContentCat
     /// <summary>The habitats listed by <see cref="AllHabitats"/> (by order, then ID); empty by default.</summary>
     public List<Habitat> Habitats { get; } = [];
 
+    /// <summary>NPCs standing on <see cref="MapId"/>; none by default.</summary>
+    public List<Npc> Npcs { get; } = [];
+
+    public List<Quest> Quests { get; } = [];
+
     public IReadOnlyList<Habitat> AllHabitats => Habitats.OrderBy(habitat => habitat.Order).ThenBy(habitat => habitat.Id, StringComparer.Ordinal).ToList();
 
     public Species? FindSpecies(SpeciesId id) => species.FirstOrDefault(s => s.Id == id);
+
+    public MapNpc? FindNpcOnMap(string mapId, string npcId) =>
+        mapId == MapId && Npcs.FirstOrDefault(npc => npc.Id == npcId) is { } match ? new MapNpc(mapId, match) : null;
+
+    public Quest? FindQuest(string questId) => Quests.FirstOrDefault(quest => quest.Id == questId);
+
+    public Quest? FindQuestByGiver(string npcId) => Quests.FirstOrDefault(quest => quest.GiverId == npcId);
 
     public Habitat? FindHabitatAt(string mapId, int x, int y) => mapId == MapId && x >= 10 ? Grass : null;
 

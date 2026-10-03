@@ -14,7 +14,7 @@ export interface WorldImages {
 const BACKDROP = '#11161c';
 const PLAYER_ROW: Record<Direction, number> = { down: 0, up: 1, left: 2, right: 3 };
 
-/** Draws the visible part of the map in authored layer order, then the player on top. */
+/** Draws the visible part of the map in authored layer order, then closed gates and NPCs, then the player on top. */
 export function renderWorld(
   context: CanvasRenderingContext2D,
   world: World,
@@ -59,6 +59,24 @@ export function renderWorld(
       }
     }
   }
+
+  const drawTile = (gid: number, x: number, y: number): void => {
+    const index = gid - firstGid;
+    if (index < 0 || index >= tileCount) return;
+    context.drawImage(
+      images.tileset,
+      (index % columns) * TILE_SIZE,
+      Math.floor(index / columns) * TILE_SIZE,
+      TILE_SIZE,
+      TILE_SIZE,
+      x * TILE_SIZE - camera.x,
+      y * TILE_SIZE - camera.y,
+      TILE_SIZE,
+      TILE_SIZE,
+    );
+  };
+  for (const gate of world.closedGates) drawTile(gate.gid, gate.x, gate.y);
+  for (const npc of map.npcs) drawTile(npc.gid, npc.x, npc.y);
 
   context.drawImage(
     images.playerSprite,

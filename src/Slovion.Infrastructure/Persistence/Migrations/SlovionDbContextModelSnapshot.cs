@@ -109,6 +109,29 @@ namespace Slovion.Infrastructure.Persistence.Migrations
                     b.ToTable("discoveries", (string)null);
                 });
 
+            modelBuilder.Entity("Slovion.Domain.Quests.QuestProgress", b =>
+                {
+                    b.Property<Guid>("SaveSlotId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("save_slot_id");
+
+                    b.Property<string>("QuestId")
+                        .HasColumnType("text")
+                        .HasColumnName("quest_id");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("completed_at");
+
+                    b.Property<DateTimeOffset>("StartedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("started_at");
+
+                    b.HasKey("SaveSlotId", "QuestId");
+
+                    b.ToTable("quest_progress", (string)null);
+                });
+
             modelBuilder.Entity("Slovion.Domain.Saves.SaveSlot", b =>
                 {
                     b.Property<Guid>("Id")
@@ -142,6 +165,15 @@ namespace Slovion.Infrastructure.Persistence.Migrations
                 });
 
             modelBuilder.Entity("Slovion.Domain.Discovery.SpeciesDiscovery", b =>
+                {
+                    b.HasOne("Slovion.Domain.Saves.SaveSlot", null)
+                        .WithMany()
+                        .HasForeignKey("SaveSlotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Slovion.Domain.Quests.QuestProgress", b =>
                 {
                     b.HasOne("Slovion.Domain.Saves.SaveSlot", null)
                         .WithMany()

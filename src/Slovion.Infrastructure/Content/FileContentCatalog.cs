@@ -8,8 +8,8 @@ using Slovion.Domain.Content;
 namespace Slovion.Infrastructure.Content;
 
 /// <summary>
-/// Loads and validates content from <c>species/*.json</c>, <c>species-pictures/*.png</c>, <c>habitats/*.json</c>
-/// and <c>maps/*.json</c> under a root folder.
+/// Loads and validates content from <c>species/*.json</c>, <c>species-pictures/*.png</c>, <c>habitats/*.json</c>,
+/// <c>npcs/*.json</c>, <c>quests/*.json</c> and <c>maps/*.json</c> under a root folder.
 /// Validation collects every problem and fails once, so authors see all errors at the same time.
 /// </summary>
 public sealed partial class FileContentCatalog : IContentCatalog
@@ -31,6 +31,8 @@ public sealed partial class FileContentCatalog : IContentCatalog
     private readonly Dictionary<(string MapId, string SpotId), MapSpot> spots;
     private readonly Dictionary<string, Habitat> habitats;
     private readonly Dictionary<string, List<HabitatZone>> zones;
+    private readonly Dictionary<(string MapId, string NpcId), MapNpc> mapNpcs;
+    private readonly Dictionary<string, Quest> quests;
 
     public IReadOnlySet<string> Languages { get; }
 
@@ -38,12 +40,14 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
     public IReadOnlyList<Habitat> AllHabitats { get; }
 
-    private FileContentCatalog(Dictionary<SpeciesId, Species> species, Dictionary<(string, string), MapSpot> spots, Dictionary<string, Habitat> habitats, Dictionary<string, List<HabitatZone>> zones, IReadOnlySet<string> languages)
+    private FileContentCatalog(Dictionary<SpeciesId, Species> species, Dictionary<(string, string), MapSpot> spots, Dictionary<string, Habitat> habitats, Dictionary<string, List<HabitatZone>> zones, Dictionary<(string, string), MapNpc> mapNpcs, Dictionary<string, Quest> quests, IReadOnlySet<string> languages)
     {
         this.species = species;
         this.spots = spots;
         this.habitats = habitats;
         this.zones = zones;
+        this.mapNpcs = mapNpcs;
+        this.quests = quests;
         Languages = languages;
         AllHabitats = habitats.Values.OrderBy(habitat => habitat.Order).ThenBy(habitat => habitat.Id, StringComparer.Ordinal).ToList();
     }
@@ -51,6 +55,12 @@ public sealed partial class FileContentCatalog : IContentCatalog
     public Species? FindSpecies(SpeciesId id) => species.GetValueOrDefault(id);
 
     public MapSpot? FindSpot(string mapId, string spotId) => spots.GetValueOrDefault((mapId, spotId));
+
+    public MapNpc? FindNpcOnMap(string mapId, string npcId) => mapNpcs.GetValueOrDefault((mapId, npcId));
+
+    public Quest? FindQuest(string questId) => quests.GetValueOrDefault(questId);
+
+    public Quest? FindQuestByGiver(string npcId) => quests.Values.FirstOrDefault(quest => quest.GiverId == npcId);
 
     public Habitat? FindHabitatAt(string mapId, int x, int y) =>
         zones.GetValueOrDefault(mapId)?.FirstOrDefault(zone => zone.Contains(x, y)) is { } zone
@@ -75,7 +85,12 @@ public sealed partial class FileContentCatalog : IContentCatalog
             // Skipped when a habitat file is invalid, which would otherwise report its species here too.
             ValidateHabitatMembership(species, habitats, errors);
         }
-        var (spots, zones) = LoadMaps(Path.Combine(rootPath, "maps"), species, habitats, errors);
+
+        var npcs = LoadNpcs(Path.Combine(rootPath, "npcs"), errors);
+        var quests = LoadQuests(Path.Combine(rootPath, "quests"), npcs, errors);
+        ValidateQuestGivers(npcs, quests, errors);
+        var rewardFlags = quests.Values.Select(quest => quest.RewardFlag).ToHashSet(StringComparer.Ordinal);
+        var (spots, zones, mapNpcs) = LoadMaps(Path.Combine(rootPath, "maps"), species, habitats, npcs, rewardFlags, errors);
 
         if (errors.Count > 0)
         {
@@ -84,7 +99,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
         var languages = species.Values.SelectMany(item => item.Text.Keys).ToHashSet(StringComparer.Ordinal);
         languages.Add(IContentCatalog.DefaultLanguage);
-        return new FileContentCatalog(species, spots, habitats, zones, languages);
+        return new FileContentCatalog(species, spots, habitats, zones, mapNpcs, quests, languages);
     }
 
     private static Dictionary<SpeciesId, Species> LoadSpecies(string folder, List<string> errors)
@@ -405,10 +420,11 @@ public sealed partial class FileContentCatalog : IContentCatalog
         return result;
     }
 
-    private static (Dictionary<(string, string), MapSpot> Spots, Dictionary<string, List<HabitatZone>> Zones) LoadMaps(string folder, Dictionary<SpeciesId, Species> species, Dictionary<string, Habitat> habitats, List<string> errors)
+    private static (Dictionary<(string, string), MapSpot> Spots, Dictionary<string, List<HabitatZone>> Zones, Dictionary<(string, string), MapNpc> Npcs) LoadMaps(string folder, Dictionary<SpeciesId, Species> species, Dictionary<string, Habitat> habitats, Dictionary<string, Npc> npcs, IReadOnlySet<string> rewardFlags, List<string> errors)
     {
         var result = new Dictionary<(string, string), MapSpot>();
         var zones = new Dictionary<string, List<HabitatZone>>(StringComparer.Ordinal);
+        var mapNpcs = new Dictionary<(string, string), MapNpc>();
         foreach (var file in JsonFiles(folder))
         {
             var mapId = Path.GetFileNameWithoutExtension(file);
@@ -428,10 +444,14 @@ public sealed partial class FileContentCatalog : IContentCatalog
                 }
 
                 zones[mapId] = ValidateZones(map, name, habitats, errors);
+                foreach (var placed in ValidateMapActors(map, mapId, name, npcs, rewardFlags, errors))
+                {
+                    mapNpcs[(mapId, placed.Npc.Id)] = placed;
+                }
             }
         }
 
-        return (result, zones);
+        return (result, zones, mapNpcs);
     }
 
     /// <summary>Habitat zones: rectangles of class <c>habitat</c>; a tile belongs to a zone if its centre is inside.</summary>

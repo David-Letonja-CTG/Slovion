@@ -22,7 +22,7 @@ internal sealed record TiledMapFile(string? Orientation, int Width, int Height, 
 internal sealed record TiledLayerFile(string? Name, string? Type, List<int>? Data, List<TiledObjectFile>? Objects);
 
 /// <summary>Tiled writes the object class as <c>type</c> in JSON; <c>class</c> is accepted too.</summary>
-internal sealed record TiledObjectFile(string? Name, string? Type, string? Class, double X, double Y, double Width, double Height, List<TiledPropertyFile>? Properties)
+internal sealed record TiledObjectFile(string? Name, string? Type, string? Class, double X, double Y, double Width, double Height, int Gid, List<TiledPropertyFile>? Properties)
 {
     public string? ObjectClass => string.IsNullOrEmpty(Type) ? Class : Type;
 
@@ -33,6 +33,21 @@ internal sealed record TiledObjectFile(string? Name, string? Type, string? Class
 }
 
 internal sealed record TiledPropertyFile(string? Name, string? Type, JsonElement Value);
+
+internal sealed record NpcTextFile(string? Name);
+
+internal sealed record NpcFile(string? Id, Dictionary<string, NpcTextFile>? Text);
+
+internal sealed record QuestGoalFile(int IdentifiedSpecies);
+
+internal sealed record QuestRewardFile(string? Flag);
+
+internal sealed record QuestDialogueFile(List<string>? Offer, List<string>? Active, List<string>? Ready, List<string>? Completed);
+
+internal sealed record QuestTextFile(string? Title, string? Summary, string? ReturnHint, QuestDialogueFile? Dialogue);
+
+/// <summary>A quest: its giver, goal, reward flag, and texts per language (dialogue per quest state).</summary>
+internal sealed record QuestFile(string? Id, string? Giver, QuestGoalFile? Goal, QuestRewardFile? Reward, Dictionary<string, QuestTextFile>? Text);
 
 internal sealed record HabitatSpeciesFile(string? SpeciesId, int Weight);
 

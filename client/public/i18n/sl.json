@@ -20,7 +20,7 @@
     "loading": "Nalaganje …"
   },
   "play": {
-    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči ali išči v visoki travi · M: Terenski dnevnik"
+    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči, pogovori se ali išči v visoki travi · M: Terenski dnevnik"
   },
   "discovery": {
     "known": "Ta vrsta je že zapisana v Terenskem dnevniku: {{name}}"
@@ -59,7 +59,8 @@
     "map": "Območja ni bilo mogoče naložiti.",
     "error": "Nekaj je šlo narobe. Poskusi znova.",
     "unknown_encounter": "To opazovanje ni več veljavno. Poskusi znova.",
-    "unknown_habitat": "Tukaj ni mogoče iskati."
+    "unknown_habitat": "Tukaj ni mogoče iskati.",
+    "unknown_npc": "Tukaj ni nikogar."
   },
   "identification": {
     "heading": {
@@ -84,5 +85,12 @@
   },
   "search": {
     "nothing": "Tu ni ničesar. Poskusi drugje."
+  },
+  "dialogue": {
+    "next": "Naprej"
+  },
+  "quest": {
+    "trackerLabel": "Naloga",
+    "progress": "{{progress}}/{{goal}}"
   }
 }

@@ -18,6 +18,8 @@ import { DEVICE_STORAGE, SaveTokenStore } from '../session/save-token-store';
 export class FakeGame implements Game {
   options: GameOptions | undefined;
   consumer: 'world' | 'ui' = 'world';
+  /** The flags last given with `setOpenFlags`. */
+  openFlags: readonly string[] = [];
   private readonly uiListeners = new Set<(action: Action) => void>();
 
   start = vi.fn();
@@ -30,6 +32,10 @@ export class FakeGame implements Game {
   onUiAction(listener: (action: Action) => void) {
     this.uiListeners.add(listener);
     return () => this.uiListeners.delete(listener);
+  }
+
+  setOpenFlags(flags: readonly string[]): void {
+    this.openFlags = flags;
   }
 
   /** Simulates the player pressing a key while the UI has input. */

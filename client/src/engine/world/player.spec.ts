@@ -77,6 +77,38 @@ describe('Player movement', () => {
     expect(player.position).toEqual({ x: 2, y: 1 });
   });
 
+  it('cannot walk through an NPC', () => {
+    const { input, frames, player } = setup(['#SN.#']);
+    input.press('MoveRight');
+
+    frames.frames(60, 1000);
+
+    expect(player.position).toEqual({ x: 1, y: 0 });
+    expect(player.facing).toBe('right');
+  });
+
+  it('cannot pass a closed gate until its flag opens it', () => {
+    const { input, frames, player, world } = setup(['#SD.#']);
+    input.press('MoveRight');
+    frames.frames(60, 500);
+    expect(player.position).toEqual({ x: 1, y: 0 });
+
+    world.setOpenFlags(['gate_open']);
+    frames.frames(60, 1000);
+
+    expect(player.position).toEqual({ x: 3, y: 0 });
+    expect(world.closedGates).toEqual([]);
+  });
+
+  it('ignores flags that open no gate', () => {
+    const { world } = setup(['#SD.#']);
+
+    world.setOpenFlags(['something_else']);
+
+    expect(world.isBlocked(2, 0)).toBe(true);
+    expect(world.closedGates).toHaveLength(1);
+  });
+
   it('only turns when pressing towards a blocked tile', () => {
     const { input, frames, player } = setup();
 
@@ -160,6 +192,24 @@ describe('Interaction', () => {
     frames.frame(STEP_MS);
 
     expect(interactions).toEqual([{ kind: 'search', mapId: 'test_map', x: 1, y: 0 }]);
+  });
+
+  it('talks to the NPC on the faced tile', () => {
+    const { input, frames, interactions } = setup(['#SN#']);
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([{ kind: 'npc', mapId: 'test_map', npcId: 'vera' }]);
+  });
+
+  it('prefers a faced NPC over searching the grass underfoot', () => {
+    const { input, frames, interactions } = setup(['#GN#']);
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([{ kind: 'npc', mapId: 'test_map', npcId: 'vera' }]);
   });
 
   it('prefers a faced spot over searching the grass underfoot', () => {

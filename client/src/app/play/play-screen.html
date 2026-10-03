@@ -1,14 +1,18 @@
 <main class="play">
-  @if (loadFailed()) {
-    <p class="play__status" role="alert">{{ 'errors.map' | transloco }}</p>
+  @if (loadError(); as reason) {
+    <p class="play__status" role="alert">{{ 'errors.' + reason | transloco }}</p>
   } @else if (world(); as loaded) {
     <app-game-canvas
       class="play__game"
       [world]="loaded"
+      [openFlags]="progress().flags"
       (started)="onStarted($event)"
       (interaction)="onInteraction($event)"
       (menuRequested)="onMenu()"
     />
+    @if (activeQuest(); as quest) {
+      <app-quest-tracker class="play__tracker" [quest]="quest" />
+    }
     <p class="play__hint">{{ 'play.controlsHint' | transloco }}</p>
   } @else {
     <p class="play__status">{{ 'common.loading' | transloco }}</p>
@@ -54,6 +58,15 @@
         <app-message-dialog (closed)="close()">
           <p role="alert">{{ 'errors.' + shown.code | transloco }}</p>
         </app-message-dialog>
+      }
+    }
+    @case ('dialogue') {
+      @if (shown.kind === 'dialogue') {
+        <app-dialogue-box
+          [name]="shown.conversation.npcName"
+          [lines]="shown.conversation.lines"
+          (closed)="onDialogueClosed(shown.conversation)"
+        />
       }
     }
     @case ('naturedex') {
