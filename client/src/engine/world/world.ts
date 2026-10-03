@@ -1,6 +1,8 @@
 import { ActionState } from '../input/action-state';
-import { directionOf, stepOf } from '../input/actions';
+import { Direction, directionOf, stepOf } from '../input/actions';
 import { Player } from './player';
+import { seededRandom } from './random';
+import { Resident, ResidentInfo, Surroundings } from './resident';
 import { Gate, Obstacles, WorldMap } from './world-map';
 import { WorldTime, worldTimeAt } from './world-time';
 
@@ -18,6 +20,24 @@ export interface WorldListeners {
   readonly onAreaChange?: (areaId: string) => void;
   readonly onTorchChange?: (on: boolean) => void;
 }
+
+interface NpcState {
+  facing: Direction;
+  untilTurn: number;
+  readonly random: () => number;
+}
+
+/** NPCs look down, left or right while idle (never away), turning every 3–6 s. */
+const IDLE_FACINGS: readonly Direction[] = ['down', 'left', 'right'];
+const npcTurnDelay = (random: () => number) => 3000 + random() * 3000;
+/** After turning to the player, an NPC keeps facing them this long. */
+const NPC_HOLD_MS = 6000;
+const OPPOSITE: Record<Direction, Direction> = {
+  up: 'down',
+  down: 'up',
+  left: 'right',
+  right: 'left',
+};
 
 /** Without a server clock the world stands still at noon: daylight, no tint. */
 const STILL_NOON: WorldClock = { minutes: 12 * 60, gameMinutesPerSecond: 0 };
@@ -44,6 +64,11 @@ export class World implements Obstacles {
   private torch = false;
   /** The area of the player's tile when last checked; `null` before the first update. */
   private area: string | undefined | null = null;
+  private residentList: Resident[] = [];
+  /** Spots whose species is an animal: only reachable through their resident, never as fixed spots. */
+  private animalSpots: ReadonlySet<string> = new Set();
+  private readonly npcStates = new Map<string, NpcState>();
+  private elapsed = 0;
 
   constructor(
     readonly map: WorldMap,
@@ -56,6 +81,42 @@ export class World implements Obstacles {
     this.minutes = clock.minutes;
     this.gameMinutesPerSecond = clock.gameMinutesPerSecond;
     this.conditions = worldTimeAt(this.minutes);
+    for (const npc of map.npcs) {
+      const random = seededRandom(`npc:${npc.npcId}`);
+      this.npcStates.set(npc.npcId, { facing: 'down', untilTurn: npcTurnDelay(random), random });
+    }
+  }
+
+  /** Game time since the world started, for tile animations. */
+  get elapsedMs(): number {
+    return this.elapsed;
+  }
+
+  /** The residents present now. */
+  get residents(): readonly Resident[] {
+    return this.residentList;
+  }
+
+  /** The direction an NPC faces. */
+  npcFacing(npcId: string): Direction {
+    return this.npcStates.get(npcId)?.facing ?? 'down';
+  }
+
+  /**
+   * The map's residents as the server lists them: new ones appear at home, present ones keep their
+   * position, absent ones leave. Every listed spot stops being a fixed spot.
+   */
+  setResidents(list: readonly ResidentInfo[]): void {
+    this.animalSpots = new Set(list.map((info) => info.spotId));
+    const kept = new Map(this.residentList.map((resident) => [resident.spotId, resident]));
+    this.residentList = list
+      .filter((info) => info.present)
+      .flatMap((info) => {
+        const existing = kept.get(info.spotId);
+        if (existing) return [existing];
+        const home = this.map.spots.find((spot) => spot.spotId === info.spotId);
+        return home ? [new Resident(info.spotId, info.speciesId, info.torch, home)] : [];
+      });
   }
 
   /** Whether the player's torch is lit; it only shows in the evening and at night. */
@@ -91,8 +152,12 @@ export class World implements Obstacles {
     return this.map.gates.filter((gate) => !this.openFlags.has(gate.flag));
   }
 
-  /** Map collision, NPCs and closed gates. */
+  /** Map collision, NPCs, residents and closed gates. */
   isBlocked(x: number, y: number): boolean {
+    return this.isFixedObstacle(x, y) || this.residentList.some((r) => r.occupies(x, y));
+  }
+
+  private isFixedObstacle(x: number, y: number): boolean {
     const gate = this.map.gateAt(x, y);
     return (
       this.map.isBlocked(x, y) ||
@@ -103,8 +168,11 @@ export class World implements Obstacles {
 
   /** Advances one fixed simulation step using the actions gathered since the last step. */
   update(input: ActionState, stepMs: number): void {
+    this.elapsed += stepMs;
     this.minutes += (stepMs / 1000) * this.gameMinutesPerSecond;
     this.refreshConditions();
+    this.updateNpcs(stepMs);
+    this.updateResidents(stepMs);
 
     const presses = input.takePresses();
 
@@ -138,6 +206,31 @@ export class World implements Obstacles {
     }
   }
 
+  private updateNpcs(stepMs: number): void {
+    for (const state of this.npcStates.values()) {
+      state.untilTurn -= stepMs;
+      if (state.untilTurn > 0) continue;
+      const options = IDLE_FACINGS.filter((facing) => facing !== state.facing);
+      state.facing = options[Math.floor(state.random() * options.length)];
+      state.untilTurn = npcTurnDelay(state.random);
+    }
+  }
+
+  private updateResidents(stepMs: number): void {
+    const player = this.player;
+    const timeOfDay = this.conditions.timeOfDay;
+    const surroundings: Surroundings = {
+      player: { x: player.tileX, y: player.tileY },
+      torchLit: this.torch && (timeOfDay === 'evening' || timeOfDay === 'night'),
+      isFreeFor: (resident, x, y) =>
+        !this.isFixedObstacle(x, y) &&
+        !(player.tileX === x && player.tileY === y) &&
+        !(player.targetTile?.x === x && player.targetTile?.y === y) &&
+        !this.residentList.some((other) => other !== resident && other.occupies(x, y)),
+    };
+    for (const resident of this.residentList) resident.update(stepMs, surroundings);
+  }
+
   /** Recomputes the time and tells the host whenever the in-game minute changed. */
   private refreshConditions(): void {
     const previous = this.conditions;
@@ -151,9 +244,19 @@ export class World implements Obstacles {
     const { dx, dy } = stepOf(this.player.facing);
     const { tileX: x, tileY: y } = this.player;
     const npc = this.map.npcAt(x + dx, y + dy);
-    const spot = this.map.spotAt(x + dx, y + dy);
+    const resident = this.residentList.find((r) => r.tileX === x + dx && r.tileY === y + dy);
+    const fixed = this.map.spotAt(x + dx, y + dy);
+    const spot = fixed && !this.animalSpots.has(fixed.spotId) ? fixed : undefined;
     if (npc) {
+      // The NPC turns to face the player and holds still a while.
+      const state = this.npcStates.get(npc.npcId);
+      if (state) {
+        state.facing = OPPOSITE[this.player.facing];
+        state.untilTurn = NPC_HOLD_MS;
+      }
       this.onInteract({ kind: 'npc', mapId: this.map.id, npcId: npc.npcId });
+    } else if (resident) {
+      this.onInteract({ kind: 'spot', mapId: this.map.id, spotId: resident.spotId });
     } else if (spot) {
       this.onInteract({ kind: 'spot', mapId: this.map.id, spotId: spot.spotId });
     } else if (this.map.habitatAt(x, y)) {

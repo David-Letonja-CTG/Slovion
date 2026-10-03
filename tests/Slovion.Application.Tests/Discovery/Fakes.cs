@@ -121,6 +121,9 @@ internal sealed class FakeContentCatalog(params Species[] initial) : IContentCat
 
     public Habitat? FindHabitatAt(string mapId, int x, int y) => mapId == MapId && x >= 10 ? Grass : null;
 
+    public IReadOnlyList<MapSpot>? SpotsOn(string mapId) =>
+        mapId == MapId ? species.Select(s => new MapSpot(mapId, s.Id.Value, s.Id)).ToList() : null;
+
     /// <summary>Every species has a spot named after it on <see cref="MapId"/>.</summary>
     public MapSpot? FindSpot(string mapId, string spotId) =>
         mapId == MapId && species.FirstOrDefault(s => s.Id.Value == spotId) is { } match
@@ -170,6 +173,7 @@ internal sealed class FakeContentCatalog(params Species[] initial) : IContentCat
             new Availability(
                 (seasons.Length > 0 ? seasons : Enum.GetValues<Season>()).ToHashSet(),
                 Enum.GetValues<TimeOfDay>().ToHashSet(),
-                ["src"]));
+                ["src"]),
+            group == SpeciesGroup.Plant ? null : new WildlifeTraits(TorchReaction.Calm));
     }
 }

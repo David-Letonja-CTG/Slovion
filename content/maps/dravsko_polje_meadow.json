@@ -1091,7 +1091,7 @@
     0,
     0,
     0,
-    11,
+    0,
     0,
     0,
     0,
@@ -1198,7 +1198,7 @@
     0,
     0,
     0,
-    12,
+    0,
     0,
     0,
     5,
@@ -1322,7 +1322,7 @@
     0,
     0,
     0,
-    10,
+    0,
     0,
     0,
     0,
@@ -3066,12 +3066,36 @@
      "width": 512,
      "x": 0,
      "y": 320
+    },
+    {
+     "height": 0,
+     "id": 17,
+     "name": "hedgerow_shrike_1",
+     "point": true,
+     "properties": [
+      {
+       "name": "speciesId",
+       "type": "string",
+       "value": "lanius_collurio"
+      },
+      {
+       "name": "spotId",
+       "type": "string",
+       "value": "hedgerow_shrike_1"
+      }
+     ],
+     "rotation": 0,
+     "type": "spot",
+     "visible": true,
+     "width": 0,
+     "x": 136,
+     "y": 392
     }
    ]
   }
  ],
  "nextlayerid": 5,
- "nextobjectid": 17,
+ "nextobjectid": 18,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.11.2",
@@ -3088,7 +3112,35 @@
    "spacing": 0,
    "tilecount": 24,
    "tileheight": 16,
-   "tilewidth": 16
+   "tilewidth": 16,
+   "tiles": [
+    {
+     "id": 3,
+     "animation": [
+      {
+       "tileid": 3,
+       "duration": 700
+      },
+      {
+       "tileid": 21,
+       "duration": 700
+      }
+     ]
+    },
+    {
+     "id": 5,
+     "animation": [
+      {
+       "tileid": 5,
+       "duration": 900
+      },
+      {
+       "tileid": 20,
+       "duration": 900
+      }
+     ]
+    }
+   ]
   }
  ],
  "tilewidth": 16,

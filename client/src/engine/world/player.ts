@@ -48,6 +48,13 @@ export class Player {
     return this.step !== undefined;
   }
 
+  /** The tile a step is heading to, while stepping. */
+  get targetTile(): { x: number; y: number } | undefined {
+    if (!this.step) return undefined;
+    const { dx, dy } = stepOf(this.step.direction);
+    return { x: this.tile.x + dx, y: this.tile.y + dy };
+  }
+
   /** Position in tiles, including progress of the current step. */
   get position(): { readonly x: number; readonly y: number } {
     if (!this.step) return { ...this.tile };

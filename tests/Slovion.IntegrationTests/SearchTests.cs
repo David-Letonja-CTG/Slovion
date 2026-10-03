@@ -49,7 +49,7 @@ public sealed class SearchTests(PostgresFixture database)
     [Fact]
     public async Task A_found_species_opens_an_encounter_and_records_where_it_was_seen()
     {
-        await using var factory = Factory(0, 0); // found; first weight bucket → poljski zajec
+        await using var factory = Factory(0, 0); // found; first plant weight bucket → navadni regrat
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
 
@@ -57,7 +57,7 @@ public sealed class SearchTests(PostgresFixture database)
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         using var body = await ReadJsonAsync(response);
-        Assert.Equal("mammal", body.RootElement.GetProperty("group").GetString());
+        Assert.Equal("plant", body.RootElement.GetProperty("group").GetString());
         Assert.Equal(4, body.RootElement.GetProperty("candidates").GetArrayLength());
         Assert.Equal("observed", Assert.Single(await NatureDexEntriesAsync(client, token)).GetProperty("status").GetString());
 
@@ -80,7 +80,7 @@ public sealed class SearchTests(PostgresFixture database)
         using var search = await SearchGrassAsync(client, token);
         using var body = await ReadJsonAsync(search);
 
-        using var answer = await AnswerAsync(client, token, body.RootElement.GetProperty("encounterId").GetGuid(), Hare);
+        using var answer = await AnswerAsync(client, token, body.RootElement.GetProperty("encounterId").GetGuid(), "taraxacum_officinale");
 
         using var result = await ReadJsonAsync(answer);
         Assert.True(result.RootElement.GetProperty("correct").GetBoolean());
@@ -107,14 +107,14 @@ public sealed class SearchTests(PostgresFixture database)
         await using var factory = Factory(0, 0);
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
-        await IdentifyAsync(client, token, HareSpot, Hare);
+        await IdentifyAsync(client, token, "meadow_dandelion_1", "taraxacum_officinale");
 
         using var response = await SearchGrassAsync(client, token);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         using var body = await ReadJsonAsync(response);
         Assert.True(body.RootElement.GetProperty("alreadyIdentified").GetBoolean());
-        Assert.Equal("poljski zajec", body.RootElement.GetProperty("entry").GetProperty("species").GetProperty("name").GetString());
+        Assert.Equal("navadni regrat", body.RootElement.GetProperty("entry").GetProperty("species").GetProperty("name").GetString());
     }
 
     [Theory]

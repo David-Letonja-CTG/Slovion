@@ -213,16 +213,13 @@ test('Vera opens the hedgerow once three species are identified', async ({ page 
   await step(page, 'ArrowDown');
   await identifyAhead(page, 'Opaziš rastlino', 'navadni regrat');
 
-  // Brown hare (24,12): up to the path, east to (24,10), one step down, facing it.
-  await step(page, 'ArrowUp');
-  await walk(page, 'ArrowRight', 17);
-  await step(page, 'ArrowDown');
-  await identifyAhead(page, 'Opaziš sesalca', 'poljski zajec');
-  await expect(tracker).toContainText('Vrni se k Veri.');
+  // The brown hare wanders around its home, so walking up to it is not deterministic: identify it through
+  // the API (the same encounter the game opens when the player meets it); engine tests cover the meeting.
+  await identifyThroughApi(page, 'meadow_hare_1', 'lepus_europaeus');
 
-  // Back to Vera, who completes the quest; the gate opens as the dialogue closes.
+  // Back to Vera at (7,9): up to the path, then face her. She completes the quest; the gate opens as the
+  // dialogue closes.
   await step(page, 'ArrowUp');
-  await walk(page, 'ArrowLeft', 17);
   await step(page, 'ArrowUp');
   await page.keyboard.press('KeyE');
   await expect(page.getByRole('dialog', { name: 'Vera' })).toContainText('Odlično!');
@@ -255,3 +252,26 @@ test('a new game announces the meadow and the torch switches with L', async ({ p
   await torch.click();
   await expect(torch).toHaveAttribute('aria-pressed', 'false');
 });
+
+/** Opens and answers a spot's encounter through the API with the page's save token. */
+async function identifyThroughApi(page: Page, spotId: string, speciesId: string): Promise<void> {
+  const correct = await page.evaluate(
+    async ([spot, species]) => {
+      const token = localStorage.getItem('slovion.saveToken');
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const started = await fetch('/api/save/encounters', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ mapId: 'dravsko_polje_meadow', spotId: spot }),
+      }).then((r) => r.json());
+      const answer = await fetch(`/api/save/encounters/${started.encounterId}/identification`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ speciesId: species }),
+      }).then((r) => r.json());
+      return answer.correct as boolean;
+    },
+    [spotId, speciesId],
+  );
+  expect(correct).toBe(true);
+}

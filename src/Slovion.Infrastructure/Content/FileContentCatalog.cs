@@ -24,6 +24,12 @@ public sealed partial class FileContentCatalog : IContentCatalog
     /// <summary>Content folder with the named places of the maps, served to clients as-is.</summary>
     public const string AreasFolder = "areas";
 
+    /// <summary>Content folder with the walk sprites of animals (two 16×16 frames facing right).</summary>
+    public const string WildlifeSpritesFolder = "wildlife-sprites";
+
+    /// <summary>Content folder with the 4-facing sprite sheets of NPCs (same layout as the player).</summary>
+    public const string NpcSpritesFolder = "npc-sprites";
+
     private static readonly byte[] PngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
@@ -60,6 +66,9 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
     public MapSpot? FindSpot(string mapId, string spotId) => spots.GetValueOrDefault((mapId, spotId));
 
+    public IReadOnlyList<MapSpot>? SpotsOn(string mapId) =>
+        zones.ContainsKey(mapId) ? spots.Values.Where(spot => spot.MapId == mapId).ToList() : null;
+
     public MapNpc? FindNpcOnMap(string mapId, string npcId) => mapNpcs.GetValueOrDefault((mapId, npcId));
 
     public Quest? FindQuest(string questId) => quests.GetValueOrDefault(questId);
@@ -81,7 +90,10 @@ public sealed partial class FileContentCatalog : IContentCatalog
         }
 
         var species = LoadSpecies(Path.Combine(rootPath, "species"), errors);
-        ValidatePictures(Path.Combine(rootPath, PicturesFolder), species, errors);
+        var speciesIds = species.Keys.Select(id => id.Value).ToList();
+        ValidateImages(Path.Combine(rootPath, PicturesFolder), PicturesFolder, speciesIds, "species", "picture", PictureSize, PictureSize, errors);
+        var animalIds = species.Values.Where(item => item.Group != SpeciesGroup.Plant).Select(item => item.Id.Value).ToList();
+        ValidateImages(Path.Combine(rootPath, WildlifeSpritesFolder), WildlifeSpritesFolder, animalIds, "species", "walk sprite", 32, 16, errors);
         var errorsBeforeHabitats = errors.Count;
         var habitats = LoadHabitats(Path.Combine(rootPath, "habitats"), species, errors);
         if (errors.Count == errorsBeforeHabitats)
@@ -91,6 +103,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
         }
 
         var npcs = LoadNpcs(Path.Combine(rootPath, "npcs"), errors);
+        ValidateImages(Path.Combine(rootPath, NpcSpritesFolder), NpcSpritesFolder, npcs.Keys.ToList(), "NPC", "sprite", 32, 64, errors);
         var quests = LoadQuests(Path.Combine(rootPath, "quests"), npcs, errors);
         ValidateQuestGivers(npcs, quests, errors);
         var rewardFlags = quests.Values.Select(quest => quest.RewardFlag).ToHashSet(StringComparer.Ordinal);
@@ -169,10 +182,40 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
         var clues = ValidateClues(file.Identification?.Clues, texts, name, errors);
         var availability = ValidateAvailability(file.Availability, name, sourceIds, errors);
+        var wildlife = ValidateWildlife(file.Wildlife, group, name, errors);
 
         return errors.Count > errorCount
             ? null
-            : new Species(SpeciesId.Parse(file.Id!), group, scientificName!, sources, texts, clues, availability!);
+            : new Species(SpeciesId.Parse(file.Id!), group, scientificName!, sources, texts, clues, availability!, wildlife);
+    }
+
+    /// <summary>Animals need wildlife traits (gameplay data); plants must not have any.</summary>
+    private static WildlifeTraits? ValidateWildlife(WildlifeFile? file, SpeciesGroup group, string name, List<string> errors)
+    {
+        if (group == SpeciesGroup.Plant)
+        {
+            if (file is not null)
+            {
+                errors.Add($"{name}: plants must not declare 'wildlife' traits.");
+            }
+
+            return null;
+        }
+
+        if (file is null)
+        {
+            errors.Add($"{name}: 'wildlife' traits are required for animals.");
+            return null;
+        }
+
+        var reactions = Enum.GetValues<TorchReaction>().ToDictionary(item => item.ToString().ToLowerInvariant(), StringComparer.Ordinal);
+        if (file.Torch is null || !reactions.TryGetValue(file.Torch, out var torch))
+        {
+            errors.Add($"{name}: unknown torch reaction '{file.Torch}' (expected curious, shy or calm).");
+            return null;
+        }
+
+        return new WildlifeTraits(torch);
     }
 
     /// <summary>Sourced seasons and optional times of day (all times when absent), as lowercase names.</summary>
@@ -351,16 +394,19 @@ public sealed partial class FileContentCatalog : IContentCatalog
         return new Fact(fact.Value, fact.Sources);
     }
 
-    /// <summary>Every species needs a 32×32 PNG picture; only the signature and IHDR header are read.</summary>
-    private static void ValidatePictures(string folder, Dictionary<SpeciesId, Species> species, List<string> errors)
+    /// <summary>
+    /// Every ID needs a PNG of exactly <paramref name="width"/>×<paramref name="height"/> named after it (species pictures,
+    /// walk sprites, NPC sprites); only the signature and IHDR header are read.
+    /// </summary>
+    private static void ValidateImages(string folder, string publicFolder, IEnumerable<string> ids, string owner, string what, int width, int height, List<string> errors)
     {
-        foreach (var id in species.Keys.Select(id => id.Value).Order(StringComparer.Ordinal))
+        foreach (var id in ids.Order(StringComparer.Ordinal))
         {
-            var name = $"{PicturesFolder}/{id}.png";
+            var name = $"{publicFolder}/{id}.png";
             var file = Path.Combine(folder, $"{id}.png");
             if (!File.Exists(file))
             {
-                errors.Add($"{name}: species '{id}' has no picture.");
+                errors.Add($"{name}: {owner} '{id}' has no {what}.");
                 continue;
             }
 
@@ -373,15 +419,15 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
             if (!header.AsSpan(0, 8).SequenceEqual(PngSignature) || !"IHDR"u8.SequenceEqual(header.AsSpan(12, 4)))
             {
-                errors.Add($"{name}: the picture of species '{id}' is not a PNG.");
+                errors.Add($"{name}: the {what} of {owner} '{id}' is not a PNG.");
                 continue;
             }
 
-            var width = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(16, 4));
-            var height = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(20, 4));
-            if (width != PictureSize || height != PictureSize)
+            var actualWidth = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(16, 4));
+            var actualHeight = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(20, 4));
+            if (actualWidth != width || actualHeight != height)
             {
-                errors.Add($"{name}: the picture of species '{id}' must be {PictureSize}×{PictureSize} pixels (found {width}×{height}).");
+                errors.Add($"{name}: the {what} of {owner} '{id}' must be {width}×{height} pixels (found {actualWidth}×{actualHeight}).");
             }
         }
     }
@@ -650,6 +696,21 @@ public sealed partial class FileContentCatalog : IContentCatalog
             else if (layer.Data?.Count != map.Width * map.Height)
             {
                 errors.Add($"{name}: tile layer '{layerName}' must have {map.Width * map.Height} tiles.");
+            }
+        }
+
+        foreach (var tileset in map.Tilesets ?? [])
+        {
+            foreach (var tile in tileset.Tiles ?? [])
+            {
+                foreach (var frame in tile.Animation ?? [])
+                {
+                    if (frame.Tileid < 0 || frame.Tileid >= tileset.Tilecount || frame.Duration <= 0)
+                    {
+                        errors.Add($"{name}: the animation of tile {tile.Id} needs frames inside the tileset with a positive duration.");
+                        break;
+                    }
+                }
             }
         }
 

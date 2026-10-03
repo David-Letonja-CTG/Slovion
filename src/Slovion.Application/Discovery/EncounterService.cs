@@ -87,7 +87,8 @@ public sealed class EncounterService(IContentCatalog content, IDiscoveryReposito
 
     /// <summary>
     /// Searches the habitat at a tile (docs/decisions.md D3: rolled on an explicit action). Two draws from the
-    /// random source decide whether anything is found and, by weight among the species available now (D8), which.
+    /// random source decide whether anything is found and, by weight among the plants available now (D8), which.
+    /// Animals are found by meeting them as residents, never by searching.
     /// </summary>
     public async Task<SearchResult> SearchAsync(SaveSlot save, string mapId, int x, int y, string language, CancellationToken cancellationToken)
     {
@@ -105,7 +106,7 @@ public sealed class EncounterService(IContentCatalog content, IDiscoveryReposito
 
         var now = WorldTimeOf(save);
         var available = habitat.Species
-            .Where(entry => content.FindSpecies(entry.SpeciesId)?.Availability.IsAvailableAt(now) == true)
+            .Where(entry => content.FindSpecies(entry.SpeciesId) is { Group: SpeciesGroup.Plant } plant && plant.Availability.IsAvailableAt(now))
             .ToList();
         if (available.Count == 0)
         {

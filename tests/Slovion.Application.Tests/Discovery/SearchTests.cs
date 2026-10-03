@@ -17,22 +17,24 @@ internal sealed class ScriptedRandom(params int[] values) : IRandomSource
 public class SearchTests
 {
     private static readonly SpeciesId Hare = SpeciesId.Parse("lepus_europaeus");
-    private static readonly SpeciesId Skylark = SpeciesId.Parse("alauda_arvensis");
+    private static readonly SpeciesId Dandelion = SpeciesId.Parse("taraxacum_officinale");
+    private static readonly SpeciesId Sage = SpeciesId.Parse("salvia_pratensis");
     private static readonly Dictionary<string, string> Names = new() { ["sl"] = "Visoka trava" };
     private readonly Guid slot = Guid.NewGuid();
     private readonly FakeTimeProvider clock = new();
     private readonly InMemoryDiscoveryRepository discoveries = new();
     private readonly FakeContentCatalog catalog = new(
         FakeContentCatalog.Species("lepus_europaeus", "poljski zajec", group: SpeciesGroup.Mammal),
-        FakeContentCatalog.Species("alauda_arvensis", "poljski škrjanec", group: SpeciesGroup.Bird),
+        FakeContentCatalog.Species("taraxacum_officinale", "navadni regrat"),
         FakeContentCatalog.Species("salvia_pratensis", "travniška kadulja"));
 
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     public SearchTests()
     {
-        // Weights 3:1 for hare and skylark; tiles with x ≥ 10 are tall grass.
-        catalog.Grass = new Habitat("tall_grass", Names, 1, 70, [new(Hare, 3), new(Skylark, 1)]);
+        // The hare is listed first and heaviest, but animals are found by meeting them, never by searching.
+        // Plant weights 3:1 for dandelion and sage; tiles with x ≥ 10 are tall grass.
+        catalog.Grass = new Habitat("tall_grass", Names, 1, 70, [new(Hare, 100), new(Dandelion, 3), new(Sage, 1)]);
     }
 
     /// <summary>A save created when the test clock starts: spring, 08:00 in-game.</summary>
@@ -44,24 +46,40 @@ public class SearchTests
     private Task<SearchResult> Search(EncounterService service, int x = 12) =>
         service.SearchAsync(Save, FakeContentCatalog.MapId, x, 3, "sl", Token);
 
+    /// <summary>The species the slot observed (searches record the first observation).</summary>
+    private async Task<SpeciesId?> ObservedBy(Guid slotId) =>
+        (await discoveries.ListAsync(slotId, Token)).SingleOrDefault()?.SpeciesId;
+
     [Fact]
     public async Task A_roll_above_the_chance_finds_nothing_and_records_nothing()
     {
         var result = await Search(Service(new ScriptedRandom(70))); // 70 is not below 70 %
 
         Assert.IsType<SearchResult.NothingFound>(result);
-        Assert.Null(await discoveries.FindAsync(slot, Hare, Token));
+        Assert.Empty(await discoveries.ListAsync(slot, Token));
     }
 
     [Fact]
-    public async Task A_found_species_opens_an_encounter_and_records_the_habitat()
+    public async Task A_found_plant_opens_an_encounter_and_records_the_habitat()
     {
-        var result = await Search(Service(new ScriptedRandom(69, 3))); // found; weight roll 3 → skylark
+        var result = await Search(Service(new ScriptedRandom(69, 3))); // found; plant weight roll 3 → sage
 
         var started = Assert.IsType<StartEncounterResult.Started>(Assert.IsType<SearchResult.Found>(result).Encounter);
-        Assert.Equal(SpeciesGroup.Bird, started.Encounter.Group);
-        var observation = await discoveries.FindAsync(slot, Skylark, Token);
+        Assert.Equal(SpeciesGroup.Plant, started.Encounter.Group);
+        var observation = await discoveries.FindAsync(slot, Sage, Token);
         Assert.Equal((null, "tall_grass"), (observation?.SpotId, observation?.HabitatId));
+    }
+
+    [Fact]
+    public async Task Searches_never_find_animals()
+    {
+        for (var roll = 0; roll < 4; roll++)
+        {
+            var slotId = Guid.NewGuid();
+            await Service(new ScriptedRandom(0, roll)).SearchAsync(SaveSlot.Create(slotId, [1], new FakeTimeProvider().GetUtcNow()), FakeContentCatalog.MapId, 12, 3, "sl", Token);
+
+            Assert.NotEqual(Hare, await ObservedBy(slotId));
+        }
     }
 
     [Fact]
@@ -69,13 +87,13 @@ public class SearchTests
     {
         var service = Service(new ScriptedRandom());
         var atSpot = Assert.IsType<StartEncounterResult.Started>(
-            await service.StartAsync(Save, FakeContentCatalog.MapId, "lepus_europaeus", "sl", Token));
-        await service.AnswerAsync(slot, atSpot.Encounter.EncounterId, "lepus_europaeus", "sl", Token);
+            await service.StartAsync(Save, FakeContentCatalog.MapId, "taraxacum_officinale", "sl", Token));
+        await service.AnswerAsync(slot, atSpot.Encounter.EncounterId, "taraxacum_officinale", "sl", Token);
 
-        var result = await Search(Service(new ScriptedRandom(0, 0))); // found; weight roll 0 → hare
+        var result = await Search(Service(new ScriptedRandom(0, 0))); // found; plant weight roll 0 → dandelion
 
         var known = Assert.IsType<StartEncounterResult.AlreadyIdentified>(Assert.IsType<SearchResult.Found>(result).Encounter);
-        Assert.Equal("poljski zajec", known.Entry.Species?.Name);
+        Assert.Equal("navadni regrat", known.Entry.Species?.Name);
     }
 
     [Theory]
@@ -112,42 +130,42 @@ public class SearchTests
     }
 
     [Fact]
-    public async Task Weights_decide_how_often_each_species_is_found()
+    public async Task Weights_decide_how_often_each_plant_is_found()
     {
-        catalog.Grass = new Habitat("tall_grass", Names, 1, 100, [new(Hare, 3), new(Skylark, 1)]);
+        catalog.Grass = new Habitat("tall_grass", Names, 1, 100, [new(Hare, 100), new(Dandelion, 3), new(Sage, 1)]);
         var service = Service(new SeededRandom(123));
-        var counts = new Dictionary<SpeciesGroup, int> { [SpeciesGroup.Mammal] = 0, [SpeciesGroup.Bird] = 0 };
+        var counts = new Dictionary<SpeciesId, int> { [Dandelion] = 0, [Sage] = 0 };
 
         for (var i = 0; i < 4000; i++)
         {
-            var found = (SearchResult.Found)await service.SearchAsync(SaveSlot.Create(Guid.NewGuid(), [1], new FakeTimeProvider().GetUtcNow()), FakeContentCatalog.MapId, 12, 3, "sl", Token);
-            counts[((StartEncounterResult.Started)found.Encounter).Encounter.Group]++;
+            var slotId = Guid.NewGuid();
+            await service.SearchAsync(SaveSlot.Create(slotId, [1], new FakeTimeProvider().GetUtcNow()), FakeContentCatalog.MapId, 12, 3, "sl", Token);
+            counts[(await ObservedBy(slotId))!.Value]++;
         }
 
-        var ratio = (double)counts[SpeciesGroup.Mammal] / counts[SpeciesGroup.Bird];
+        var ratio = (double)counts[Dandelion] / counts[Sage];
         Assert.InRange(ratio, 2.6, 3.4);
     }
 
     [Fact]
-    public async Task Only_species_available_now_are_found()
+    public async Task Only_plants_available_now_are_found()
     {
-        // The sage (weight 100) flowers in spring and summer; in winter only the hare (weight 1) is left.
-        catalog.Grass = new Habitat("tall_grass", Names, 1, 100, [new(SpeciesId.Parse("salvia_pratensis"), 100), new(Hare, 1)]);
-        catalog.Replace(FakeContentCatalog.Species("salvia_pratensis", "travniška kadulja", null, SpeciesGroup.Plant, Season.Spring, Season.Summer));
-        clock.Advance(TimeSpan.FromSeconds(12960)); // day 10: winter
+        // The dandelion (weight 3) flowers in spring and autumn; in summer only the sage (weight 1) is left.
+        catalog.Replace(FakeContentCatalog.Species("taraxacum_officinale", "navadni regrat", null, SpeciesGroup.Plant, Season.Spring, Season.Autumn));
+        clock.Advance(TimeSpan.FromSeconds(3840)); // day 4: summer
 
         var result = await Search(Service(new ScriptedRandom(0, 0)));
 
-        var found = Assert.IsType<StartEncounterResult.Started>(Assert.IsType<SearchResult.Found>(result).Encounter);
-        Assert.Equal(SpeciesGroup.Mammal, found.Encounter.Group);
+        Assert.IsType<StartEncounterResult.Started>(Assert.IsType<SearchResult.Found>(result).Encounter);
+        Assert.Equal(Sage, await ObservedBy(slot));
     }
 
     [Fact]
     public async Task A_habitat_with_nothing_available_finds_nothing()
     {
-        catalog.Grass = new Habitat("tall_grass", Names, 1, 100, [new(SpeciesId.Parse("salvia_pratensis"), 1)]);
+        catalog.Grass = new Habitat("tall_grass", Names, 1, 100, [new(Hare, 1), new(Sage, 1)]);
         catalog.Replace(FakeContentCatalog.Species("salvia_pratensis", "travniška kadulja", null, SpeciesGroup.Plant, Season.Spring, Season.Summer));
-        clock.Advance(TimeSpan.FromSeconds(12960)); // winter
+        clock.Advance(TimeSpan.FromSeconds(12960)); // winter: the sage is gone, and the hare is never searched for
 
         Assert.IsType<SearchResult.NothingFound>(await Search(Service(new ScriptedRandom(0, 0))));
         Assert.Empty(await discoveries.ListAsync(slot, Token));

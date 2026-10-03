@@ -95,10 +95,10 @@ public sealed class WorldConditionsTests(PostgresFixture database)
     }
 
     [Fact]
-    public async Task A_winter_night_search_in_tall_grass_finds_only_species_around_in_winter()
+    public async Task A_winter_night_search_in_tall_grass_finds_nothing_when_no_plant_flowers()
     {
-        // The roll succeeds (0) and picks the first available species by weight (0): with the swallowtail, the
-        // dandelion and the sage gone in winter, the tall grass offers only the hare and the skylark.
+        // The roll succeeds (0), but searches find only plants: the dandelion and the sage do not flower in winter,
+        // and the hare and the skylark are met as residents, never searched for.
         await using var factory = Factory(0, 0);
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
@@ -111,9 +111,9 @@ public sealed class WorldConditionsTests(PostgresFixture database)
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         using var response = await client.SendAsync(request, Token);
 
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         using var body = await ReadJsonAsync(response);
-        Assert.Equal("mammal", body.RootElement.GetProperty("group").GetString());
+        Assert.False(body.RootElement.GetProperty("found").GetBoolean());
         AssertTime(await TimeAsync(client, token), 480 + 12960 + 840, 10, "winter", "night");
     }
 

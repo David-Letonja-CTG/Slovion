@@ -60,7 +60,8 @@
     "error": "Nekaj je šlo narobe. Poskusi znova.",
     "unknown_encounter": "To opazovanje ni več veljavno. Poskusi znova.",
     "unknown_habitat": "Tukaj ni mogoče iskati.",
-    "unknown_npc": "Tukaj ni nikogar."
+    "unknown_npc": "Tukaj ni nikogar.",
+    "unknown_map": "Tega območja ni."
   },
   "identification": {
     "heading": {

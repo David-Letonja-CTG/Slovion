@@ -26,6 +26,9 @@ const MAP_URL = '/content/maps/dravsko_polje_meadow.json';
 const SAGE = { kind: 'spot', mapId: 'dravsko_polje_meadow', spotId: 'meadow_sage_1' } as const;
 
 const NO_PROGRESS: PlayerProgress = { flags: [], quests: [] };
+const RESIDENTS = [
+  { spotId: 'meadow_hare_1', speciesId: 'lepus_europaeus', torch: 'curious', present: true },
+];
 const AREA_NAMES: Record<string, string> = {
   meadow: 'Travnik na Dravskem polju',
   south_hedgerow: 'Južna mejica',
@@ -49,6 +52,7 @@ async function openPlay(
 
   const harness = await RouterTestingHarness.create('/play');
   app.http.expectOne('/api/save/time').flush(SPRING_MORNING);
+  app.http.expectOne((r) => r.url === '/api/save/wildlife').flush({ animals: RESIDENTS });
   const progress = app.http.expectOne('/api/save/progress');
   if (typeof progressResponse === 'number' && progressResponse === 0) {
     progress.error(new ProgressEvent('error'), { status: 0 });
@@ -855,5 +859,29 @@ describe('World conditions', () => {
     game.pressUi('Cancel');
     await wait();
     expect(game.consumer).toBe('world');
+  });
+});
+
+describe('Resident animals', () => {
+  afterEach(() => TestBed.inject(Router).dispose());
+
+  it('starts the game with the residents of the map', async () => {
+    const { game } = await openPlay();
+
+    expect(game.options?.residents).toEqual(RESIDENTS);
+  });
+
+  it('refreshes the residents when the time of day changes', async () => {
+    const { game, http, settle: wait } = await openPlay();
+
+    game.options!.onTimeChange!(worldTimeAt(9 * 60 + 59)); // still morning
+    http.expectNone((r) => r.url === '/api/save/wildlife');
+    game.options!.onTimeChange!(worldTimeAt(10 * 60)); // day
+    const request = http.expectOne((r) => r.url === '/api/save/wildlife');
+    expect(request.request.params.get('mapId')).toBe('dravsko_polje_meadow');
+    request.flush({ animals: [] });
+    await wait();
+
+    expect(game.residents).toEqual([]);
   });
 });

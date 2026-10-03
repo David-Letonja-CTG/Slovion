@@ -22,6 +22,12 @@ public sealed class ContentFolder : IDisposable
     /// <summary>The picture written for the species; <c>null</c> writes none.</summary>
     public byte[]? Picture { get; set; } = Png(32, 32);
 
+    /// <summary>The walk sprite written for the species (used when it is an animal); <c>null</c> writes none.</summary>
+    public byte[]? WildlifeSprite { get; set; } = Png(32, 16);
+
+    /// <summary>The sprite sheet written for the NPC; <c>null</c> writes none.</summary>
+    public byte[]? NpcSprite { get; set; } = Png(32, 64);
+
     public ContentFolder()
     {
         Path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "slovion-content-" + Guid.NewGuid().ToString("N"));
@@ -31,6 +37,8 @@ public sealed class ContentFolder : IDisposable
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "species-pictures"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "npcs"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "areas"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "wildlife-sprites"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "npc-sprites"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "quests"));
         Species = ValidSpecies();
         Map = ValidMap();
@@ -49,6 +57,16 @@ public sealed class ContentFolder : IDisposable
         File.WriteAllText(System.IO.Path.Combine(Path, "species", speciesFile), Species.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "maps", mapFile), Map.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "habitats", habitatFile), Habitat.ToJsonString());
+        if (WildlifeSprite is not null)
+        {
+            File.WriteAllBytes(System.IO.Path.Combine(Path, "wildlife-sprites", $"{Species["id"]}.png"), WildlifeSprite);
+        }
+
+        if (NpcSprite is not null)
+        {
+            File.WriteAllBytes(System.IO.Path.Combine(Path, "npc-sprites", $"{Npc["id"]}.png"), NpcSprite);
+        }
+
         if (Picture is not null)
         {
             File.WriteAllBytes(System.IO.Path.Combine(Path, "species-pictures", $"{Species["id"]}.png"), Picture);
