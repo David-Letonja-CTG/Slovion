@@ -51,6 +51,16 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - **THEN** it has a resident spot for each of the region's animals and a fixed spot for each of its ground plants, and the player can reach each spot from the spawn
 - **AND** some of its trees or shrubs lie inside the habitat zones
 
+#### Scenario: People of the regions
+- **WHEN** a region map is loaded
+- **THEN** its person stands at tile (3, 10), beside the path near the spawn and outside the habitat zones:
+
+  | Map | NPC |
+  |---|---|
+  | `kocevje_forest` | `jure` |
+  | `pohorje_forest` | `maja` |
+  | `triglav_alps` | `luka` |
+
 #### Scenario: Areas of the meadow
 - **WHEN** the meadow is loaded
 - **THEN** the meadow, its southern hedge and the gate belong to area `meadow`, and the hedgerow strip belongs to area `south_hedgerow`

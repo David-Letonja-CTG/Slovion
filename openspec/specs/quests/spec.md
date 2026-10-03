@@ -12,7 +12,7 @@ Each NPC SHALL be a content file with a stable ID and a localized name, with Slo
 Each quest SHALL be a content file with:
 - a stable ID
 - the ID of the NPC who gives it
-- a goal: the number of species the save must have identified, a positive integer
+- a goal: the number of species the save must have identified, a positive integer, and optionally a habitat whose species alone count
 - a reward flag ID in lowercase snake_case
 - localized texts, with Slovenian required:
   - a title
@@ -25,6 +25,7 @@ In the current scope every NPC SHALL give exactly one quest. Content validation 
 - an NPC without a quest, or with more than one
 - a missing Slovenian text or an empty dialogue state
 - a non-positive goal
+- a goal habitat that does not exist, or that lists fewer species than the goal
 - duplicate IDs
 
 Quest texts are game dialogue, not species facts. They SHALL NOT state biological facts about a species unless the same fact is sourced in that species' content.
@@ -32,6 +33,20 @@ Quest texts are game dialogue, not species facts. They SHALL NOT state biologica
 #### Scenario: Valid repository quests
 - **WHEN** the API starts with the repository content
 - **THEN** NPC `vera` and quest `eye_for_nature` are available, with goal 3 and reward flag `hedgerow_open`
+
+#### Scenario: Region quests
+- **WHEN** the API starts with the repository content
+- **THEN** the region quests are available:
+
+  | NPC | Quest | Goal | Reward flag |
+  |---|---|---|---|
+  | `jure` | `in_the_shade_of_firs` | 3 species of `fir_beech_forest` | `pohorje_open` |
+  | `maja` | `secrets_of_the_bog` | 3 species of `mountain_forest` | `triglav_open` |
+  | `luka` | `below_the_peaks` | 3 species of `alpine_grassland` | `alps_explored` |
+
+#### Scenario: Goal habitat too small
+- **WHEN** a quest asks for 4 species of a habitat that lists 3
+- **THEN** content validation fails and names the quest
 
 #### Scenario: Quest from an unknown NPC
 - **WHEN** a quest names giver `mojca` and no such NPC exists
@@ -48,7 +63,7 @@ Quest texts are game dialogue, not species facts. They SHALL NOT state biologica
 - the quest's resulting state: ID, title, summary, status, progress and goal
 - the save's flags after the conversation
 
-The server SHALL decide the dialogue and every quest change (D3). Quest progress SHALL be the number of species the save has identified, capped at the goal, whenever those species were identified. The conversation SHALL depend on the quest's state:
+The server SHALL decide the dialogue and every quest change (D3). Quest progress SHALL be the number of species the save has identified, counting only species of the goal's habitat when the goal names one, capped at the goal, whenever those species were identified. The conversation SHALL depend on the quest's state:
 
 | Quest state | Effect | Dialogue |
 |---|---|---|
@@ -76,6 +91,10 @@ A request without a valid save token SHALL respond `401` with code `invalid_save
 - **WHEN** a save that already identified three species talks to `vera` for the first time
 - **THEN** the response contains the `offer` lines followed by the `ready` lines, and the quest is completed
 
+#### Scenario: Only the region's species count
+- **WHEN** a save that identified five meadow species and one Kočevje species talks to `jure`
+- **THEN** quest `in_the_shade_of_firs` has progress 1 of 3
+
 #### Scenario: Unknown NPC
 - **WHEN** a save talks to NPC `mojca` on the meadow
 - **THEN** the response is `404` with code `unknown_npc`
@@ -92,7 +111,7 @@ A conversation SHALL open a dialogue box showing the NPC's name and one line at 
 - **THEN** the box closes and the player can move again
 
 ### Requirement: Quest tracker
-While a quest is active, the game SHALL show a tracker over the world with the quest's title and progress (for example *Oko za naravo 1/3*). Once the goal is met, the tracker SHALL show the quest's hint for returning to the giver. The tracker SHALL update after every identification and conversation. It SHALL NOT show completed quests.
+While a quest is active, the game SHALL show a tracker over the world with the quest's title and progress (for example *Oko za naravo 1/3*). Once the goal is met, the tracker SHALL show the quest's hint for returning to the giver. The tracker SHALL update after every identification and conversation, with the progress the server reports. It SHALL NOT show completed quests.
 
 #### Scenario: Tracking progress
 - **WHEN** the player has started the quest and identifies a species
@@ -101,6 +120,10 @@ While a quest is active, the game SHALL show a tracker over the world with the q
 #### Scenario: Ready to return
 - **WHEN** the third species is identified
 - **THEN** the tracker shows the hint to return to Vera
+
+#### Scenario: A species that does not count
+- **WHEN** Jure's quest is active and the player identifies a meadow species
+- **THEN** the tracker's progress stays the same
 
 #### Scenario: No quest yet
 - **WHEN** a new game starts
