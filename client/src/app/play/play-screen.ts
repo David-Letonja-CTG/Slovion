@@ -107,7 +107,11 @@ export class PlayScreen {
     Promise.all([
       inject(WorldLoader)
         .load(START_MAP)
-        .catch(() => Promise.reject(MAP_FAILED)),
+        .catch((cause: unknown) => {
+          // The player sees one message; developers get the cause (invalid map, missing file …).
+          console.error('The map could not be loaded.', cause);
+          return Promise.reject(MAP_FAILED);
+        }),
       firstValueFrom(this.api.progress()),
       firstValueFrom(this.api.time()),
     ]).then(
