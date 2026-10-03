@@ -203,6 +203,16 @@ describe('Interaction', () => {
     expect(interactions).toEqual([{ kind: 'npc', mapId: 'test_map', npcId: 'vera' }]);
   });
 
+  it('opens the travel map at the faced signpost, which blocks its tile', () => {
+    const { input, frames, interactions, world } = setup(['#GP#']);
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([{ kind: 'signpost', mapId: 'test_map' }]);
+    expect(world.isBlocked(2, 0)).toBe(true);
+  });
+
   it('prefers a faced NPC over searching the grass underfoot', () => {
     const { input, frames, interactions } = setup(['#GN#']);
 

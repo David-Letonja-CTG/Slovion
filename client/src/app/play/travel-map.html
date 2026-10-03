@@ -1,0 +1,58 @@
+<div class="overlay">
+  <section class="dialog travel" role="dialog" aria-modal="true" aria-labelledby="travel-title">
+    <header class="travel__header">
+      <h2 id="travel-title">{{ 'travel.title' | transloco }}</h2>
+      <button type="button" class="button" (click)="closed.emit()">
+        {{ 'common.close' | transloco }}
+      </button>
+    </header>
+    <p class="travel__question">{{ 'travel.question' | transloco }}</p>
+
+    <div class="travel__map" role="img" [attr.aria-label]="'travel.mapLabel' | transloco">
+      <img class="travel__outline" src="/images/slovenia.svg" alt="" />
+      @for (region of regions(); track region.regionId; let i = $index) {
+        <span
+          class="travel__marker"
+          [class.travel__marker--current]="region.regionId === currentRegionId()"
+          [class.travel__marker--locked]="!region.unlocked"
+          [class.travel__marker--selected]="i === selected()"
+          [style.left.%]="region.x"
+          [style.top.%]="region.y"
+        ></span>
+        <span
+          class="travel__label"
+          [class.travel__label--selected]="i === selected()"
+          [style.left.%]="region.x"
+          [style.top.%]="region.y"
+          aria-hidden="true"
+          >{{ region.name }}</span
+        >
+      }
+    </div>
+
+    <ul class="travel__list">
+      @for (region of regions(); track region.regionId; let i = $index) {
+        <li>
+          <button
+            #option
+            type="button"
+            class="travel__region"
+            [class.travel__region--selected]="i === selected()"
+            [attr.aria-disabled]="!canTravel(region)"
+            [attr.data-region]="region.regionId"
+            (click)="choose(i)"
+          >
+            <span class="travel__name">{{ region.name }}</span>
+            <span class="travel__state">{{ stateKey(region) | transloco }}</span>
+            @if (!region.unlocked) {
+              <span class="travel__hint">{{ region.lockedHint }}</span>
+              @if (remaining(region); as count) {
+                <span class="travel__hint">{{ remainingKey(count) | transloco: { count } }}</span>
+              }
+            }
+          </button>
+        </li>
+      }
+    </ul>
+  </section>
+</div>

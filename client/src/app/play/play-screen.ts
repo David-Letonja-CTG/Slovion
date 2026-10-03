@@ -1,5 +1,13 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, DestroyRef, computed, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  InjectionToken,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
@@ -13,6 +21,8 @@ import {
   GameApi,
   NothingFound,
   PlayerProgress,
+  RegionInfo,
+  RegionsInfo,
   WorldTimeInfo,
   apiErrorCode,
 } from '../api/game-api';
@@ -25,9 +35,29 @@ import { IdentificationDialog } from './identification-dialog';
 import { MessageDialog } from './message-dialog';
 import { NatureDexPanel } from './naturedex-panel';
 import { QuestTracker } from './quest-tracker';
+import { TravelMap } from './travel-map';
 import { LoadedPlace, WorldLoader } from './world-loader';
 
-export const START_MAP = 'dravsko_polje_meadow';
+/** How long the screen takes to fade out (and in again) when travelling; none for players who prefer reduced motion. */
+export const TRAVEL_FADE_MS = new InjectionToken<number>('TRAVEL_FADE_MS', {
+  providedIn: 'root',
+  factory: () =>
+    inject(DOCUMENT).defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+      ? 0
+      : 300,
+});
+
+/** The map of the save's current region (the server reports the start region if content removed it). */
+function currentMapOf({ currentRegionId, regions }: RegionsInfo): string {
+  return (regions.find((region) => region.regionId === currentRegionId) ?? regions[0]).mapId;
+}
+
+/** A loaded map with its resident animals. */
+interface Place {
+  readonly mapId: string;
+  readonly world: LoadedPlace;
+  readonly residents: readonly ResidentInfo[];
+}
 
 /** Marks a failed map load, as opposed to a failed progress request. */
 const MAP_FAILED = Symbol('map');
@@ -50,6 +80,8 @@ type Overlay =
   | { readonly kind: 'notNow' }
   | { readonly kind: 'naturedex' }
   | { readonly kind: 'dialogue'; readonly conversation: Conversation }
+  /** The travel map opened at a signpost. */
+  | { readonly kind: 'travel'; readonly regions: RegionsInfo }
   | { readonly kind: 'error'; readonly code: ApiErrorCode };
 
 /** The game: the world on canvas plus UI overlays that take input while open. */
@@ -65,6 +97,7 @@ type Overlay =
     NatureDexPanel,
     QuestTracker,
     TranslocoPipe,
+    TravelMap,
   ],
   templateUrl: './play-screen.html',
   styleUrl: './play-screen.css',
@@ -77,7 +110,13 @@ export class PlayScreen {
   private readonly identification = viewChild(IdentificationDialog);
   private readonly natureDex = viewChild(NatureDexPanel);
   private readonly dialogue = viewChild(DialogueBox);
+  private readonly travelMap = viewChild(TravelMap);
+  private readonly fadeMs = inject(TRAVEL_FADE_MS);
   private game: Game | undefined;
+  /** The map of the place the player is in. */
+  private mapId = '';
+  /** Set while arriving in a region, so the new game gets focus and the torch carries over. */
+  private arriving = false;
 
   protected readonly world = signal<LoadedPlace | undefined>(undefined);
   protected readonly loadError = signal<LoadError | undefined>(undefined);
@@ -98,6 +137,8 @@ export class PlayScreen {
     undefined,
   );
   protected readonly torchOn = signal(false);
+  /** The screen is dark while travelling to another region. */
+  protected readonly fading = signal(false);
   /** The map's resident animals, as the server last listed them (D3, D8). */
   protected readonly residents = signal<readonly ResidentInfo[]>([]);
   private readonly loader = inject(WorldLoader);
@@ -106,28 +147,28 @@ export class PlayScreen {
   );
 
   constructor() {
-    // The world starts only with the save's progress, so gates are right from the first frame.
-    Promise.all([
-      this.loadPlace(),
-      firstValueFrom(this.api.progress()),
-      firstValueFrom(this.api.time()),
-    ]).then(
-      ([{ world, residents }, progress, time]) => {
+    // The game continues in the save's current region. The world starts only with the save's progress, so gates
+    // are right from the first frame.
+    firstValueFrom(this.api.regions())
+      .then((regions) =>
+        Promise.all([
+          this.loadPlace(currentMapOf(regions)),
+          firstValueFrom(this.api.progress()),
+          firstValueFrom(this.api.time()),
+        ]),
+      )
+      .then(([place, progress, time]) => {
         this.progress.set(progress);
-        this.worldTime.set(time);
-        this.time.set(worldTimeAt(time.minutes));
-        this.residents.set(residents);
-        this.world.set(world);
-      },
-      (error: unknown) => {
+        this.enter(place, time);
+      })
+      .catch((error: unknown) => {
         const reason = error === MAP_FAILED ? 'map' : apiErrorCode(error);
         if (reason === 'invalid_save_token') {
           this.onSaveLost();
         } else {
           this.loadError.set(reason);
         }
-      },
-    );
+      });
 
     // The game loop pauses while the page is hidden, but the server clock does not: re-sync on return.
     const document = inject(DOCUMENT);
@@ -141,14 +182,14 @@ export class PlayScreen {
   }
 
   /** The map with its sprites, and its residents with their walk sprites. */
-  private async loadPlace(): Promise<{ world: LoadedPlace; residents: readonly ResidentInfo[] }> {
+  private async loadPlace(mapId: string): Promise<Place> {
     const [world, { animals }] = await Promise.all([
-      this.loader.load(START_MAP).catch((cause: unknown) => {
+      this.loader.load(mapId).catch((cause: unknown) => {
         // The player sees one message; developers get the cause (invalid map, missing file …).
         console.error('The map could not be loaded.', cause);
         return Promise.reject(MAP_FAILED);
       }),
-      firstValueFrom(this.api.wildlife(START_MAP)),
+      firstValueFrom(this.api.wildlife(mapId)),
     ]);
     const wildlifeSprites = await this.loader
       .wildlifeSprites(animals.map((animal) => animal.speciesId))
@@ -156,7 +197,16 @@ export class PlayScreen {
         console.error('The animal sprites could not be loaded.', cause);
         return Promise.reject(MAP_FAILED);
       });
-    return { world: { ...world, wildlifeSprites }, residents: animals };
+    return { mapId, world: { ...world, wildlifeSprites }, residents: animals };
+  }
+
+  /** Shows a loaded place with the clock as the server reported it; a new place starts a new game. */
+  private enter(place: Place, time: WorldTimeInfo): void {
+    this.mapId = place.mapId;
+    this.worldTime.set(time);
+    this.time.set(worldTimeAt(time.minutes));
+    this.residents.set(place.residents);
+    this.world.set(place.world); // a new place starts a new game
   }
 
   protected onTimeChanged(time: WorldTime): void {
@@ -166,8 +216,10 @@ export class PlayScreen {
   }
 
   private refreshResidents(): void {
-    this.api.wildlife(START_MAP).subscribe({
+    const mapId = this.mapId;
+    this.api.wildlife(mapId).subscribe({
       next: ({ animals }) => {
+        if (mapId !== this.mapId) return; // travelled meanwhile
         this.residents.set(animals);
         this.game?.setResidents(animals);
       },
@@ -211,12 +263,25 @@ export class PlayScreen {
   protected onStarted(game: Game): void {
     this.game = game;
     game.onUiAction((action) => this.onUiAction(action));
+    if (this.arriving) {
+      this.arriving = false;
+      game.setActionConsumer('world');
+      if (this.torchOn()) game.setTorch(true);
+      this.canvas()?.focus();
+    }
   }
 
-  /** An NPC talks; a spot starts an observation; a search may find something. The server decides (D3). */
+  /**
+   * An NPC talks; the signpost opens the travel map; a spot starts an observation; a search may find something.
+   * The server decides (D3).
+   */
   protected onInteraction(interaction: Interaction): void {
     // Block the world right away, so the player cannot walk off while the server answers.
     this.open({ kind: 'pending' });
+    if (interaction.kind === 'signpost') {
+      this.openTravelMap();
+      return;
+    }
     if (interaction.kind === 'npc') {
       this.api.talk(interaction.mapId, interaction.npcId).subscribe({
         next: (conversation) => this.overlay.set({ kind: 'dialogue', conversation }),
@@ -234,6 +299,48 @@ export class PlayScreen {
       next: (result) => this.overlay.set(this.overlayFor(result, kind)),
       error: (error: unknown) => this.onError(error),
     });
+  }
+
+  private openTravelMap(): void {
+    this.api.regions().subscribe({
+      next: (regions) => this.open({ kind: 'travel', regions }),
+      error: (error: unknown) => this.onError(error),
+    });
+  }
+
+  /**
+   * Travels to a region the server allows (D3): the screen fades out, the region's map loads with its animals,
+   * and the screen fades in again; the place banner then names the area.
+   */
+  protected onTravel(region: RegionInfo): void {
+    this.overlay.set({ kind: 'pending' });
+    this.api.travel(region.regionId).subscribe({
+      next: (travelled) => void this.arrive(travelled.mapId),
+      error: (error: unknown) => {
+        // Progress may have changed elsewhere: show the regions as they are now.
+        if (apiErrorCode(error) === 'region_locked') this.openTravelMap();
+        else this.onError(error);
+      },
+    });
+  }
+
+  private async arrive(mapId: string): Promise<void> {
+    this.fading.set(true);
+    try {
+      const [place, time] = await Promise.all([
+        this.loadPlace(mapId),
+        firstValueFrom(this.api.time()),
+        new Promise((resolve) => setTimeout(resolve, this.fadeMs)),
+      ]);
+      this.overlay.set({ kind: 'none' });
+      this.arriving = true;
+      this.enter(place, time);
+    } catch (error) {
+      if (error === MAP_FAILED) this.loadError.set('map');
+      else this.onError(error);
+    } finally {
+      this.fading.set(false);
+    }
   }
 
   private overlayFor(
@@ -333,6 +440,8 @@ export class PlayScreen {
       this.natureDex()?.handleAction(action);
     } else if (kind === 'dialogue') {
       this.dialogue()?.handleAction(action);
+    } else if (kind === 'travel') {
+      this.travelMap()?.handleAction(action);
     }
   }
 }

@@ -41,6 +41,7 @@
       <app-quest-tracker class="play__tracker" [quest]="quest" />
     }
     <p class="play__hint">{{ 'play.controlsHint' | transloco }}</p>
+    <div class="play__fade" [class.play__fade--dark]="fading()" aria-hidden="true"></div>
   } @else {
     <p class="play__status">{{ 'common.loading' | transloco }}</p>
   }
@@ -98,6 +99,16 @@
           [name]="shown.conversation.npcName"
           [lines]="shown.conversation.lines"
           (closed)="onDialogueClosed(shown.conversation)"
+        />
+      }
+    }
+    @case ('travel') {
+      @if (shown.kind === 'travel') {
+        <app-travel-map
+          [regions]="shown.regions.regions"
+          [currentRegionId]="shown.regions.currentRegionId"
+          (chosen)="onTravel($event)"
+          (closed)="close()"
         />
       }
     }

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import kocevje from '../../../../content/maps/kocevje_forest.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import sl from '../../../public/i18n/sl.json';
 import { Action, worldTimeAt } from '../../engine';
@@ -10,11 +11,13 @@ import {
   NatureDexSlot,
   PlayerProgress,
   QuestInfo,
+  RegionsInfo,
 } from '../api/game-api';
 import { GameSession } from '../session/game-session';
 import { SaveTokenStore } from '../session/save-token-store';
 import {
   HARE_OBSERVED,
+  REGIONS,
   SAGE_ENCOUNTER,
   SAGE_ENTRY,
   sageAnswer,
@@ -22,7 +25,6 @@ import {
   setupTestApp,
 } from '../testing/test-app';
 
-const MAP_URL = '/content/maps/dravsko_polje_meadow.json';
 const SAGE = { kind: 'spot', mapId: 'dravsko_polje_meadow', spotId: 'meadow_sage_1' } as const;
 
 const NO_PROGRESS: PlayerProgress = { flags: [], quests: [] };
@@ -32,6 +34,7 @@ const RESIDENTS = [
 const AREA_NAMES: Record<string, string> = {
   meadow: 'Travnik na Dravskem polju',
   south_hedgerow: 'Južna mejica',
+  kocevje_forest: 'Kočevski gozd',
 };
 const SPRING_MORNING = {
   minutes: 480,
@@ -41,16 +44,23 @@ const SPRING_MORNING = {
   gameMinutesPerSecond: 1,
 };
 
-/** Opens the play screen; the progress response is a body, or an HTTP status to fail with (0 = network). */
+/**
+ * Opens the play screen in the save's current region; the progress response is a body, or an HTTP status to fail
+ * with (0 = network).
+ */
 async function openPlay(
   mapResponse: object | 404 = meadow,
   progressResponse: PlayerProgress | number = NO_PROGRESS,
+  regions: RegionsInfo = REGIONS,
 ) {
   const app = await setupTestApp();
   TestBed.inject(SaveTokenStore).set('play-token');
   TestBed.inject(GameSession).active.set(true);
 
   const harness = await RouterTestingHarness.create('/play');
+  app.http.expectOne('/api/save/regions').flush(regions);
+  await settle(harness.fixture);
+  const current = regions.regions.find((region) => region.regionId === regions.currentRegionId)!;
   app.http.expectOne('/api/save/time').flush(SPRING_MORNING);
   app.http.expectOne((r) => r.url === '/api/save/wildlife').flush({ animals: RESIDENTS });
   const progress = app.http.expectOne('/api/save/progress');
@@ -64,7 +74,7 @@ async function openPlay(
   } else {
     progress.flush(progressResponse);
   }
-  const map = app.http.expectOne(MAP_URL);
+  const map = app.http.expectOne(`/content/maps/${current.mapId}.json`);
   if (mapResponse === 404) {
     map.flush(null, { status: 404, statusText: 'Not Found' });
   } else {
@@ -883,5 +893,192 @@ describe('Resident animals', () => {
     await wait();
 
     expect(game.residents).toEqual([]);
+  });
+});
+
+describe('Travel', () => {
+  afterEach(() => TestBed.inject(Router).dispose());
+
+  const SIGNPOST = { kind: 'signpost', mapId: 'dravsko_polje_meadow' } as const;
+  const KOCEVJE = REGIONS.regions[1];
+
+  /** Reads the signpost and answers with the regions. */
+  async function openTravelMap(play: Awaited<ReturnType<typeof openPlay>>, regions = REGIONS) {
+    play.game.options!.onInteract(SIGNPOST);
+    await play.settle();
+    expect(play.game.consumer).toBe('ui');
+    play.http.expectOne('/api/save/regions').flush(regions);
+    await play.settle();
+  }
+
+  const entries = (root: () => HTMLElement) =>
+    [...root().querySelectorAll<HTMLButtonElement>('.travel__region')].map((entry) => ({
+      region: entry.dataset['region'],
+      text: [...entry.querySelectorAll('span')].map((part) => part.textContent?.trim()).join(' '),
+      disabled: entry.getAttribute('aria-disabled'),
+      selected: entry.classList.contains('travel__region--selected'),
+    }));
+
+  /** Answers the requests of arriving in Kočevje: time, animals, map and area names. */
+  async function arriveInKocevje(play: Awaited<ReturnType<typeof openPlay>>) {
+    play.http.expectOne({ method: 'POST', url: '/api/save/travel' }).flush(KOCEVJE);
+    await play.settle();
+    play.http.expectOne('/api/save/time').flush(SPRING_MORNING);
+    const wildlife = play.http.expectOne((r) => r.url === '/api/save/wildlife');
+    expect(wildlife.request.params.get('mapId')).toBe('kocevje_forest');
+    wildlife.flush({ animals: [] });
+    play.http.expectOne('/content/maps/kocevje_forest.json').flush(kocevje);
+    await play.settle();
+    for (const request of play.http.match((r) => r.url.startsWith('/content/areas/'))) {
+      request.flush({ text: { sl: { name: 'Kočevski gozd' } } });
+    }
+    await play.settle();
+  }
+
+  it("continues in the save's current region", async () => {
+    const { game } = await openPlay(kocevje, NO_PROGRESS, {
+      ...REGIONS,
+      currentRegionId: 'kocevje',
+    });
+
+    expect(game.options?.world.map.id).toBe('kocevje_forest');
+  });
+
+  it('opens the travel map at the signpost with every region and what unlocks the locked ones', async () => {
+    const play = await openPlay();
+
+    await openTravelMap(play);
+
+    expect(play.root().querySelector('#travel-title')?.textContent).toBe(sl.travel.title);
+    expect(play.root().querySelectorAll('.travel__marker')).toHaveLength(4);
+    expect(entries(play.root)).toEqual([
+      { region: 'dravsko_polje', text: 'Dravsko polje Tukaj si', disabled: 'true', selected: true },
+      { region: 'kocevje', text: 'Kočevje Odprto', disabled: 'false', selected: false },
+      {
+        region: 'pohorje',
+        text: 'Pohorje Zaklenjeno Za pot na Pohorje moraš bolje poznati naravo. Prepoznaj še 2 vrsti.',
+        disabled: 'true',
+        selected: false,
+      },
+      {
+        region: 'triglav',
+        text: 'Triglav Zaklenjeno V gore se odpravijo le izkušeni naravoslovci. Prepoznaj še 4 vrste.',
+        disabled: 'true',
+        selected: false,
+      },
+    ]);
+    expect(document.activeElement?.getAttribute('data-region')).toBe('dravsko_polje');
+  });
+
+  it('travels to the selected open region: fades, loads its map and names the place', async () => {
+    const play = await openPlay();
+    await openTravelMap(play);
+
+    play.game.pressUi('MoveDown');
+    await play.settle();
+    expect(document.activeElement?.getAttribute('data-region')).toBe('kocevje');
+    play.game.pressUi('Confirm');
+    await play.settle();
+
+    const travel = play.http.expectOne({ method: 'POST', url: '/api/save/travel' });
+    expect(travel.request.body).toEqual({ regionId: 'kocevje' });
+    travel.flush(KOCEVJE);
+    await play.settle();
+    expect(play.root().querySelector('.play__fade--dark')).not.toBeNull();
+    play.http.expectOne('/api/save/time').flush(SPRING_MORNING);
+    play.http.expectOne((r) => r.url === '/api/save/wildlife').flush({ animals: [] });
+    play.http.expectOne('/content/maps/kocevje_forest.json').flush(kocevje);
+    await play.settle();
+    for (const request of play.http.match((r) => r.url.startsWith('/content/areas/'))) {
+      request.flush({ text: { sl: { name: 'Kočevski gozd' } } });
+    }
+    await play.settle();
+
+    expect(play.game.options?.world.map.id).toBe('kocevje_forest');
+    expect(play.root().querySelector('[role="dialog"]')).toBeNull();
+    expect(play.root().querySelector('.play__fade--dark')).toBeNull();
+    expect(play.game.consumer).toBe('world');
+    play.game.options!.onAreaChange!('kocevje_forest');
+    await play.settle();
+    expect(play.root().querySelector('app-location-banner')?.textContent).toBe('Kočevski gozd');
+  });
+
+  it('travels when an open region is clicked, and keeps the torch lit', async () => {
+    const play = await openPlay();
+    play.game.options!.onTorchChange!(true);
+    await openTravelMap(play);
+
+    play.root().querySelector<HTMLButtonElement>('[data-region="kocevje"]')!.click();
+    await play.settle();
+    await arriveInKocevje(play);
+
+    expect(play.game.options?.world.map.id).toBe('kocevje_forest');
+    expect(play.game.torch).toBe(true);
+  });
+
+  it.each([
+    ['a locked region', 2],
+    ['the current region', 0],
+  ])('does not travel to %s', async (_, downs) => {
+    const play = await openPlay();
+    await openTravelMap(play);
+
+    for (let i = 0; i < downs; i++) play.game.pressUi('MoveDown');
+    play.game.pressUi('Confirm');
+    play.root().querySelector<HTMLButtonElement>('[data-region="triglav"]')!.click();
+    await play.settle();
+
+    play.http.expectNone('/api/save/travel');
+    expect(play.root().querySelector('#travel-title')).not.toBeNull();
+  });
+
+  it('closes with Cancel and gives input back to the world', async () => {
+    const play = await openPlay();
+    await openTravelMap(play);
+
+    play.game.pressUi('Cancel');
+    await play.settle();
+
+    expect(play.root().querySelector('#travel-title')).toBeNull();
+    expect(play.game.consumer).toBe('world');
+  });
+
+  it('shows the regions again when the region was locked meanwhile', async () => {
+    const play = await openPlay();
+    await openTravelMap(play);
+    play.root().querySelector<HTMLButtonElement>('[data-region="kocevje"]')!.click();
+    await play.settle();
+
+    play.http
+      .expectOne('/api/save/travel')
+      .flush({ code: 'region_locked' }, { status: 409, statusText: 'Conflict' });
+    await play.settle();
+    const locked = { ...KOCEVJE, unlocked: false, lockedHint: 'Pomagaj Veri na Dravskem polju.' };
+    play.http
+      .expectOne('/api/save/regions')
+      .flush({ ...REGIONS, regions: [REGIONS.regions[0], locked] });
+    await play.settle();
+
+    expect(entries(play.root).map((entry) => entry.text)).toEqual([
+      'Dravsko polje Tukaj si',
+      'Kočevje Zaklenjeno Pomagaj Veri na Dravskem polju.',
+    ]);
+  });
+
+  it('shows the map error when the new region cannot be loaded', async () => {
+    const play = await openPlay();
+    await openTravelMap(play);
+    play.root().querySelector<HTMLButtonElement>('[data-region="kocevje"]')!.click();
+    await play.settle();
+    play.http.expectOne('/api/save/travel').flush(KOCEVJE);
+    await play.settle();
+    play.http.expectOne('/api/save/time').flush(SPRING_MORNING);
+    play.http.expectOne((r) => r.url === '/api/save/wildlife').flush({ animals: [] });
+    play.http
+      .expectOne('/content/maps/kocevje_forest.json')
+      .flush(null, { status: 404, statusText: 'Not Found' });
+    await play.settle();
+
+    expect(play.root().querySelector('[role="alert"]')?.textContent).toBe(sl.errors.map);
   });
 });

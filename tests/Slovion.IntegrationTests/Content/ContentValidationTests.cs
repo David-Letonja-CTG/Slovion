@@ -45,9 +45,55 @@ public sealed class ContentValidationTests
         Assert.Equal("Oko za naravo", quest.Text["sl"].Title);
         Assert.Null(catalog.FindNpcOnMap("other_map", "vera"));
 
-        Assert.Equal(["tall_grass", "hedgerow"], catalog.AllHabitats.Select(habitat => habitat.Id));
-        Assert.Equal(["Visoka trava", "Mejica"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
-        Assert.Equal([1, 2], catalog.AllHabitats.Select(habitat => habitat.Order));
+        Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland"], catalog.AllHabitats.Select(habitat => habitat.Id));
+        Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
+        Assert.Equal([1, 2, 3, 4, 5], catalog.AllHabitats.Select(habitat => habitat.Order));
+    }
+
+    [Fact]
+    public void Repository_content_has_the_regions()
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        Assert.Equal(
+            [
+                ("dravsko_polje", "dravsko_polje_meadow", (UnlockRule)new UnlockRule.Always()),
+                ("kocevje", "kocevje_forest", new UnlockRule.Flag("hedgerow_open")),
+                ("pohorje", "pohorje_forest", new UnlockRule.IdentifiedSpecies(6)),
+                ("triglav", "triglav_alps", new UnlockRule.IdentifiedSpecies(8)),
+            ],
+            catalog.AllRegions.Select(region => (region.Id, region.MapId, region.Unlock)));
+        Assert.Equal(["Dravsko polje", "Kočevje", "Pohorje", "Triglav"], catalog.AllRegions.Select(region => region.Text["sl"].Name));
+    }
+
+    [Theory]
+    [InlineData("ursus_arctos", "rjavi medved", "kocevje_forest", "kocevje_bear_1", "fir_beech_forest", TorchReaction.Shy)]
+    [InlineData("canis_lupus", "volk", "pohorje_forest", "pohorje_wolf_1", "mountain_forest", TorchReaction.Shy)]
+    [InlineData("rupicapra_rupicapra", "gams", "triglav_alps", "triglav_chamois_1", "alpine_grassland", TorchReaction.Calm)]
+    public void Repository_content_has_the_signature_species_of_the_regions(string id, string slName, string mapId, string spotId, string habitatId, TorchReaction torch)
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        var species = catalog.FindSpecies(SpeciesId.Parse(id));
+        Assert.NotNull(species);
+        Assert.Equal(SpeciesGroup.Mammal, species.Group);
+        Assert.Equal(slName, species.Text["sl"].Name.Value);
+        Assert.Equal(3, species.Clues.Count);
+        Assert.Equal(torch, species.Wildlife?.Torch);
+        Assert.Equal(species.Id, catalog.FindSpot(mapId, spotId)?.SpeciesId);
+        Assert.Contains(catalog.AllHabitats.Single(habitat => habitat.Id == habitatId).Species, entry => entry.SpeciesId == species.Id);
+    }
+
+    [Theory]
+    [InlineData("ursus_arctos", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("canis_lupus", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("rupicapra_rupicapra", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening })]
+    public void Region_species_have_their_sourced_availability(string id, Season[] seasons, TimeOfDay[] times)
+    {
+        var availability = FileContentCatalog.Load(ContentFolder.RepositoryContent()).FindSpecies(SpeciesId.Parse(id))!.Availability;
+
+        Assert.Equal(seasons.Order(), availability.Seasons.Order());
+        Assert.Equal(times.Order(), availability.Times.Order());
     }
 
     [Theory]
@@ -65,7 +111,7 @@ public sealed class ContentValidationTests
         var availability = catalog.FindSpecies(SpeciesId.Parse(id))!.Availability;
 
         Assert.Equal(seasons.Order(), availability.Seasons.Order());
-        Assert.Equal(Enum.GetValues<TimeOfDay>().Order(), availability.Times.Order()); // no sourced time-of-day limits yet
+        Assert.Equal(Enum.GetValues<TimeOfDay>().Order(), availability.Times.Order()); // no sourced time-of-day limits for the lowland species
         Assert.NotEmpty(availability.SourceIds);
     }
 
@@ -176,6 +222,20 @@ public sealed class ContentValidationTests
         { "walk sprite of the wrong size", c => { c.Species["group"] = "mammal"; c.Species["wildlife"] = new JsonObject { ["torch"] = "shy" }; c.WildlifeSprite = ContentFolder.Png(16, 16); }, "walk sprite of species 'salvia_pratensis' must be 32×16 pixels (found 16×16)" },
         { "NPC without a sprite", c => c.NpcSprite = null, "NPC 'vera' has no sprite" },
         { "tile animation outside the tileset", c => c.Map["tilesets"] = new JsonArray(new JsonObject { ["tilecount"] = 8, ["tiles"] = new JsonArray(new JsonObject { ["id"] = 1, ["animation"] = new JsonArray(new JsonObject { ["tileid"] = 9, ["duration"] = 100 }) }) }), "the animation of tile 1 needs frames inside the tileset" },
+        { "map without a signpost", c => Objects(c).RemoveAt(4), "exactly one 'signpost' object is required (found 0)" },
+        { "map with two signposts", c => Objects(c).Add(ContentFolder.TileObject("signpost", "note", "second", tileX: 0, tileY: 0)), "exactly one 'signpost' object is required (found 2)" },
+        { "signpost outside the map", c => Objects(c)[4] = ContentFolder.TileObject("signpost", "note", "far", tileX: 9), "signpost 'far' lies outside the map" },
+        { "region on an unknown map", c => c.Region["mapId"] = "nowhere", "region 'dravsko_polje' refers to unknown map 'nowhere'" },
+        { "map in no region", c => c.Region["mapId"] = "nowhere", "map 'test_meadow' must belong to exactly one region (found 0)" },
+        { "region with an unrewarded flag", c => c.Region["unlock"] = new JsonObject { ["flag"] = "secret" }, "region 'dravsko_polje' requires flag 'secret', which no quest rewards" },
+        { "region with a non-positive count", c => c.Region["unlock"] = new JsonObject { ["identifiedSpecies"] = 0 }, "'unlock.identifiedSpecies' must be a positive integer (found 0)" },
+        { "region with two rules", c => c.Region["unlock"] = new JsonObject { ["flag"] = "hedgerow_open", ["identifiedSpecies"] = 2 }, "may name a flag or a number of identified species, not both" },
+        { "region without Slovenian text", c => c.Region["text"] = new JsonObject(), "regions/dravsko_polje.json: Slovenian text ('text.sl') is required" },
+        { "region without a hint", c => c.Region["text"]!["sl"]!.AsObject().Remove("lockedHint"), "'text.sl' needs a 'name' and a 'lockedHint'" },
+        { "region outside the travel map", c => c.Region["position"]!["x"] = 101, "'position.x' and 'position.y' must be between 0 and 100" },
+        { "region without an order", c => c.Region.Remove("order"), "regions/dravsko_polje.json: 'order' must be a positive integer (found none)" },
+        { "invalid region ID", c => c.Region["id"] = "Dravsko-Polje", "invalid region ID 'Dravsko-Polje'" },
+        { "no start region", c => c.Region["id"] = "elsewhere", "the start region 'dravsko_polje' is required" },
         { "spot with unknown species", c => Objects(c)[1]!["properties"]![1]!["value"] = "vulpes_vulpes", "spot 'sage_1' references unknown species 'vulpes_vulpes'" },
     };
 
@@ -237,6 +297,31 @@ public sealed class ContentValidationTests
 
         Assert.NotNull(catalog.FindNpcOnMap("test_meadow", "vera"));
         Assert.Equal("eye_for_nature", catalog.FindQuest("eye_for_nature")?.Id);
+    }
+
+    [Fact]
+    public void Duplicate_region_IDs_are_rejected()
+    {
+        using var content = new ContentFolder();
+        content.Write();
+
+        var error = Assert.Throws<ContentValidationException>(() => FileContentCatalog.Load(content.Write(regionFile: "copy.json")));
+
+        Assert.Contains(error.Errors, message => message.Contains("duplicate region ID 'dravsko_polje'", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Valid_fixture_has_its_region()
+    {
+        using var content = new ContentFolder();
+
+        var catalog = FileContentCatalog.Load(content.Write());
+
+        var region = Assert.Single(catalog.AllRegions);
+        Assert.Equal(("dravsko_polje", "test_meadow", 78, 34), (region.Id, region.MapId, region.X, region.Y));
+        Assert.IsType<UnlockRule.Always>(region.Unlock);
+        Assert.Same(region, catalog.FindRegion("dravsko_polje"));
+        Assert.Null(catalog.FindRegion("atlantis"));
     }
 
     [Fact]

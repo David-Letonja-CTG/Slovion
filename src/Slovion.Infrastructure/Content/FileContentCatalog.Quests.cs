@@ -4,7 +4,7 @@ using Slovion.Domain.Content;
 
 namespace Slovion.Infrastructure.Content;
 
-/// <summary>NPC, quest and map-actor (NPC and gate) loading and validation.</summary>
+/// <summary>NPC, quest and map-actor (NPC, gate and signpost) loading and validation.</summary>
 public sealed partial class FileContentCatalog
 {
     /// <summary>Dialogue placeholders the server fills in.</summary>
@@ -170,14 +170,20 @@ public sealed partial class FileContentCatalog
     }
 
     /// <summary>
-    /// NPCs and gates: Tiled tile objects (with a <c>gid</c>) whose position is their bottom-left corner. Each covers the
-    /// tile under its centre.
+    /// NPCs, gates and the signpost: Tiled tile objects (with a <c>gid</c>) whose position is their bottom-left corner.
+    /// Each covers the tile under its centre. Every map has exactly one signpost, which opens the travel map.
     /// </summary>
     private static List<MapNpc> ValidateMapActors(TiledMapFile map, string mapId, string name, Dictionary<string, Npc> npcs, IReadOnlySet<string> rewardFlags, List<string> errors)
     {
         var result = new List<MapNpc>();
         var objects = map.Layers?.FirstOrDefault(l => l.Name == "objects" && l.Type == "objectgroup")?.Objects ?? [];
-        foreach (var actor in objects.Where(o => o.ObjectClass is "npc" or "gate"))
+        var signposts = objects.Count(o => o.ObjectClass == "signpost");
+        if (signposts != 1)
+        {
+            errors.Add($"{name}: exactly one 'signpost' object is required (found {signposts}).");
+        }
+
+        foreach (var actor in objects.Where(o => o.ObjectClass is "npc" or "gate" or "signpost"))
         {
             var isNpc = actor.ObjectClass == "npc";
             var at = $"{name}: {actor.ObjectClass} '{actor.Name}'";
@@ -209,7 +215,7 @@ public sealed partial class FileContentCatalog
                     result.Add(new MapNpc(mapId, npc));
                 }
             }
-            else if (actor.StringProperty("requiresFlag") is not { } flag || !rewardFlags.Contains(flag))
+            else if (actor.ObjectClass == "gate" && (actor.StringProperty("requiresFlag") is not { } flag || !rewardFlags.Contains(flag)))
             {
                 errors.Add($"{at} requires flag '{actor.StringProperty("requiresFlag")}', which no quest rewards.");
             }

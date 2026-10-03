@@ -101,7 +101,12 @@ internal sealed class FakeContentCatalog(params Species[] initial) : IContentCat
 
     public List<Quest> Quests { get; } = [];
 
+    /// <summary>The regions listed by <see cref="AllRegions"/> (by order, then ID); none by default.</summary>
+    public List<Region> Regions { get; } = [];
+
     public IReadOnlyList<Habitat> AllHabitats => Habitats.OrderBy(habitat => habitat.Order).ThenBy(habitat => habitat.Id, StringComparer.Ordinal).ToList();
+
+    public IReadOnlyList<Region> AllRegions => Regions.OrderBy(region => region.Order).ThenBy(region => region.Id, StringComparer.Ordinal).ToList();
 
     public Species? FindSpecies(SpeciesId id) => species.FirstOrDefault(s => s.Id == id);
 
@@ -116,6 +121,8 @@ internal sealed class FakeContentCatalog(params Species[] initial) : IContentCat
         mapId == MapId && Npcs.FirstOrDefault(npc => npc.Id == npcId) is { } match ? new MapNpc(mapId, match) : null;
 
     public Quest? FindQuest(string questId) => Quests.FirstOrDefault(quest => quest.Id == questId);
+
+    public Region? FindRegion(string regionId) => Regions.FirstOrDefault(region => region.Id == regionId);
 
     public Quest? FindQuestByGiver(string npcId) => Quests.FirstOrDefault(quest => quest.GiverId == npcId);
 

@@ -1,0 +1,120 @@
+{
+  "id": "ursus_arctos",
+  "group": "mammal",
+  "scientificName": {
+    "value": "Ursus arctos Linnaeus, 1758",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "lzs": {
+      "title": "Rjavi medved",
+      "publisher": "Lovska zveza Slovenije",
+      "url": "https://www.lovska-zveza.si/prostozivece-zivali/sesalci/medved/",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gis": {
+      "title": "Rjavi medved",
+      "publisher": "Gozdarski inštitut Slovenije (zdravgozd.si)",
+      "url": "https://www.zdravgozd.si/prirocnik/zapis.aspx?idso=803",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Ursus arctos Linnaeus, 1758 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2433433",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "rjavi medved",
+        "sources": [
+          "lzs",
+          "gis"
+        ]
+      },
+      "family": {
+        "value": "Ursidae",
+        "sources": [
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Listnati, iglasti in mešani gozdovi v nižinah in gorah.",
+        "sources": [
+          "lzs"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je najpogostejši v bukovo-jelovih gozdovih dinarskega visokogorskega krasa.",
+        "sources": [
+          "lzs"
+        ]
+      },
+      "season": {
+        "value": "Je predvsem nočna žival, a ga neredko vidimo tudi podnevi. Zimo prespi, vendar to ni pravo zimsko spanje.",
+        "sources": [
+          "lzs"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Samci so dolgi od 161 do 257 cm, samice od 120 do 200 cm.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Kožuh je v osnovi rjav, lahko pa je tudi svetel z rumenkastimi toni ali temen, črno rjav.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Pri hoji stopa po celotnem podplatu.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Oči so drobne, uhlji kratki in zaokroženi, rep pa kratek in skrit v kožuhu.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Je vsejed: hrani se z glivami, gozdnimi plodovi, deli rastlin, nevretenčarji, glodavci in mrhovino.",
+          "sources": [
+            "lzs"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "sources": [
+      "lzs"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

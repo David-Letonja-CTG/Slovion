@@ -69,6 +69,16 @@ internal sealed record HabitatTextFile(string? Name);
 /// <summary>A habitat's localized display name and fictional gameplay values (search chance, species weights).</summary>
 internal sealed record HabitatFile(string? Id, Dictionary<string, HabitatTextFile>? Text, int? Order, int SearchChancePercent, List<HabitatSpeciesFile>? Species);
 
+internal sealed record RegionTextFile(string? Name, string? LockedHint);
+
+internal sealed record RegionPositionFile(int? X, int? Y);
+
+/// <summary>At most one rule: a flag, or a number of identified species. None means always open.</summary>
+internal sealed record RegionUnlockFile(string? Flag, int? IdentifiedSpecies);
+
+/// <summary>A travel destination: its map, travel-map position and list order, unlock rule, and texts per language.</summary>
+internal sealed record RegionFile(string? Id, string? MapId, int? Order, RegionPositionFile? Position, RegionUnlockFile? Unlock, Dictionary<string, RegionTextFile>? Text);
+
 internal sealed record AreaTextFile(string? Name);
 
 /// <summary>A named place in the world (a game label, not a fact).</summary>

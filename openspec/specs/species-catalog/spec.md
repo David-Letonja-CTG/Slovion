@@ -50,6 +50,16 @@ The API SHALL refuse to start when content is invalid, reporting every problem f
 - **WHEN** the API starts with the repository's content
 - **THEN** `crataegus_monogyna` (group `plant`, *enovrati glog*) and `lanius_collurio` (group `bird`, *rjavi srakoper*) are available, each with sourced Slovenian facts, three clues and a picture
 
+#### Scenario: Signature species of the regions
+- **WHEN** the API starts with the repository's content
+- **THEN** the following are available, each with sourced Slovenian facts, three clues, a picture, a walk sprite and wildlife traits:
+
+  | Species | Group | Slovenian name | Region |
+  |---|---|---|---|
+  | `ursus_arctos` | `mammal` | *rjavi medved* | Kočevje |
+  | `canis_lupus` | `mammal` | *volk* | Pohorje |
+  | `rupicapra_rupicapra` | `mammal` | *gams* | Triglav |
+
 ### Requirement: Spots reference existing species
 Every interactive spot in a map that names a species SHALL reference an existing species ID.
 

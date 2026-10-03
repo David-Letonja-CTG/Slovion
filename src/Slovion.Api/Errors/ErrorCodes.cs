@@ -21,6 +21,8 @@ public static class ErrorCodes
     public const string UnknownHabitat = "unknown_habitat";
     public const string UnknownNpc = "unknown_npc";
     public const string UnknownMap = "unknown_map";
+    public const string UnknownRegion = "unknown_region";
+    public const string RegionLocked = "region_locked";
 
     public static string FromStatusCode(int? statusCode) => statusCode switch
     {

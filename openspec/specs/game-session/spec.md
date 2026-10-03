@@ -42,11 +42,15 @@ Choosing *Nova igra* on a device that already holds a save token SHALL ask for c
 - **THEN** a new save slot is created and its token replaces the old one on the device
 
 ### Requirement: Continue an existing save
-Choosing *Nadaljuj* SHALL enter the meadow at its starting point with the saved progress (discoveries) of the slot identified by the stored token.
+Choosing *Nadaljuj* SHALL enter the spawn of the save's current region (see `regions`), with the saved progress of the slot identified by the stored token.
 
 #### Scenario: Continue after reload
 - **WHEN** a player who discovered a species reloads the page and chooses *Nadaljuj*
 - **THEN** the NatureDex still lists that species
+
+#### Scenario: Continue in another region
+- **WHEN** a player who travelled to Kočevje reloads the page and chooses *Nadaljuj*
+- **THEN** the game continues on the Kočevje map
 
 ### Requirement: Unknown save token
 When the server rejects the stored token as unknown, the client SHALL tell the player the saved game could not be found, remove the token from the device, and return to the title screen offering only *Nova igra*.

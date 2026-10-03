@@ -2,6 +2,7 @@ import { Direction } from '../input/actions';
 import {
   AreaZone,
   Gate,
+  Signpost,
   HabitatZone,
   MapNpc,
   Spot,
@@ -70,7 +71,7 @@ const DIRECTIONS: readonly Direction[] = ['up', 'down', 'left', 'right'];
 /**
  * Parses the Tiled JSON subset Slovion supports (design §4): orthogonal, 16×16 tiles, one embedded
  * tileset, tile layers `ground` (+ optional others) and `collision`, object layer `objects` with one
- * `spawn`, any number of `spot` objects, habitat and area zones, and NPC and gate tile objects.
+ * `spawn`, any number of `spot` objects, habitat and area zones, NPC and gate tile objects, and one signpost.
  */
 export function parseTiledMap(id: string, json: unknown): WorldMap {
   const map = (json ?? {}) as TiledMap;
@@ -180,6 +181,24 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     }
   }
 
+  // The signpost: a tile object like the gates, exactly one per map, opening the travel map.
+  const signposts: Signpost[] = [];
+  const signpostObjects = objects?.filter((o) => classOf(o) === 'signpost') ?? [];
+  if (objects && signpostObjects.length !== 1) {
+    problems.push(`exactly one signpost is required (found ${signpostObjects.length})`);
+  }
+  for (const object of signpostObjects) {
+    const x = Math.floor(((object.x ?? 0) + (object.width ?? 0) / 2) / TILE_SIZE);
+    const y = Math.floor(((object.y ?? 0) - (object.height ?? 0) / 2) / TILE_SIZE);
+    if (!object.gid || object.gid <= 0) {
+      problems.push('the signpost must be a tile object');
+    } else if (x < 0 || y < 0 || x >= width || y >= height) {
+      problems.push('the signpost lies outside the map');
+    } else {
+      signposts.push({ x, y, gid: object.gid });
+    }
+  }
+
   if (problems.length > 0) throw new MapFormatError(id, problems);
 
   const spawnTile = tileOf(spawns[0]);
@@ -218,6 +237,7 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     npcs,
     gates,
     areas,
+    signposts,
   );
 }
 

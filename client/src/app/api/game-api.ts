@@ -114,6 +114,28 @@ export interface PlayerProgress {
   readonly quests: readonly QuestInfo[];
 }
 
+/**
+ * A region for the save (D3). `x` and `y` are percent of the travel map. `identified` and `required` are set
+ * for species-count rules only; `lockedHint` only while the region is locked.
+ */
+export interface RegionInfo {
+  readonly regionId: string;
+  readonly name: string;
+  readonly mapId: string;
+  readonly x: number;
+  readonly y: number;
+  readonly unlocked: boolean;
+  readonly identified: number | null;
+  readonly required: number | null;
+  readonly lockedHint: string | null;
+}
+
+/** The save's current region and every region in travel-list order. */
+export interface RegionsInfo {
+  readonly currentRegionId: string;
+  readonly regions: readonly RegionInfo[];
+}
+
 export interface AnswerResult {
   readonly correct: boolean;
   /** The correct species, revealed after answering. */
@@ -123,7 +145,7 @@ export interface AnswerResult {
 
 /**
  * Error codes the client shows messages for; each has a key `errors.<code>`, used dynamically:
- * t(errors.invalid_save_token, errors.unknown_spot, errors.unknown_encounter, errors.unknown_habitat, errors.unknown_npc, errors.unknown_map, errors.network, errors.error)
+ * t(errors.invalid_save_token, errors.unknown_spot, errors.unknown_encounter, errors.unknown_habitat, errors.unknown_npc, errors.unknown_map, errors.unknown_region, errors.region_locked, errors.network, errors.error)
  */
 export type ApiErrorCode =
   | 'invalid_save_token'
@@ -132,6 +154,8 @@ export type ApiErrorCode =
   | 'unknown_habitat'
   | 'unknown_npc'
   | 'unknown_map'
+  | 'unknown_region'
+  | 'region_locked'
   | 'network'
   | 'error';
 
@@ -142,6 +166,8 @@ const KNOWN_CODES: readonly ApiErrorCode[] = [
   'unknown_habitat',
   'unknown_npc',
   'unknown_map',
+  'unknown_region',
+  'region_locked',
 ];
 
 /** Maps any failure to a code with a translated message. */
@@ -202,6 +228,16 @@ export class GameApi {
   /** Talks to an NPC; the server decides what is said and every quest change. */
   talk(mapId: string, npcId: string): Observable<Conversation> {
     return this.http.post<Conversation>('/api/save/conversations', { mapId, npcId });
+  }
+
+  /** The save's current region and which regions it may travel to. */
+  regions(): Observable<RegionsInfo> {
+    return this.http.get<RegionsInfo>('/api/save/regions');
+  }
+
+  /** Travels to an unlocked region; the server decides and remembers it (D3). */
+  travel(regionId: string): Observable<RegionInfo> {
+    return this.http.post<RegionInfo>('/api/save/travel', { regionId });
   }
 
   progress(): Observable<PlayerProgress> {

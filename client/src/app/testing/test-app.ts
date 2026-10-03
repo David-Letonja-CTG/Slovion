@@ -6,11 +6,12 @@ import { TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import sl from '../../../public/i18n/sl.json';
 import { Action, ResidentInfo, Game, GameOptions } from '../../engine';
-import { AnswerResult, Encounter, NatureDexEntry } from '../api/game-api';
+import { AnswerResult, Encounter, NatureDexEntry, RegionsInfo } from '../api/game-api';
 import { gameApiInterceptor } from '../api/game-api.interceptor';
 import { routes } from '../app.routes';
 import { GAME_FACTORY } from '../game/game-canvas';
 import { provideTestLocalization } from '../i18n/localization.testing';
+import { TRAVEL_FADE_MS } from '../play/play-screen';
 import { IMAGE_LOADER } from '../play/world-loader';
 import { DEVICE_STORAGE, SaveTokenStore } from '../session/save-token-store';
 
@@ -102,6 +103,7 @@ export async function setupTestApp(options: TestAppOptions = {}) {
             : storage,
       },
       { provide: IMAGE_LOADER, useValue: (url: string) => Promise.resolve({ url }) },
+      { provide: TRAVEL_FADE_MS, useValue: 0 },
       {
         provide: GAME_FACTORY,
         useValue: (_host: HTMLElement, _canvas: HTMLCanvasElement, given: GameOptions) => {
@@ -120,6 +122,57 @@ export async function setupTestApp(options: TestAppOptions = {}) {
     tokens: TestBed.inject(SaveTokenStore),
   };
 }
+
+/** A save on Dravsko polje after Vera's quest, with 4 species identified: Kočevje is open. */
+export const REGIONS: RegionsInfo = {
+  currentRegionId: 'dravsko_polje',
+  regions: [
+    {
+      regionId: 'dravsko_polje',
+      name: 'Dravsko polje',
+      mapId: 'dravsko_polje_meadow',
+      x: 74,
+      y: 35,
+      unlocked: true,
+      identified: null,
+      required: null,
+      lockedHint: null,
+    },
+    {
+      regionId: 'kocevje',
+      name: 'Kočevje',
+      mapId: 'kocevje_forest',
+      x: 45,
+      y: 84,
+      unlocked: true,
+      identified: null,
+      required: null,
+      lockedHint: null,
+    },
+    {
+      regionId: 'pohorje',
+      name: 'Pohorje',
+      mapId: 'pohorje_forest',
+      x: 62,
+      y: 27,
+      unlocked: false,
+      identified: 4,
+      required: 6,
+      lockedHint: 'Za pot na Pohorje moraš bolje poznati naravo.',
+    },
+    {
+      regionId: 'triglav',
+      name: 'Triglav',
+      mapId: 'triglav_alps',
+      x: 15,
+      y: 35,
+      unlocked: false,
+      identified: 4,
+      required: 8,
+      lockedHint: 'V gore se odpravijo le izkušeni naravoslovci.',
+    },
+  ],
+};
 
 export const SAGE_ENTRY: NatureDexEntry = {
   speciesId: 'salvia_pratensis',

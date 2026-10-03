@@ -1,6 +1,5 @@
 using System.Globalization;
 using Slovion.Application.Content;
-using Slovion.Application.Discovery;
 using Slovion.Domain.Content;
 using Slovion.Domain.Quests;
 
@@ -34,7 +33,7 @@ public abstract record TalkResult
 /// Quests and progression (docs/decisions.md D3): the server decides what an NPC says and every quest change.
 /// Progress is the number of species the save has identified, whenever they were identified.
 /// </summary>
-public sealed class QuestService(IContentCatalog content, IDiscoveryRepository discoveries, IQuestRepository quests, TimeProvider time)
+public sealed class QuestService(IContentCatalog content, ProgressReader progressReader, IQuestRepository quests, TimeProvider time)
 {
     /// <summary>Talks to an NPC on a map: starts, reports on or completes its quest.</summary>
     public async Task<TalkResult> TalkAsync(Guid saveSlotId, string mapId, string npcId, string language, CancellationToken cancellationToken)
@@ -45,7 +44,7 @@ public sealed class QuestService(IContentCatalog content, IDiscoveryRepository d
         }
 
         var text = TextFor(quest, language);
-        var progress = Math.Min(await IdentifiedCountAsync(saveSlotId, cancellationToken), quest.IdentifiedSpeciesGoal);
+        var progress = Math.Min(await progressReader.IdentifiedCountAsync(saveSlotId, cancellationToken), quest.IdentifiedSpeciesGoal);
         var now = time.GetUtcNow();
         var lines = new List<string>();
 
@@ -71,13 +70,13 @@ public sealed class QuestService(IContentCatalog content, IDiscoveryRepository d
         }
 
         var all = await quests.ListAsync(saveSlotId, cancellationToken);
-        return new TalkResult.Conversation(NameOf(placed.Npc, language), lines, ViewOf(quest, text, stored, progress), FlagsOf(all));
+        return new TalkResult.Conversation(NameOf(placed.Npc, language), lines, ViewOf(quest, text, stored, progress), progressReader.FlagsOf(all));
     }
 
     /// <summary>The save's flags and started quests, for loading the game.</summary>
     public async Task<PlayerProgress> GetProgressAsync(Guid saveSlotId, string language, CancellationToken cancellationToken)
     {
-        var identified = await IdentifiedCountAsync(saveSlotId, cancellationToken);
+        var identified = await progressReader.IdentifiedCountAsync(saveSlotId, cancellationToken);
         var all = await quests.ListAsync(saveSlotId, cancellationToken);
         var views = all
             .OrderBy(stored => stored.StartedAt)
@@ -86,20 +85,8 @@ public sealed class QuestService(IContentCatalog content, IDiscoveryRepository d
             .Where(pair => pair.quest is not null) // content removed since: skip, keep the record
             .Select(pair => ViewOf(pair.quest!, TextFor(pair.quest!, language), pair.stored, Math.Min(identified, pair.quest!.IdentifiedSpeciesGoal)))
             .ToList();
-        return new PlayerProgress(FlagsOf(all), views);
+        return new PlayerProgress(progressReader.FlagsOf(all), views);
     }
-
-    private async Task<int> IdentifiedCountAsync(Guid saveSlotId, CancellationToken cancellationToken) =>
-        (await discoveries.ListAsync(saveSlotId, cancellationToken)).Count(discovery => discovery.IsIdentified);
-
-    /// <summary>The reward flags of the completed quests that still exist in content.</summary>
-    private List<string> FlagsOf(IEnumerable<QuestProgress> all) =>
-        all.Where(stored => stored.IsCompleted)
-            .Select(stored => content.FindQuest(stored.QuestId)?.RewardFlag)
-            .OfType<string>()
-            .Distinct(StringComparer.Ordinal)
-            .Order(StringComparer.Ordinal)
-            .ToList();
 
     private static QuestView ViewOf(Quest quest, QuestText text, QuestProgress stored, int progress) =>
         new(quest.Id, text.Title, text.Summary, text.ReturnHint, stored.IsCompleted ? QuestStatus.Completed : QuestStatus.Active, progress, quest.IdentifiedSpeciesGoal);

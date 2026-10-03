@@ -1,0 +1,133 @@
+{
+  "id": "canis_lupus",
+  "group": "mammal",
+  "scientificName": {
+    "value": "Canis lupus Linnaeus, 1758",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "lzs": {
+      "title": "Volk",
+      "publisher": "Lovska zveza Slovenije",
+      "url": "https://www.lovska-zveza.si/prostozivece-zivali/sesalci/volk/",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gis": {
+      "title": "Volk",
+      "publisher": "Gozdarski inštitut Slovenije (zdravgozd.si)",
+      "url": "https://www.zdravgozd.si/prirocnik/zapis.aspx?idso=804",
+      "accessed": "2026-10-03",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "rtv": {
+      "title": "Na območju Pohorja opazili volkove, kaže, da se je izoblikoval trop",
+      "publisher": "RTV Slovenija",
+      "url": "https://www.rtvslo.si/slovenija/na-obmocju-pohorja-zaznana-prisotnost-volkov-kaze-da-se-je-izoblikoval-trop/729678",
+      "accessed": "2026-10-03",
+      "licence": "© RTV Slovenija; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Canis lupus Linnaeus, 1758 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5219173",
+      "accessed": "2026-10-03",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "volk",
+        "sources": [
+          "lzs",
+          "gis"
+        ]
+      },
+      "family": {
+        "value": "Canidae",
+        "sources": [
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "V Evropi živi predvsem v gozdovih; pri nas v gozdovih bukve in jelke na obsežnih gorskih območjih dinarskega krasa.",
+        "sources": [
+          "lzs"
+        ]
+      },
+      "distribution": {
+        "value": "Ohranil se je na Kočevskem in Notranjskem, v letih 2018–2019 se je razširil v Alpe, leta 2024 pa so trop posneli tudi na Pohorju.",
+        "sources": [
+          "rtv",
+          "gis"
+        ]
+      },
+      "season": {
+        "value": "Aktiven je pretežno ponoči in v mraku.",
+        "sources": [
+          "gis"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Trup je dolg od 1 do 1,6 m, rep od 30 do 50 cm; tehta od 30 do 75 kg.",
+          "sources": [
+            "gis"
+          ]
+        },
+        {
+          "value": "Kožuh je rumeno rjav s sivim nadihom; pozimi so sivi toni bolj izraženi.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Na podlakti ima 10 cm dolgo in 2 cm široko črno progo.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Živi v tropih s strogo določeno hierarhijo.",
+          "sources": [
+            "lzs"
+          ]
+        },
+        {
+          "value": "Pri iskanju hrane lahko naenkrat prepotuje od 40 do 70 km.",
+          "sources": [
+            "lzs"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "times": [
+      "evening",
+      "night"
+    ],
+    "sources": [
+      "gis"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

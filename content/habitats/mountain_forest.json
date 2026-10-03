@@ -1,0 +1,9 @@
+{
+  "id": "mountain_forest",
+  "text": { "sl": { "name": "Gorski gozd" } },
+  "order": 4,
+  "searchChancePercent": 50,
+  "species": [
+    { "speciesId": "canis_lupus", "weight": 1 }
+  ]
+}

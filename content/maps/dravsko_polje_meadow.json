@@ -3090,12 +3090,24 @@
      "width": 0,
      "x": 136,
      "y": 392
+    },
+    {
+     "gid": 31,
+     "height": 16,
+     "id": 18,
+     "name": "signpost",
+     "rotation": 0,
+     "type": "signpost",
+     "visible": true,
+     "width": 16,
+     "x": 192,
+     "y": 160
     }
    ]
   }
  ],
  "nextlayerid": 5,
- "nextobjectid": 18,
+ "nextobjectid": 19,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.11.2",
@@ -3105,12 +3117,12 @@
    "columns": 8,
    "firstgid": 1,
    "image": "../tilesets/meadow.png",
-   "imageheight": 48,
+   "imageheight": 80,
    "imagewidth": 128,
    "margin": 0,
    "name": "meadow",
    "spacing": 0,
-   "tilecount": 24,
+   "tilecount": 40,
    "tileheight": 16,
    "tilewidth": 16,
    "tiles": [

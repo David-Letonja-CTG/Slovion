@@ -12,13 +12,13 @@ const WORLD = { map: { id: 'test_map' } } as unknown as LoadedWorld;
 @Component({
   imports: [GameCanvas],
   template: `<app-game-canvas
-    [world]="world"
+    [world]="world()"
     (interaction)="interactions.push($event)"
     (started)="started.set($event)"
   />`,
 })
 class Host {
-  readonly world = WORLD;
+  readonly world = signal(WORLD);
   readonly interactions: Interaction[] = [];
   readonly started = signal<Game | undefined>(undefined);
 }
@@ -54,6 +54,18 @@ describe('GameCanvas', () => {
     expect(options?.world).toBe(WORLD);
     expect(game.start).toHaveBeenCalledOnce();
     expect(fixture.componentInstance.started()).toBe(game);
+  });
+
+  it('stops the game and starts a new one for a new world', async () => {
+    const fixture = await render();
+    const next = { map: { id: 'other_map' } } as unknown as LoadedWorld;
+
+    fixture.componentInstance.world.set(next);
+    await fixture.whenStable();
+
+    expect(game.stop).toHaveBeenCalledOnce();
+    expect(game.start).toHaveBeenCalledTimes(2);
+    expect(options?.world).toBe(next);
   });
 
   it('emits interactions reported by the engine', async () => {

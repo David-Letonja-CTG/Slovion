@@ -1,0 +1,8 @@
+{
+  "id": "triglav",
+  "mapId": "triglav_alps",
+  "order": 4,
+  "position": { "x": 15, "y": 35 },
+  "unlock": { "identifiedSpecies": 8 },
+  "text": { "sl": { "name": "Triglav", "lockedHint": "V gore se odpravijo le izkušeni naravoslovci." } }
+}

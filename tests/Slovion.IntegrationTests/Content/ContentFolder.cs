@@ -19,6 +19,8 @@ public sealed class ContentFolder : IDisposable
 
     public JsonObject Quest { get; }
 
+    public JsonObject Region { get; }
+
     /// <summary>The picture written for the species; <c>null</c> writes none.</summary>
     public byte[]? Picture { get; set; } = Png(32, 32);
 
@@ -40,17 +42,20 @@ public sealed class ContentFolder : IDisposable
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "wildlife-sprites"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "npc-sprites"));
         Directory.CreateDirectory(System.IO.Path.Combine(Path, "quests"));
+        Directory.CreateDirectory(System.IO.Path.Combine(Path, "regions"));
         Species = ValidSpecies();
         Map = ValidMap();
         Habitat = ValidHabitat();
         Npc = ValidNpc();
         Area = new JsonObject { ["id"] = "test_field", ["text"] = new JsonObject { ["sl"] = new JsonObject { ["name"] = "Testno polje" } } };
         Quest = ValidQuest();
+        Region = ValidRegion();
     }
 
-    /// <summary>Writes the species, its picture, the map, the habitat, the NPC and the quest, and returns the folder path.</summary>
-    public string Write(string speciesFile = "salvia_pratensis.json", string mapFile = "test_meadow.json", string habitatFile = "tall_grass.json", string npcFile = "vera.json", string questFile = "eye_for_nature.json")
+    /// <summary>Writes the species, its picture, the map, the habitat, the NPC, the quest and the region, and returns the folder path.</summary>
+    public string Write(string speciesFile = "salvia_pratensis.json", string mapFile = "test_meadow.json", string habitatFile = "tall_grass.json", string npcFile = "vera.json", string questFile = "eye_for_nature.json", string regionFile = "dravsko_polje.json")
     {
+        File.WriteAllText(System.IO.Path.Combine(Path, "regions", regionFile), Region.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "npcs", npcFile), Npc.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "areas", "test_field.json"), Area.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "quests", questFile), Quest.ToJsonString());
@@ -144,6 +149,16 @@ public sealed class ContentFolder : IDisposable
         ["order"] = 1,
         ["searchChancePercent"] = 70,
         ["species"] = new JsonArray(new JsonObject { ["speciesId"] = "salvia_pratensis", ["weight"] = 5 }),
+    };
+
+    private static JsonObject ValidRegion() => new()
+    {
+        ["id"] = "dravsko_polje",
+        ["mapId"] = "test_meadow",
+        ["order"] = 1,
+        ["position"] = new JsonObject { ["x"] = 78, ["y"] = 34 },
+        ["unlock"] = new JsonObject(),
+        ["text"] = new JsonObject { ["sl"] = new JsonObject { ["name"] = "Dravsko polje", ["lockedHint"] = "Vedno odprto." } },
     };
 
     private static JsonObject ValidNpc() => new()
@@ -252,7 +267,8 @@ public sealed class ContentFolder : IDisposable
                             Property("spotId", "sage_1"),
                             Property("speciesId", "salvia_pratensis"))),
                         HabitatZone(),
-                        AreaZone()),
+                        AreaZone(),
+                        TileObject("signpost", "note", "signpost", tileX: 3, tileY: 2)),
                 }),
         };
     }

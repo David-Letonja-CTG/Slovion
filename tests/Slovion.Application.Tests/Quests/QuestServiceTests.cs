@@ -32,7 +32,7 @@ public class QuestServiceTests
                 [QuestDialogue.Completed] = ["completed"],
             }),
         }));
-        service = new QuestService(catalog, discoveries, progress, time);
+        service = new QuestService(catalog, new ProgressReader(catalog, discoveries, progress), progress, time);
     }
 
     private async Task Identify(int count)
