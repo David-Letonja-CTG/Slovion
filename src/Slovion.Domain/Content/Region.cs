@@ -1,3 +1,5 @@
+using Slovion.Domain.World;
+
 namespace Slovion.Domain.Content;
 
 /// <summary>What opens a region for a save. Gameplay data (docs/decisions.md D6).</summary>
@@ -38,12 +40,16 @@ public sealed record RegionText(string Name, string LockedHint);
 
 /// <summary>
 /// A place the player can travel to: one map, a position on the schematic travel map (percent of its width and
-/// height), its order in the travel list, and the rule that opens it (docs/decisions.md D7).
+/// height), its order in the travel list, the rule that opens it, and its weather weights per season (fictional
+/// gameplay data; always clear without them) (docs/decisions.md D7, D11).
 /// </summary>
-public sealed record Region(string Id, string MapId, int Order, int X, int Y, UnlockRule Unlock, IReadOnlyDictionary<string, RegionText> Text)
+public sealed record Region(string Id, string MapId, int Order, int X, int Y, UnlockRule Unlock, IReadOnlyDictionary<string, RegionText> Text, IReadOnlyDictionary<Season, IReadOnlyDictionary<Weather, int>>? WeatherWeights = null)
 {
     /// <summary>The region every new save starts in; content must define it.</summary>
     public const string StartId = "dravsko_polje";
 
     public bool IsUnlockedFor(IReadOnlyCollection<string> flags, int identifiedCount) => Unlock.IsMetBy(flags, identifiedCount);
+
+    /// <summary>The region's weather at an in-game moment.</summary>
+    public Weather WeatherAt(WorldTime time) => WeatherPick.For(Id, time, WeatherWeights);
 }

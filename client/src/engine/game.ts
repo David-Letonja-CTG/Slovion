@@ -1,3 +1,4 @@
+import { Weather } from './render/weather';
 import { GameLoop } from './game-loop';
 import { ActionConsumer, ActionDispatcher } from './input/action-dispatcher';
 import { ActionState } from './input/action-state';
@@ -32,6 +33,8 @@ export interface Game {
   setTorch(on: boolean): void;
   /** Replaces the map's resident animals as the server lists them (D3, D8). */
   setResidents(residents: readonly ResidentInfo[]): void;
+  /** Sets the current region's weather as the server reported it (D11). */
+  setWeather(weather: Weather): void;
 }
 
 export interface GameOptions {
@@ -52,6 +55,10 @@ export interface GameOptions {
   readonly onAreaChange?: (areaId: string) => void;
   /** Called when the torch is switched on or off. */
   readonly onTorchChange?: (on: boolean) => void;
+  /** The current region's weather when the game starts; clear by default. */
+  readonly weather?: Weather;
+  /** Draws weather without movement, for players who prefer reduced motion. */
+  readonly reducedMotion?: boolean;
   /** Platform services. Defaults to the browser. */
   readonly environment?: GameEnvironment;
 }
@@ -86,6 +93,8 @@ export function createGame(
   );
   world.setOpenFlags(options.openFlags ?? []);
   world.setResidents(options.residents ?? []);
+  world.setWeather(options.weather ?? 'clear');
+  world.reducedMotion = options.reducedMotion ?? false;
 
   let availableWidth = container.clientWidth;
   let availableHeight = container.clientHeight;
@@ -137,6 +146,7 @@ export function createGame(
     setWorldTime: (minutes) => world.setWorldTime(minutes),
     setTorch: (on) => world.setTorch(on),
     setResidents: (residents) => world.setResidents(residents),
+    setWeather: (weather) => world.setWeather(weather),
   };
 }
 

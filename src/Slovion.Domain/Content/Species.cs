@@ -29,15 +29,17 @@ public enum TorchReaction
 public sealed record WildlifeTraits(TorchReaction Torch);
 
 /// <summary>
-/// When a species can be found: in which seasons and at which times of day. Derived from sourced facts (flowering,
-/// flight or presence periods, activity) and backed by <see cref="SourceIds"/> (docs/decisions.md D6, D8).
+/// When a species can be found: in which seasons and at which times of day, and in which weathers it is also found at
+/// any time of day. Derived from sourced facts (flowering, flight or presence periods, activity) and backed by
+/// <see cref="SourceIds"/> (docs/decisions.md D6, D8, D11).
 /// </summary>
-public sealed record Availability(IReadOnlySet<Season> Seasons, IReadOnlySet<TimeOfDay> Times, IReadOnlyList<string> SourceIds)
+public sealed record Availability(IReadOnlySet<Season> Seasons, IReadOnlySet<TimeOfDay> Times, IReadOnlyList<string> SourceIds, IReadOnlySet<Weather>? AlsoInWeather = null)
 {
-    public bool IsAvailableAt(WorldTime time)
+    /// <summary>In one of its seasons, and at one of its times of day or in one of its "also in" weathers.</summary>
+    public bool IsAvailableAt(WorldTime time, Weather weather)
     {
         ArgumentNullException.ThrowIfNull(time);
-        return Seasons.Contains(time.Season) && Times.Contains(time.TimeOfDay);
+        return Seasons.Contains(time.Season) && (Times.Contains(time.TimeOfDay) || (AlsoInWeather?.Contains(weather) ?? false));
     }
 }
 

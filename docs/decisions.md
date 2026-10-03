@@ -71,3 +71,9 @@ The project uses the OpenSpec CLI (`@fission-ai/openspec`, `spec-driven` schema)
 ## D10 — In-game naming of the NatureDex (Accepted, 2026-10-02)
 
 "NatureDex" is the internal/code name only. The player-facing name is **Terenski dnevnik** (confirmed by the project owner with the first NatureDex change, `add-meadow-walking-skeleton`) — Slovenian and original, to avoid imitating existing franchises.
+
+## D11 — Weather (Accepted, 2026-10-03)
+
+Each region has its own weather: `clear`, `cloudy`, `rain`, `fog` or `snow` (*jasno*, *oblačno*, *dež*, *megla*, *sneg*). It stays the same within each 6-hour in-game period (00:00, 06:00, 12:00, 18:00) and is picked deterministically from the region ID, the in-game day and the period: a 32-bit FNV-1a hash, modulo the region's weights for the current season. It needs no storage and no injected randomness, and every save at the same in-game moment sees the same weather per region. The weights live in the region content and are fictional gameplay data (D6). The server decides the weather (D3); the client only draws what `GET /api/save/weather` reports and reloads it when the period ends.
+
+Weather affects species only where a source supports it: a species' availability may list weathers in which it is also found at any time of day (`alsoInWeather`), for example the salamanders in rain. Weather never hides a species, and has no other gameplay effect yet.

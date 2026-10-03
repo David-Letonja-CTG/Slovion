@@ -6,6 +6,7 @@
   "species": [
     { "speciesId": "ursus_arctos", "weight": 1 },
     { "speciesId": "cervus_elaphus", "weight": 1 },
+    { "speciesId": "salamandra_salamandra", "weight": 1 },
     { "speciesId": "allium_ursinum", "weight": 40 },
     { "speciesId": "galium_odoratum", "weight": 30 },
     { "speciesId": "abies_alba", "weight": 15 },

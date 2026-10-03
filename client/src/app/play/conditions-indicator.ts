@@ -1,11 +1,12 @@
 import { Component, computed, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { WorldTime } from '../../engine';
+import { Weather, WorldTime } from '../../engine';
 
 /**
- * The current season, time of day and clock over the world, e.g. "Pomlad · jutro · 08:15", and the place the
- * player is in (docs/decisions.md D8). Only season and time of day are announced to screen readers, not every
- * minute. Labels are looked up dynamically:
+ * The current season, time of day, clock and weather over the world, e.g. "Pomlad · jutro · 08:15 · dež", and the
+ * place the player is in (docs/decisions.md D8, D11). Only season, time of day and weather are announced to screen
+ * readers, not every minute. Labels are looked up dynamically:
+ * t(weather.clear, weather.cloudy, weather.rain, weather.fog, weather.snow)
  * t(time.season.spring, time.season.summer, time.season.autumn, time.season.winter)
  * t(time.timeOfDay.morning, time.timeOfDay.day, time.timeOfDay.evening, time.timeOfDay.night)
  */
@@ -19,10 +20,16 @@ import { WorldTime } from '../../engine';
         ·
         <span class="conditions__time">{{ 'time.timeOfDay.' + time().timeOfDay | transloco }}</span>
         · <span class="conditions__clock">{{ clock() }}</span>
+        @if (weather(); as now) {
+          · <span class="conditions__weather">{{ 'weather.' + now | transloco }}</span>
+        }
       </p>
       <p class="visually-hidden" aria-live="polite">
         {{ 'time.season.' + time().season | transloco }},
         {{ 'time.timeOfDay.' + time().timeOfDay | transloco }}
+        @if (weather(); as now) {
+          , {{ 'weather.' + now | transloco }}
+        }
       </p>
       @if (location(); as place) {
         <p class="conditions__location" [attr.aria-label]="'area.label' | transloco">{{ place }}</p>
@@ -65,6 +72,8 @@ export class ConditionsIndicator {
   readonly time = input.required<WorldTime>();
   /** The name of the place the player is in, if known. */
   readonly location = input<string | undefined>(undefined);
+  /** The current region's weather, if known (D11). */
+  readonly weather = input<Weather | undefined>(undefined);
 
   protected readonly clock = computed(() => {
     const minuteOfDay = this.time().minuteOfDay;

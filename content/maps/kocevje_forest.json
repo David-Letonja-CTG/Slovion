@@ -1806,6 +1806,30 @@
      "width": 16,
      "x": 48,
      "y": 176
+    },
+    {
+     "height": 0,
+     "id": 11,
+     "name": "kocevje_salamander_1",
+     "point": true,
+     "properties": [
+      {
+       "name": "speciesId",
+       "type": "string",
+       "value": "salamandra_salamandra"
+      },
+      {
+       "name": "spotId",
+       "type": "string",
+       "value": "kocevje_salamander_1"
+      }
+     ],
+     "rotation": 0,
+     "type": "spot",
+     "visible": true,
+     "width": 0,
+     "x": 104,
+     "y": 232
     }
    ],
    "opacity": 1,
@@ -1816,7 +1840,7 @@
   }
  ],
  "nextlayerid": 5,
- "nextobjectid": 11,
+ "nextobjectid": 12,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.11.2",

@@ -38,6 +38,8 @@ test('identify the meadow sage, read about it, and keep it after a reload', asyn
   // A new save starts on a spring morning (docs/decisions.md D8).
   await expect(page.locator('.conditions__now')).toHaveText(/Pomlad\s*·\s*jutro\s*·\s*08:\d\d/);
   await expect(page.locator('.conditions__location')).toHaveText('Travnik na Dravskem polju');
+  // The meadow's weather, decided by the server for this time (docs/decisions.md D11).
+  await expect(page.locator('.conditions__weather')).toHaveText(/^(jasno|oblačno|dež|megla|sneg)$/);
 
   await observation.getByRole('button', { name: 'Nov namig' }).click();
   await expect(observation.locator('li')).toHaveCount(2);

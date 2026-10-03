@@ -1,4 +1,5 @@
 using Slovion.Application.Content;
+using Slovion.Application.Weather;
 using Slovion.Domain.Content;
 using Slovion.Domain.Discovery;
 using Slovion.Domain.Saves;
@@ -80,7 +81,8 @@ public sealed class EncounterService(IContentCatalog content, IDiscoveryReposito
             return new StartEncounterResult.UnknownSpot();
         }
 
-        if (!species.Availability.IsAvailableAt(WorldTimeOf(save)))
+        var now = WorldTimeOf(save);
+        if (!species.Availability.IsAvailableAt(now, WeatherService.At(content, mapId, now)))
         {
             return new StartEncounterResult.NotNow();
         }
@@ -108,8 +110,9 @@ public sealed class EncounterService(IContentCatalog content, IDiscoveryReposito
         }
 
         var now = WorldTimeOf(save);
+        var weather = WeatherService.At(content, mapId, now);
         var available = habitat.Species
-            .Where(entry => content.FindSpecies(entry.SpeciesId) is { Group: SpeciesGroup.Plant } plant && plant.Availability.IsAvailableAt(now))
+            .Where(entry => content.FindSpecies(entry.SpeciesId) is { Group: SpeciesGroup.Plant } plant && plant.Availability.IsAvailableAt(now, weather))
             .ToList();
         if (available.Count == 0)
         {

@@ -8,6 +8,8 @@
       [openFlags]="progress().flags"
       [worldTime]="worldTime()"
       [residents]="residents()"
+      [weather]="weather()?.weather ?? 'clear'"
+      [reducedMotion]="reducedMotion"
       (timeChanged)="onTimeChanged($event)"
       (areaChanged)="onAreaChanged($event)"
       (torchChanged)="onTorchChanged($event)"
@@ -17,7 +19,11 @@
     />
     @if (time(); as now) {
       <div class="play__conditions">
-        <app-conditions-indicator [time]="now" [location]="areaName()" />
+        <app-conditions-indicator
+          [time]="now"
+          [location]="areaName()"
+          [weather]="weather()?.weather"
+        />
         <button
           type="button"
           class="button play__torch"

@@ -39,14 +39,16 @@
       "plant": "Rastišče",
       "mammal": "Življenjski prostor",
       "bird": "Življenjski prostor",
-      "insect": "Življenjski prostor"
+      "insect": "Življenjski prostor",
+      "amphibian": "Življenjski prostor"
     },
     "distribution": "Razširjenost",
     "season": {
       "plant": "Čas cvetenja",
       "insect": "Čas letanja",
       "bird": "Prisotnost v Sloveniji",
-      "mammal": "Aktivnost"
+      "mammal": "Aktivnost",
+      "amphibian": "Aktivnost"
     },
     "characteristics": "Prepoznavni znaki",
     "sources": "Viri",
@@ -74,7 +76,8 @@
       "plant": "Opaziš rastlino",
       "mammal": "Opaziš sesalca",
       "bird": "Opaziš ptico",
-      "insect": "Opaziš žuželko"
+      "insect": "Opaziš žuželko",
+      "amphibian": "Opaziš dvoživko"
     },
     "question": "Katera vrsta je to?",
     "nextClue": "Nov namig",
@@ -87,7 +90,8 @@
       "plant": "rastlina",
       "mammal": "sesalec",
       "bird": "ptica",
-      "insect": "žuželka"
+      "insect": "žuželka",
+      "amphibian": "dvoživka"
     }
   },
   "search": {
@@ -117,6 +121,13 @@
   },
   "spot": {
     "notNow": "Tukaj zdaj ni ničesar. Poskusi ob drugem času."
+  },
+  "weather": {
+    "clear": "jasno",
+    "cloudy": "oblačno",
+    "rain": "dež",
+    "fog": "megla",
+    "snow": "sneg"
   },
   "torch": {
     "button": "Svetilka",

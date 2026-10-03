@@ -4,5 +4,11 @@
   "order": 3,
   "position": { "x": 62, "y": 27 },
   "unlock": { "flag": "pohorje_open" },
+  "weather": {
+    "spring": { "clear": 3, "cloudy": 3, "rain": 2, "fog": 2 },
+    "summer": { "clear": 4, "cloudy": 2, "rain": 2, "fog": 2 },
+    "autumn": { "clear": 2, "cloudy": 2, "rain": 2, "fog": 4 },
+    "winter": { "clear": 2, "cloudy": 2, "fog": 2, "snow": 4 }
+  },
   "text": { "sl": { "name": "Pohorje", "lockedHint": "Pomagaj Juretu v Kočevju." } }
 }

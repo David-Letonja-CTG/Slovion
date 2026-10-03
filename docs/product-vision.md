@@ -28,7 +28,7 @@ No GPS: the player's real location never affects gameplay.
 | Habitats | Forest, meadow, wetland, river, lake, mountain, cave, coast, field, urban. Data-driven, never hardcoded into maps. |
 | Seasons | Spring, summer, autumn, winter; affect species availability (implemented: D8, `world-conditions`). |
 | Time of day | Morning, day, evening, night; affects encounters. Deterministic and testable (implemented: D8). |
-| Weather | Affects encounters, visuals, quests, activity. Deterministic for tests. Not over-engineered. |
+| Weather | Per region, drawn over the map; widens availability where sourced (implemented: D11, `weather`). |
 | Research stations | Original progression milestones built on observation challenges (trees, tracks, amphibians, alpine plants, birds, mushrooms). Not gym copies. |
 | Quests, inventory, progression | Introduced only when a slice needs them. |
 
@@ -81,13 +81,13 @@ Implemented:
 | `add-regions-and-travel` | Kočevje, Pohorje and Triglav, reached through a signpost's travel map. |
 | `add-region-species` | Animals, flowers and trees per region; trees can be searched. |
 | `add-region-quests` | A person and a quest per region; the quests open the regions in turn (a journey). |
+| `add-species-research` | Research levels: seeing a species again at other times reveals more of its journal page. |
+| `add-weather` | Weather per region, drawn over the map; salamanders come out in the rain. |
 
-Next, in the order agreed with the owner, each as its own change:
+Next candidates, each as its own change once the owner chooses:
 
-1. **Deeper journal entries:** research beyond identification reveals more about a species.
-2. **More habitats:** e.g. wetland, river, cave, coast, town.
-3. **Weather:** deterministic weather that affects which species are around.
-4. **Inventory:** only as far as a concrete feature needs it.
+1. **More habitats:** e.g. wetland, river, cave, coast, town.
+2. **Inventory:** only as far as a concrete feature needs it.
 
 Later candidates: research stations, an installable app (PWA) with offline play, English, accounts/cloud save.
 
@@ -97,4 +97,4 @@ First slice: `localization`, `game-viewport`, `input-actions`, `game-session`, `
 
 Added since: `habitat-search`, `world-conditions`, `map-areas`, `wildlife`, `regions`.
 
-Later: `weather`, `inventory`, `research-stations`.
+Later: `inventory`, `research-stations`.

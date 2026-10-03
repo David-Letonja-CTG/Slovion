@@ -4,5 +4,11 @@
   "order": 1,
   "position": { "x": 74, "y": 35 },
   "unlock": {},
+  "weather": {
+    "spring": { "clear": 4, "cloudy": 3, "rain": 2, "fog": 1 },
+    "summer": { "clear": 6, "cloudy": 2, "rain": 2 },
+    "autumn": { "clear": 3, "cloudy": 3, "rain": 2, "fog": 2 },
+    "winter": { "clear": 3, "cloudy": 3, "fog": 2, "snow": 2 }
+  },
   "text": { "sl": { "name": "Dravsko polje", "lockedHint": "Vedno odprto." } }
 }

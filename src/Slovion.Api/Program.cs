@@ -10,6 +10,7 @@ using Slovion.Application.Discovery;
 using Slovion.Application.Quests;
 using Slovion.Application.Saves;
 using Slovion.Application.Travel;
+using Slovion.Application.Weather;
 using Slovion.Application.Wildlife;
 using Slovion.Infrastructure;
 using Slovion.Infrastructure.Persistence;
@@ -26,6 +27,7 @@ builder.Services.AddScoped<NatureDexService>();
 builder.Services.AddScoped<ProgressReader>();
 builder.Services.AddScoped<QuestService>();
 builder.Services.AddScoped<TravelService>();
+builder.Services.AddScoped<WeatherService>();
 builder.Services.AddScoped<WildlifeService>();
 
 var app = builder.Build();
@@ -45,7 +47,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapHealthChecks("/health");
-app.MapSaveEndpoints().MapDiscoveryEndpoints().MapQuestEndpoints().MapTimeEndpoints().MapWildlifeEndpoints().MapTravelEndpoints();
+app.MapSaveEndpoints().MapDiscoveryEndpoints().MapQuestEndpoints().MapTimeEndpoints().MapWildlifeEndpoints().MapTravelEndpoints().MapWeatherEndpoints();
 app.MapApiNotFoundFallback();
 
 await app.RunAsync();
