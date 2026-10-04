@@ -84,6 +84,20 @@ The API SHALL refuse to start when content is invalid, reporting every problem f
 - **WHEN** the API starts with the repository's content
 - **THEN** `salamandra_salamandra` (group `amphibian`, *navadni močerad*, Kočevje) and `salamandra_atra` (group `amphibian`, *planinski močerad*, Triglav) are available, each with sourced Slovenian facts, three clues, a picture, a walk sprite, wildlife traits and sourced "also in weather" availability
 
+#### Scenario: Wetland species
+- **WHEN** the API starts with the repository's content
+- **THEN** the following are available, each with sourced Slovenian facts, three clues and a picture, and the animals also with a walk sprite and wildlife traits:
+
+  | Species | Group | Slovenian name | Region |
+  |---|---|---|---|
+  | `ardea_cinerea` | `bird` | *siva čaplja* | Cerkniško jezero |
+  | `crex_crex` | `bird` | *kosec* | Cerkniško jezero |
+  | `hyla_arborea` | `amphibian` | *zelena rega* | Cerkniško jezero |
+  | `calopteryx_splendens` | `insect` | *pasasti bleščavec* | Cerkniško jezero |
+  | `iris_pseudacorus` | `plant` | *vodna perunika* | Cerkniško jezero |
+  | `iris_sibirica` | `plant` | *sibirska perunika* | Cerkniško jezero |
+  | `nymphaea_alba` | `plant` | *beli lokvanj* | Cerkniško jezero |
+
 ### Requirement: Spots reference existing species
 Every interactive spot in a map that names a species SHALL reference an existing species ID.
 

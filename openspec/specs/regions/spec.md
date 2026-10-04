@@ -35,6 +35,7 @@ Unlock rules are fictional gameplay data (D6). Content validation SHALL reject a
   | `kocevje` | `kocevje_forest` | flag `hedgerow_open` (Vera) |
   | `pohorje` | `pohorje_forest` | flag `pohorje_open` (Jure) |
   | `triglav` | `triglav_alps` | flag `triglav_open` (Maja) |
+  | `cerknica` | `cerknica_lake` | flag `alps_explored` (Luka) |
 
 #### Scenario: Region with an unknown flag
 - **WHEN** a region requires flag `secret` and no quest rewards it
@@ -52,7 +53,7 @@ Requests without a valid save token SHALL respond `401` with code `invalid_save_
 
 #### Scenario: A new save
 - **WHEN** a new save requests its regions
-- **THEN** the current region is `dravsko_polje`, Dravsko polje is unlocked, and the other three are locked
+- **THEN** the current region is `dravsko_polje`, Dravsko polje is unlocked, and the other four are locked
 
 #### Scenario: After Vera's quest
 - **WHEN** a save that completed Vera's quest requests its regions
@@ -61,6 +62,14 @@ Requests without a valid save token SHALL respond `401` with code `invalid_save_
 #### Scenario: After Jure's quest
 - **WHEN** a save that completed Jure's quest requests its regions
 - **THEN** Pohorje is unlocked, and Triglav is locked with the hint to help Maja on Pohorje
+
+#### Scenario: After Luka's quest
+- **WHEN** a save that completed Luka's quest requests its regions
+- **THEN** Cerkniško jezero is unlocked
+
+#### Scenario: Before Luka's quest
+- **WHEN** a save that completed Maja's quest but not Luka's requests its regions
+- **THEN** Cerkniško jezero is locked with the hint to help Luka on Triglav
 
 ### Requirement: Travelling
 `POST /api/save/travel` with a region ID SHALL make that region the save's current region when the region is unlocked for the save, and respond `200` with the region. A locked region SHALL respond `409` with code `region_locked`. An unknown region SHALL respond `404` with code `unknown_region`. A missing region SHALL respond `400` with code `bad_request`. In all error cases the current region SHALL stay unchanged.
