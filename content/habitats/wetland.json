@@ -8,9 +8,11 @@
     { "speciesId": "crex_crex", "weight": 1 },
     { "speciesId": "hyla_arborea", "weight": 2 },
     { "speciesId": "calopteryx_splendens", "weight": 2 },
+    { "speciesId": "lutra_lutra", "weight": 1 },
     { "speciesId": "iris_pseudacorus", "weight": 25 },
     { "speciesId": "iris_sibirica", "weight": 25 },
     { "speciesId": "nymphaea_alba", "weight": 20 },
-    { "speciesId": "fritillaria_meleagris", "weight": 20 }
+    { "speciesId": "fritillaria_meleagris", "weight": 20 },
+    { "speciesId": "salix_purpurea", "weight": 20 }
   ]
 }

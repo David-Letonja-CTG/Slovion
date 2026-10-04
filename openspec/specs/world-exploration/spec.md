@@ -52,6 +52,7 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
   | `cerknica_lake` | `wetland` |
   | `rakov_skocjan_karst` | `karst` |
   | `ljubljana_park` | `city` |
+  | `murska_sobota_village` | `farmland` |
 
 #### Scenario: Species of the regions on their maps
 - **WHEN** a region map is loaded
@@ -75,6 +76,7 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
   | `cerknica_lake` | `neza` |
   | `rakov_skocjan_karst` | `tilen` |
   | `ljubljana_park` | `ana` |
+  | `murska_sobota_village` | `stefan` |
 
 #### Scenario: Areas of the meadow
 - **WHEN** the meadow is loaded
@@ -106,6 +108,11 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 #### Scenario: The Ljubljana park
 - **WHEN** `ljubljana_park` is loaded
 - **THEN** it has lamp posts along its paths, a `city` zone in the park, and a `wetland` zone on the barje strip with the fritillary's spot and a corncrake resident spot
+
+#### Scenario: The Murska Sobota village
+- **WHEN** `murska_sobota_village` is loaded
+- **THEN** the stork's spot lies on a blocked roof tile that can be faced from a walkable tile
+- **AND** a `farmland` zone covers the fields and the orchard, and a `wetland` zone covers the oxbow, where the otter's spot lies on a wadeable tile, and the Mura's bank
 
 ### Requirement: Invalid map is reported
 If a map cannot be loaded or does not satisfy the supported format (orthogonal, fixed tile size, a spawn point, layers referenced by name), the game SHALL show a Slovenian error message instead of a broken or blank world.

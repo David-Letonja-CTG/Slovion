@@ -1,0 +1,12 @@
+{
+  "id": "farmland",
+  "text": { "sl": { "name": "Kulturna krajina" } },
+  "order": 9,
+  "searchChancePercent": 55,
+  "species": [
+    { "speciesId": "ciconia_ciconia", "weight": 1 },
+    { "speciesId": "upupa_epops", "weight": 1 },
+    { "speciesId": "alauda_arvensis", "weight": 1 },
+    { "speciesId": "viola_arvensis", "weight": 40 }
+  ]
+}

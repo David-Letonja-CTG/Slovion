@@ -11,6 +11,8 @@ export interface ResidentInfo {
   readonly torch: TorchReaction;
   /** An aquatic animal lives and wanders on water tiles only. */
   readonly aquatic?: boolean;
+  /** A perched animal stays on its home tile, which may be blocked (e.g. a nest on a roof). */
+  readonly perched?: boolean;
   /** Whether its species is around at the save's in-game time. */
   readonly present: boolean;
 }
@@ -37,7 +39,8 @@ const distance = (a: { x: number; y: number }, b: { x: number; y: number }) =>
 
 /**
  * A resident animal: wanders around its home spot one tile at a time, waits next to the player, and reacts
- * to a lit torch in the dark. It always occupies its tile, plus the target tile while stepping.
+ * to a lit torch in the dark; a perched one never leaves home. It always occupies its tile, plus the target tile while
+ * stepping.
  */
 export class Resident {
   /** The direction the sprite faces horizontally; sprites face right and are mirrored for left. */
@@ -53,6 +56,7 @@ export class Resident {
     readonly torch: TorchReaction,
     readonly home: { readonly x: number; readonly y: number },
     readonly aquatic = false,
+    readonly perched = false,
   ) {
     this.tile = { ...home };
     this.random = seededRandom(spotId);
@@ -89,6 +93,7 @@ export class Resident {
   }
 
   update(stepMs: number, world: Surroundings): void {
+    if (this.perched) return;
     if (this.step) {
       this.step.progress += stepMs / RESIDENT_STEP_MS;
       if (this.step.progress >= 1) {

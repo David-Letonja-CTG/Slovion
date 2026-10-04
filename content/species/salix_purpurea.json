@@ -1,0 +1,104 @@
+{
+  "id": "salix_purpurea",
+  "group": "plant",
+  "scientificName": {
+    "value": "Salix purpurea L.",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Rdeča vrba",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/rastlinski-svet/vrbovke/rdeca-vrba",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Salix purpurea L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5372800",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "rdeča vrba",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "vrbovke (Salicaceae)",
+        "sources": [
+          "np"
+        ]
+      },
+      "habitat": {
+        "value": "Nabrežja, močvirja, prodišča in kamnolomi; uspeva na vlažnih tleh.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "Razširjena je po vsej Sloveniji.",
+        "sources": [
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Cveti marca in aprila, še preden ozeleni.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Zraste v grm, visok do 6 m, s tankimi škrlatnimi ali rumenorjavimi vejami.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Je pionirska vrsta: med prvimi lesnimi rastlinami zasede neporasel prostor.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Cvetovi tvorijo mačice; vrbe so dvodomne.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Suličasti listi so goli, dolgi do 12 cm in najširši v zgornji tretjini.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "identification": {
+    "clues": [
+      0,
+      3,
+      2
+    ]
+  }
+}

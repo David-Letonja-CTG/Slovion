@@ -1,0 +1,125 @@
+{
+  "id": "lutra_lutra",
+  "group": "mammal",
+  "scientificName": {
+    "value": "Lutra lutra (Linnaeus, 1758)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Vidra",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/zivalski-svet/sesalci/zveri/vidra",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "wiki": {
+      "title": "Vidra",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Vidra",
+      "accessed": "2026-10-04",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Lutra lutra (Linnaeus, 1758) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2433753",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "vidra",
+        "sources": [
+          "np",
+          "wiki"
+        ]
+      },
+      "family": {
+        "value": "kune (Mustelidae)",
+        "sources": [
+          "np",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Čisti potoki, reke in jezera z razgibano strugo in bogatim obrežnim rastlinjem.",
+        "sources": [
+          "np",
+          "wiki"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji živi okoli 120 vider, predvsem na Goričkem in Štajerskem. Je zavarovana in uvrščena na rdeči seznam.",
+        "sources": [
+          "wiki",
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Je vezana na vodo; pod vodo zdrži do štiri minute in plava s hitrostjo do 15 km na uro.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Dolgo telo z močnim, stožčastim repom meri tudi več kot meter.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Gost temno rjav kožuh jo v vodi ohranja suho.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Med prsti kratkih nog ima plavalno kožico.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Glava je ploska, z majhnimi uhlji in čutilnimi dlakami okoli smrčka.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Hrani se večinoma z ribami, pa tudi z raki in dvoživkami.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy",
+    "aquatic": true
+  },
+  "identification": {
+    "clues": [
+      2,
+      4,
+      1
+    ]
+  }
+}

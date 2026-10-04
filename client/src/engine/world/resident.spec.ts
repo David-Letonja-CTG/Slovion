@@ -182,6 +182,32 @@ describe('Resident animals', () => {
     expect(tileOf(day.world)).not.toEqual({ x: 3, y: 1 });
   });
 
+  it('stay on their home tile when perched, even on a blocked tile and near a lit torch', () => {
+    const { world, frames } = setup(
+      ['#########', '#S..^...#', '#########'],
+      [{ ...hare('curious'), perched: true }],
+      NIGHT,
+    );
+    world.setTorch(true);
+
+    frames.frames(200, 500);
+
+    expect(tileOf(world)).toEqual({ x: 4, y: 1 });
+    expect(world.isBlocked(4, 1)).toBe(true);
+  });
+
+  it('are met on their blocked home tile rather than searching it, when perched', () => {
+    const { input, frames, interactions } = setup(
+      ['#####', '#S^.#', '#####'],
+      [{ ...hare('calm'), perched: true }],
+    );
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([{ kind: 'spot', mapId: 'test_map', spotId: 'hare' }]);
+  });
+
   it('block the player', () => {
     const { world, input, frames } = setup(['#####', '#SR.#', '#####']);
 

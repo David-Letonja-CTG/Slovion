@@ -1,0 +1,36 @@
+{
+  "id": "under_the_storks_nest",
+  "giver": "stefan",
+  "goal": {
+    "identifiedSpecies": 3,
+    "habitat": "farmland"
+  },
+  "reward": {
+    "flag": "farmland_explored"
+  },
+  "text": {
+    "sl": {
+      "title": "Pod štorkljinim gnezdom",
+      "summary": "Prepoznaj tri vrste kulturne krajine.",
+      "returnHint": "Vrni se k Štefanu.",
+      "dialogue": {
+        "offer": [
+          "Dober dan! Jaz sem Štefan in obdelujem polja ob Muri.",
+          "Na dimniku čez cesto vsako pomlad gnezdita štorklji.",
+          "Prepoznaj tri vrste kulturne krajine: na poljih, v sadovnjaku ali na strehi."
+        ],
+        "active": [
+          "Prepoznane vrste: {identified} od {goal}.",
+          "Namig: štorkljo najbolje vidiš z dvorišča ob hiši, smrdokavro pa v starem sadovnjaku."
+        ],
+        "ready": [
+          "Odlično! Tudi naša vas je zdaj v tvojem terenskem dnevniku.",
+          "Hvala, da paziš na štorklje in na vse, kar živi ob poljih."
+        ],
+        "completed": [
+          "Štorklje se vsako leto vrnejo na isto gnezdo. Vrni se tudi ti, kadar želiš."
+        ]
+      }
+    }
+  }
+}

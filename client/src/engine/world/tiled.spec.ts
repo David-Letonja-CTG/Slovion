@@ -3,6 +3,7 @@ import karst from '../../../../content/maps/rakov_skocjan_karst.json';
 import kocevje from '../../../../content/maps/kocevje_forest.json';
 import ljubljana from '../../../../content/maps/ljubljana_park.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
+import murskaSobota from '../../../../content/maps/murska_sobota_village.json';
 import pohorje from '../../../../content/maps/pohorje_forest.json';
 import triglav from '../../../../content/maps/triglav_alps.json';
 import { STEP_MS } from '../game-loop';
@@ -150,6 +151,7 @@ describe('parseTiledMap', () => {
     ['cerknica_lake', cerknica, 'cerknica_heron_1', 'cerknica_lake'],
     ['rakov_skocjan_karst', karst, 'karst_saxifrage_1', 'rakov_skocjan'],
     ['ljubljana_park', ljubljana, 'city_hedgehog_1', 'ljubljana'],
+    ['murska_sobota_village', murskaSobota, 'orchard_hoopoe_1', 'murska_sobota'],
   ])(
     'parses the region map %s with a reachable signpost, spots and searchable trees',
     (id, json, spotId, area) => {
@@ -175,7 +177,20 @@ describe('parseTiledMap', () => {
         expect(map.habitatAt(x, y), `${x},${y}`).toBeUndefined();
       }
       expect(map.habitats.length).toBeGreaterThan(0);
-      for (const spot of map.spots) expect(reachable(spot.x, spot.y), spot.spotId).toBe(true);
+      // Every spot can be reached, or, on a blocked tile (a perched animal's nest), faced from a reachable tile.
+      for (const spot of map.spots) {
+        const faceable = [
+          [0, 0],
+          [0, 1],
+          [0, -1],
+          [1, 0],
+          [-1, 0],
+        ].some(([dx, dy]) => reachable(spot.x + dx, spot.y + dy));
+        expect(
+          map.isBlocked(spot.x, spot.y) ? faceable : reachable(spot.x, spot.y),
+          spot.spotId,
+        ).toBe(true);
+      }
       // Some trees, shrubs or rocks stand inside the zones, so they can be searched.
       const zonedBlocked = map.habitats.some((zone) => {
         for (let y = zone.minY; y <= zone.maxY; y++) {
@@ -213,6 +228,7 @@ describe('parseTiledMap', () => {
     ['cerknica_lake', cerknica, 'bird_station', { x: 6, y: 8 }],
     ['rakov_skocjan_karst', karst, 'cave_station', { x: 6, y: 8 }],
     ['ljubljana_park', ljubljana, 'city_station', { x: 6, y: 8 }],
+    ['murska_sobota_village', murskaSobota, 'farmland_station', { x: 6, y: 8 }],
   ])(
     'places a reachable research station on %s, outside the habitat zones',
     (id, json, stationId, tile) => {
@@ -269,6 +285,30 @@ describe('parseTiledMap', () => {
     // The river is deep, not wadeable: only the bridge crosses it.
     expect(reachable(13, 14)).toBe(true);
     expect([map.isBlocked(12, 14), map.isWadeable(12, 14)]).toEqual([true, false]);
+  });
+
+  it("reads the Murska Sobota village: the stork's nest on a roof beside a yard, the fields, the oxbow", () => {
+    const { map, reachable } = reachableFromSpawn([], 'murska_sobota_village', murskaSobota);
+    const spot = (id: string) => map.spots.find((s) => s.spotId === id)!;
+
+    expect(map.npcs).toEqual([expect.objectContaining({ npcId: 'stefan', x: 3, y: 10 })]);
+    const nest = spot('village_stork_1');
+    expect([nest.x, nest.y, map.isBlocked(nest.x, nest.y)]).toEqual([7, 1, true]);
+    expect(reachable(nest.x - 1, nest.y)).toBe(true); // the yard beside the house
+    expect(map.habitatAt(nest.x, nest.y)).toBeUndefined();
+    expect([map.habitatAt(12, 6), map.areaAt(12, 6)]).toEqual(['farmland', 'murska_sobota']);
+    const otter = spot('oxbow_otter_1');
+    expect([
+      map.isWadeable(otter.x, otter.y),
+      map.habitatAt(otter.x, otter.y),
+      map.areaAt(otter.x, otter.y),
+    ]).toEqual([true, 'wetland', 'mura']);
+    // The Mura is deep: the player stays on the gravel bank.
+    expect([reachable(5, 14), map.isBlocked(5, 15), map.isWadeable(5, 15)]).toEqual([
+      true,
+      true,
+      false,
+    ]);
   });
 
   it('reports an area whose underground property is not a boolean', () => {

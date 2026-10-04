@@ -130,7 +130,16 @@ export class World implements Obstacles {
         if (existing) return [existing];
         const home = this.map.spots.find((spot) => spot.spotId === info.spotId);
         return home
-          ? [new Resident(info.spotId, info.speciesId, info.torch, home, info.aquatic === true)]
+          ? [
+              new Resident(
+                info.spotId,
+                info.speciesId,
+                info.torch,
+                home,
+                info.aquatic === true,
+                info.perched === true,
+              ),
+            ]
           : [];
       });
   }

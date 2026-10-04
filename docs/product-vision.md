@@ -89,6 +89,7 @@ Implemented:
 | `add-research-stations` | A research station per region: fully research a themed set of species to earn a journal certificate. |
 | `add-karst-cave` | Rakov Škocjan after Neža's quest: a karst gorge and a dark cave with the olm, the cave beetle and a winter bat. |
 | `add-ljubljana` | Ljubljana after Tilen's quest: a city park with street lamps, the Ljubljanica and a strip of Ljubljansko barje; Ana's quest. |
+| `add-murska-sobota` | Murska Sobota after Ana's quest: a Prekmurje village with a stork on a chimney, fields, an orchard and an oxbow of the Mura; Štefan's quest. |
 
 Next candidates, each as its own change once the owner chooses:
 
