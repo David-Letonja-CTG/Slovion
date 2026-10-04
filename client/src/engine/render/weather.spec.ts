@@ -84,10 +84,14 @@ describe('renderWorld with weather', () => {
     const context = recordingContext();
     const image = { name: 'x' } as unknown as CanvasImageSource;
 
-    renderWorld(context as unknown as CanvasRenderingContext2D, world, {
-      tileset: image,
-      playerSprite: image,
-    });
+    renderWorld(
+      context as unknown as CanvasRenderingContext2D,
+      world,
+      { tileset: image, playerSprite: image },
+      () => {
+        throw new Error('no circles of light by day');
+      },
+    );
 
     expect(world.weather).toBe('rain');
     expect(context.fills.at(-1)?.style).toBe(RAIN_COLOUR);

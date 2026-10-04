@@ -46,13 +46,25 @@ export const TIME_TINT: Record<TimeOfDay, string | undefined> = {
 export const CAVE_TINT = 'rgba(4, 6, 12, 0.86)';
 
 /**
- * Draws the visible part of the map in authored layer order, then closed gates, signposts, stations and NPCs, then the player, then
- * the time-of-day tint over everything.
+ * Supplies the offscreen layer the tint is drawn into when circles of light are cut out of it: a 2D context
+ * whose transform maps logical pixels onto its canvas like the main context's. Injected so tests can record it.
+ */
+export type DarknessLayerFactory = () => CanvasRenderingContext2D;
+
+interface Point {
+  readonly x: number;
+  readonly y: number;
+}
+
+/**
+ * Draws the visible part of the map in authored layer order, then closed gates, signposts, stations, lamp posts and NPCs, then
+ * the player, then the time-of-day tint over everything, with circles of light around the lit torch and lamps.
  */
 export function renderWorld(
   context: CanvasRenderingContext2D,
   world: World,
   images: WorldImages,
+  darknessLayer: DarknessLayerFactory,
 ): void {
   const { map, player } = world;
   const position = player.position;
@@ -113,6 +125,7 @@ export function renderWorld(
   for (const gate of world.closedGates) drawTile(gate.gid, gate.x, gate.y);
   for (const signpost of map.signposts) drawTile(signpost.gid, signpost.x, signpost.y);
   for (const station of map.stations) drawTile(station.gid, station.x, station.y);
+  for (const lamp of map.lamps) drawTile(lamp.gid, lamp.x, lamp.y);
   for (const npc of map.npcs) {
     const sheet = images.npcSprites?.[npc.npcId];
     if (!sheet) {
@@ -180,36 +193,77 @@ export function renderWorld(
   const underground = world.isUnderground;
   const tint = underground ? CAVE_TINT : TIME_TINT[world.time.timeOfDay];
   if (tint) {
-    drawTint(context, tint, world.torchOn && world.isDark, {
-      x: playerX - camera.x + TILE_SIZE / 2,
-      y: playerY - camera.y + TILE_SIZE / 2,
-    });
+    const lights: Point[] = [];
+    if (world.torchOn && world.isDark) {
+      lights.push({ x: playerX - camera.x + TILE_SIZE / 2, y: playerY - camera.y + TILE_SIZE / 2 });
+    }
+    if (world.lampsLit) {
+      for (const lamp of map.lamps) {
+        const light = {
+          x: lamp.x * TILE_SIZE - camera.x + TILE_SIZE / 2,
+          y: lamp.y * TILE_SIZE - camera.y + TILE_SIZE / 2,
+        };
+        if (inView(light, TORCH_OUTER_RADIUS)) lights.push(light);
+      }
+    }
+    drawTint(context, tint, lights, darknessLayer);
   }
   // No weather falls underground.
   if (!underground) drawWeather(context, world.weather, world.elapsedMs, world.reducedMotion);
 }
 
-/** The time-of-day tint; with the torch lit it clears a soft circle around `torch`, padding with the tint. */
+/** Whether a circle of `radius` around `point` reaches into the view. */
+function inView(point: Point, radius: number): boolean {
+  return (
+    point.x + radius > 0 &&
+    point.y + radius > 0 &&
+    point.x - radius < LOGICAL_WIDTH &&
+    point.y - radius < LOGICAL_HEIGHT
+  );
+}
+
+/**
+ * The tint over the view. Without lights it is filled directly; otherwise it is filled into the darkness layer, a soft
+ * circle is cut out of it around each light, and the layer is drawn over the view.
+ */
 function drawTint(
   context: CanvasRenderingContext2D,
   tint: string,
-  torchLit: boolean,
-  torch: { readonly x: number; readonly y: number },
+  lights: readonly Point[],
+  darknessLayer: DarknessLayerFactory,
 ): void {
-  if (torchLit) {
-    const light = context.createRadialGradient(
-      torch.x,
-      torch.y,
+  if (lights.length === 0) {
+    context.fillStyle = tint;
+    context.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+    return;
+  }
+
+  const layer = darknessLayer();
+  layer.globalCompositeOperation = 'source-over';
+  layer.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+  layer.fillStyle = tint;
+  layer.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+  // Fully clear within the inner radius, fading back to the tint at the outer one.
+  layer.globalCompositeOperation = 'destination-out';
+  for (const light of lights) {
+    const hole = layer.createRadialGradient(
+      light.x,
+      light.y,
       TORCH_INNER_RADIUS,
-      torch.x,
-      torch.y,
+      light.x,
+      light.y,
       TORCH_OUTER_RADIUS,
     );
-    light.addColorStop(0, 'rgba(0, 0, 0, 0)');
-    light.addColorStop(1, tint);
-    context.fillStyle = light;
-  } else {
-    context.fillStyle = tint;
+    hole.addColorStop(0, 'rgba(0, 0, 0, 1)');
+    hole.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    layer.fillStyle = hole;
+    layer.fillRect(
+      light.x - TORCH_OUTER_RADIUS,
+      light.y - TORCH_OUTER_RADIUS,
+      TORCH_OUTER_RADIUS * 2,
+      TORCH_OUTER_RADIUS * 2,
+    );
   }
-  context.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+  layer.globalCompositeOperation = 'source-over';
+  context.drawImage(layer.canvas, 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
 }

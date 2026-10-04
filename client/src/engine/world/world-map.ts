@@ -97,6 +97,13 @@ export interface MapStation {
   readonly gid: number;
 }
 
+/** A lamp post drawn with tileset tile `gid`: it blocks its tile and lights the area around it in the evening and at night. */
+export interface MapLamp {
+  readonly x: number;
+  readonly y: number;
+  readonly gid: number;
+}
+
 /** Anything that can say whether a tile can be entered. */
 export interface Obstacles {
   isBlocked(x: number, y: number): boolean;
@@ -125,13 +132,14 @@ export class WorldMap implements Obstacles {
     readonly areas: readonly AreaZone[] = [],
     readonly signposts: readonly Signpost[] = [],
     readonly stations: readonly MapStation[] = [],
+    readonly lamps: readonly MapLamp[] = [],
   ) {}
 
   inBounds(x: number, y: number): boolean {
     return x >= 0 && y >= 0 && x < this.width && y < this.height;
   }
 
-  /** Tiles outside the map count as blocked. NPCs, gates, signposts and stations are handled by the world. */
+  /** Tiles outside the map count as blocked. NPCs, gates, signposts, stations and lamps are handled by the world. */
   isBlocked(x: number, y: number): boolean {
     return !this.inBounds(x, y) || this.blocked[y * this.width + x];
   }
@@ -160,6 +168,10 @@ export class WorldMap implements Obstacles {
 
   stationAt(x: number, y: number): MapStation | undefined {
     return this.stations.find((station) => station.x === x && station.y === y);
+  }
+
+  lampAt(x: number, y: number): MapLamp | undefined {
+    return this.lamps.find((lamp) => lamp.x === x && lamp.y === y);
   }
 
   spotAt(x: number, y: number): Spot | undefined {

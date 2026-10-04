@@ -46,10 +46,10 @@ public sealed class ContentValidationTests
         Assert.Equal("Oko za naravo", quest.Text["sl"].Title);
         Assert.Null(catalog.FindNpcOnMap("other_map", "vera"));
 
-        Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland", "wetland", "karst"], catalog.AllHabitats.Select(habitat => habitat.Id));
-        Assert.Equal([60, 60, 50, 55, 50], catalog.AllHabitats.Skip(2).Select(habitat => habitat.SearchChancePercent));
-        Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje", "Mokrišče", "Kras"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
-        Assert.Equal([1, 2, 3, 4, 5, 6, 7], catalog.AllHabitats.Select(habitat => habitat.Order));
+        Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland", "wetland", "karst", "city"], catalog.AllHabitats.Select(habitat => habitat.Id));
+        Assert.Equal([60, 60, 50, 55, 50, 50], catalog.AllHabitats.Skip(2).Select(habitat => habitat.SearchChancePercent));
+        Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje", "Mokrišče", "Kras", "Mesto"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
+        Assert.Equal([1, 2, 3, 4, 5, 6, 7, 8], catalog.AllHabitats.Select(habitat => habitat.Order));
     }
 
     [Fact]
@@ -65,9 +65,10 @@ public sealed class ContentValidationTests
                 ("triglav", "triglav_alps", new UnlockRule.Flag("triglav_open")),
                 ("cerknica", "cerknica_lake", new UnlockRule.Flag("alps_explored")),
                 ("rakov_skocjan", "rakov_skocjan_karst", new UnlockRule.Flag("lake_explored")),
+                ("ljubljana", "ljubljana_park", new UnlockRule.Flag("caves_explored")),
             ],
             catalog.AllRegions.Select(region => (region.Id, region.MapId, region.Unlock)));
-        Assert.Equal(["Dravsko polje", "Kočevje", "Pohorje", "Triglav", "Cerkniško jezero", "Rakov Škocjan"], catalog.AllRegions.Select(region => region.Text["sl"].Name));
+        Assert.Equal(["Dravsko polje", "Kočevje", "Pohorje", "Triglav", "Cerkniško jezero", "Rakov Škocjan", "Ljubljana"], catalog.AllRegions.Select(region => region.Text["sl"].Name));
     }
 
     [Theory]
@@ -139,6 +140,7 @@ public sealed class ContentValidationTests
     [InlineData("luka", "Luka", "triglav_alps", "below_the_peaks", "alpine_grassland", "alps_explored")]
     [InlineData("neza", "Neža", "cerknica_lake", "vanishing_lake", "wetland", "lake_explored")]
     [InlineData("tilen", "Tilen", "rakov_skocjan_karst", "into_the_dark", "karst", "caves_explored")]
+    [InlineData("ana", "Ana", "ljubljana_park", "city_nature", "city", "city_explored")]
     public void Repository_content_has_the_people_of_the_regions(string npcId, string name, string mapId, string questId, string habitatId, string flag)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -176,6 +178,11 @@ public sealed class ContentValidationTests
     [InlineData("rhinolophus_ferrumequinum", SpeciesGroup.Mammal, "veliki podkovnjak", "karst")]
     [InlineData("saxifraga_rotundifolia", SpeciesGroup.Plant, "okroglolistni kamnokreč", "karst")]
     [InlineData("chrysosplenium_alternifolium", SpeciesGroup.Plant, "premenjalnolistni vraničnik", "karst")]
+    [InlineData("apus_apus", SpeciesGroup.Bird, "hudournik", "city")]
+    [InlineData("erinaceus_roumanicus", SpeciesGroup.Mammal, "beloprsi jež", "city")]
+    [InlineData("alcedo_atthis", SpeciesGroup.Bird, "vodomec", "city")]
+    [InlineData("alnus_glutinosa", SpeciesGroup.Plant, "črna jelša", "city")]
+    [InlineData("fritillaria_meleagris", SpeciesGroup.Plant, "močvirska logarica", "wetland")]
     public void Repository_content_has_more_species_of_the_regions(string id, SpeciesGroup group, string slName, string habitatId)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -220,6 +227,22 @@ public sealed class ContentValidationTests
     }
 
     [Fact]
+    public void The_ljubljana_park_has_a_city_zone_the_barje_and_their_spots()
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+        const string map = "ljubljana_park";
+
+        // The spawn (1, 9), the signpost (2, 8) and Ana (3, 10) lie outside the zones.
+        Assert.Null(catalog.FindHabitatAt(map, 1, 9));
+        Assert.Null(catalog.FindHabitatAt(map, 2, 8));
+        Assert.Equal("city", catalog.FindHabitatAt(map, 10, 7)?.Id);
+        Assert.Equal("wetland", catalog.FindHabitatAt(map, 8, 17)?.Id);
+        Assert.Null(catalog.FindHabitatAt(map, 13, 3)); // the street
+        string[][] spots = [["barje_corncrake_1", "crex_crex"], ["barje_fritillary_1", "fritillaria_meleagris"], ["barje_fritillary_2", "fritillaria_meleagris"], ["city_hedgehog_1", "erinaceus_roumanicus"], ["city_kingfisher_1", "alcedo_atthis"], ["city_swift_1", "apus_apus"]];
+        Assert.All(spots, spot => Assert.Equal(spot[1], catalog.FindSpot(map, spot[0])?.SpeciesId.Value));
+    }
+
+    [Fact]
     public void The_corncrake_lives_in_the_wet_meadow_of_the_lake()
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -252,6 +275,11 @@ public sealed class ContentValidationTests
     [InlineData("rhinolophus_ferrumequinum", new[] { Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     [InlineData("saxifraga_rotundifolia", new[] { Season.Summer }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     [InlineData("chrysosplenium_alternifolium", new[] { Season.Spring, Season.Summer }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("apus_apus", new[] { Season.Spring, Season.Summer }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("erinaceus_roumanicus", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("alcedo_atthis", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("fritillaria_meleagris", new[] { Season.Spring }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("alnus_glutinosa", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     public void Region_species_have_their_sourced_availability(string id, Season[] seasons, TimeOfDay[] times)
     {
         var availability = FileContentCatalog.Load(ContentFolder.RepositoryContent()).FindSpecies(SpeciesId.Parse(id))!.Availability;
@@ -391,6 +419,8 @@ public sealed class ContentValidationTests
         { "map without a signpost", c => Objects(c).RemoveAt(4), "exactly one 'signpost' object is required (found 0)" },
         { "map with two signposts", c => Objects(c).Add(ContentFolder.TileObject("signpost", "note", "second", tileX: 0, tileY: 0)), "exactly one 'signpost' object is required (found 2)" },
         { "signpost outside the map", c => Objects(c)[4] = ContentFolder.TileObject("signpost", "note", "far", tileX: 9), "signpost 'far' lies outside the map" },
+        { "lamp post that is not a tile object", c => Objects(c).Add(ContentFolder.TileObject("lamp", "note", "lamp_1", gid: 0)), "lamp 'lamp_1' must be a tile object" },
+        { "lamp post outside the map", c => Objects(c).Add(ContentFolder.TileObject("lamp", "note", "lamp_far", tileX: 9)), "lamp 'lamp_far' lies outside the map" },
         { "region on an unknown map", c => c.Region["mapId"] = "nowhere", "region 'dravsko_polje' refers to unknown map 'nowhere'" },
         { "map in no region", c => c.Region["mapId"] = "nowhere", "map 'test_meadow' must belong to exactly one region (found 0)" },
         { "region with an unrewarded flag", c => c.Region["unlock"] = new JsonObject { ["flag"] = "secret" }, "region 'dravsko_polje' requires flag 'secret', which no quest rewards" },

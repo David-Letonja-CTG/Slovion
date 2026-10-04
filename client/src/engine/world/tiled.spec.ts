@@ -1,6 +1,7 @@
 import cerknica from '../../../../content/maps/cerknica_lake.json';
 import karst from '../../../../content/maps/rakov_skocjan_karst.json';
 import kocevje from '../../../../content/maps/kocevje_forest.json';
+import ljubljana from '../../../../content/maps/ljubljana_park.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import pohorje from '../../../../content/maps/pohorje_forest.json';
 import triglav from '../../../../content/maps/triglav_alps.json';
@@ -148,6 +149,7 @@ describe('parseTiledMap', () => {
     ['triglav_alps', triglav, 'triglav_chamois_1', 'triglav_slopes'],
     ['cerknica_lake', cerknica, 'cerknica_heron_1', 'cerknica_lake'],
     ['rakov_skocjan_karst', karst, 'karst_saxifrage_1', 'rakov_skocjan'],
+    ['ljubljana_park', ljubljana, 'city_hedgehog_1', 'ljubljana'],
   ])(
     'parses the region map %s with a reachable signpost, spots and searchable trees',
     (id, json, spotId, area) => {
@@ -210,6 +212,7 @@ describe('parseTiledMap', () => {
     ['triglav_alps', triglav, 'mountain_station', { x: 6, y: 8 }],
     ['cerknica_lake', cerknica, 'bird_station', { x: 6, y: 8 }],
     ['rakov_skocjan_karst', karst, 'cave_station', { x: 6, y: 8 }],
+    ['ljubljana_park', ljubljana, 'city_station', { x: 6, y: 8 }],
   ])(
     'places a reachable research station on %s, outside the habitat zones',
     (id, json, stationId, tile) => {
@@ -243,6 +246,29 @@ describe('parseTiledMap', () => {
     }
     expect(map.habitats.every((zone) => zone.maxX < 18)).toBe(true);
     expect(map.npcs).toEqual([expect.objectContaining({ npcId: 'tilen', x: 3, y: 10 })]);
+  });
+
+  it('reads the Ljubljana park: lamp posts on the street and paths, the park, the barje beyond the bridge', () => {
+    const { map, reachable } = reachableFromSpawn([], 'ljubljana_park', ljubljana);
+    const spot = (id: string) => map.spots.find((s) => s.spotId === id)!;
+    const world = new World(map, () => undefined);
+
+    expect(map.npcs).toEqual([expect.objectContaining({ npcId: 'ana', x: 3, y: 10 })]);
+    expect(map.lamps).toHaveLength(7);
+    expect(map.lamps.every((lamp) => lamp.gid === 127 && world.isBlocked(lamp.x, lamp.y))).toBe(
+      true,
+    );
+    expect(map.lamps.filter((lamp) => lamp.y === 4)).toHaveLength(4); // along the street
+    expect([map.habitatAt(10, 7), map.areaAt(10, 7)]).toEqual(['city', 'ljubljana']);
+    const fritillary = spot('barje_fritillary_1');
+    expect([
+      map.habitatAt(fritillary.x, fritillary.y),
+      map.areaAt(fritillary.x, fritillary.y),
+    ]).toEqual(['wetland', 'ljubljansko_barje']);
+    expect(map.habitatAt(spot('barje_corncrake_1').x, spot('barje_corncrake_1').y)).toBe('wetland');
+    // The river is deep, not wadeable: only the bridge crosses it.
+    expect(reachable(13, 14)).toBe(true);
+    expect([map.isBlocked(12, 14), map.isWadeable(12, 14)]).toEqual([true, false]);
   });
 
   it('reports an area whose underground property is not a boolean', () => {
@@ -360,6 +386,23 @@ describe('parseTiledMap', () => {
         "station 'far' lies outside the map",
       ]),
     );
+  });
+
+  it('reports lamp posts without a tile or outside the map', () => {
+    const json = meadowCopy();
+    const objects = (
+      json.layers.find((layer) => layer['name'] === 'objects') as {
+        objects: Record<string, unknown>[];
+      }
+    ).objects;
+    const station = objects.find((object) => object['type'] === 'station')!;
+    const lamp = { ...station, type: 'lamp', properties: undefined };
+    objects.push({ ...lamp, name: 'flat', gid: undefined }, { ...lamp, name: 'far', x: 9999 });
+
+    expect(problemsOf(json)).toEqual([
+      "lamp 'flat' must be a tile object",
+      "lamp 'far' lies outside the map",
+    ]);
   });
 
   it('reports NPCs and gates that are not usable tile objects', () => {

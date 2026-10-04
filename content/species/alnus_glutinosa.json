@@ -1,0 +1,110 @@
+{
+  "id": "alnus_glutinosa",
+  "group": "plant",
+  "scientificName": {
+    "value": "Alnus glutinosa (L.) Gaertn.",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Črna jelša",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/rastlinski-svet/brezovke/crna-jelsa",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Alnus glutinosa (L.) Gaertn. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2876213",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "črna jelša",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "brezovke (Betulaceae)",
+        "sources": [
+          "np"
+        ]
+      },
+      "habitat": {
+        "value": "Bregovi voda, močvirja in vlažni gozdovi.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "Raste na mokrih, z dušikom bogatih tleh po vsej Sloveniji.",
+        "sources": [
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Cveti marca in aprila, še preden ozeleni.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Drevo je visoko do 25 m.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Lubje je rdečerjavo, v starosti črnikasto.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Listi so ovalni do okroglasti, s topim ali izrobljenim vrhom in topo nazobčanim robom.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Mladi listi so izrazito lepljivi.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Moška in ženska socvetja rastejo na istem drevesu.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "identification": {
+    "clues": [
+      2,
+      1,
+      3
+    ]
+  }
+}

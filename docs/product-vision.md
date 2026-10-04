@@ -88,6 +88,7 @@ Implemented:
 | `add-cerknica-wetland` | Cerkniško jezero after Luka's quest: a wetland with shallows, seven species and Neža's quest. |
 | `add-research-stations` | A research station per region: fully research a themed set of species to earn a journal certificate. |
 | `add-karst-cave` | Rakov Škocjan after Neža's quest: a karst gorge and a dark cave with the olm, the cave beetle and a winter bat. |
+| `add-ljubljana` | Ljubljana after Tilen's quest: a city park with street lamps, the Ljubljanica and a strip of Ljubljansko barje; Ana's quest. |
 
 Next candidates, each as its own change once the owner chooses:
 

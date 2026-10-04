@@ -10,6 +10,7 @@
     { "speciesId": "calopteryx_splendens", "weight": 2 },
     { "speciesId": "iris_pseudacorus", "weight": 25 },
     { "speciesId": "iris_sibirica", "weight": 25 },
-    { "speciesId": "nymphaea_alba", "weight": 20 }
+    { "speciesId": "nymphaea_alba", "weight": 20 },
+    { "speciesId": "fritillaria_meleagris", "weight": 20 }
   ]
 }

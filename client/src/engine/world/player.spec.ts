@@ -249,6 +249,20 @@ describe('Interaction', () => {
     expect(opened).toHaveBeenCalledOnce();
   });
 
+  it('stops at a lamp post, which offers nothing to interact with', () => {
+    const { input, frames, interactions, world, player } = setup(['#SL#']);
+
+    input.press('MoveRight');
+    frames.frames(60, 500);
+    input.release('MoveRight');
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(world.isBlocked(2, 0)).toBe(true);
+    expect(player.position).toEqual({ x: 1, y: 0 });
+    expect(interactions).toEqual([]);
+  });
+
   it('opens a faced research station, which blocks its tile', () => {
     const { input, frames, interactions, world, player } = setup(['#SB#']);
 

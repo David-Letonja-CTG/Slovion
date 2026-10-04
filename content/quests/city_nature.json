@@ -1,0 +1,36 @@
+{
+  "id": "city_nature",
+  "giver": "ana",
+  "goal": {
+    "identifiedSpecies": 3,
+    "habitat": "city"
+  },
+  "reward": {
+    "flag": "city_explored"
+  },
+  "text": {
+    "sl": {
+      "title": "Mestna narava",
+      "summary": "Prepoznaj tri vrste mesta.",
+      "returnHint": "Vrni se k Ani.",
+      "dialogue": {
+        "offer": [
+          "Pozdravljeni! Jaz sem Ana in skrbim za ta park.",
+          "Tudi sredi mesta živi veliko živali in rastlin, le pogledati je treba.",
+          "Prepoznaj tri vrste mesta: v parku, nad strehami ali ob reki."
+        ],
+        "active": [
+          "Prepoznane vrste: {identified} od {goal}.",
+          "Namig: zvečer pod svetilkami poišči ježa, podnevi pa opazuj breg reke."
+        ],
+        "ready": [
+          "Odlično! Tudi mestni park je zdaj v tvojem terenskem dnevniku.",
+          "Hvala, ker skrbiš za naravo tudi v mestu."
+        ],
+        "completed": [
+          "V parku je vsak letni čas drugačen. Vrni se, kadar želiš."
+        ]
+      }
+    }
+  }
+}

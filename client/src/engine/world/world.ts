@@ -161,6 +161,12 @@ export class World implements Obstacles {
     return timeOfDay === 'evening' || timeOfDay === 'night' || this.isUnderground;
   }
 
+  /** Lamp posts are lit in the evening and at night. */
+  get lampsLit(): boolean {
+    const timeOfDay = this.conditions.timeOfDay;
+    return timeOfDay === 'evening' || timeOfDay === 'night';
+  }
+
   get torchOn(): boolean {
     return this.torch;
   }
@@ -193,7 +199,7 @@ export class World implements Obstacles {
     return this.map.gates.filter((gate) => !this.openFlags.has(gate.flag));
   }
 
-  /** Map collision, NPCs, the signpost, research stations, residents and closed gates. */
+  /** Map collision, NPCs, the signpost, research stations, lamp posts, residents and closed gates. */
   isBlocked(x: number, y: number): boolean {
     return this.isFixedObstacle(x, y) || this.residentList.some((r) => r.occupies(x, y));
   }
@@ -206,18 +212,20 @@ export class World implements Obstacles {
       this.map.npcAt(x, y) !== undefined ||
       this.map.signpostAt(x, y) !== undefined ||
       this.map.stationAt(x, y) !== undefined ||
+      this.map.lampAt(x, y) !== undefined ||
       (gate !== undefined && !this.openFlags.has(gate.flag)) ||
       this.residentList.some((r) => r.occupies(x, y))
     );
   }
 
-  /** A water tile an aquatic resident may swim into: wadeable, with no NPC, signpost, station or gate on it. */
+  /** A water tile an aquatic resident may swim into: wadeable, with no NPC, signpost, station, lamp or gate on it. */
   private isOpenWater(x: number, y: number): boolean {
     return (
       this.map.isWadeable(x, y) &&
       this.map.npcAt(x, y) === undefined &&
       this.map.signpostAt(x, y) === undefined &&
       this.map.stationAt(x, y) === undefined &&
+      this.map.lampAt(x, y) === undefined &&
       this.map.gateAt(x, y) === undefined
     );
   }
@@ -229,6 +237,7 @@ export class World implements Obstacles {
       this.map.npcAt(x, y) !== undefined ||
       this.map.signpostAt(x, y) !== undefined ||
       this.map.stationAt(x, y) !== undefined ||
+      this.map.lampAt(x, y) !== undefined ||
       (gate !== undefined && !this.openFlags.has(gate.flag))
     );
   }

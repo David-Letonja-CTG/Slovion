@@ -1,11 +1,20 @@
 import { Direction } from '../input/actions';
-import { AreaZone, Gate, HabitatZone, MapNpc, MapStation, Signpost, WorldMap } from './world-map';
+import {
+  AreaZone,
+  Gate,
+  HabitatZone,
+  MapLamp,
+  MapNpc,
+  MapStation,
+  Signpost,
+  WorldMap,
+} from './world-map';
 
 /**
  * A small test map drawn as text: `.` open, `#` blocked, `S` spawn, `*` spot (named `spot`),
  * `g` tall grass (habitat `tall_grass`), `G` spawn standing in tall grass, `N` the NPC `vera` (tile 5),
  * `D` a gate opened by flag `gate_open` (tile 6), `R` the home spot `hare` of a resident animal,
- * `P` the signpost (tile 7), `B` a research station (tile 7), `T` a tree: a blocked tile inside a `tall_grass` zone, `~` shallow water: a blocked,
+ * `P` the signpost (tile 7), `B` a research station (tile 7), `L` a lamp post (tile 7), `T` a tree: a blocked tile inside a `tall_grass` zone, `~` shallow water: a blocked,
  * wadeable tile (tile 8), `O` shallow water holding the home spot `olm`. An area named `cave` is underground.
  */
 export function textMap(
@@ -26,6 +35,7 @@ export function textMap(
   const areas: AreaZone[] = [];
   const signposts: Signpost[] = [];
   const stations: MapStation[] = [];
+  const lamps: MapLamp[] = [];
 
   rows.forEach((row, y) =>
     [...row].forEach((cell, x) => {
@@ -39,6 +49,7 @@ export function textMap(
       if (cell === 'D') gates.push({ flag: 'gate_open', x, y, gid: 6 });
       if (cell === 'P') signposts.push({ x, y, gid: 7 });
       if (cell === 'B') stations.push({ stationId: 'test_station', x, y, gid: 7 });
+      if (cell === 'L') lamps.push({ x, y, gid: 7 });
       const areaId = areaOf(x, y);
       if (areaId) {
         areas.push({
@@ -71,5 +82,6 @@ export function textMap(
     areas,
     signposts,
     stations,
+    lamps,
   );
 }

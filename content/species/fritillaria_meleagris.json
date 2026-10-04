@@ -1,0 +1,119 @@
+{
+  "id": "fritillaria_meleagris",
+  "group": "plant",
+  "scientificName": {
+    "value": "Fritillaria meleagris L.",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "bv": {
+      "title": "Fritillaria meleagris (močvirska logarica)",
+      "publisher": "Botanični vrt Univerze v Ljubljani",
+      "url": "http://www.botanicni-vrt.si/component/rastline/fritillaria-meleagris",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "wiki": {
+      "title": "Močvirski tulipan",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Mo%C4%8Dvirski_tulipan",
+      "accessed": "2026-10-04",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Fritillaria meleagris L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5300535",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "močvirska logarica",
+        "sources": [
+          "bv",
+          "wiki"
+        ]
+      },
+      "family": {
+        "value": "lilijevke (Liliaceae)",
+        "sources": [
+          "wiki",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Raste le na zelo vlažnih rastiščih: v močvirjih, na vlažnih travnikih in drugih vlažnih mestih.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji raste le še na Ljubljanskem barju, v Krakovskem gozdu in na severovzhodu države. Je zavarovana in na Rdečem seznamu kot prizadeta vrsta.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "season": {
+        "value": "Cveti od konca marca do začetka aprila.",
+        "sources": [
+          "wiki",
+          "bv"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Zvonasti cvetovi s šestimi venčnimi listi so obrnjeni navzdol.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Cvetovi imajo škrlatno rdeč vzorec šahovnice; posamezni so tudi beli.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Listi so dolgi in ozki, premenjalno nameščeni okoli stebla.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Je strupena zaradi alkaloidov.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Imenujemo jo tudi močvirski tulipan.",
+          "sources": [
+            "wiki",
+            "bv"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring"
+    ],
+    "sources": [
+      "wiki",
+      "bv"
+    ]
+  },
+  "identification": {
+    "clues": [
+      2,
+      0,
+      1
+    ]
+  }
+}

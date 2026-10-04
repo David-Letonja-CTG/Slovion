@@ -77,6 +77,22 @@ public sealed class WildlifeTests(PostgresFixture database)
     }
 
     [Fact]
+    public async Task The_hedgehog_comes_out_in_the_ljubljana_park_only_at_dusk_and_night()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+
+        // A new save starts on a spring morning: the swift and the kingfisher are out, the hedgehog is not.
+        var morning = Animals((await WildlifeAsync(client, token, "ljubljana_park")).Body);
+        Assert.Equal((true, true, false), (morning["city_swift_1"].Present, morning["city_kingfisher_1"].Present, morning["city_hedgehog_1"].Present));
+
+        clock.Advance(TimeSpan.FromMinutes(14)); // 22:00, night
+        var night = Animals((await WildlifeAsync(client, token, "ljubljana_park")).Body);
+        Assert.True(night["city_hedgehog_1"].Present);
+    }
+
+    [Fact]
     public async Task Residents_out_of_season_are_absent()
     {
         await using var factory = Factory();

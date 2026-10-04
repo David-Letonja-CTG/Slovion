@@ -1,0 +1,12 @@
+{
+  "id": "city",
+  "text": { "sl": { "name": "Mesto" } },
+  "order": 8,
+  "searchChancePercent": 50,
+  "species": [
+    { "speciesId": "apus_apus", "weight": 1 },
+    { "speciesId": "erinaceus_roumanicus", "weight": 1 },
+    { "speciesId": "alcedo_atthis", "weight": 1 },
+    { "speciesId": "alnus_glutinosa", "weight": 40 }
+  ]
+}

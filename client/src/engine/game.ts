@@ -84,6 +84,19 @@ export function createGame(
     throw new Error('Canvas 2D context is not available.');
   }
 
+  // The darkness layer is made the first time a light is cut out of the tint, and follows the canvas's size.
+  let darkness: CanvasRenderingContext2D | null = null;
+  const darknessLayer = (): CanvasRenderingContext2D => {
+    darkness ??= canvas.ownerDocument.createElement('canvas').getContext('2d');
+    if (!darkness) throw new Error('Canvas 2D context is not available.');
+    const layer = darkness.canvas;
+    if (layer.width !== canvas.width) layer.width = canvas.width;
+    if (layer.height !== canvas.height) layer.height = canvas.height;
+    const drawScale = canvas.width / LOGICAL_WIDTH;
+    darkness.setTransform(drawScale, 0, 0, drawScale, 0, 0);
+    return darkness;
+  };
+
   const input = new ActionState();
   const dispatcher = new ActionDispatcher(input);
   const world = new World(
@@ -111,7 +124,7 @@ export function createGame(
   const loop = new GameLoop(
     {
       update: (stepMs) => world.update(input, stepMs),
-      render: () => renderWorld(context, world, options.world),
+      render: () => renderWorld(context, world, options.world, darknessLayer),
     },
     environment.clock,
     environment.scheduler,

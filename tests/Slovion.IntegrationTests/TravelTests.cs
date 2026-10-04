@@ -73,7 +73,7 @@ public sealed class TravelTests(PostgresFixture database)
         var regions = await RegionsAsync(client, token);
 
         Assert.Equal("dravsko_polje", regions.GetProperty("currentRegionId").GetString());
-        Assert.Equal(["dravsko_polje", "kocevje", "pohorje", "triglav", "cerknica", "rakov_skocjan"], regions.GetProperty("regions").EnumerateArray().Select(region => region.GetProperty("regionId").GetString()));
+        Assert.Equal(["dravsko_polje", "kocevje", "pohorje", "triglav", "cerknica", "rakov_skocjan", "ljubljana"], regions.GetProperty("regions").EnumerateArray().Select(region => region.GetProperty("regionId").GetString()));
         var meadow = Region(regions, "dravsko_polje");
         Assert.Equal(("Dravsko polje", "dravsko_polje_meadow", true), (meadow.GetProperty("name").GetString(), meadow.GetProperty("mapId").GetString(), meadow.GetProperty("unlocked").GetBoolean()));
         Assert.Equal(JsonValueKind.Null, meadow.GetProperty("lockedHint").ValueKind);
@@ -87,6 +87,7 @@ public sealed class TravelTests(PostgresFixture database)
         Assert.Equal((62, 27), (pohorje.GetProperty("x").GetInt32(), pohorje.GetProperty("y").GetInt32()));
         Assert.False(Region(regions, "triglav").GetProperty("unlocked").GetBoolean());
         Assert.Equal((false, "Pomagaj Neži ob Cerkniškem jezeru."), (Region(regions, "rakov_skocjan").GetProperty("unlocked").GetBoolean(), Region(regions, "rakov_skocjan").GetProperty("lockedHint").GetString()));
+        Assert.Equal((false, "Pomagaj Tilnu v Rakovem Škocjanu."), (Region(regions, "ljubljana").GetProperty("unlocked").GetBoolean(), Region(regions, "ljubljana").GetProperty("lockedHint").GetString()));
         var lake = Region(regions, "cerknica");
         Assert.Equal((false, "Pomagaj Luki na Triglavu.", "cerknica_lake"), (lake.GetProperty("unlocked").GetBoolean(), lake.GetProperty("lockedHint").GetString(), lake.GetProperty("mapId").GetString()));
     }
@@ -114,6 +115,31 @@ public sealed class TravelTests(PostgresFixture database)
         var (status, travelled) = await SendAsync(client, token, HttpMethod.Post, "/api/save/travel", new { regionId = "rakov_skocjan" });
         Assert.Equal(HttpStatusCode.OK, status);
         Assert.Equal("rakov_skocjan_karst", travelled.GetProperty("mapId").GetString());
+    }
+
+    [Fact]
+    public async Task Tilens_quest_opens_ljubljana()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+
+        // The journey before Tilen is covered elsewhere; here his completed quest is stored directly.
+        await using (var scope = factory.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<SlovionDbContext>();
+            var hash = SaveToken.Hash(token);
+            var slotId = (await db.SaveSlots.SingleAsync(slot => slot.TokenHash == hash, Token)).Id;
+            var tilen = QuestProgress.Start(slotId, "into_the_dark", DateTimeOffset.UtcNow);
+            tilen.Complete(DateTimeOffset.UtcNow);
+            db.QuestProgress.Add(tilen);
+            await db.SaveChangesAsync(Token);
+        }
+
+        Assert.True(Region(await RegionsAsync(client, token), "ljubljana").GetProperty("unlocked").GetBoolean());
+        var (status, travelled) = await SendAsync(client, token, HttpMethod.Post, "/api/save/travel", new { regionId = "ljubljana" });
+        Assert.Equal(HttpStatusCode.OK, status);
+        Assert.Equal("ljubljana_park", travelled.GetProperty("mapId").GetString());
     }
 
     [Fact]

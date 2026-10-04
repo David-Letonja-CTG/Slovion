@@ -1,0 +1,121 @@
+{
+  "id": "erinaceus_roumanicus",
+  "group": "mammal",
+  "scientificName": {
+    "value": "Erinaceus roumanicus Barrett-Hamilton, 1900",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Beloprsi jež",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/zivalski-svet/sesalci/zuzkojedi/beloprsi-jez",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "wiki": {
+      "title": "Beloprsi jež",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Beloprsi_je%C5%BE",
+      "accessed": "2026-10-04",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Erinaceus roumanicus Barrett-Hamilton, 1900 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5219618",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "beloprsi jež",
+        "sources": [
+          "np",
+          "wiki"
+        ]
+      },
+      "family": {
+        "value": "ježi (Erinaceidae)",
+        "sources": [
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Nižinska kulturna krajina, kjer se prepletajo gozdiči, žive meje, polja in travniki. Človeka se ne boji: v mraku ga srečamo tudi v mestnem parku ali na domačem vrtu.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je splošno razširjen od nižin do približno 1000 m visoko. V starejših virih je naveden kot Erinaceus concolor.",
+        "sources": [
+          "wiki",
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Najbolj je aktiven ob mraku in ponoči; zimo prespi v hibernaciji.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Ob nevarnosti se zvije v kroglo in naježi bodice.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Dolg je od 22,5 do 27,5 cm in tehta od 400 do 1100 g.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Ima vidno svetlejša prsa kot temno obarvani trebuh.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Hrani se z deževniki, hrošči in drugimi žuželkami, pajki in polži, rad pa poje tudi odpadlo sadje.",
+          "sources": [
+            "np",
+            "wiki"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "times": [
+      "evening",
+      "night"
+    ],
+    "sources": [
+      "wiki",
+      "np"
+    ]
+  },
+  "wildlife": {
+    "torch": "curious"
+  },
+  "identification": {
+    "clues": [
+      0,
+      3,
+      2
+    ]
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "id": "alcedo_atthis",
+  "group": "bird",
+  "scientificName": {
+    "value": "Alcedo atthis (Linnaeus, 1758)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Vodomec",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/zivalski-svet/ptici/vodomci/vodomec",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Alcedo atthis (Linnaeus, 1758) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2475532",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "vodomec",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "vodomci (Alcedinidae)",
+        "sources": [
+          "np",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Potoki in reke: s veje nad vodo opreza za majhnimi ribami in vodnimi žuželkami, gnezdo pa izkoplje v strm, praviloma peščen breg.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "Pri nas ga lahko opazujemo vse leto. Ker izginja njegov življenjski prostor, je na Rdečem seznamu kot močno ogrožena vrsta.",
+        "sources": [
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Gnezdi navadno od aprila do junija; samica znese šest ali sedem belkastih jajc.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Je majhen, okrogel ptič s kratkimi krili, repom in nogami ter velikim šilastim kljunom.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Krila in vrh glave so zeleno modri s svetlo modrimi pegami, hrbet in rep pa živo modra.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Spodnji del telesa in lica so rjasto oranžni, grlo in lisa na vratu snežno beli.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Najpogosteje ga vidimo, ko premočrtno leti nizko nad vodo in zažvižga »zii«.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Dolg je od 17 do 19,5 cm.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy"
+  },
+  "identification": {
+    "clues": [
+      0,
+      2,
+      3
+    ]
+  }
+}

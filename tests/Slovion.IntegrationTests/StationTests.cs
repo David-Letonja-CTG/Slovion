@@ -43,7 +43,7 @@ public sealed class StationTests(PostgresFixture database)
 
         Assert.Equal(HttpStatusCode.OK, status);
         var stations = body.GetProperty("stations").EnumerateArray().ToList();
-        Assert.Equal(["meadow_station", "forest_station", "mammal_station", "mountain_station", "bird_station", "cave_station"], stations.Select(station => station.GetProperty("stationId").GetString()));
+        Assert.Equal(["meadow_station", "forest_station", "mammal_station", "mountain_station", "bird_station", "cave_station", "city_station"], stations.Select(station => station.GetProperty("stationId").GetString()));
         var forest = stations[1];
         Assert.Equal(
             ("Raziskovalna postaja v Kočevju", "Gozdna drevesa", "kocevje_forest", 3, 0, false),

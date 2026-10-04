@@ -17,9 +17,11 @@ interface Draw {
 }
 
 /** Minimal stand-in for a 2D context that records draws; jsdom has no canvas implementation. */
-function fakeContext() {
+function fakeContext(name = 'view') {
   return {
+    canvas: { name, width: 0, height: 0 },
     imageSmoothingEnabled: true,
+    globalCompositeOperation: 'source-over',
     fillStyle: '',
     transform: [1, 0, 0, 1, 0, 0],
     draws: [] as Draw[],
@@ -38,8 +40,12 @@ function fakeContext() {
         addColorStop: (at: number, color: string) => stops.push([at, color]),
       };
     },
+    clearRect() {
+      this.draws.push({ image: 'clear', sx: 0, sy: 0, dx: 0, dy: 0 });
+    },
     fillRect() {
-      this.draws.push({ image: 'backdrop', style: this.fillStyle, sx: 0, sy: 0, dx: 0, dy: 0 });
+      const image = this.globalCompositeOperation === 'destination-out' ? 'hole' : 'backdrop';
+      this.draws.push({ image, style: this.fillStyle, sx: 0, sy: 0, dx: 0, dy: 0 });
     },
     drawImage(
       image: { name: string },
@@ -215,6 +221,11 @@ describe('createGame', () => {
     const canvas = document.createElement('canvas');
     const context = fakeContext();
     canvas.getContext = (() => context) as unknown as typeof canvas.getContext;
+    // The darkness layer: an offscreen canvas made on first use.
+    const layer = fakeContext('darkness');
+    const layerCanvas = document.createElement('canvas');
+    layerCanvas.getContext = (() => layer) as unknown as typeof canvas.getContext;
+    const createElement = vi.spyOn(document, 'createElement').mockReturnValue(layerCanvas);
     const game = createGame(document.createElement('div'), canvas, {
       environment,
       world: {
@@ -229,20 +240,27 @@ describe('createGame', () => {
 
     game.setTorch(true);
     environment.frames.frame(STEP_MS);
+    createElement.mockRestore();
     const player = [...context.draws].reverse().find((draw) => draw.image === 'player')!;
-    const light = context.draws.at(-1)!.style;
 
-    expect(light).toMatchObject({
+    // The tint goes into the layer, the circle is cut out of it, and the layer is drawn over the view.
+    expect(layer.draws.map((draw) => draw.image)).toEqual(['clear', 'backdrop', 'hole']);
+    expect(layer.draws[1].style).toBe(TIME_TINT.night);
+    expect(layer.draws[2].style).toMatchObject({
       kind: 'radial',
       x0: player.dx + 8,
       y0: player.dy + 8,
       r0: TORCH_INNER_RADIUS,
       r1: TORCH_OUTER_RADIUS,
       stops: [
-        [0, 'rgba(0, 0, 0, 0)'],
-        [1, TIME_TINT.night],
+        [0, 'rgba(0, 0, 0, 1)'],
+        [1, 'rgba(0, 0, 0, 0)'],
       ],
     });
+    expect(context.draws.at(-1)!.image).toBe('darkness');
+    // The layer follows the canvas's size and maps logical pixels like the view.
+    expect([layer.canvas.width, layer.canvas.height]).toEqual([canvas.width, canvas.height]);
+    expect(layer.transform).toEqual(context.transform);
 
     game.setTorch(false);
     environment.frames.frame(STEP_MS);
