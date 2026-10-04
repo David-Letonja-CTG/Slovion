@@ -1,4 +1,5 @@
 using Slovion.Application.Content;
+using Slovion.Application.Stations;
 using Slovion.Application.Weather;
 using Slovion.Domain.Content;
 using Slovion.Domain.Discovery;
@@ -26,9 +27,9 @@ public abstract record StartEncounterResult
 
     /// <summary>
     /// The save already identified this species; no encounter is opened. <see cref="Researched"/> says whether this
-    /// sighting raised its research level.
+    /// sighting raised its research level; <see cref="NewCertificates"/> lists the research stations whose goal it met.
     /// </summary>
-    public sealed record AlreadyIdentified(NatureDexEntry Entry, bool Researched) : StartEncounterResult;
+    public sealed record AlreadyIdentified(NatureDexEntry Entry, bool Researched, IReadOnlyList<CertificateView> NewCertificates) : StartEncounterResult;
 
     public sealed record Started(EncounterView Encounter) : StartEncounterResult;
 }
@@ -152,7 +153,10 @@ public sealed class EncounterService(IContentCatalog content, IDiscoveryReposito
         {
             // Sighting an identified species again may research it further.
             var (researched, advanced) = await discoveries.ResearchAsync(saveSlotId, species.Id, time.GetUtcNow(), save.CreatedAt, cancellationToken);
-            return new StartEncounterResult.AlreadyIdentified(NatureDexService.ToEntry(researched, species, language), advanced);
+            var certificates = advanced && researched.ResearchLevel == SpeciesDiscovery.MaxResearchLevel
+                ? StationService.EarnedBy(content, StationService.LevelsOf(await discoveries.ListAsync(saveSlotId, cancellationToken)), species.Id, language)
+                : [];
+            return new StartEncounterResult.AlreadyIdentified(NatureDexService.ToEntry(researched, species, language), advanced, certificates);
         }
 
         var now = time.GetUtcNow();

@@ -201,6 +201,29 @@ describe('parseTiledMap', () => {
     ).toBe(true);
   });
 
+  it.each([
+    ['dravsko_polje_meadow', meadow, 'meadow_station', { x: 14, y: 8 }],
+    ['kocevje_forest', kocevje, 'forest_station', { x: 6, y: 8 }],
+    ['pohorje_forest', pohorje, 'mammal_station', { x: 5, y: 10 }],
+    ['triglav_alps', triglav, 'mountain_station', { x: 6, y: 8 }],
+    ['cerknica_lake', cerknica, 'bird_station', { x: 6, y: 8 }],
+  ])(
+    'places a reachable research station on %s, outside the habitat zones',
+    (id, json, stationId, tile) => {
+      const { map, reachable } = reachableFromSpawn([], id, json);
+
+      expect(map.stations).toEqual([{ stationId, ...tile, gid: 57 }]);
+      expect(map.habitatAt(tile.x, tile.y)).toBeUndefined();
+      const faceable = [
+        [0, 1],
+        [0, -1],
+        [1, 0],
+        [-1, 0],
+      ].some(([dx, dy]) => reachable(tile.x + dx, tile.y + dy));
+      expect(faceable).toBe(true);
+    },
+  );
+
   it('needs the boots for the water lily and the islet on the lake, and never enters deep water', () => {
     const without = reachableFromSpawn([], 'cerknica_lake', cerknica);
     const withBoots = reachableFromSpawn([], 'cerknica_lake', cerknica, ['boots']);
@@ -278,6 +301,29 @@ describe('parseTiledMap', () => {
       (o) => o['type'] !== 'signpost',
     );
     expect(problemsOf(json)).toContain('exactly one signpost is required (found 0)');
+  });
+
+  it('reports research stations without an ID, without a tile, or outside the map', () => {
+    const json = meadowCopy();
+    const objects = (
+      json.layers.find((layer) => layer['name'] === 'objects') as {
+        objects: Record<string, unknown>[];
+      }
+    ).objects;
+    const station = objects.find((object) => object['type'] === 'station')!;
+    objects.push(
+      { ...station, name: 'unnamed', properties: [] },
+      { ...station, name: 'flat', gid: undefined },
+      { ...station, name: 'far', x: 9999 },
+    );
+
+    expect(problemsOf(json)).toEqual(
+      expect.arrayContaining([
+        "station 'unnamed' needs a stationId",
+        "station 'flat' must be a tile object",
+        "station 'far' lies outside the map",
+      ]),
+    );
   });
 
   it('reports NPCs and gates that are not usable tile objects', () => {

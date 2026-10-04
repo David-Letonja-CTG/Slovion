@@ -50,12 +50,13 @@ const STILL_NOON: WorldClock = { minutes: 12 * 60, gameMinutesPerSecond: 0 };
 
 /**
  * The world asks the host to handle an interaction; the server decides the outcome (D3): a conversation
- * with the NPC the player faces, the travel map at the signpost, the spot the player faces, or a search of the
+ * with the NPC the player faces, the travel map at the signpost, a research station's dialog, the spot the player faces, or a search of the
  * habitat at the tree (or other blocked tile) the player faces or the ground the player stands on.
  */
 export type Interaction =
   | { readonly kind: 'npc'; readonly mapId: string; readonly npcId: string }
   | { readonly kind: 'signpost'; readonly mapId: string }
+  | { readonly kind: 'station'; readonly mapId: string; readonly stationId: string }
   | { readonly kind: 'spot'; readonly mapId: string; readonly spotId: string }
   | { readonly kind: 'search'; readonly mapId: string; readonly x: number; readonly y: number };
 
@@ -179,7 +180,7 @@ export class World implements Obstacles {
     return this.map.gates.filter((gate) => !this.openFlags.has(gate.flag));
   }
 
-  /** Map collision, NPCs, the signpost, residents and closed gates. */
+  /** Map collision, NPCs, the signpost, research stations, residents and closed gates. */
   isBlocked(x: number, y: number): boolean {
     return this.isFixedObstacle(x, y) || this.residentList.some((r) => r.occupies(x, y));
   }
@@ -191,6 +192,7 @@ export class World implements Obstacles {
     return (
       this.map.npcAt(x, y) !== undefined ||
       this.map.signpostAt(x, y) !== undefined ||
+      this.map.stationAt(x, y) !== undefined ||
       (gate !== undefined && !this.openFlags.has(gate.flag)) ||
       this.residentList.some((r) => r.occupies(x, y))
     );
@@ -202,6 +204,7 @@ export class World implements Obstacles {
       this.map.isBlocked(x, y) ||
       this.map.npcAt(x, y) !== undefined ||
       this.map.signpostAt(x, y) !== undefined ||
+      this.map.stationAt(x, y) !== undefined ||
       (gate !== undefined && !this.openFlags.has(gate.flag))
     );
   }
@@ -292,7 +295,12 @@ export class World implements Obstacles {
     if (!this.tools.has('binoculars')) return undefined;
     for (let distance = 2; distance <= BINOCULARS_RANGE; distance++) {
       const [bx, by] = [x + dx * (distance - 1), y + dy * (distance - 1)];
-      if (this.map.isBlocked(bx, by) || this.map.npcAt(bx, by) || this.map.signpostAt(bx, by))
+      if (
+        this.map.isBlocked(bx, by) ||
+        this.map.npcAt(bx, by) ||
+        this.map.signpostAt(bx, by) ||
+        this.map.stationAt(bx, by)
+      )
         return undefined;
       const [tx, ty] = [x + dx * distance, y + dy * distance];
       const resident = this.residentList.find((r) => r.tileX === tx && r.tileY === ty);
@@ -318,6 +326,12 @@ export class World implements Obstacles {
       this.onInteract({ kind: 'npc', mapId: this.map.id, npcId: npc.npcId });
     } else if (this.map.signpostAt(x + dx, y + dy)) {
       this.onInteract({ kind: 'signpost', mapId: this.map.id });
+    } else if (this.map.stationAt(x + dx, y + dy)) {
+      this.onInteract({
+        kind: 'station',
+        mapId: this.map.id,
+        stationId: this.map.stationAt(x + dx, y + dy)!.stationId,
+      });
     } else if (resident) {
       this.onInteract({ kind: 'spot', mapId: this.map.id, spotId: resident.spotId });
     } else if (spot) {

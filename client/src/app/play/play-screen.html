@@ -132,6 +132,11 @@
         />
       }
     }
+    @case ('station') {
+      @if (shown.kind === 'station') {
+        <app-station-dialog [station]="shown.station" (closed)="close()" />
+      }
+    }
     @case ('inventory') {
       <app-inventory-panel [items]="progress().items" (closed)="close()" />
     }

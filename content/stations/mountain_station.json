@@ -1,0 +1,16 @@
+{
+  "id": "mountain_station",
+  "species": [
+    "leontopodium_nivale",
+    "potentilla_nitida",
+    "pinus_mugo",
+    "salamandra_atra"
+  ],
+  "goal": 3,
+  "text": {
+    "sl": {
+      "name": "Raziskovalna postaja pod Triglavom",
+      "theme": "Gorski svet"
+    }
+  }
+}

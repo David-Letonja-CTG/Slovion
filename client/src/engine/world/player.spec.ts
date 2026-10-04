@@ -249,6 +249,33 @@ describe('Interaction', () => {
     expect(opened).toHaveBeenCalledOnce();
   });
 
+  it('opens a faced research station, which blocks its tile', () => {
+    const { input, frames, interactions, world, player } = setup(['#SB#']);
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+    input.release('Interact');
+    input.press('MoveRight');
+    frames.frames(60, 500);
+
+    expect(interactions).toEqual([
+      { kind: 'station', mapId: 'test_map', stationId: 'test_station' },
+    ]);
+    expect(world.isBlocked(2, 0)).toBe(true);
+    expect(player.position).toEqual({ x: 1, y: 0 });
+  });
+
+  it('prefers a faced research station over searching the grass underfoot', () => {
+    const { input, frames, interactions } = setup(['#GB#']);
+
+    input.press('Interact');
+    frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([
+      { kind: 'station', mapId: 'test_map', stationId: 'test_station' },
+    ]);
+  });
+
   it('prefers a faced NPC over searching the grass underfoot', () => {
     const { input, frames, interactions } = setup(['#GN#']);
 

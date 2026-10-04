@@ -1830,6 +1830,25 @@
      "width": 0,
      "x": 104,
      "y": 280
+    },
+    {
+     "gid": 57,
+     "height": 16,
+     "id": 12,
+     "name": "forest_station",
+     "properties": [
+      {
+       "name": "stationId",
+       "type": "string",
+       "value": "forest_station"
+      }
+     ],
+     "rotation": 0,
+     "type": "station",
+     "visible": true,
+     "width": 16,
+     "x": 96,
+     "y": 144
     }
    ],
    "opacity": 1,
@@ -1840,7 +1859,7 @@
   }
  ],
  "nextlayerid": 5,
- "nextobjectid": 12,
+ "nextobjectid": 13,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.11.2",
@@ -1850,12 +1869,12 @@
    "columns": 8,
    "firstgid": 1,
    "image": "../tilesets/meadow.png",
-   "imageheight": 112,
+   "imageheight": 128,
    "imagewidth": 128,
    "margin": 0,
    "name": "meadow",
    "spacing": 0,
-   "tilecount": 56,
+   "tilecount": 64,
    "tileheight": 16,
    "tilewidth": 16,
    "tiles": [

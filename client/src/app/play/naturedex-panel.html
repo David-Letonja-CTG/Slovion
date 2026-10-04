@@ -7,9 +7,19 @@
   >
     <header class="naturedex__header">
       <h2 id="naturedex-title">{{ 'naturedex.title' | transloco }}</h2>
-      <button type="button" class="button" (click)="closed.emit()">
-        {{ 'common.close' | transloco }}
-      </button>
+      <div class="naturedex__actions">
+        <button
+          type="button"
+          class="button"
+          data-action="certificates"
+          (click)="openCertificates()"
+        >
+          {{ 'naturedex.certificates.button' | transloco }}
+        </button>
+        <button type="button" class="button" (click)="closed.emit()">
+          {{ 'common.close' | transloco }}
+        </button>
+      </div>
     </header>
 
     @let current = state();
@@ -77,6 +87,28 @@
               </ul>
             </section>
           }
+        } @else if (opened.kind === 'certificates') {
+          <article class="certificates">
+            <button #backButton type="button" class="button entry__back" (click)="back()">
+              {{ 'naturedex.back' | transloco }}
+            </button>
+            <h3>{{ 'naturedex.certificates.title' | transloco }}</h3>
+            @if (opened.stations === null) {
+              <p>{{ 'common.loading' | transloco }}</p>
+            } @else if (opened.stations.length === 0) {
+              <p class="certificates__empty">{{ 'naturedex.certificates.empty' | transloco }}</p>
+            } @else {
+              <ul class="certificates__list">
+                @for (station of opened.stations; track station.stationId) {
+                  <li class="certificate" [attr.data-station]="station.stationId">
+                    <p class="certificate__name">{{ station.name }}</p>
+                    <p class="certificate__theme">{{ station.theme }}</p>
+                    <p class="certificate__species">{{ researchedNames(station).join(', ') }}</p>
+                  </li>
+                }
+              </ul>
+            }
+          </article>
         } @else if (opened.kind === 'page') {
           @if (opened.entry.species; as species) {
             <article class="entry" [attr.data-species]="opened.speciesId">

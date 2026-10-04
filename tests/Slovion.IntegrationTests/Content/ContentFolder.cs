@@ -24,6 +24,9 @@ public sealed class ContentFolder : IDisposable
     /// <summary>A start tool; written as <c>items/lamp.json</c>.</summary>
     public JsonObject Item { get; }
 
+    /// <summary>A research station, written to <c>stations/</c> when set; none by default.</summary>
+    public JsonObject? Station { get; set; }
+
     /// <summary>The tool's icon; <c>null</c> writes none.</summary>
     public byte[]? ItemIcon { get; set; } = Png(16, 16);
 
@@ -66,6 +69,12 @@ public sealed class ContentFolder : IDisposable
     {
         File.WriteAllText(System.IO.Path.Combine(Path, "regions", regionFile), Region.ToJsonString());
         File.WriteAllText(System.IO.Path.Combine(Path, "items", "lamp.json"), Item.ToJsonString());
+        if (Station is not null)
+        {
+            Directory.CreateDirectory(System.IO.Path.Combine(Path, "stations"));
+            File.WriteAllText(System.IO.Path.Combine(Path, "stations", $"{Station["id"]}.json"), Station.ToJsonString());
+        }
+
         if (ItemIcon is not null)
         {
             File.WriteAllBytes(System.IO.Path.Combine(Path, "item-icons", $"{Item["id"]}.png"), ItemIcon);

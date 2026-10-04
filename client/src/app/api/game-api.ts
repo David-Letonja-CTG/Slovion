@@ -76,10 +76,37 @@ export interface Encounter {
 }
 
 /** A sighting of an identified species; `researched` says whether it raised the research level. */
+/** A research station whose goal a sighting has just met. */
+export interface CertificateInfo {
+  readonly stationId: string;
+  readonly name: string;
+}
+
 export interface AlreadyIdentified {
   readonly alreadyIdentified: true;
   readonly researched: boolean;
   readonly entry: NatureDexEntry;
+  /** The research stations whose goal this sighting met. */
+  readonly newCertificates: readonly CertificateInfo[];
+}
+
+/** A station's species for the save: level 0 and no name until identified. */
+export interface StationSpeciesInfo {
+  readonly speciesId: string;
+  readonly level: number;
+  readonly name: string | null;
+}
+
+/** A research station with the save's progress, as the server decided it (D3). */
+export interface StationInfo {
+  readonly stationId: string;
+  readonly name: string;
+  readonly theme: string;
+  readonly mapId: string;
+  readonly goal: number;
+  readonly researched: number;
+  readonly met: boolean;
+  readonly species: readonly StationSpeciesInfo[];
 }
 
 /** The save's in-game time (docs/decisions.md D8); `minutes` count from day 1 00:00. */
@@ -289,5 +316,10 @@ export class GameApi {
   /** Every species per habitat, with the save's progress on each. */
   natureDex(): Observable<{ habitats: NatureDexSection[] }> {
     return this.http.get<{ habitats: NatureDexSection[] }>('/api/save/naturedex');
+  }
+
+  /** Every research station with the save's progress, in region order. */
+  stations(): Observable<{ stations: StationInfo[] }> {
+    return this.http.get<{ stations: StationInfo[] }>('/api/save/stations');
   }
 }

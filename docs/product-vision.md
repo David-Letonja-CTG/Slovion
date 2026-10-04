@@ -29,7 +29,7 @@ No GPS: the player's real location never affects gameplay.
 | Seasons | Spring, summer, autumn, winter; affect species availability (implemented: D8, `world-conditions`). |
 | Time of day | Morning, day, evening, night; affects encounters. Deterministic and testable (implemented: D8). |
 | Weather | Per region, drawn over the map; widens availability where sourced (implemented: D11, `weather`). |
-| Research stations | Original progression milestones built on observation challenges (trees, tracks, amphibians, alpine plants, birds, mushrooms). Not gym copies. |
+| Research stations | Original progression milestones built on observation challenges (trees, tracks, amphibians, alpine plants, birds, mushrooms). Not gym copies. One per region: fully research a themed set of species for a journal certificate (implemented: `research-stations`). |
 | Quests, inventory, progression | Introduced only when a slice needs them. |
 
 ## Educational model
@@ -86,12 +86,13 @@ Implemented:
 | `add-field-tools` | A bag of field tools from quests: lamp, binoculars, magnifier, rubber boots. |
 | `add-installable-app` | An installable app (PWA) that opens without a connection and offers new versions. |
 | `add-cerknica-wetland` | Cerkniško jezero after Luka's quest: a wetland with shallows, seven species and Neža's quest. |
+| `add-research-stations` | A research station per region: fully research a themed set of species to earn a journal certificate. |
 
 Next candidates, each as its own change once the owner chooses:
 
 1. **More habitats:** e.g. river, cave, coast, town.
 
-Later candidates: research stations, offline play (needs D3 revisited), English, accounts/cloud save.
+Later candidates: offline play (needs D3 revisited), English, accounts/cloud save.
 
 ## Capabilities (OpenSpec specs)
 

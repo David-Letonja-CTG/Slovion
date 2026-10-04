@@ -231,3 +231,46 @@
   color: var(--color-text-muted);
   font-size: 0.9rem;
 }
+
+.naturedex__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.certificates h3,
+.certificates__empty {
+  margin: 0.5rem 0;
+}
+
+.certificates__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.certificate {
+  padding: 0.6rem 0.8rem;
+  border: 2px solid var(--color-accent);
+  background: rgb(0 0 0 / 15%);
+}
+
+.certificate p {
+  margin: 0;
+}
+
+.certificate__name {
+  font-weight: bold;
+}
+
+.certificate__theme {
+  color: var(--color-accent);
+}
+
+.certificate__species {
+  margin-top: 0.2rem !important;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}

@@ -1,0 +1,16 @@
+{
+  "id": "meadow_station",
+  "species": [
+    "salvia_pratensis",
+    "taraxacum_officinale",
+    "crataegus_monogyna",
+    "iris_sibirica"
+  ],
+  "goal": 3,
+  "text": {
+    "sl": {
+      "name": "Raziskovalna postaja na Dravskem polju",
+      "theme": "Travniki in mejice"
+    }
+  }
+}

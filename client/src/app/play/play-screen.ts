@@ -16,6 +16,7 @@ import {
   AlreadyIdentified,
   AnswerResult,
   ApiErrorCode,
+  CertificateInfo,
   Conversation,
   Encounter,
   GameApi,
@@ -24,6 +25,7 @@ import {
   RegionInfo,
   WeatherInfo,
   RegionsInfo,
+  StationInfo,
   WorldTimeInfo,
   apiErrorCode,
 } from '../api/game-api';
@@ -38,6 +40,7 @@ import { NatureDexPanel } from './naturedex-panel';
 import { QuestTracker } from './quest-tracker';
 import { TravelMap } from './travel-map';
 import { InventoryPanel } from './inventory-panel';
+import { StationDialog } from './station-dialog';
 import { LoadedPlace, WorldLoader } from './world-loader';
 
 /** How long the screen takes to fade out (and in again) when travelling; none for players who prefer reduced motion. */
@@ -84,6 +87,8 @@ type Overlay =
       readonly name: string;
       readonly level: number;
       readonly researched: boolean;
+      /** Research stations whose goal this sighting met; announced when the message closes. */
+      readonly certificates: readonly CertificateInfo[];
     }
   | { readonly kind: 'nothing' }
   /** A spot whose species is not around at the save's in-game time (D8). */
@@ -94,6 +99,8 @@ type Overlay =
   | { readonly kind: 'travel'; readonly regions: RegionsInfo }
   /** The bag with the save's field tools. */
   | { readonly kind: 'inventory' }
+  /** A research station's board. */
+  | { readonly kind: 'station'; readonly station: StationInfo }
   | { readonly kind: 'error'; readonly code: ApiErrorCode };
 
 /** The game: the world on canvas plus UI overlays that take input while open. */
@@ -111,6 +118,7 @@ type Overlay =
     TranslocoPipe,
     TravelMap,
     InventoryPanel,
+    StationDialog,
   ],
   templateUrl: './play-screen.html',
   styleUrl: './play-screen.css',
@@ -125,6 +133,7 @@ export class PlayScreen {
   private readonly dialogue = viewChild(DialogueBox);
   private readonly travelMap = viewChild(TravelMap);
   private readonly inventory = viewChild(InventoryPanel);
+  private readonly stationDialog = viewChild(StationDialog);
   private readonly fadeMs = inject(TRAVEL_FADE_MS);
   private game: Game | undefined;
   /** The map of the place the player is in. */
@@ -336,6 +345,10 @@ export class PlayScreen {
       this.openTravelMap();
       return;
     }
+    if (interaction.kind === 'station') {
+      this.openStation(interaction.stationId);
+      return;
+    }
     if (interaction.kind === 'npc') {
       this.api.talk(interaction.mapId, interaction.npcId).subscribe({
         next: (conversation) => this.overlay.set({ kind: 'dialogue', conversation }),
@@ -351,6 +364,17 @@ export class PlayScreen {
     const kind = interaction.kind;
     request.subscribe({
       next: (result) => this.overlay.set(this.overlayFor(result, kind)),
+      error: (error: unknown) => this.onError(error),
+    });
+  }
+
+  private openStation(stationId: string): void {
+    this.api.stations().subscribe({
+      next: ({ stations }) => {
+        const station = stations.find((candidate) => candidate.stationId === stationId);
+        if (station) this.open({ kind: 'station', station });
+        else this.close();
+      },
       error: (error: unknown) => this.onError(error),
     });
   }
@@ -408,6 +432,7 @@ export class PlayScreen {
         name: result.entry.species?.name ?? '',
         level: result.entry.researchLevel ?? 1,
         researched: result.researched,
+        certificates: result.newCertificates ?? [],
       };
     }
     return { kind: 'encounter', encounter: result };
@@ -477,9 +502,17 @@ export class PlayScreen {
   }
 
   protected close(): void {
+    const closing = this.overlay();
     this.overlay.set({ kind: 'none' });
     this.game?.setActionConsumer('world');
     this.canvas()?.focus();
+    // A finished research station is announced after the research message, like a new tool.
+    if (closing.kind === 'known') {
+      for (const certificate of closing.certificates) {
+        const name = this.transloco.translate('certificate.received', { name: certificate.name });
+        this.banner.update((banner) => ({ key: (banner?.key ?? 0) + 1, name }));
+      }
+    }
   }
 
   /** The server no longer knows this save: back to the title screen with an explanation. */
@@ -523,6 +556,8 @@ export class PlayScreen {
       this.travelMap()?.handleAction(action);
     } else if (kind === 'inventory') {
       this.inventory()?.handleAction(action);
+    } else if (kind === 'station') {
+      this.stationDialog()?.handleAction(action);
     }
   }
 }

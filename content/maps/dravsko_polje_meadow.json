@@ -3102,12 +3102,31 @@
      "width": 16,
      "x": 192,
      "y": 160
+    },
+    {
+     "gid": 57,
+     "height": 16,
+     "id": 19,
+     "name": "meadow_station",
+     "properties": [
+      {
+       "name": "stationId",
+       "type": "string",
+       "value": "meadow_station"
+      }
+     ],
+     "rotation": 0,
+     "type": "station",
+     "visible": true,
+     "width": 16,
+     "x": 224,
+     "y": 144
     }
    ]
   }
  ],
  "nextlayerid": 5,
- "nextobjectid": 19,
+ "nextobjectid": 20,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.11.2",
@@ -3117,12 +3136,12 @@
    "columns": 8,
    "firstgid": 1,
    "image": "../tilesets/meadow.png",
-   "imageheight": 112,
+   "imageheight": 128,
    "imagewidth": 128,
    "margin": 0,
    "name": "meadow",
    "spacing": 0,
-   "tilecount": 56,
+   "tilecount": 64,
    "tileheight": 16,
    "tilewidth": 16,
    "tiles": [
