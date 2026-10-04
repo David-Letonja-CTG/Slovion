@@ -12,6 +12,7 @@ import {
   PlayerProgress,
   QuestInfo,
   RegionsInfo,
+  StationInfo,
 } from '../api/game-api';
 import { GameSession } from '../session/game-session';
 import { SaveTokenStore } from '../session/save-token-store';
@@ -1319,5 +1320,165 @@ describe('Field tools', () => {
     await play.settle();
 
     expect(play.root().querySelectorAll('.identification__clues li')).toHaveLength(clues);
+  });
+});
+
+describe('Research stations', () => {
+  afterEach(() => TestBed.inject(Router).dispose());
+
+  const STATIONS = '/api/save/stations';
+  const MEADOW_STATION = {
+    kind: 'station',
+    mapId: 'dravsko_polje_meadow',
+    stationId: 'meadow_station',
+  } as const;
+  const station = (overrides: Partial<StationInfo> = {}): StationInfo => ({
+    stationId: 'meadow_station',
+    name: 'Raziskovalna postaja na Dravskem polju',
+    theme: 'Travniki in mejice',
+    mapId: 'dravsko_polje_meadow',
+    goal: 3,
+    researched: 1,
+    met: false,
+    species: [
+      { speciesId: 'salvia_pratensis', level: 3, name: 'travniška kadulja' },
+      { speciesId: 'taraxacum_officinale', level: 1, name: 'navadni regrat' },
+      { speciesId: 'crataegus_monogyna', level: 0, name: null },
+      { speciesId: 'iris_sibirica', level: 0, name: null },
+    ],
+    ...overrides,
+  });
+  const forest = (met: boolean): StationInfo => ({
+    stationId: 'forest_station',
+    name: 'Raziskovalna postaja v Kočevju',
+    theme: 'Gozdna drevesa',
+    mapId: 'kocevje_forest',
+    goal: 3,
+    researched: met ? 3 : 0,
+    met,
+    species: [
+      { speciesId: 'abies_alba', level: met ? 3 : 0, name: met ? 'navadna jelka' : null },
+      { speciesId: 'fagus_sylvatica', level: met ? 3 : 0, name: met ? 'navadna bukev' : null },
+      { speciesId: 'picea_abies', level: met ? 3 : 0, name: met ? 'navadna smreka' : null },
+    ],
+  });
+
+  async function openStation(stations: StationInfo[] = [station(), forest(false)]) {
+    const play = await openPlay();
+    play.game.options!.onInteract(MEADOW_STATION);
+    play.http.expectOne(STATIONS).flush({ stations });
+    await play.settle();
+    const dialog = () => play.root().querySelector('app-station-dialog');
+    return { ...play, dialog };
+  }
+
+  it('opens a station with its theme, species and progress', async () => {
+    const { dialog, game } = await openStation();
+
+    expect(dialog()?.querySelector('h2')?.textContent).toBe(
+      'Raziskovalna postaja na Dravskem polju',
+    );
+    expect(dialog()?.querySelector('.station__theme')?.textContent).toBe('Travniki in mejice');
+    expect(dialog()?.querySelector('.station__progress')?.textContent?.trim()).toBe(
+      'Popolnoma raziskane vrste: 1 od 3',
+    );
+    const sage = dialog()!.querySelector('[data-species="salvia_pratensis"]')!;
+    expect(sage.querySelector('.station__name')?.textContent).toBe('travniška kadulja');
+    expect(sage.querySelector('.station__stars')?.textContent).toBe('★★★');
+    const hawthorn = dialog()!.querySelector('[data-species="crataegus_monogyna"]')!;
+    expect(hawthorn.classList).toContain('station__picture--unknown');
+    expect(hawthorn.querySelector('.station__name')?.textContent).toBe(sl.naturedex.unknown);
+    expect(hawthorn.querySelector('.station__stars')).toBeNull();
+    expect(dialog()?.querySelector('.station__met')).toBeNull();
+    expect(game.consumer).toBe('ui');
+  });
+
+  it('says the certificate is in the journal once the goal is met', async () => {
+    const { dialog } = await openStation([station({ researched: 3, met: true })]);
+
+    expect(dialog()?.querySelector('.station__met')?.textContent).toBe(sl.station.met);
+  });
+
+  it.each(['Cancel', 'Confirm'] as const)(
+    'closes the station with %s and gives input back to the world',
+    async (action) => {
+      const { dialog, game, settle } = await openStation();
+
+      game.pressUi(action);
+      await settle();
+
+      expect(dialog()).toBeNull();
+      expect(game.consumer).toBe('world');
+    },
+  );
+
+  it('announces a new certificate after the research message', async () => {
+    const play = await openPlay();
+    play.game.options!.onInteract(SAGE);
+    play.http.expectOne('/api/save/encounters').flush({
+      alreadyIdentified: true,
+      researched: true,
+      entry: { ...SAGE_ENTRY, researchLevel: 3 },
+      newCertificates: [
+        { stationId: 'meadow_station', name: 'Raziskovalna postaja na Dravskem polju' },
+      ],
+    });
+    await play.settle();
+    expect(play.root().querySelector('app-location-banner')).toBeNull();
+
+    play.game.pressUi('Confirm');
+    await play.settle();
+
+    expect(play.root().querySelector('app-location-banner')?.textContent).toBe(
+      'Novo potrdilo: Raziskovalna postaja na Dravskem polju',
+    );
+  });
+
+  describe('Certificates in Terenski dnevnik', () => {
+    async function openCertificates(stations: StationInfo[]) {
+      const play = await openPlay();
+      play.game.options!.onOpenMenu!();
+      await play.settle();
+      play.http.expectOne('/api/save/naturedex').flush({ habitats: [] });
+      await play.settle();
+      const panel = () => play.root().querySelector('app-naturedex-panel')!;
+      panel().querySelector<HTMLButtonElement>('[data-action="certificates"]')!.click();
+      await play.settle();
+      play.http.expectOne(STATIONS).flush({ stations });
+      await play.settle();
+      return { ...play, panel };
+    }
+
+    it('lists the stations whose goal is met, with their researched species', async () => {
+      const { panel } = await openCertificates([station(), forest(true)]);
+
+      const certificates = panel().querySelectorAll('.certificate');
+      expect(certificates.length).toBe(1);
+      expect(certificates[0].getAttribute('data-station')).toBe('forest_station');
+      expect(certificates[0].querySelector('.certificate__theme')?.textContent).toBe(
+        'Gozdna drevesa',
+      );
+      expect(certificates[0].querySelector('.certificate__species')?.textContent).toBe(
+        'navadna jelka, navadna bukev, navadna smreka',
+      );
+    });
+
+    it('explains where certificates come from while there are none', async () => {
+      const { panel } = await openCertificates([station(), forest(false)]);
+
+      expect(panel().querySelector('.certificates__empty')?.textContent).toBe(
+        sl.naturedex.certificates.empty,
+      );
+    });
+
+    it('goes back to the grid with Cancel', async () => {
+      const { panel, game, settle } = await openCertificates([forest(true)]);
+
+      game.pressUi('Cancel');
+      await settle();
+
+      expect(panel().querySelector('.certificates')).toBeNull();
+      expect(panel().querySelector('h2')?.textContent).toBe(sl.naturedex.title);
+    });
   });
 });

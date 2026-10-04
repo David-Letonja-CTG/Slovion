@@ -3,12 +3,14 @@ using Slovion.Api.Discovery;
 using Slovion.Api.Errors;
 using Slovion.Api.Quests;
 using Slovion.Api.Saves;
+using Slovion.Api.Stations;
 using Slovion.Api.Travel;
 using Slovion.Api.Wildlife;
 using Slovion.Api.World;
 using Slovion.Application.Discovery;
 using Slovion.Application.Quests;
 using Slovion.Application.Saves;
+using Slovion.Application.Stations;
 using Slovion.Application.Travel;
 using Slovion.Application.Weather;
 using Slovion.Application.Wildlife;
@@ -29,6 +31,7 @@ builder.Services.AddScoped<QuestService>();
 builder.Services.AddScoped<TravelService>();
 builder.Services.AddScoped<WeatherService>();
 builder.Services.AddScoped<WildlifeService>();
+builder.Services.AddScoped<StationService>();
 
 var app = builder.Build();
 
@@ -47,7 +50,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapHealthChecks("/health");
-app.MapSaveEndpoints().MapDiscoveryEndpoints().MapQuestEndpoints().MapTimeEndpoints().MapWildlifeEndpoints().MapTravelEndpoints().MapWeatherEndpoints();
+app.MapSaveEndpoints().MapDiscoveryEndpoints().MapQuestEndpoints().MapTimeEndpoints().MapWildlifeEndpoints().MapTravelEndpoints().MapWeatherEndpoints().MapStationEndpoints();
 app.MapApiNotFoundFallback();
 
 await app.RunAsync();

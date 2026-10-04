@@ -1,0 +1,15 @@
+{
+  "id": "forest_station",
+  "species": [
+    "abies_alba",
+    "fagus_sylvatica",
+    "picea_abies"
+  ],
+  "goal": 3,
+  "text": {
+    "sl": {
+      "name": "Raziskovalna postaja v Kočevju",
+      "theme": "Gozdna drevesa"
+    }
+  }
+}

@@ -18,6 +18,7 @@ import {
   NatureDexEntry,
   NatureDexSection,
   NatureDexSlot,
+  StationInfo,
   apiErrorCode,
 } from '../api/game-api';
 import { Selection, moveSelection } from './naturedex-selection';
@@ -27,10 +28,11 @@ type PanelState =
   | { readonly kind: 'loaded'; readonly sections: readonly NatureDexSection[] }
   | { readonly kind: 'error'; readonly code: ApiErrorCode };
 
-/** The grid, or one opened species: a card while only observed, its page once identified. */
+/** The grid, one opened species (a card while only observed, its page once identified), or the certificates. */
 type View =
   | { readonly kind: 'grid' }
-  | { readonly kind: 'card' | 'page'; readonly speciesId: string; readonly entry: NatureDexEntry };
+  | { readonly kind: 'card' | 'page'; readonly speciesId: string; readonly entry: NatureDexEntry }
+  | { readonly kind: 'certificates'; readonly stations: readonly StationInfo[] | null };
 
 /**
  * The NatureDex, shown to players as "Terenski dnevnik" (docs/decisions.md D10): one picture grid per
@@ -62,17 +64,17 @@ export class NatureDexPanel {
   private readonly pictures = viewChildren<ElementRef<HTMLButtonElement>>('picture');
   private readonly backButton = viewChild<ElementRef<HTMLButtonElement>>('backButton');
 
+  private readonly api = inject(GameApi);
+
   constructor() {
-    inject(GameApi)
-      .natureDex()
-      .subscribe({
-        next: ({ habitats }) => this.state.set({ kind: 'loaded', sections: habitats }),
-        error: (error: unknown) => {
-          const code = apiErrorCode(error);
-          if (code === 'invalid_save_token') this.saveLost.emit();
-          this.state.set({ kind: 'error', code });
-        },
-      });
+    this.api.natureDex().subscribe({
+      next: ({ habitats }) => this.state.set({ kind: 'loaded', sections: habitats }),
+      error: (error: unknown) => {
+        const code = apiErrorCode(error);
+        if (code === 'invalid_save_token') this.saveLost.emit();
+        this.state.set({ kind: 'error', code });
+      },
+    });
 
     // Focus follows the selection in the grid and the back button in an opened species, so the
     // visible focus, the shown label and screen readers stay in sync.
@@ -122,6 +124,33 @@ export class NatureDexPanel {
 
   protected back(): void {
     this.view.set({ kind: 'grid' });
+  }
+
+  /** The certificates page: research stations whose goal the save has met (the server decides, D3). */
+  protected openCertificates(): void {
+    this.view.set({ kind: 'certificates', stations: null });
+    this.api.stations().subscribe({
+      next: ({ stations }) => {
+        if (this.view().kind === 'certificates') {
+          this.view.set({
+            kind: 'certificates',
+            stations: stations.filter((station) => station.met),
+          });
+        }
+      },
+      error: (error: unknown) => {
+        const code = apiErrorCode(error);
+        if (code === 'invalid_save_token') this.saveLost.emit();
+        this.state.set({ kind: 'error', code });
+      },
+    });
+  }
+
+  /** The names of a station's fully researched species. */
+  protected researchedNames(station: StationInfo): string[] {
+    return station.species
+      .filter((species) => species.level >= 3 && species.name !== null)
+      .map((species) => species.name!);
   }
 
   protected isSelected(section: number, index: number): boolean {

@@ -32,6 +32,11 @@
   },
   "naturedex": {
     "title": "Terenski dnevnik",
+    "certificates": {
+      "button": "Potrdila",
+      "title": "Potrdila",
+      "empty": "Potrdila prejmeš na raziskovalnih postajah, ko popolnoma raziščeš njihove vrste."
+    },
     "empty": "Terenski dnevnik je še prazen. Razišči travnik in poišči rastline in živali.",
     "unknown": "Neznana vrsta",
     "observedAt": "Opaženo",
@@ -124,6 +129,13 @@
   },
   "spot": {
     "notNow": "Tukaj zdaj ni ničesar. Poskusi ob drugem času."
+  },
+  "station": {
+    "progress": "Popolnoma raziskane vrste: {{researched}} od {{goal}}",
+    "met": "Potrdilo je v terenskem dnevniku."
+  },
+  "certificate": {
+    "received": "Novo potrdilo: {{name}}"
   },
   "inventory": {
     "title": "Nahrbtnik",

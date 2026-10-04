@@ -25,6 +25,11 @@ public interface IContentCatalog
 
     Item? FindItem(string itemId);
 
+    /// <summary>Every research station, ordered by the order of its map's region, then by ID.</summary>
+    IReadOnlyList<Station> AllStations { get; }
+
+    Station? FindStation(string stationId);
+
     Species? FindSpecies(SpeciesId id);
 
     MapSpot? FindSpot(string mapId, string spotId);

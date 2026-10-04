@@ -1,0 +1,16 @@
+{
+  "id": "bird_station",
+  "species": [
+    "alauda_arvensis",
+    "lanius_collurio",
+    "ardea_cinerea",
+    "crex_crex"
+  ],
+  "goal": 3,
+  "text": {
+    "sl": {
+      "name": "Raziskovalna postaja ob Cerkniškem jezeru",
+      "theme": "Ptice"
+    }
+  }
+}

@@ -5,6 +5,7 @@ import {
   Signpost,
   HabitatZone,
   MapNpc,
+  MapStation,
   Spot,
   TILE_SIZE,
   TileLayer,
@@ -75,7 +76,8 @@ const DIRECTIONS: readonly Direction[] = ['up', 'down', 'left', 'right'];
 /**
  * Parses the Tiled JSON subset Slovion supports (design §4): orthogonal, 16×16 tiles, one embedded
  * tileset, tile layers `ground` (+ optional others) and `collision`, object layer `objects` with one
- * `spawn`, any number of `spot` objects, habitat and area zones, NPC and gate tile objects, and one signpost.
+ * `spawn`, any number of `spot` objects, habitat and area zones, NPC, gate and research station tile objects, and one
+ * signpost.
  */
 export function parseTiledMap(id: string, json: unknown): WorldMap {
   const map = (json ?? {}) as TiledMap;
@@ -203,6 +205,24 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     }
   }
 
+  // Research stations: tile objects naming a station (`stationId`), opening its dialog.
+  const stations: MapStation[] = [];
+  for (const object of objects?.filter((o) => classOf(o) === 'station') ?? []) {
+    const x = Math.floor(((object.x ?? 0) + (object.width ?? 0) / 2) / TILE_SIZE);
+    const y = Math.floor(((object.y ?? 0) - (object.height ?? 0) / 2) / TILE_SIZE);
+    const stationId = object.properties?.find((p) => p.name === 'stationId')?.value;
+    const label = `station '${object.name ?? ''}'`;
+    if (!object.gid || object.gid <= 0) {
+      problems.push(`${label} must be a tile object`);
+    } else if (typeof stationId !== 'string' || stationId === '') {
+      problems.push(`${label} needs a stationId`);
+    } else if (x < 0 || y < 0 || x >= width || y >= height) {
+      problems.push(`${label} lies outside the map`);
+    } else {
+      stations.push({ stationId, x, y, gid: object.gid });
+    }
+  }
+
   if (problems.length > 0) throw new MapFormatError(id, problems);
 
   const spawnTile = tileOf(spawns[0]);
@@ -251,6 +271,7 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     gates,
     areas,
     signposts,
+    stations,
   );
 }
 

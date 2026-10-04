@@ -92,6 +92,11 @@ internal sealed record RegionUnlockFile(string? Flag, int? IdentifiedSpecies);
 /// </summary>
 internal sealed record RegionFile(string? Id, string? MapId, int? Order, RegionPositionFile? Position, RegionUnlockFile? Unlock, Dictionary<string, RegionTextFile>? Text, Dictionary<string, Dictionary<string, int>>? Weather);
 
+internal sealed record StationTextFile(string? Name, string? Theme);
+
+/// <summary>A research station: a themed species list and how many to research fully (fictional gameplay data).</summary>
+internal sealed record StationFile(string? Id, List<string>? Species, int? Goal, Dictionary<string, StationTextFile>? Text);
+
 internal sealed record AreaTextFile(string? Name);
 
 /// <summary>A named place in the world (a game label, not a fact).</summary>

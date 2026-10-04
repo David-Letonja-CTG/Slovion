@@ -429,3 +429,29 @@ test("the bag holds the lamp from the start and the binoculars after Vera's ques
   await expect(bag.locator('.inventory__item')).toHaveCount(2);
   await expect(bag).toContainText('daljnogled');
 });
+
+test('the meadow research station shows its theme and progress', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Nova igra' }).click();
+  await waitForTheWorld(page);
+
+  // From the spawn (10, 10) to (14, 9), facing the station at (14, 8).
+  for (const key of [
+    'ArrowRight',
+    'ArrowRight',
+    'ArrowRight',
+    'ArrowRight',
+    'ArrowUp',
+    'ArrowUp',
+  ]) {
+    await step(page, key);
+  }
+  await page.keyboard.press('KeyE');
+
+  const station = page.getByRole('dialog', { name: 'Raziskovalna postaja na Dravskem polju' });
+  await expect(station).toBeVisible();
+  await expect(station.getByText('Travniki in mejice')).toBeVisible();
+  await expect(station.getByText('Popolnoma raziskane vrste: 0 od 3')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(station).toBeHidden();
+});

@@ -117,6 +117,13 @@ internal sealed class FakeContentCatalog(params Species[] initial) : IContentCat
 
     public Item? FindItem(string itemId) => Items.FirstOrDefault(item => item.Id == itemId);
 
+    /// <summary>The research stations listed by <see cref="AllStations"/>, in list order; none by default.</summary>
+    public List<Station> Stations { get; } = [];
+
+    public IReadOnlyList<Station> AllStations => Stations;
+
+    public Station? FindStation(string stationId) => Stations.FirstOrDefault(station => station.Id == stationId);
+
     public IReadOnlyList<Habitat> AllHabitats => Habitats.OrderBy(habitat => habitat.Order).ThenBy(habitat => habitat.Id, StringComparer.Ordinal).ToList();
 
     public IReadOnlyList<Region> AllRegions => Regions.OrderBy(region => region.Order).ThenBy(region => region.Id, StringComparer.Ordinal).ToList();

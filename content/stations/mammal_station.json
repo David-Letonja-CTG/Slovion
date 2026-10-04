@@ -1,0 +1,19 @@
+{
+  "id": "mammal_station",
+  "species": [
+    "lepus_europaeus",
+    "ursus_arctos",
+    "cervus_elaphus",
+    "canis_lupus",
+    "sciurus_vulgaris",
+    "rupicapra_rupicapra",
+    "marmota_marmota"
+  ],
+  "goal": 4,
+  "text": {
+    "sl": {
+      "name": "Raziskovalna postaja na Pohorju",
+      "theme": "Sesalci"
+    }
+  }
+}

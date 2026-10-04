@@ -33,8 +33,14 @@ public sealed record CandidateResponse(string SpeciesId, string Name);
 /// <summary>An open encounter. It never says which candidate is correct.</summary>
 public sealed record EncounterResponse(Guid EncounterId, string Group, IReadOnlyList<string> Clues, IReadOnlyList<CandidateResponse> Candidates);
 
-/// <summary>A sighting of an identified species; <c>Researched</c> says whether it raised the research level.</summary>
-public sealed record AlreadyIdentifiedResponse(bool AlreadyIdentified, bool Researched, NatureDexEntryResponse Entry);
+/// <summary>A research station whose goal a sighting has just met.</summary>
+public sealed record CertificateResponse(string StationId, string Name);
+
+/// <summary>
+/// A sighting of an identified species; <c>Researched</c> says whether it raised the research level, and
+/// <c>NewCertificates</c> lists the research stations whose goal it met.
+/// </summary>
+public sealed record AlreadyIdentifiedResponse(bool AlreadyIdentified, bool Researched, NatureDexEntryResponse Entry, IReadOnlyList<CertificateResponse> NewCertificates);
 
 public sealed record SearchRequest(string? MapId, int? X, int? Y);
 
@@ -125,7 +131,7 @@ public static class DiscoveryEndpoints
                 started.Encounter.Clues,
                 started.Encounter.Candidates.Select(ToResponse).ToList()),
             statusCode: StatusCodes.Status201Created),
-        StartEncounterResult.AlreadyIdentified known => TypedResults.Ok(new AlreadyIdentifiedResponse(true, known.Researched, ToResponse(known.Entry))),
+        StartEncounterResult.AlreadyIdentified known => TypedResults.Ok(new AlreadyIdentifiedResponse(true, known.Researched, ToResponse(known.Entry), known.NewCertificates.Select(certificate => new CertificateResponse(certificate.StationId, certificate.Name)).ToList())),
         _ => throw new InvalidOperationException($"Unexpected result {result}."),
     };
 
