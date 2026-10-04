@@ -45,6 +45,7 @@ Quest texts are game dialogue, not species facts. They SHALL NOT state biologica
   | `maja` | `secrets_of_the_bog` | 3 species of `mountain_forest` | `triglav_open` |
   | `luka` | `below_the_peaks` | 3 species of `alpine_grassland` | `alps_explored` |
   | `neza` | `vanishing_lake` | 3 species of `wetland` | `lake_explored` |
+  | `tilen` | `into_the_dark` | 3 species of `karst` | `caves_explored` |
 
 #### Scenario: Goal habitat too small
 - **WHEN** a quest asks for 4 species of a habitat that lists 3

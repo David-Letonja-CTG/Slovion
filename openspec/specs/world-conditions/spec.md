@@ -79,6 +79,8 @@ The game SHALL show the current season, time of day, in-game clock (`HH:MM`) and
 - an orange tint in the evening
 - a dark tint at night, dark enough that a lit torch makes a clear difference
 
+While the player is in an area marked `underground` (see `world-exploration`), the map SHALL take a cave darkness at any time of day, at least as dark as the night tint. The indicator SHALL still show the in-game time.
+
 Between server syncs, the client SHALL advance the time at the rate the server reported. It SHALL re-sync when the game starts and whenever the page becomes visible again. The clock SHALL update every in-game minute. The season, time of day and tint SHALL update when they change. The indicator is text, so screen readers can read it. It SHALL NOT announce every minute.
 
 #### Scenario: Starting a new game
@@ -93,12 +95,16 @@ Between server syncs, the client SHALL advance the time at the rate the server r
 - **WHEN** the in-game time reaches 22:00 while playing
 - **THEN** the indicator changes to show *noč · 22:00* and the map takes the night tint
 
+#### Scenario: Into the cave by day
+- **WHEN** the player walks from the gorge into the cave at 12:00
+- **THEN** the map takes the cave darkness, and it returns to no tint when the player walks back out
+
 ### Requirement: Torch
 The player SHALL be able to switch a torch (*svetilka*) on and off:
 - with the `Torch` action while the world has input
 - with an on-screen button that shows whether the torch is on, which works with mouse and touch
 
-While the torch is on, the player SHALL be drawn holding a small lamp on the side they face, at any time of day. In the evening and at night, a lit torch SHALL also show a soft-edged circle around the player, with a radius of about three tiles, where the darkness tint is cleared. The circle SHALL follow the player as they move. By day and in the morning there is no circle; only the lamp is visible.
+While the torch is on, the player SHALL be drawn holding a small lamp on the side they face, at any time of day. In the evening, at night and in underground areas, a lit torch SHALL also show a soft-edged circle around the player, with a radius of about three tiles, where the darkness tint is cleared. The circle SHALL follow the player as they move. By day and in the morning above ground there is no circle; only the lamp is visible.
 
 The torch SHALL start switched off when a game starts or continues. Its state SHALL stay on the client and SHALL NOT affect encounters. It MAY change how resident animals move (see `wildlife`).
 
@@ -117,3 +123,7 @@ The torch SHALL start switched off when a game starts or continues. Its state SH
 #### Scenario: Not while a dialog is open
 - **WHEN** a dialog is open and the player presses `L`
 - **THEN** the torch does not change
+
+#### Scenario: Lighting the cave
+- **WHEN** the player is in the cave by day and switches the torch on
+- **THEN** a circle of light appears around the player and moves with them

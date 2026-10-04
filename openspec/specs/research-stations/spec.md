@@ -30,6 +30,7 @@ The goal is fictional gameplay data (D6); the theme is a game label, not a biolo
   | `mammal_station` | `pohorje_forest` | *Sesalci* | `lepus_europaeus`, `ursus_arctos`, `cervus_elaphus`, `canis_lupus`, `sciurus_vulgaris`, `rupicapra_rupicapra`, `marmota_marmota` | 4 |
   | `mountain_station` | `triglav_alps` | *Gorski svet* | `leontopodium_nivale`, `potentilla_nitida`, `pinus_mugo`, `salamandra_atra` | 3 |
   | `bird_station` | `cerknica_lake` | *Ptice* | `alauda_arvensis`, `lanius_collurio`, `ardea_cinerea`, `crex_crex` | 3 |
+  | `cave_station` | `rakov_skocjan_karst` | *Podzemlje* | `proteus_anguinus`, `leptodirus_hochenwartii`, `rhinolophus_ferrumequinum` | 2 |
 
 #### Scenario: A goal larger than the list
 - **WHEN** a station lists 3 species with goal 4
