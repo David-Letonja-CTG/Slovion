@@ -1,0 +1,119 @@
+{
+  "id": "rhinolophus_ferrumequinum",
+  "group": "mammal",
+  "scientificName": {
+    "value": "Rhinolophus ferrumequinum (Schreber, 1774)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "wiki": {
+      "title": "Veliki podkovnjak",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Veliki_podkovnjak",
+      "accessed": "2026-10-04",
+      "licence": "CC BY-SA 4.0"
+    },
+    "ckff": {
+      "title": "Netopirji Slovenije – seznam vrst",
+      "publisher": "Center za kartografijo favne in flore",
+      "url": "https://www.ckff.si/projekti/interreg/netopirji_slo.php?lang=si",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Rhinolophus ferrumequinum (Schreber, 1774) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2432655",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "veliki podkovnjak",
+        "sources": [
+          "wiki",
+          "ckff"
+        ]
+      },
+      "family": {
+        "value": "podkovnjaki (Rhinolophidae)",
+        "sources": [
+          "ckff",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Dan prespi na skritih mestih, zimo pa v hibernaciji v jamah. Lovi leteče žuželke od 0,5 do 3 m nad tlemi.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "distribution": {
+        "value": "Živi v Sloveniji, kjer je ena od treh danes živečih vrst podkovnjakov.",
+        "sources": [
+          "ckff"
+        ]
+      },
+      "season": {
+        "value": "Aktiven je ponoči; zimo preživi v hibernaciji v jamah.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Med nosnicama ima kožno gubo v obliki podkve.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Je največji podkovnjak v Evropi: dolg je od 57 do 71 mm.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Razpon prhuti meri okoli 40 cm.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Leti navidezno nerodno, nizko nad tlemi.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Samica običajno skoti enega mladiča.",
+          "sources": [
+            "wiki"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "winter"
+    ],
+    "sources": [
+      "wiki"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy"
+  },
+  "identification": {
+    "clues": [
+      3,
+      1,
+      0
+    ]
+  }
+}

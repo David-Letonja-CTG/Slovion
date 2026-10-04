@@ -1,0 +1,36 @@
+{
+  "id": "into_the_dark",
+  "giver": "tilen",
+  "goal": {
+    "identifiedSpecies": 3,
+    "habitat": "karst"
+  },
+  "reward": {
+    "flag": "caves_explored"
+  },
+  "text": {
+    "sl": {
+      "title": "V temo",
+      "summary": "Prepoznaj tri vrste krasa.",
+      "returnHint": "Vrni se k Tilnu.",
+      "dialogue": {
+        "offer": [
+          "Živijo! Jaz sem Tilen in raziskujem jame.",
+          "V jami je vedno tema. Prižgi svetilko, preden greš noter.",
+          "Prepoznaj tri vrste krasa, v soteski ali v jami."
+        ],
+        "active": [
+          "Prepoznane vrste: {identified} od {goal}.",
+          "Namig: v jami hodi počasi in s svetilko, ob potoku pa poglej med skale."
+        ],
+        "ready": [
+          "Odlično! Tudi podzemlje je zdaj v tvojem terenskem dnevniku.",
+          "Tvoja pot od Dravskega polja do Rakovega Škocjana je končana."
+        ],
+        "completed": [
+          "Jame so vedno tu. Vrni se, kadar želiš."
+        ]
+      }
+    }
+  }
+}

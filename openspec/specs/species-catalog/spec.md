@@ -98,6 +98,19 @@ The API SHALL refuse to start when content is invalid, reporting every problem f
   | `iris_sibirica` | `plant` | *sibirska perunika* | Cerkniško jezero |
   | `nymphaea_alba` | `plant` | *beli lokvanj* | Cerkniško jezero |
 
+#### Scenario: Karst species
+- **WHEN** the API starts with the repository's content
+- **THEN** the following are available, each with sourced Slovenian facts, three clues and a picture, and the animals also with a walk sprite and wildlife traits:
+
+  | Species | Group | Slovenian name | Region |
+  |---|---|---|---|
+  | `proteus_anguinus` | `amphibian` | *človeška ribica* | Rakov Škocjan |
+  | `leptodirus_hochenwartii` | `insect` | *drobnovratnik* | Rakov Škocjan |
+  | `rhinolophus_ferrumequinum` | `mammal` | *veliki podkovnjak* | Rakov Škocjan |
+  | `saxifraga_rotundifolia` | `plant` | *okroglolistni kamnokreč* | Rakov Škocjan |
+  | `chrysosplenium_alternifolium` | `plant` | *premenjalnolistni vraničnik* | Rakov Škocjan |
+- **AND** `proteus_anguinus` is aquatic
+
 ### Requirement: Spots reference existing species
 Every interactive spot in a map that names a species SHALL reference an existing species ID.
 
@@ -177,7 +190,7 @@ Content validation SHALL reject any of the following, naming the species:
 
 ### Requirement: Wildlife traits and sprites
 Every species that is not a plant SHALL declare:
-- wildlife traits: a torch reaction of `curious`, `shy` or `calm`
+- wildlife traits: a torch reaction of `curious`, `shy` or `calm`, and optionally `aquatic` (the animal lives in water; see `wildlife`)
 - a walk sprite at `content/wildlife-sprites/<speciesId>.png`: a PNG of 32×16 pixels holding two 16×16 frames of the animal facing right, which is mirrored when it faces left
 
 Wildlife traits are fictional gameplay data and SHALL NOT be presented as biological facts (D6). Sprites are original illustrations (D10) and SHALL be downloadable under `/content/wildlife-sprites/`. Plants SHALL NOT declare wildlife traits. Content validation SHALL reject the following, naming the species:
@@ -195,4 +208,12 @@ Wildlife traits are fictional gameplay data and SHALL NOT be presented as biolog
 
 #### Scenario: Plant with traits
 - **WHEN** `salvia_pratensis` declares wildlife traits
+- **THEN** content validation fails and names the species
+
+#### Scenario: An aquatic animal
+- **WHEN** a species declares `"aquatic": true` in its wildlife traits
+- **THEN** it is loaded as aquatic; species without the property are not aquatic
+
+#### Scenario: A non-boolean aquatic trait
+- **WHEN** a species declares `"aquatic": "yes"`
 - **THEN** content validation fails and names the species

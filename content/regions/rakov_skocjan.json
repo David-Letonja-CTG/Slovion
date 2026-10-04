@@ -1,0 +1,14 @@
+{
+  "id": "rakov_skocjan",
+  "mapId": "rakov_skocjan_karst",
+  "order": 6,
+  "position": { "x": 26, "y": 71 },
+  "unlock": { "flag": "lake_explored" },
+  "weather": {
+    "spring": { "clear": 2, "cloudy": 3, "rain": 3, "fog": 2 },
+    "summer": { "clear": 4, "cloudy": 2, "rain": 2, "fog": 1 },
+    "autumn": { "clear": 2, "cloudy": 2, "rain": 3, "fog": 3 },
+    "winter": { "clear": 1, "cloudy": 3, "fog": 3, "snow": 3 }
+  },
+  "text": { "sl": { "name": "Rakov Škocjan", "lockedHint": "Pomagaj Neži ob Cerkniškem jezeru." } }
+}

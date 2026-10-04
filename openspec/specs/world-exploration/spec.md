@@ -12,7 +12,7 @@ Maps SHALL be loaded from content data (Tiled JSON). A map SHALL define:
 - a spawn point
 - interactive spots
 - optional habitat zones (rectangles naming a habitat)
-- area zones (rectangles naming an area) covering every walkable tile
+- area zones (rectangles naming an area) covering every walkable tile; an area zone may be marked `underground` (a boolean property)
 - optional NPCs (tile objects naming an NPC)
 - optional gates (tile objects naming the flag that opens them)
 - exactly one signpost (a tile object of class `signpost`)
@@ -23,6 +23,7 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - gates whose flag no quest rewards
 - NPCs, gates, signposts or stations outside the map
 - stations naming an unknown station
+- an `underground` property that is not a boolean
 - a map without exactly one signpost
 
 #### Scenario: Entering the meadow
@@ -48,6 +49,7 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
   | `pohorje_forest` | `mountain_forest` |
   | `triglav_alps` | `alpine_grassland` |
   | `cerknica_lake` | `wetland` |
+  | `rakov_skocjan_karst` | `karst` |
 
 #### Scenario: Species of the regions on their maps
 - **WHEN** a region map is loaded
@@ -69,6 +71,7 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
   | `pohorje_forest` | `maja` |
   | `triglav_alps` | `luka` |
   | `cerknica_lake` | `neza` |
+  | `rakov_skocjan_karst` | `tilen` |
 
 #### Scenario: Areas of the meadow
 - **WHEN** the meadow is loaded
@@ -90,6 +93,12 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 #### Scenario: A station on every region map
 - **WHEN** a region map is loaded
 - **THEN** it has one research station on a tile beside the path near the spawn, outside the habitat zones, which the player can face from a reachable tile
+
+#### Scenario: The karst gorge and its cave
+- **WHEN** `rakov_skocjan_karst` is loaded
+- **THEN** the gorge belongs to an area that is not underground and the cave to an area marked `underground`
+- **AND** the olm's spot lies on a water tile inside the cave, and the cave beetle's and the bat's spots lie on the cave floor
+- **AND** the habitat zones lie in the gorge only
 
 ### Requirement: Invalid map is reported
 If a map cannot be loaded or does not satisfy the supported format (orthogonal, fixed tile size, a spawn point, layers referenced by name), the game SHALL show a Slovenian error message instead of a broken or blank world.

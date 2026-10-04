@@ -129,7 +129,9 @@ export class World implements Obstacles {
         const existing = kept.get(info.spotId);
         if (existing) return [existing];
         const home = this.map.spots.find((spot) => spot.spotId === info.spotId);
-        return home ? [new Resident(info.spotId, info.speciesId, info.torch, home)] : [];
+        return home
+          ? [new Resident(info.spotId, info.speciesId, info.torch, home, info.aquatic === true)]
+          : [];
       });
   }
 
@@ -146,6 +148,17 @@ export class World implements Obstacles {
 
   setWeather(weather: Weather): void {
     this.currentWeather = weather;
+  }
+
+  /** Whether the player stands in an underground area (a cave): dark at any time of day. */
+  get isUnderground(): boolean {
+    return this.map.isUnderground(this.player.tileX, this.player.tileY);
+  }
+
+  /** Dark enough for the torch to matter: evening, night, or underground. */
+  get isDark(): boolean {
+    const timeOfDay = this.conditions.timeOfDay;
+    return timeOfDay === 'evening' || timeOfDay === 'night' || this.isUnderground;
   }
 
   get torchOn(): boolean {
@@ -195,6 +208,17 @@ export class World implements Obstacles {
       this.map.stationAt(x, y) !== undefined ||
       (gate !== undefined && !this.openFlags.has(gate.flag)) ||
       this.residentList.some((r) => r.occupies(x, y))
+    );
+  }
+
+  /** A water tile an aquatic resident may swim into: wadeable, with no NPC, signpost, station or gate on it. */
+  private isOpenWater(x: number, y: number): boolean {
+    return (
+      this.map.isWadeable(x, y) &&
+      this.map.npcAt(x, y) === undefined &&
+      this.map.signpostAt(x, y) === undefined &&
+      this.map.stationAt(x, y) === undefined &&
+      this.map.gateAt(x, y) === undefined
     );
   }
 
@@ -265,12 +289,11 @@ export class World implements Obstacles {
 
   private updateResidents(stepMs: number): void {
     const player = this.player;
-    const timeOfDay = this.conditions.timeOfDay;
     const surroundings: Surroundings = {
       player: { x: player.tileX, y: player.tileY },
-      torchLit: this.torch && (timeOfDay === 'evening' || timeOfDay === 'night'),
+      torchLit: this.torch && this.isDark,
       isFreeFor: (resident, x, y) =>
-        !this.isFixedObstacle(x, y) &&
+        (resident.aquatic ? this.isOpenWater(x, y) : !this.isFixedObstacle(x, y)) &&
         !(player.tileX === x && player.tileY === y) &&
         !(player.targetTile?.x === x && player.targetTile?.y === y) &&
         !this.residentList.some((other) => other !== resident && other.occupies(x, y)),

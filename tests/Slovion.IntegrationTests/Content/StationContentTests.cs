@@ -60,6 +60,7 @@ public class StationContentTests
                 ("mammal_station", "pohorje_forest", "Sesalci", 7, 4),
                 ("mountain_station", "triglav_alps", "Gorski svet", 4, 3),
                 ("bird_station", "cerknica_lake", "Ptice", 4, 3),
+                ("cave_station", "rakov_skocjan_karst", "Podzemlje", 3, 2),
             ],
             catalog.AllStations.Select(station => (station.Id, station.MapId, station.Text["sl"].Theme, station.Species.Count, station.Goal)));
         Assert.Equal(catalog.AllRegions.Select(region => region.MapId), catalog.AllStations.Select(station => station.MapId));

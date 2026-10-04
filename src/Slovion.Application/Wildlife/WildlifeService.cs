@@ -7,7 +7,7 @@ using Slovion.Domain.World;
 namespace Slovion.Application.Wildlife;
 
 /// <summary>A resident animal of a map: the animal of a spot, present only while its species is available (D8, D11).</summary>
-public sealed record ResidentView(string SpotId, SpeciesId SpeciesId, TorchReaction Torch, bool Present);
+public sealed record ResidentView(string SpotId, SpeciesId SpeciesId, TorchReaction Torch, bool Aquatic, bool Present);
 
 /// <summary>Which animals live on a map and which of them are around at the save's in-game time.</summary>
 public sealed class WildlifeService(IContentCatalog content, TimeProvider time)
@@ -27,7 +27,7 @@ public sealed class WildlifeService(IContentCatalog content, TimeProvider time)
             .Select(spot => (spot, species: content.FindSpecies(spot.SpeciesId)))
             .Where(pair => pair.species?.Wildlife is not null)
             .OrderBy(pair => pair.spot.SpotId, StringComparer.Ordinal)
-            .Select(pair => new ResidentView(pair.spot.SpotId, pair.spot.SpeciesId, pair.species!.Wildlife!.Torch, pair.species.Availability.IsAvailableAt(now, weather)))
+            .Select(pair => new ResidentView(pair.spot.SpotId, pair.spot.SpeciesId, pair.species!.Wildlife!.Torch, pair.species.Wildlife.Aquatic, pair.species.Availability.IsAvailableAt(now, weather)))
             .ToList();
     }
 }

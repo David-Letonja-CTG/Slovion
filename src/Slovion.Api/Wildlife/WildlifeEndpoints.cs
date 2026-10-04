@@ -4,8 +4,11 @@ using Slovion.Application.Wildlife;
 
 namespace Slovion.Api.Wildlife;
 
-/// <summary>A resident animal of a map. <c>Torch</c> is <c>curious</c>, <c>shy</c> or <c>calm</c> (gameplay data).</summary>
-public sealed record ResidentResponse(string SpotId, string SpeciesId, string Torch, bool Present);
+/// <summary>
+/// A resident animal of a map. <c>Torch</c> is <c>curious</c>, <c>shy</c> or <c>calm</c>; an <c>Aquatic</c> one lives on water
+/// tiles only (gameplay data).
+/// </summary>
+public sealed record ResidentResponse(string SpotId, string SpeciesId, string Torch, bool Aquatic, bool Present);
 
 public sealed record WildlifeResponse(IReadOnlyList<ResidentResponse> Animals);
 
@@ -34,7 +37,7 @@ public static class WildlifeEndpoints
         return residents is null
             ? ErrorCodes.Problem(StatusCodes.Status404NotFound, ErrorCodes.UnknownMap)
             : TypedResults.Ok(new WildlifeResponse(residents
-                .Select(resident => new ResidentResponse(resident.SpotId, resident.SpeciesId.Value, resident.Torch.ToString().ToLowerInvariant(), resident.Present))
+                .Select(resident => new ResidentResponse(resident.SpotId, resident.SpeciesId.Value, resident.Torch.ToString().ToLowerInvariant(), resident.Aquatic, resident.Present))
                 .ToList()));
     }
 }

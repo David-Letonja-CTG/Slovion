@@ -59,6 +59,24 @@ public sealed class WildlifeTests(PostgresFixture database)
     }
 
     [Fact]
+    public async Task The_olm_is_listed_as_aquatic_and_the_bat_only_in_winter()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+
+        var (status, animals) = await WildlifeAsync(client, token, "rakov_skocjan_karst");
+
+        Assert.Equal(HttpStatusCode.OK, status);
+        var byId = animals.GetProperty("animals").EnumerateArray().ToDictionary(animal => animal.GetProperty("speciesId").GetString()!);
+        Assert.True(byId["proteus_anguinus"].GetProperty("aquatic").GetBoolean());
+        Assert.False(byId["leptodirus_hochenwartii"].GetProperty("aquatic").GetBoolean());
+        // A new save is in spring: the bat hibernates in the cave in winter only.
+        Assert.False(byId["rhinolophus_ferrumequinum"].GetProperty("present").GetBoolean());
+        Assert.True(byId["proteus_anguinus"].GetProperty("present").GetBoolean());
+    }
+
+    [Fact]
     public async Task Residents_out_of_season_are_absent()
     {
         await using var factory = Factory();

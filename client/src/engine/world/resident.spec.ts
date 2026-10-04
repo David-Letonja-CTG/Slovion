@@ -33,10 +33,11 @@ function setup(
   rows: readonly string[] = FIELD,
   residents: readonly ResidentInfo[] = [hare()],
   clock: WorldClock = NOON,
+  areaOf: (x: number, y: number) => string | undefined = () => undefined,
 ) {
   const interactions: Interaction[] = [];
   const world = new World(
-    textMap(rows),
+    textMap(rows, 'right', areaOf),
     (i) => interactions.push(i),
     () => undefined,
     clock,
@@ -120,6 +121,51 @@ describe('Resident animals', () => {
     frames.frames(30, 5000);
 
     expect(world.residents[0].tileX).toBeGreaterThan(6);
+  });
+
+  it('react to a lit torch underground, even by day', () => {
+    const { world, frames } = setup(
+      ['#############', '#.S...R.....#', '#############'],
+      [hare('curious')],
+      NOON,
+      () => 'cave',
+    );
+    world.setTorch(true);
+
+    frames.frames(30, 5000);
+
+    expect(world.isUnderground).toBe(true);
+    expect(world.isDark).toBe(true);
+    expect(tileOf(world)).toEqual({ x: 3, y: 1 });
+  });
+
+  it('stay in the water when aquatic', () => {
+    const pool = [
+      '#########',
+      '#S......#',
+      '#.~~~~~.#',
+      '#.~~O~~.#',
+      '#.~~~~~.#',
+      '#.......#',
+      '#########',
+    ];
+    const olm: ResidentInfo = {
+      spotId: 'olm',
+      speciesId: 'proteus_anguinus',
+      torch: 'shy',
+      aquatic: true,
+      present: true,
+    };
+    const { world, frames } = setup(pool, [olm]);
+    const visited = new Set<string>();
+
+    for (let second = 0; second < 120; second++) {
+      frames.frames(30, 1000);
+      const at = tileOf(world);
+      visited.add(`${at.x},${at.y}`);
+      expect(pool[at.y][at.x], `${at.x},${at.y}`).toMatch(/[~O]/);
+    }
+    expect(visited.size).toBeGreaterThan(3);
   });
 
   it('ignore the torch when calm and by day', () => {

@@ -1,0 +1,13 @@
+{
+  "id": "karst",
+  "text": { "sl": { "name": "Kras" } },
+  "order": 7,
+  "searchChancePercent": 50,
+  "species": [
+    { "speciesId": "proteus_anguinus", "weight": 1 },
+    { "speciesId": "leptodirus_hochenwartii", "weight": 1 },
+    { "speciesId": "rhinolophus_ferrumequinum", "weight": 1 },
+    { "speciesId": "saxifraga_rotundifolia", "weight": 30 },
+    { "speciesId": "chrysosplenium_alternifolium", "weight": 30 }
+  ]
+}

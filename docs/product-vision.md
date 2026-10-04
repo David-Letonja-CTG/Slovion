@@ -87,10 +87,11 @@ Implemented:
 | `add-installable-app` | An installable app (PWA) that opens without a connection and offers new versions. |
 | `add-cerknica-wetland` | Cerkniško jezero after Luka's quest: a wetland with shallows, seven species and Neža's quest. |
 | `add-research-stations` | A research station per region: fully research a themed set of species to earn a journal certificate. |
+| `add-karst-cave` | Rakov Škocjan after Neža's quest: a karst gorge and a dark cave with the olm, the cave beetle and a winter bat. |
 
 Next candidates, each as its own change once the owner chooses:
 
-1. **More habitats:** e.g. river, cave, coast, town.
+1. **More habitats:** e.g. river, coast, town.
 
 Later candidates: offline play (needs D3 revisited), English, accounts/cloud save.
 

@@ -1,0 +1,115 @@
+{
+  "id": "proteus_anguinus",
+  "group": "amphibian",
+  "scientificName": {
+    "value": "Proteus anguinus Laurenti, 1768",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Človeška ribica",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/zivalski-svet/dvozivke/repati-krkoni/mocerilarji/cloveska-ribica",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Proteus anguinus Laurenti, 1768 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2432042",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "človeška ribica",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "močerilarji (Proteidae)",
+        "sources": [
+          "np",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Živi izključno v podzemeljskih vodah krasa; v površinske vodotoke jo zanese le narasla voda po obilnem deževju.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "Je endemit dinarskega krasa in edini evropski vretenčar, ki stalno živi v jamah. V Sloveniji je zavarovana in na Rdečem seznamu kot ranljiva vrsta.",
+        "sources": [
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Je plenilec: s kačastim zvijanjem telesa hitro plava in lovi jamske vodne nevretenčarje. Okolico zaznava z vohom in s tresljaji.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Telo je izrazito podaljšano in bledo kožnate barve, z veslastim, od strani sploščenim repom.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Odrasla žival meri od 20 do 30 cm.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Za ploščato glavo hruškaste oblike ima na obeh straneh rožnate zunanje škrge.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Okončine so drobne: na sprednjih nogah ima tri prstke, na zadnjih dva.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Oči ima zakrnele in prekrite s kožo.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy",
+    "aquatic": true
+  },
+  "identification": {
+    "clues": [
+      0,
+      2,
+      4
+    ]
+  }
+}
