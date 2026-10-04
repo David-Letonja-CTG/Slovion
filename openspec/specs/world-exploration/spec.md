@@ -16,11 +16,13 @@ Maps SHALL be loaded from content data (Tiled JSON). A map SHALL define:
 - optional NPCs (tile objects naming an NPC)
 - optional gates (tile objects naming the flag that opens them)
 - exactly one signpost (a tile object of class `signpost`)
+- optional research stations (tile objects of class `station` naming a station, see `research-stations`)
 
 No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - NPCs naming an unknown NPC
 - gates whose flag no quest rewards
-- NPCs, gates or signposts outside the map
+- NPCs, gates, signposts or stations outside the map
+- stations naming an unknown station
 - a map without exactly one signpost
 
 #### Scenario: Entering the meadow
@@ -84,6 +86,10 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 #### Scenario: A signpost near every spawn
 - **WHEN** any repository map is loaded
 - **THEN** it has exactly one signpost, which the player can reach from the spawn
+
+#### Scenario: A station on every region map
+- **WHEN** a region map is loaded
+- **THEN** it has one research station on a tile beside the path near the spawn, outside the habitat zones, which the player can face from a reachable tile
 
 ### Requirement: Invalid map is reported
 If a map cannot be loaded or does not satisfy the supported format (orthogonal, fixed tile size, a spawn point, layers referenced by name), the game SHALL show a Slovenian error message instead of a broken or blank world.
@@ -154,13 +160,14 @@ The camera SHALL keep the player centred, but SHALL NOT show anything beyond the
 When the player is not mid-step and `Interact` is pressed, the game SHALL act on the first of these that applies:
 1. If the player faces an NPC, it SHALL start a conversation with that NPC.
 2. Otherwise, if the player faces the signpost, it SHALL open the travel map.
-3. Otherwise, if the player faces a resident animal, it SHALL interact with that resident's spot.
-4. Otherwise, if the player faces a plant spot, it SHALL interact with that spot.
-5. Otherwise, if the player has the binoculars and a resident animal stands 2 or 3 tiles straight ahead with no blocking tile in between, it SHALL interact with the nearest such resident's spot.
-6. Otherwise, if the player faces a blocked tile (a tree, shrub, rock or similar) inside a habitat zone, it SHALL start a search of that habitat at the faced tile.
-7. Otherwise, if the player stands in a habitat zone, it SHALL start a search of that habitat at the player's tile.
+3. Otherwise, if the player faces a research station, it SHALL open that station (see `research-stations`).
+4. Otherwise, if the player faces a resident animal, it SHALL interact with that resident's spot.
+5. Otherwise, if the player faces a plant spot, it SHALL interact with that spot.
+6. Otherwise, if the player has the binoculars and a resident animal stands 2 or 3 tiles straight ahead with no blocking tile in between, it SHALL interact with the nearest such resident's spot.
+7. Otherwise, if the player faces a blocked tile (a tree, shrub, rock or similar) inside a habitat zone, it SHALL start a search of that habitat at the faced tile.
+8. Otherwise, if the player stands in a habitat zone, it SHALL start a search of that habitat at the player's tile.
 
-If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose species is an animal SHALL only be reachable through its resident, never as a fixed spot. Signposts SHALL block movement.
+If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose species is an animal SHALL only be reachable through its resident, never as a fixed spot. Signposts and stations SHALL block movement.
 
 #### Scenario: Talking to Vera
 - **WHEN** the player stands next to Vera, faces her and presses `Interact`
@@ -201,6 +208,10 @@ If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose
 #### Scenario: An animal seen through binoculars
 - **WHEN** a player with the binoculars faces open ground with the hare 2 tiles ahead and presses `Interact`
 - **THEN** an interaction with the hare's spot is started
+
+#### Scenario: Reading a station
+- **WHEN** the player faces the Kočevje research station and presses `Interact`
+- **THEN** the dialog of station `forest_station` opens
 
 ### Requirement: Draw order
 Map layers SHALL be drawn in their authored order, with animated tiles showing their current frame. Above the ground layers SHALL be drawn, in order:
