@@ -1,0 +1,108 @@
+{
+  "id": "nymphaea_alba",
+  "group": "plant",
+  "scientificName": {
+    "value": "Nymphaea alba L.",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Beli lokvanj",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/rastlinski-svet/lokvanjevke/beli-lokvanj",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Nymphaea alba L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2882437",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "beli lokvanj",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "lokvanjevke (Nymphaeaceae)",
+        "sources": [
+          "np"
+        ]
+      },
+      "habitat": {
+        "value": "Stoječe in počasi tekoče vode nižin; debelo koreniko skriva v mehkem dnu.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "Uspeva tu in tam po vsej Sloveniji; Cerkniško jezero je eno njegovih redkih naravnih nahajališč. Na rdečem seznamu je kot ranljiva vrsta.",
+        "sources": [
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Cveti od junija do septembra.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Veliki srčasti listi plavajo na vodi.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Cvet je širok do 9 cm, s številnimi snežno belimi venčnimi listi.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Sredi cveta je množica rumenih prašnikov.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Listi in cvetna stebla poženejo iz debele korenike na dnu.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Je strupena vodna rastlina.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "identification": {
+    "clues": [
+      0,
+      1,
+      2
+    ]
+  }
+}

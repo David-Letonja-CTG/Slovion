@@ -1,0 +1,108 @@
+{
+  "id": "iris_sibirica",
+  "group": "plant",
+  "scientificName": {
+    "value": "Iris sibirica L.",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Sibirska perunika",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/rastlinski-svet/perunikovke/sibirska-perunika",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Iris sibirica L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5298126",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "sibirska perunika",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "perunikovke (Iridaceae)",
+        "sources": [
+          "np"
+        ]
+      },
+      "habitat": {
+        "value": "Pusti vlažni in močvirni travniki, predvsem v nižinah.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji raste raztreseno. Je zavarovana in na rdečem seznamu kot ranljiva vrsta.",
+        "sources": [
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Cveti maja in junija.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Visoka je od 50 do 80 cm.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Na vrhu okroglega, votlega stebla se navadno razvijeta dva velika modra cvetova.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Cvetova sta v notranjosti belkasta in ju krasijo izrazite modre žile.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Listi so ozki in ne presegajo stebla.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Ime rodu izvira iz imena starogrške boginje mavrice, Iris.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "identification": {
+    "clues": [
+      3,
+      1,
+      2
+    ]
+  }
+}

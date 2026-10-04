@@ -17,7 +17,7 @@
         "offer": [
           "Živijo! Jaz sem Luka, gorski vodnik.",
           "V gorah hodimo počasi in gledamo pozorno, saj se marsikaj skriva med skalami.",
-          "Prepoznaj tri vrste visokogorja, pa bo tvoja pot od Dravskega polja do Triglava končana."
+          "Prepoznaj tri vrste visokogorja, pa ti povem, kam te pot vodi naprej."
         ],
         "active": [
           "Prepoznane vrste: {identified} od {goal}.",
@@ -25,10 +25,10 @@
         ],
         "ready": [
           "Čestitam! Tvoj terenski dnevnik je zdaj pravi zaklad.",
-          "Pot od Dravskega polja do Triglava je za tabo."
+          "Pot te zdaj vodi na Cerkniško jezero. Tam te čaka Neža."
         ],
         "completed": [
-          "Gore so vedno tu. Vrni se, kadar želiš."
+          "Gore so vedno tu. Neža te čaka na Cerkniškem jezeru."
         ]
       }
     }

@@ -1,3 +1,4 @@
+import cerknica from '../../../../content/maps/cerknica_lake.json';
 import kocevje from '../../../../content/maps/kocevje_forest.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import pohorje from '../../../../content/maps/pohorje_forest.json';
@@ -144,6 +145,7 @@ describe('parseTiledMap', () => {
     ['kocevje_forest', kocevje, 'kocevje_bear_1', 'kocevje_forest'],
     ['pohorje_forest', pohorje, 'pohorje_wolf_1', 'pohorje_forest'],
     ['triglav_alps', triglav, 'triglav_chamois_1', 'triglav_slopes'],
+    ['cerknica_lake', cerknica, 'cerknica_heron_1', 'cerknica_lake'],
   ])(
     'parses the region map %s with a reachable signpost, spots and searchable trees',
     (id, json, spotId, area) => {
@@ -197,6 +199,32 @@ describe('parseTiledMap', () => {
         salamander.y,
       ),
     ).toBe(true);
+  });
+
+  it('needs the boots for the water lily and the islet on the lake, and never enters deep water', () => {
+    const without = reachableFromSpawn([], 'cerknica_lake', cerknica);
+    const withBoots = reachableFromSpawn([], 'cerknica_lake', cerknica, ['boots']);
+    const spot = (id: string) => without.map.spots.find((s) => s.spotId === id)!;
+    const wading = ['cerknica_water_lily_1', 'cerknica_demoiselle_1'];
+
+    for (const id of wading) {
+      expect(without.reachable(spot(id).x, spot(id).y), id).toBe(false);
+      expect(withBoots.reachable(spot(id).x, spot(id).y), id).toBe(true);
+    }
+    // The lily lies two tiles out: no tile next to it can be reached without the boots.
+    const lily = spot('cerknica_water_lily_1');
+    for (const [dx, dy] of [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1],
+    ]) {
+      expect(without.reachable(lily.x + dx, lily.y + dy)).toBe(false);
+    }
+    for (const s of without.map.spots.filter((s) => !wading.includes(s.spotId))) {
+      expect(without.reachable(s.x, s.y), s.spotId).toBe(true);
+    }
+    for (let x = 0; x < without.map.width; x++) expect(withBoots.reachable(x, 17)).toBe(false);
   });
 
   it('searches at a spruce beside the Pohorje path, from outside the zones', () => {

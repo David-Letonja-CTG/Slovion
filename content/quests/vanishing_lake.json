@@ -1,0 +1,36 @@
+{
+  "id": "vanishing_lake",
+  "giver": "neza",
+  "goal": {
+    "identifiedSpecies": 3,
+    "habitat": "wetland"
+  },
+  "reward": {
+    "flag": "lake_explored"
+  },
+  "text": {
+    "sl": {
+      "title": "Presihajoče jezero",
+      "summary": "Prepoznaj tri vrste mokrišča.",
+      "returnHint": "Vrni se k Neži.",
+      "dialogue": {
+        "offer": [
+          "Dober dan! Jaz sem Neža in tukaj ob jezeru opazujem ptice.",
+          "V trstičju, plitvini in visoki travi se marsikaj skriva.",
+          "Prepoznaj tri vrste mokrišča. V plitvini ti bodo prav prišli škornji."
+        ],
+        "active": [
+          "Prepoznane vrste: {identified} od {goal}.",
+          "Namig: preišči mokrotni travnik in trstičje, do otočka pa prebrodi plitvino."
+        ],
+        "ready": [
+          "Odlično! Tudi jezero je zdaj v tvojem terenskem dnevniku.",
+          "Tvoja pot od Dravskega polja do Cerkniškega jezera je končana."
+        ],
+        "completed": [
+          "Pri jezeru je vedno kaj novega. Vrni se, kadar želiš."
+        ]
+      }
+    }
+  }
+}

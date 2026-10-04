@@ -1880,12 +1880,12 @@
    "columns": 8,
    "firstgid": 1,
    "image": "../tilesets/meadow.png",
-   "imageheight": 96,
+   "imageheight": 112,
    "imagewidth": 128,
    "margin": 0,
    "name": "meadow",
    "spacing": 0,
-   "tilecount": 48,
+   "tilecount": 56,
    "tileheight": 16,
    "tilewidth": 16,
    "tiles": [
@@ -1906,6 +1906,19 @@
        "name": "wadeable",
        "type": "bool",
        "value": true
+      }
+     ]
+    },
+    {
+     "id": 48,
+     "animation": [
+      {
+       "tileid": 48,
+       "duration": 600
+      },
+      {
+       "tileid": 49,
+       "duration": 600
       }
      ]
     }

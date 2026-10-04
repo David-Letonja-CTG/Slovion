@@ -1,0 +1,108 @@
+{
+  "id": "iris_pseudacorus",
+  "group": "plant",
+  "scientificName": {
+    "value": "Iris pseudacorus L.",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Vodna perunika",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/rastlinski-svet/perunikovke/vodna-perunika",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Iris pseudacorus L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5298231",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "vodna perunika",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "perunikovke (Iridaceae)",
+        "sources": [
+          "np"
+        ]
+      },
+      "habitat": {
+        "value": "Močvirja, počasi tekoče vode, vodni jarki in obrežja.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "Uspeva raztreseno po vsej Sloveniji, a le ob vodah. Je zavarovana vrsta.",
+        "sources": [
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Cveti maja in junija.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Visoka je od 50 do 100 cm.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Na vrhu visokih, nekoliko sploščenih stebel ima velike rumene cvetove.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Zunanji cvetni listi so večji in močno razširjeni, notranji pa krajši in ožji.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Zašiljeni črtalasti listi so široki 1–3 cm in dolgi do 1 m.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Stebla in listi poženejo iz debele korenike.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "identification": {
+    "clues": [
+      3,
+      1,
+      2
+    ]
+  }
+}
