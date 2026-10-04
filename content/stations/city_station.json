@@ -1,0 +1,16 @@
+{
+  "id": "city_station",
+  "species": [
+    "apus_apus",
+    "erinaceus_roumanicus",
+    "alcedo_atthis",
+    "alnus_glutinosa"
+  ],
+  "goal": 3,
+  "text": {
+    "sl": {
+      "name": "Raziskovalna postaja v Ljubljani",
+      "theme": "Mestna narava"
+    }
+  }
+}

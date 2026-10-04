@@ -111,6 +111,18 @@ The API SHALL refuse to start when content is invalid, reporting every problem f
   | `chrysosplenium_alternifolium` | `plant` | *premenjalnolistni vraničnik* | Rakov Škocjan |
 - **AND** `proteus_anguinus` is aquatic
 
+#### Scenario: City species
+- **WHEN** the API starts with the repository's content
+- **THEN** the following are available, each with sourced Slovenian facts, three clues and a picture, and the animals also with a walk sprite and wildlife traits:
+
+  | Species | Group | Slovenian name | Region |
+  |---|---|---|---|
+  | `apus_apus` | `bird` | *hudournik* | Ljubljana |
+  | `erinaceus_roumanicus` | `mammal` | *beloprsi jež* | Ljubljana |
+  | `alcedo_atthis` | `bird` | *vodomec* | Ljubljana |
+  | `fritillaria_meleagris` | `plant` | *močvirska logarica* | Ljubljana |
+  | `alnus_glutinosa` | `plant` | *črna jelša* | Ljubljana |
+
 ### Requirement: Spots reference existing species
 Every interactive spot in a map that names a species SHALL reference an existing species ID.
 

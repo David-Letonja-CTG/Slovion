@@ -1,0 +1,14 @@
+{
+  "id": "ljubljana",
+  "mapId": "ljubljana_park",
+  "order": 7,
+  "position": { "x": 40, "y": 52 },
+  "unlock": { "flag": "caves_explored" },
+  "weather": {
+    "spring": { "clear": 3, "cloudy": 3, "rain": 3, "fog": 1 },
+    "summer": { "clear": 5, "cloudy": 2, "rain": 2 },
+    "autumn": { "clear": 2, "cloudy": 3, "rain": 2, "fog": 3 },
+    "winter": { "clear": 1, "cloudy": 3, "fog": 3, "snow": 2 }
+  },
+  "text": { "sl": { "name": "Ljubljana", "lockedHint": "Pomagaj Tilnu v Rakovem Škocjanu." } }
+}

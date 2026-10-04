@@ -39,8 +39,9 @@ Content validation SHALL also reject map zones that name an unknown habitat.
   | `fir_beech_forest` | *Jelovo-bukov gozd* | 3 | bear, red deer, wild garlic, sweet woodruff, silver fir, beech |
   | `mountain_forest` | *Gorski gozd* | 4 | wolf, red squirrel, round-leaved sundew, bilberry, Norway spruce |
   | `alpine_grassland` | *Visokogorje* | 5 | chamois, alpine marmot, edelweiss, *triglavska roža*, mountain pine (*rušje*) |
-  | `wetland` | *Mokrišče* | 6 | grey heron, corncrake, tree frog, banded demoiselle, yellow iris, Siberian iris, white water lily |
+  | `wetland` | *Mokrišče* | 6 | grey heron, corncrake, tree frog, banded demoiselle, yellow iris, Siberian iris, white water lily, snake's-head fritillary |
   | `karst` | *Kras* | 7 | olm, cave beetle (*drobnovratnik*), greater horseshoe bat, round-leaved saxifrage, alternate-leaved golden saxifrage |
+  | `city` | *Mesto* | 8 | common swift, white-breasted hedgehog, kingfisher, black alder |
 
 #### Scenario: Unknown species in a habitat
 - **WHEN** a habitat lists species `vulpes_vulpes`, which does not exist

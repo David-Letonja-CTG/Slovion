@@ -1,0 +1,106 @@
+{
+  "id": "apus_apus",
+  "group": "bird",
+  "scientificName": {
+    "value": "Apus apus (Linnaeus, 1758)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "dopps": {
+      "title": "Ptice Slovenije – Hudourniki",
+      "publisher": "DOPPS – BirdLife Slovenija",
+      "url": "https://ptice.si/ptice-in-ljudje/ptice-slovenije/hudourniki/",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Apus apus (Linnaeus, 1758) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5228676",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "hudournik",
+        "sources": [
+          "dopps"
+        ]
+      },
+      "family": {
+        "value": "hudourniki (Apodidae)",
+        "sources": [
+          "dopps",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Gnezdi v luknjah skalnih sten in kamnitih stavb, kot so cerkve, gradovi in stolpi, zato ga najpogosteje vidimo v mestih in naseljih.",
+        "sources": [
+          "dopps"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je razširjen predvsem na Primorskem, Notranjskem in Štajerskem.",
+        "sources": [
+          "dopps"
+        ]
+      },
+      "season": {
+        "value": "Je selivka in znanilec pomladi: v Slovenijo se vrača aprila in maja, že sredi poletja pa odleti v Afriko južno od Sahare.",
+        "sources": [
+          "dopps"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Ima dolge, ozke, srpaste peruti.",
+          "sources": [
+            "dopps"
+          ]
+        },
+        {
+          "value": "Telo je popolnoma črno, le na grlu ima manjšo svetlejšo liso.",
+          "sources": [
+            "dopps"
+          ]
+        },
+        {
+          "value": "Hrani se, spi in se pari med letenjem; pristane le, ko obišče gnezdo.",
+          "sources": [
+            "dopps"
+          ]
+        },
+        {
+          "value": "Gnezda si ne znaša: jajca izleže kar na dno kotanje.",
+          "sources": [
+            "dopps"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "sources": [
+      "dopps"
+    ]
+  },
+  "wildlife": {
+    "torch": "calm"
+  },
+  "identification": {
+    "clues": [
+      2,
+      0,
+      1
+    ]
+  }
+}

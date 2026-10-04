@@ -180,7 +180,7 @@ public sealed partial class FileContentCatalog
     }
 
     /// <summary>
-    /// NPCs, gates, the signpost and research stations: Tiled tile objects (with a <c>gid</c>) whose position is their bottom-left corner.
+    /// NPCs, gates, the signpost, research stations and lamp posts: Tiled tile objects (with a <c>gid</c>) whose position is their bottom-left corner.
     /// Each covers the tile under its centre. Every map has exactly one signpost, which opens the travel map.
     /// </summary>
     private static List<MapNpc> ValidateMapActors(TiledMapFile map, string mapId, string name, Dictionary<string, Npc> npcs, IReadOnlySet<string> rewardFlags, List<string> errors)
@@ -193,7 +193,7 @@ public sealed partial class FileContentCatalog
             errors.Add($"{name}: exactly one 'signpost' object is required (found {signposts}).");
         }
 
-        foreach (var actor in objects.Where(o => o.ObjectClass is "npc" or "gate" or "signpost" or "station"))
+        foreach (var actor in objects.Where(o => o.ObjectClass is "npc" or "gate" or "signpost" or "station" or "lamp"))
         {
             var isNpc = actor.ObjectClass == "npc";
             var at = $"{name}: {actor.ObjectClass} '{actor.Name}'";
