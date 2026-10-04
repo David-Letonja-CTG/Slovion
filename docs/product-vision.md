@@ -85,10 +85,11 @@ Implemented:
 | `add-weather` | Weather per region, drawn over the map; salamanders come out in the rain. |
 | `add-field-tools` | A bag of field tools from quests: lamp, binoculars, magnifier, rubber boots. |
 | `add-installable-app` | An installable app (PWA) that opens without a connection and offers new versions. |
+| `add-cerknica-wetland` | Cerkniško jezero after Luka's quest: a wetland with shallows, seven species and Neža's quest. |
 
 Next candidates, each as its own change once the owner chooses:
 
-1. **More habitats:** e.g. wetland, river, cave, coast, town.
+1. **More habitats:** e.g. river, cave, coast, town.
 
 Later candidates: research stations, offline play (needs D3 revisited), English, accounts/cloud save.
 

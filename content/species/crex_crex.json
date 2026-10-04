@@ -1,0 +1,135 @@
+{
+  "id": "crex_crex",
+  "group": "bird",
+  "scientificName": {
+    "value": "Crex crex (Linnaeus, 1758)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Kosec",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/zivalski-svet/ptici/tukalice/kosec",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "dopps-kosec": {
+      "title": "Kosec",
+      "publisher": "DOPPS – BirdLife Slovenija",
+      "url": "https://ptice.si/kosec/",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "dopps-tukalice": {
+      "title": "Ptice Slovenije – Tukalice",
+      "publisher": "DOPPS – BirdLife Slovenija",
+      "url": "https://ptice.si/ptice-in-ljudje/ptice-slovenije/tukalice/",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Crex crex (Linnaeus, 1758) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/4408498",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "kosec",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "tukalice (Rallidae)",
+        "sources": [
+          "np",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Negnojeni travniki, ki jih kosijo šele pozno, suhi ali močvirni; za gnezdenje potrebuje vlažne travnike.",
+        "sources": [
+          "dopps-tukalice",
+          "dopps-kosec"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji gnezdi med 300 in 400 koscev, največ na Ljubljanskem barju, sledi Cerkniško jezero. Prezimuje v afriških savanah in stepah.",
+        "sources": [
+          "dopps-kosec",
+          "dopps-tukalice"
+        ]
+      },
+      "season": {
+        "value": "Pri nas je od maja do avgusta, ko tudi gnezdi.",
+        "sources": [
+          "dopps-tukalice",
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Je srednje velik ptič, dolg od 27 do 30 cm.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Čez dan se skriva v gosti travi; če ga splašimo, ne odleti daleč.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "V letu pokaže cimetno rjavo zgornjo stran kril in progast hrbet, noge pa mu bingljajo.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Samci ponoči glasno kličejo »krrrek – krrrek«, kar spominja na brušenje kose; klic se sliši do 1 km daleč.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Gnezdo zgradi na tleh nepokošenih travnikov.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "times": [
+      "evening",
+      "night"
+    ],
+    "sources": [
+      "dopps-tukalice",
+      "dopps-kosec",
+      "np"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

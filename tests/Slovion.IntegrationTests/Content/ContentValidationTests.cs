@@ -46,10 +46,10 @@ public sealed class ContentValidationTests
         Assert.Equal("Oko za naravo", quest.Text["sl"].Title);
         Assert.Null(catalog.FindNpcOnMap("other_map", "vera"));
 
-        Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland"], catalog.AllHabitats.Select(habitat => habitat.Id));
-        Assert.Equal([60, 60, 50], catalog.AllHabitats.Skip(2).Select(habitat => habitat.SearchChancePercent));
-        Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
-        Assert.Equal([1, 2, 3, 4, 5], catalog.AllHabitats.Select(habitat => habitat.Order));
+        Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland", "wetland"], catalog.AllHabitats.Select(habitat => habitat.Id));
+        Assert.Equal([60, 60, 50, 55], catalog.AllHabitats.Skip(2).Select(habitat => habitat.SearchChancePercent));
+        Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje", "Mokrišče"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
+        Assert.Equal([1, 2, 3, 4, 5, 6], catalog.AllHabitats.Select(habitat => habitat.Order));
     }
 
     [Fact]
@@ -63,9 +63,10 @@ public sealed class ContentValidationTests
                 ("kocevje", "kocevje_forest", new UnlockRule.Flag("hedgerow_open")),
                 ("pohorje", "pohorje_forest", new UnlockRule.Flag("pohorje_open")),
                 ("triglav", "triglav_alps", new UnlockRule.Flag("triglav_open")),
+                ("cerknica", "cerknica_lake", new UnlockRule.Flag("alps_explored")),
             ],
             catalog.AllRegions.Select(region => (region.Id, region.MapId, region.Unlock)));
-        Assert.Equal(["Dravsko polje", "Kočevje", "Pohorje", "Triglav"], catalog.AllRegions.Select(region => region.Text["sl"].Name));
+        Assert.Equal(["Dravsko polje", "Kočevje", "Pohorje", "Triglav", "Cerkniško jezero"], catalog.AllRegions.Select(region => region.Text["sl"].Name));
     }
 
     [Theory]
@@ -135,6 +136,7 @@ public sealed class ContentValidationTests
     [InlineData("jure", "Jure", "kocevje_forest", "in_the_shade_of_firs", "fir_beech_forest", "pohorje_open")]
     [InlineData("maja", "Maja", "pohorje_forest", "secrets_of_the_bog", "mountain_forest", "triglav_open")]
     [InlineData("luka", "Luka", "triglav_alps", "below_the_peaks", "alpine_grassland", "alps_explored")]
+    [InlineData("neza", "Neža", "cerknica_lake", "vanishing_lake", "wetland", "lake_explored")]
     public void Repository_content_has_the_people_of_the_regions(string npcId, string name, string mapId, string questId, string habitatId, string flag)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -160,6 +162,13 @@ public sealed class ContentValidationTests
     [InlineData("leontopodium_nivale", SpeciesGroup.Plant, "planika", "alpine_grassland")]
     [InlineData("potentilla_nitida", SpeciesGroup.Plant, "triglavska roža", "alpine_grassland")]
     [InlineData("pinus_mugo", SpeciesGroup.Plant, "rušje", "alpine_grassland")]
+    [InlineData("ardea_cinerea", SpeciesGroup.Bird, "siva čaplja", "wetland")]
+    [InlineData("crex_crex", SpeciesGroup.Bird, "kosec", "wetland")]
+    [InlineData("hyla_arborea", SpeciesGroup.Amphibian, "zelena rega", "wetland")]
+    [InlineData("calopteryx_splendens", SpeciesGroup.Insect, "pasasti bleščavec", "wetland")]
+    [InlineData("iris_pseudacorus", SpeciesGroup.Plant, "vodna perunika", "wetland")]
+    [InlineData("iris_sibirica", SpeciesGroup.Plant, "sibirska perunika", "wetland")]
+    [InlineData("nymphaea_alba", SpeciesGroup.Plant, "beli lokvanj", "wetland")]
     public void Repository_content_has_more_species_of_the_regions(string id, SpeciesGroup group, string slName, string habitatId)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -177,6 +186,7 @@ public sealed class ContentValidationTests
     [InlineData("kocevje_forest", "fir_beech_forest", new[] { "kocevje_garlic_1", "kocevje_woodruff_1", "kocevje_deer_1" })]
     [InlineData("pohorje_forest", "mountain_forest", new[] { "pohorje_sundew_1", "pohorje_bilberry_1", "pohorje_squirrel_1" })]
     [InlineData("triglav_alps", "alpine_grassland", new[] { "triglav_edelweiss_1", "triglav_rose_1", "triglav_marmot_1" })]
+    [InlineData("cerknica_lake", "wetland", new[] { "cerknica_heron_1", "cerknica_corncrake_1", "cerknica_frog_1", "cerknica_demoiselle_1", "cerknica_yellow_iris_1", "cerknica_siberian_iris_1", "cerknica_water_lily_1" })]
     public void Region_maps_have_habitat_zones_and_spots(string mapId, string habitatId, string[] spotIds)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -187,6 +197,17 @@ public sealed class ContentValidationTests
         Assert.Null(catalog.FindHabitatAt(mapId, 2, 8));
         Assert.Equal(habitatId, catalog.FindHabitatAt(mapId, 5, 16)?.Id);
         Assert.All(spotIds, spotId => Assert.NotNull(catalog.FindSpot(mapId, spotId)));
+    }
+
+    [Fact]
+    public void The_corncrake_lives_in_the_wet_meadow_of_the_lake()
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+
+        var spot = catalog.FindSpot("cerknica_lake", "cerknica_corncrake_1");
+        Assert.Equal(SpeciesId.Parse("crex_crex"), spot?.SpeciesId);
+        Assert.Equal("wetland", catalog.FindHabitatAt("cerknica_lake", 14, 5)?.Id);
+        Assert.Equal("wetland", catalog.FindHabitatAt("cerknica_lake", 5, 12)?.Id);
     }
 
     [Theory]
@@ -200,6 +221,13 @@ public sealed class ContentValidationTests
     [InlineData("ursus_arctos", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     [InlineData("canis_lupus", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Evening, TimeOfDay.Night })]
     [InlineData("rupicapra_rupicapra", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening })]
+    [InlineData("ardea_cinerea", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("crex_crex", new[] { Season.Spring, Season.Summer }, new[] { TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("hyla_arborea", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("calopteryx_splendens", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("iris_pseudacorus", new[] { Season.Spring, Season.Summer }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("iris_sibirica", new[] { Season.Spring, Season.Summer }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("nymphaea_alba", new[] { Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     public void Region_species_have_their_sourced_availability(string id, Season[] seasons, TimeOfDay[] times)
     {
         var availability = FileContentCatalog.Load(ContentFolder.RepositoryContent()).FindSpecies(SpeciesId.Parse(id))!.Availability;

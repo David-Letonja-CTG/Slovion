@@ -45,11 +45,17 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
   | `kocevje_forest` | `fir_beech_forest` |
   | `pohorje_forest` | `mountain_forest` |
   | `triglav_alps` | `alpine_grassland` |
+  | `cerknica_lake` | `wetland` |
 
 #### Scenario: Species of the regions on their maps
 - **WHEN** a region map is loaded
 - **THEN** it has a resident spot for each of the region's animals and a fixed spot for each of its ground plants, and the player can reach each spot from the spawn
-- **AND** some of its trees or shrubs lie inside the habitat zones
+- **AND** some of its trees or shrubs (on the lake: reeds) lie inside the habitat zones
+
+#### Scenario: Spots reached by wading
+- **WHEN** `cerknica_lake` is loaded
+- **THEN** the white water lily's spot and the banded demoiselle's spot can be reached from the spawn with the boots, but not without them
+- **AND** every other spot on the lake can be reached without the boots
 
 #### Scenario: People of the regions
 - **WHEN** a region map is loaded
@@ -60,6 +66,7 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
   | `kocevje_forest` | `jure` |
   | `pohorje_forest` | `maja` |
   | `triglav_alps` | `luka` |
+  | `cerknica_lake` | `neza` |
 
 #### Scenario: Areas of the meadow
 - **WHEN** the meadow is loaded

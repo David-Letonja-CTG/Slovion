@@ -1,0 +1,113 @@
+{
+  "id": "hyla_arborea",
+  "group": "amphibian",
+  "scientificName": {
+    "value": "Hyla arborea (Linnaeus, 1758)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Zelena rega",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/zivalski-svet/dvozivke/brezrepe-dvozivke/drevesne-zabe-ali-rege/zelena-rega",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Hyla arborea (Linnaeus, 1758) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2427573",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "zelena rega",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "drevesne žabe ali rege (Hylidae)",
+        "sources": [
+          "np",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Obronki gozdov, mejice in močvirni travniki z visokimi zelnatimi rastlinami; razmnožuje se v manjših, osončenih vodah brez rib.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je splošno razširjena do 800 m nadmorske višine. Je zavarovana in na Rdečem seznamu kot ranljiva vrsta.",
+        "sources": [
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Od aprila do junija se samci v toplih večerih glasno oglašajo; pozimi spi pod kamenjem ali v skalnih razpokah.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Je majhna dvoživka gladke kože; trup meri od 3 do 5 cm.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Hrbet je živo zelen, čez oko in vzdolž bokov pa teče temno rjav, navadno rumenkasto obrobljen pas.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Z oprijemalnimi blazinicami na konicah prstov spretno pleza po vejah, listih in trstu.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Barvo prilagaja okolici: po zimskem spanju je lahko rjavo siva, jeseni sivkasta.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Samci se oglašajo z zvonkim »rega-rega-rega«, ki se sliši tudi nekaj kilometrov daleč.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "wildlife": {
+    "torch": "calm"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      4
+    ]
+  }
+}

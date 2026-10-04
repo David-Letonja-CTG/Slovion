@@ -1,0 +1,129 @@
+{
+  "id": "ardea_cinerea",
+  "group": "bird",
+  "scientificName": {
+    "value": "Ardea cinerea Linnaeus, 1758",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Siva čaplja",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/zivalski-svet/ptici/caplje/siva-caplja",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "dopps": {
+      "title": "Ptice Slovenije – Čaplje",
+      "publisher": "DOPPS – BirdLife Slovenija",
+      "url": "https://ptice.si/ptice-in-ljudje/ptice-slovenije/caplje/",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Ardea cinerea Linnaeus, 1758 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/9797180",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "siva čaplja",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "čaplje (Ardeidae)",
+        "sources": [
+          "np",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Reke, jezera in mokrišča; plen lovi tudi na travnikih.",
+        "sources": [
+          "dopps",
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "Pri nas je najpogostejša vrsta čaplje, ki jo zasledimo na skoraj vsaki večji reki ali mokrišču. V Sloveniji jo vidimo vse leto.",
+        "sources": [
+          "dopps",
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Gnezdi od februarja do aprila, najraje v krošnjah visokih dreves blizu jezera ali reke.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Je velika ptica: z iztegnjenim vratom meri od 84 do 102 cm.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Zgoraj je pepelnato siva, spodaj sivo bela, na bokih ima črni lisi.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Nad rumenim očesom teče črna proga, ki se na tilniku konča s perjanico iz treh dolgih črnih peres.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Dolg in močan umazano rumen kljun ima obliko bodala.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Leti s skrčenim vratom in iztegnjenimi nogami.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Ure dolgo lahko nepremično čaka na bregu, nato bliskovito iztegne vrat in zgrabi ribo ali raka.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy"
+  },
+  "identification": {
+    "clues": [
+      1,
+      3,
+      4
+    ]
+  }
+}

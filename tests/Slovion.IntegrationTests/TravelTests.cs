@@ -2,6 +2,11 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Slovion.Application.Saves;
+using Slovion.Domain.Quests;
+using Slovion.Infrastructure.Persistence;
 using Slovion.IntegrationTests.Infrastructure;
 using static Slovion.IntegrationTests.Infrastructure.GameApiClient;
 using GameApi = Slovion.IntegrationTests.Infrastructure.GameApiClient;
@@ -68,7 +73,7 @@ public sealed class TravelTests(PostgresFixture database)
         var regions = await RegionsAsync(client, token);
 
         Assert.Equal("dravsko_polje", regions.GetProperty("currentRegionId").GetString());
-        Assert.Equal(["dravsko_polje", "kocevje", "pohorje", "triglav"], regions.GetProperty("regions").EnumerateArray().Select(region => region.GetProperty("regionId").GetString()));
+        Assert.Equal(["dravsko_polje", "kocevje", "pohorje", "triglav", "cerknica"], regions.GetProperty("regions").EnumerateArray().Select(region => region.GetProperty("regionId").GetString()));
         var meadow = Region(regions, "dravsko_polje");
         Assert.Equal(("Dravsko polje", "dravsko_polje_meadow", true), (meadow.GetProperty("name").GetString(), meadow.GetProperty("mapId").GetString(), meadow.GetProperty("unlocked").GetBoolean()));
         Assert.Equal(JsonValueKind.Null, meadow.GetProperty("lockedHint").ValueKind);
@@ -81,6 +86,33 @@ public sealed class TravelTests(PostgresFixture database)
         Assert.Equal(JsonValueKind.Null, pohorje.GetProperty("required").ValueKind);
         Assert.Equal((62, 27), (pohorje.GetProperty("x").GetInt32(), pohorje.GetProperty("y").GetInt32()));
         Assert.False(Region(regions, "triglav").GetProperty("unlocked").GetBoolean());
+        var lake = Region(regions, "cerknica");
+        Assert.Equal((false, "Pomagaj Luki na Triglavu.", "cerknica_lake"), (lake.GetProperty("unlocked").GetBoolean(), lake.GetProperty("lockedHint").GetString(), lake.GetProperty("mapId").GetString()));
+    }
+
+    [Fact]
+    public async Task Lukas_quest_opens_the_lake_and_travelling_there_works()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+
+        // The journey before Luka is covered elsewhere; here his completed quest is stored directly.
+        await using (var scope = factory.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<SlovionDbContext>();
+            var hash = SaveToken.Hash(token);
+            var slotId = (await db.SaveSlots.SingleAsync(slot => slot.TokenHash == hash, Token)).Id;
+            var luka = QuestProgress.Start(slotId, "below_the_peaks", DateTimeOffset.UtcNow);
+            luka.Complete(DateTimeOffset.UtcNow);
+            db.QuestProgress.Add(luka);
+            await db.SaveChangesAsync(Token);
+        }
+
+        Assert.True(Region(await RegionsAsync(client, token), "cerknica").GetProperty("unlocked").GetBoolean());
+        var (status, travelled) = await SendAsync(client, token, HttpMethod.Post, "/api/save/travel", new { regionId = "cerknica" });
+        Assert.Equal(HttpStatusCode.OK, status);
+        Assert.Equal(("cerknica", "cerknica_lake"), (travelled.GetProperty("regionId").GetString(), travelled.GetProperty("mapId").GetString()));
     }
 
     [Fact]

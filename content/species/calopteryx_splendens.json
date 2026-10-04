@@ -1,0 +1,121 @@
+{
+  "id": "calopteryx_splendens",
+  "group": "insect",
+  "scientificName": {
+    "value": "Calopteryx splendens (Harris, 1780)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Pasasti bleščavec",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/zivalski-svet/kacji-pastirji/enakokrili-kacji-pastirji/blescavci/pasasti-blescavec",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "wiki": {
+      "title": "Pasasti bleščavec",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Pasasti_ble%C5%A1%C4%8Davec",
+      "accessed": "2026-10-04",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Calopteryx splendens (Harris, 1780) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/1427067",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "pasasti bleščavec",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "bleščavci (Calopterygidae)",
+        "sources": [
+          "np",
+          "wiki",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Odprti, osončeni vodotoki; izogiba se goratim predelom, hladnim potokom in vodam v globoki senci.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "Razširjen in zelo pogost je po večini Evrope, proti vzhodu do Bajkalskega jezera.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "season": {
+        "value": "Na toplejših območjih leti od konca aprila do oktobra, v hladnejših nekoliko krajši čas.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Je eden naših največjih enakokrilih kačjih pastirjev: dolg je okoli 45 mm, razpon kril meri okoli 6 cm.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Samec ima kovinsko modro telo, ki se preliva v kovinsko zeleno.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Samec ima na krilih širok temno moder pas.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Samica je kovinsko zelena, krila pa ima prozorna z rahlim zelenkastim pridihom.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Samci samicam pred parjenjem dvorijo z razkazovanjem.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "wildlife": {
+    "torch": "calm"
+  },
+  "identification": {
+    "clues": [
+      0,
+      1,
+      2
+    ]
+  }
+}
