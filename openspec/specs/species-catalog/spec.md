@@ -123,6 +123,19 @@ The API SHALL refuse to start when content is invalid, reporting every problem f
   | `fritillaria_meleagris` | `plant` | *močvirska logarica* | Ljubljana |
   | `alnus_glutinosa` | `plant` | *črna jelša* | Ljubljana |
 
+#### Scenario: Prekmurje species
+- **WHEN** the API starts with the repository's content
+- **THEN** the following are available, each with sourced Slovenian facts, three clues and a picture, and the animals also with a walk sprite and wildlife traits:
+
+  | Species | Group | Slovenian name | Region |
+  |---|---|---|---|
+  | `ciconia_ciconia` | `bird` | *bela štorklja* | Murska Sobota |
+  | `upupa_epops` | `bird` | *smrdokavra* | Murska Sobota |
+  | `lutra_lutra` | `mammal` | *vidra* | Murska Sobota |
+  | `viola_arvensis` | `plant` | *njivska vijolica* | Murska Sobota |
+  | `salix_purpurea` | `plant` | *rdeča vrba* | Murska Sobota |
+- **AND** `ciconia_ciconia` is perched and `lutra_lutra` is aquatic
+
 ### Requirement: Spots reference existing species
 Every interactive spot in a map that names a species SHALL reference an existing species ID.
 
@@ -202,11 +215,12 @@ Content validation SHALL reject any of the following, naming the species:
 
 ### Requirement: Wildlife traits and sprites
 Every species that is not a plant SHALL declare:
-- wildlife traits: a torch reaction of `curious`, `shy` or `calm`, and optionally `aquatic` (the animal lives in water; see `wildlife`)
+- wildlife traits: a torch reaction of `curious`, `shy` or `calm`, and optionally `aquatic` (the animal lives in water) or `perched` (the animal stays on its home tile, e.g. a nest on a roof); see `wildlife`
 - a walk sprite at `content/wildlife-sprites/<speciesId>.png`: a PNG of 32×16 pixels holding two 16×16 frames of the animal facing right, which is mirrored when it faces left
 
 Wildlife traits are fictional gameplay data and SHALL NOT be presented as biological facts (D6). Sprites are original illustrations (D10) and SHALL be downloadable under `/content/wildlife-sprites/`. Plants SHALL NOT declare wildlife traits. Content validation SHALL reject the following, naming the species:
 - missing or unknown traits on an animal
+- an animal that is both aquatic and perched
 - traits on a plant
 - a missing or wrongly sized sprite
 
@@ -228,4 +242,16 @@ Wildlife traits are fictional gameplay data and SHALL NOT be presented as biolog
 
 #### Scenario: A non-boolean aquatic trait
 - **WHEN** a species declares `"aquatic": "yes"`
+- **THEN** content validation fails and names the species
+
+#### Scenario: A perched animal
+- **WHEN** a species declares `"perched": true` in its wildlife traits
+- **THEN** it is loaded as perched; species without the property are not perched
+
+#### Scenario: A non-boolean perched trait
+- **WHEN** a species declares `"perched": "yes"`
+- **THEN** content validation fails and names the species
+
+#### Scenario: Aquatic and perched
+- **WHEN** a species declares both `"aquatic": true` and `"perched": true`
 - **THEN** content validation fails and names the species

@@ -14,6 +14,7 @@ Every map spot whose species is not a plant SHALL be a **resident** animal. The 
 - its species ID, which selects the sprite
 - its torch reaction
 - whether it is aquatic
+- whether it is perched
 - whether it is present now
 
 The client SHALL draw only present residents. It SHALL never treat an absent resident's spot as a fixed spot.
@@ -28,10 +29,16 @@ An unknown map SHALL respond `404` with code `unknown_map`. A missing map ID SHA
 - **WHEN** a save in winter requests the wildlife of the meadow
 - **THEN** the swallowtail and the shrike are listed as not present, and the hare and the skylark as present
 
+#### Scenario: The stork on its nest
+- **WHEN** a new save requests the wildlife of `murska_sobota_village` on a spring morning
+- **THEN** the stork's spot is listed as perched and present, and the otter's as aquatic
+
 ### Requirement: Wandering
-A present resident SHALL wander: from time to time it takes one step to a free neighbouring tile within 3 tiles of its home spot. A free tile is one that is:
+A present resident SHALL wander, unless it is **perched**: from time to time it takes one step to a free neighbouring tile within 3 tiles of its home spot. A free tile is one that is:
 - walkable and inside the map; for an **aquatic** resident instead a water tile (a wadeable tile) inside the map
 - not taken by the player, an NPC, a closed gate or another resident
+
+A perched resident SHALL stay on its home spot's tile and never step. Its home MAY be a blocked tile (e.g. a nest on a roof); it still occupies that tile, and the player meets it by facing it, as any resident.
 
 Each resident SHALL use its own seeded random sequence, so its movement is deterministic in tests. Residents SHALL move with a two-frame walk animation, facing their direction of travel. A resident next to the player SHALL stop wandering while the player stays next to it, so the player can talk to it.
 
@@ -46,6 +53,14 @@ Each resident SHALL use its own seeded random sequence, so its movement is deter
 #### Scenario: The olm stays in its pool
 - **WHEN** the olm wanders for a long time
 - **THEN** it is only ever on water tiles of its pool, and it never leaves the water
+
+#### Scenario: The stork stays on its nest
+- **WHEN** the stork is present for a long time
+- **THEN** it never leaves the nest's tile, although that tile is blocked
+
+#### Scenario: Meeting the stork
+- **WHEN** the player faces the stork's nest from a neighbouring walkable tile and presses `Interact`
+- **THEN** an interaction with the stork's spot ID is started, not a search of the roof
 
 ### Requirement: Meeting an animal
 Residents SHALL block movement like NPCs. When the player faces a resident and presses `Interact`, the game SHALL start the encounter of the resident's spot through the existing spot encounter (D3), wherever the resident currently stands. All outcomes and messages are the same as for spots: an encounter, *already recorded*, or *not now*.
@@ -63,6 +78,8 @@ While the torch is lit in the evening, at night or in an underground area, resid
 - `curious` residents SHALL step towards the player until they are next to them
 - `shy` residents SHALL step away from the player, even beyond their usual 3 tiles
 - `calm` residents SHALL keep wandering as usual
+
+Perched residents SHALL NOT react to the torch.
 
 When the torch is off, the time is morning or day, or the player is farther than 4 tiles away, residents SHALL return towards home and wander again. Torch reactions SHALL NOT change encounters.
 

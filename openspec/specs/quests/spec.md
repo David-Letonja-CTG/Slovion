@@ -47,6 +47,7 @@ Quest texts are game dialogue, not species facts. They SHALL NOT state biologica
   | `neza` | `vanishing_lake` | 3 species of `wetland` | `lake_explored` |
   | `tilen` | `into_the_dark` | 3 species of `karst` | `caves_explored` |
   | `ana` | `city_nature` | 3 species of `city` | `city_explored` |
+  | `stefan` | `under_the_storks_nest` | 3 species of `farmland` | `farmland_explored` |
 
 #### Scenario: Goal habitat too small
 - **WHEN** a quest asks for 4 species of a habitat that lists 3
