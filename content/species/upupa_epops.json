@@ -1,0 +1,127 @@
+{
+  "id": "upupa_epops",
+  "group": "bird",
+  "scientificName": {
+    "value": "Upupa epops Linnaeus, 1758",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Smrdokavra",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/zivalski-svet/ptici/smrdokavre/smrdokavra",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "wiki": {
+      "title": "Smrdokavra",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Smrdokavra",
+      "accessed": "2026-10-04",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Upupa epops Linnaeus, 1758 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2498415",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "smrdokavra",
+        "sources": [
+          "np",
+          "wiki"
+        ]
+      },
+      "family": {
+        "value": "smrdokavre (Upupidae)",
+        "sources": [
+          "np",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Topla kulturna krajina, kjer se pašniki, njive in sadovnjaki prepletajo z mejicami; najraje ima stare visokodebelne sadovnjake. Gnezdi v duplu starega sadnega drevesa ali v vrzeli v zidu.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je pogosta poletna vrsta.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "season": {
+        "value": "Je selivka: k nam se vrne spomladi, največkrat aprila, septembra pa odleti v Afriko.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Velika je kot kos, a ima dolg, ozek, navzdol ukrivljen kljun.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Glava, vrat in prsi so rožnato oker, krila in rep pa črni z belimi progami.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Na glavi ima perjanico s črnimi konci, ki jo razpre predvsem ob pristanku.",
+          "sources": [
+            "np",
+            "wiki"
+          ]
+        },
+        {
+          "value": "Oglaša se z daleč slišnim »up-up-up«.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Hrano išče podnevi na tleh: kobilice, bramorje, hrošče in njihove ličinke.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "times": [
+      "morning",
+      "day",
+      "evening"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy"
+  },
+  "identification": {
+    "clues": [
+      0,
+      2,
+      3
+    ]
+  }
+}

@@ -27,9 +27,9 @@ public enum TorchReaction
 
 /// <summary>
 /// Gameplay traits of an animal living in the world; plants have none. An <paramref name="Aquatic"/> animal lives and
-/// wanders on water tiles only.
+/// wanders on water tiles only; a <paramref name="Perched"/> one stays on its home tile (e.g. a nest on a roof).
 /// </summary>
-public sealed record WildlifeTraits(TorchReaction Torch, bool Aquatic = false);
+public sealed record WildlifeTraits(TorchReaction Torch, bool Aquatic = false, bool Perched = false);
 
 /// <summary>
 /// When a species can be found: in which seasons and at which times of day, and in which weathers it is also found at

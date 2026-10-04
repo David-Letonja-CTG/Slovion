@@ -93,6 +93,25 @@ public sealed class WildlifeTests(PostgresFixture database)
     }
 
     [Fact]
+    public async Task The_stork_is_listed_as_perched_and_is_on_its_nest_by_day_only()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+
+        var (status, body) = await WildlifeAsync(client, token, "murska_sobota_village");
+
+        Assert.Equal(HttpStatusCode.OK, status);
+        var byId = body.GetProperty("animals").EnumerateArray().ToDictionary(animal => animal.GetProperty("spotId").GetString()!);
+        Assert.Equal((true, false, true), (byId["village_stork_1"].GetProperty("perched").GetBoolean(), byId["village_stork_1"].GetProperty("aquatic").GetBoolean(), byId["village_stork_1"].GetProperty("present").GetBoolean()));
+        Assert.Equal((false, true), (byId["oxbow_otter_1"].GetProperty("perched").GetBoolean(), byId["oxbow_otter_1"].GetProperty("aquatic").GetBoolean()));
+
+        clock.Advance(TimeSpan.FromMinutes(14)); // 22:00, night: the stork is active by day only
+        var night = Animals((await WildlifeAsync(client, token, "murska_sobota_village")).Body);
+        Assert.False(night["village_stork_1"].Present);
+    }
+
+    [Fact]
     public async Task Residents_out_of_season_are_absent()
     {
         await using var factory = Factory();

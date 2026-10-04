@@ -1,0 +1,103 @@
+{
+  "id": "viola_arvensis",
+  "group": "plant",
+  "scientificName": {
+    "value": "Viola arvensis Murray",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Njivska vijolica",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/rastlinski-svet/vijolicevke/njivska-vijolica",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Viola arvensis Murray (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5331235",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "njivska vijolica",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "vijoličevke (Violaceae)",
+        "sources": [
+          "np"
+        ]
+      },
+      "habitat": {
+        "value": "Obdelana tla; najpogosteje raste na robovih njiv.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je splošno razširjena; izogiba se le Julijskim Alpam.",
+        "sources": [
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Cveti od aprila do oktobra.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Visoka je od 10 do 40 cm.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Drobni cvetovi so dolgi od 8 do 15 mm in neizrazito dišijo.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Štirje venčni listi so obrnjeni navzgor in bledo rumeni, spodnji je temno rumen s temnimi črtami.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Venčni listi so krajši ali tako dolgi kot zeleni čašni listi.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "identification": {
+    "clues": [
+      2,
+      3,
+      0
+    ]
+  }
+}

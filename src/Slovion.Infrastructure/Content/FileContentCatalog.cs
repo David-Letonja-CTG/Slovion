@@ -246,7 +246,13 @@ public sealed partial class FileContentCatalog : IContentCatalog
             return null;
         }
 
-        return new WildlifeTraits(torch, file.Aquatic ?? false);
+        if (file.Aquatic == true && file.Perched == true)
+        {
+            errors.Add($"{name}: an animal cannot be both aquatic and perched.");
+            return null;
+        }
+
+        return new WildlifeTraits(torch, file.Aquatic ?? false, file.Perched ?? false);
     }
 
     /// <summary>Sourced seasons and optional times of day (all times when absent), as lowercase names.</summary>

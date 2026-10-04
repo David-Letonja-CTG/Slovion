@@ -1,0 +1,137 @@
+{
+  "id": "ciconia_ciconia",
+  "group": "bird",
+  "scientificName": {
+    "value": "Ciconia ciconia (Linnaeus, 1758)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Bela štorklja",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/zivalski-svet/ptici/storklje/bela-storklja",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "dopps": {
+      "title": "Ptice Slovenije – Štorklje",
+      "publisher": "DOPPS – BirdLife Slovenija",
+      "url": "https://ptice.si/ptice-in-ljudje/ptice-slovenije/storklje/",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "wiki": {
+      "title": "Bela štorklja",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Bela_%C5%A1torklja",
+      "accessed": "2026-10-04",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Ciconia ciconia (Linnaeus, 1758) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2481912",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "bela štorklja",
+        "sources": [
+          "np",
+          "dopps"
+        ]
+      },
+      "family": {
+        "value": "štorklje (Ciconiidae)",
+        "sources": [
+          "dopps",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Odprta kulturna krajina blizu vlažnih travnikov, rek in jezer. Ni plaha: gnezdo iz vej si zgradi blizu človeka, na strešnih slemenih, dimnikih, drogovih ali posebnih podstavkih.",
+        "sources": [
+          "np",
+          "dopps"
+        ]
+      },
+      "distribution": {
+        "value": "Največ štorkelj gnezdi na severovzhodu Slovenije, v panonskem delu; štorklja je simbol Prekmurja. Na Rdečem seznamu je uvrščena med ranljive vrste.",
+        "sources": [
+          "wiki",
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Je selivka: prezimuje v tropski Afriki, vrača se zgodaj spomladi, na jug pa se lahko začne seliti že avgusta. Gnezdi od marca do junija.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Dolga je od 95 do 110 cm, z razponom peruti od 180 do 220 cm.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Perje je belo, letalna peresa so črna; kljun in noge so rdeči.",
+          "sources": [
+            "np",
+            "dopps"
+          ]
+        },
+        {
+          "value": "V letu ima iztegnjen vrat in dolge noge, ki segajo daleč za rep.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Redko se oglaša, rada pa »ropota« s kljunom.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Par se leto za letom vrača na isto gnezdo in ga dograjuje, zato lahko gnezdo tehta več kot 500 kg.",
+          "sources": [
+            "np",
+            "dopps"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "times": [
+      "morning",
+      "day",
+      "evening"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "wildlife": {
+    "torch": "calm",
+    "perched": true
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      4
+    ]
+  }
+}

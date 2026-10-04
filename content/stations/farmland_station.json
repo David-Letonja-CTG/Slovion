@@ -1,0 +1,17 @@
+{
+  "id": "farmland_station",
+  "species": [
+    "ciconia_ciconia",
+    "upupa_epops",
+    "lutra_lutra",
+    "viola_arvensis",
+    "salix_purpurea"
+  ],
+  "goal": 3,
+  "text": {
+    "sl": {
+      "name": "Raziskovalna postaja v Murski Soboti",
+      "theme": "Kulturna krajina"
+    }
+  }
+}

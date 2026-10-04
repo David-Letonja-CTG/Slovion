@@ -29,9 +29,9 @@ async function observeTheSage(page: Page) {
   return observation;
 }
 
-/** A species picture in the open *Terenski dnevnik*. */
+/** A species picture in the open *Terenski dnevnik*; a species of several habitats shows in each section, so the first. */
 const pictureOf = (page: Page, speciesId: string) =>
-  page.locator(`app-naturedex-panel .picture[data-species="${speciesId}"]`);
+  page.locator(`app-naturedex-panel .picture[data-species="${speciesId}"]`).first();
 
 test('identify the meadow sage, read about it, and keep it after a reload', async ({ page }) => {
   const observation = await observeTheSage(page);

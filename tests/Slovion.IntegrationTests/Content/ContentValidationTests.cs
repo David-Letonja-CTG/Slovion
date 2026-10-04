@@ -46,10 +46,10 @@ public sealed class ContentValidationTests
         Assert.Equal("Oko za naravo", quest.Text["sl"].Title);
         Assert.Null(catalog.FindNpcOnMap("other_map", "vera"));
 
-        Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland", "wetland", "karst", "city"], catalog.AllHabitats.Select(habitat => habitat.Id));
-        Assert.Equal([60, 60, 50, 55, 50, 50], catalog.AllHabitats.Skip(2).Select(habitat => habitat.SearchChancePercent));
-        Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje", "Mokrišče", "Kras", "Mesto"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
-        Assert.Equal([1, 2, 3, 4, 5, 6, 7, 8], catalog.AllHabitats.Select(habitat => habitat.Order));
+        Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland", "wetland", "karst", "city", "farmland"], catalog.AllHabitats.Select(habitat => habitat.Id));
+        Assert.Equal([60, 60, 50, 55, 50, 50, 55], catalog.AllHabitats.Skip(2).Select(habitat => habitat.SearchChancePercent));
+        Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje", "Mokrišče", "Kras", "Mesto", "Kulturna krajina"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
+        Assert.Equal([1, 2, 3, 4, 5, 6, 7, 8, 9], catalog.AllHabitats.Select(habitat => habitat.Order));
     }
 
     [Fact]
@@ -66,9 +66,10 @@ public sealed class ContentValidationTests
                 ("cerknica", "cerknica_lake", new UnlockRule.Flag("alps_explored")),
                 ("rakov_skocjan", "rakov_skocjan_karst", new UnlockRule.Flag("lake_explored")),
                 ("ljubljana", "ljubljana_park", new UnlockRule.Flag("caves_explored")),
+                ("murska_sobota", "murska_sobota_village", new UnlockRule.Flag("city_explored")),
             ],
             catalog.AllRegions.Select(region => (region.Id, region.MapId, region.Unlock)));
-        Assert.Equal(["Dravsko polje", "Kočevje", "Pohorje", "Triglav", "Cerkniško jezero", "Rakov Škocjan", "Ljubljana"], catalog.AllRegions.Select(region => region.Text["sl"].Name));
+        Assert.Equal(["Dravsko polje", "Kočevje", "Pohorje", "Triglav", "Cerkniško jezero", "Rakov Škocjan", "Ljubljana", "Murska Sobota"], catalog.AllRegions.Select(region => region.Text["sl"].Name));
     }
 
     [Theory]
@@ -141,6 +142,7 @@ public sealed class ContentValidationTests
     [InlineData("neza", "Neža", "cerknica_lake", "vanishing_lake", "wetland", "lake_explored")]
     [InlineData("tilen", "Tilen", "rakov_skocjan_karst", "into_the_dark", "karst", "caves_explored")]
     [InlineData("ana", "Ana", "ljubljana_park", "city_nature", "city", "city_explored")]
+    [InlineData("stefan", "Štefan", "murska_sobota_village", "under_the_storks_nest", "farmland", "farmland_explored")]
     public void Repository_content_has_the_people_of_the_regions(string npcId, string name, string mapId, string questId, string habitatId, string flag)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -183,6 +185,11 @@ public sealed class ContentValidationTests
     [InlineData("alcedo_atthis", SpeciesGroup.Bird, "vodomec", "city")]
     [InlineData("alnus_glutinosa", SpeciesGroup.Plant, "črna jelša", "city")]
     [InlineData("fritillaria_meleagris", SpeciesGroup.Plant, "močvirska logarica", "wetland")]
+    [InlineData("ciconia_ciconia", SpeciesGroup.Bird, "bela štorklja", "farmland")]
+    [InlineData("upupa_epops", SpeciesGroup.Bird, "smrdokavra", "farmland")]
+    [InlineData("viola_arvensis", SpeciesGroup.Plant, "njivska vijolica", "farmland")]
+    [InlineData("lutra_lutra", SpeciesGroup.Mammal, "vidra", "wetland")]
+    [InlineData("salix_purpurea", SpeciesGroup.Plant, "rdeča vrba", "wetland")]
     public void Repository_content_has_more_species_of_the_regions(string id, SpeciesGroup group, string slName, string habitatId)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -243,6 +250,26 @@ public sealed class ContentValidationTests
     }
 
     [Fact]
+    public void The_murska_sobota_village_has_the_stork_on_a_chimney_fields_and_the_oxbow()
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+        const string map = "murska_sobota_village";
+
+        Assert.Equal(new WildlifeTraits(TorchReaction.Calm, Perched: true), catalog.FindSpecies(SpeciesId.Parse("ciconia_ciconia"))!.Wildlife);
+        Assert.Equal(new WildlifeTraits(TorchReaction.Shy, Aquatic: true), catalog.FindSpecies(SpeciesId.Parse("lutra_lutra"))!.Wildlife);
+        Assert.Contains(catalog.AllHabitats.Single(habitat => habitat.Id == "farmland").Species, entry => entry.SpeciesId == SpeciesId.Parse("alauda_arvensis"));
+
+        // The spawn (1, 9), the signpost (2, 8), Štefan (3, 10) and the station (6, 8) lie outside the zones.
+        Assert.All(new[] { (1, 9), (2, 8), (3, 10), (6, 8) }, tile => Assert.Null(catalog.FindHabitatAt(map, tile.Item1, tile.Item2)));
+        Assert.Equal("farmland", catalog.FindHabitatAt(map, 12, 6)?.Id);
+        Assert.Equal("farmland", catalog.FindHabitatAt(map, 21, 6)?.Id);
+        Assert.Equal("wetland", catalog.FindHabitatAt(map, 22, 10)?.Id);
+        Assert.Equal("wetland", catalog.FindHabitatAt(map, 5, 14)?.Id);
+        string[][] spots = [["village_stork_1", "ciconia_ciconia"], ["orchard_hoopoe_1", "upupa_epops"], ["field_skylark_1", "alauda_arvensis"], ["field_pansy_1", "viola_arvensis"], ["oxbow_otter_1", "lutra_lutra"]];
+        Assert.All(spots, spot => Assert.Equal(spot[1], catalog.FindSpot(map, spot[0])?.SpeciesId.Value));
+    }
+
+    [Fact]
     public void The_corncrake_lives_in_the_wet_meadow_of_the_lake()
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -280,6 +307,11 @@ public sealed class ContentValidationTests
     [InlineData("alcedo_atthis", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     [InlineData("fritillaria_meleagris", new[] { Season.Spring }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     [InlineData("alnus_glutinosa", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("ciconia_ciconia", new[] { Season.Spring, Season.Summer }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening })]
+    [InlineData("upupa_epops", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening })]
+    [InlineData("lutra_lutra", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("viola_arvensis", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("salix_purpurea", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     public void Region_species_have_their_sourced_availability(string id, Season[] seasons, TimeOfDay[] times)
     {
         var availability = FileContentCatalog.Load(ContentFolder.RepositoryContent()).FindSpecies(SpeciesId.Parse(id))!.Availability;
@@ -439,6 +471,8 @@ public sealed class ContentValidationTests
         { "region with an unknown weather season", c => c.Region["weather"]!["monsoon"] = new JsonObject { ["rain"] = 1 }, "'weather' has unknown season 'monsoon'" },
         { "species with unknown weather", c => c.Species["availability"]!["alsoInWeather"] = new JsonArray("hail"), "availability.alsoInWeather: unknown weather 'hail'" },
         { "animal with a non-boolean aquatic trait", c => { c.Species["group"] = "mammal"; c.Species["wildlife"] = new JsonObject { ["torch"] = "calm", ["aquatic"] = "yes" }; }, "species/salvia_pratensis.json: invalid JSON" },
+        { "animal with a non-boolean perched trait", c => { c.Species["group"] = "bird"; c.Species["wildlife"] = new JsonObject { ["torch"] = "calm", ["perched"] = "yes" }; }, "species/salvia_pratensis.json: invalid JSON" },
+        { "animal both aquatic and perched", c => { c.Species["group"] = "bird"; c.Species["wildlife"] = new JsonObject { ["torch"] = "calm", ["aquatic"] = true, ["perched"] = true }; }, "species/salvia_pratensis.json: an animal cannot be both aquatic and perched" },
         { "area with a non-boolean underground", c => Objects(c).First(o => (string?)o!["type"] == "area")!["properties"]!.AsArray().Add(new JsonObject { ["name"] = "underground", ["type"] = "string", ["value"] = "yes" }), "'underground' must be a boolean" },
         { "species with empty weather", c => c.Species["availability"]!["alsoInWeather"] = new JsonArray(), "availability.alsoInWeather must list at least one weather" },
         { "tool without Slovenian text", c => c.Item["text"] = new JsonObject(), "items/lamp.json: Slovenian text ('text.sl') is required" },
