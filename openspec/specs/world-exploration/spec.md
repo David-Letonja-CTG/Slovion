@@ -17,11 +17,12 @@ Maps SHALL be loaded from content data (Tiled JSON). A map SHALL define:
 - optional gates (tile objects naming the flag that opens them)
 - exactly one signpost (a tile object of class `signpost`)
 - optional research stations (tile objects of class `station` naming a station, see `research-stations`)
+- optional lamp posts (tile objects of class `lamp`), which light up in the evening and at night (see `world-conditions`)
 
 No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - NPCs naming an unknown NPC
 - gates whose flag no quest rewards
-- NPCs, gates, signposts or stations outside the map
+- NPCs, gates, signposts, stations or lamp posts outside the map
 - stations naming an unknown station
 - an `underground` property that is not a boolean
 - a map without exactly one signpost
@@ -50,6 +51,7 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
   | `triglav_alps` | `alpine_grassland` |
   | `cerknica_lake` | `wetland` |
   | `rakov_skocjan_karst` | `karst` |
+  | `ljubljana_park` | `city` |
 
 #### Scenario: Species of the regions on their maps
 - **WHEN** a region map is loaded
@@ -72,6 +74,7 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
   | `triglav_alps` | `luka` |
   | `cerknica_lake` | `neza` |
   | `rakov_skocjan_karst` | `tilen` |
+  | `ljubljana_park` | `ana` |
 
 #### Scenario: Areas of the meadow
 - **WHEN** the meadow is loaded
@@ -99,6 +102,10 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - **THEN** the gorge belongs to an area that is not underground and the cave to an area marked `underground`
 - **AND** the olm's spot lies on a water tile inside the cave, and the cave beetle's and the bat's spots lie on the cave floor
 - **AND** the habitat zones lie in the gorge only
+
+#### Scenario: The Ljubljana park
+- **WHEN** `ljubljana_park` is loaded
+- **THEN** it has lamp posts along its paths, a `city` zone in the park, and a `wetland` zone on the barje strip with the fritillary's spot and a corncrake resident spot
 
 ### Requirement: Invalid map is reported
 If a map cannot be loaded or does not satisfy the supported format (orthogonal, fixed tile size, a spawn point, layers referenced by name), the game SHALL show a Slovenian error message instead of a broken or blank world.
@@ -176,7 +183,7 @@ When the player is not mid-step and `Interact` is pressed, the game SHALL act on
 7. Otherwise, if the player faces a blocked tile (a tree, shrub, rock or similar) inside a habitat zone, it SHALL start a search of that habitat at the faced tile.
 8. Otherwise, if the player stands in a habitat zone, it SHALL start a search of that habitat at the player's tile.
 
-If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose species is an animal SHALL only be reachable through its resident, never as a fixed spot. Signposts and stations SHALL block movement.
+If none applies, nothing SHALL happen and no request SHALL be sent. A spot whose species is an animal SHALL only be reachable through its resident, never as a fixed spot. Signposts, stations and lamp posts SHALL block movement.
 
 #### Scenario: Talking to Vera
 - **WHEN** the player stands next to Vera, faces her and presses `Interact`

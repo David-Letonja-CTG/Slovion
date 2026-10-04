@@ -81,6 +81,8 @@ The game SHALL show the current season, time of day, in-game clock (`HH:MM`) and
 
 While the player is in an area marked `underground` (see `world-exploration`), the map SHALL take a cave darkness at any time of day, at least as dark as the night tint. The indicator SHALL still show the in-game time.
 
+In the evening and at night, every lamp post on the map SHALL clear a soft-edged circle of light around itself in the tint, of about the torch's size, whether the torch is on or not. Lamps SHALL NOT change encounters or how animals move.
+
 Between server syncs, the client SHALL advance the time at the rate the server reported. It SHALL re-sync when the game starts and whenever the page becomes visible again. The clock SHALL update every in-game minute. The season, time of day and tint SHALL update when they change. The indicator is text, so screen readers can read it. It SHALL NOT announce every minute.
 
 #### Scenario: Starting a new game
@@ -98,6 +100,14 @@ Between server syncs, the client SHALL advance the time at the rate the server r
 #### Scenario: Into the cave by day
 - **WHEN** the player walks from the gorge into the cave at 12:00
 - **THEN** the map takes the cave darkness, and it returns to no tint when the player walks back out
+
+#### Scenario: Lamps at night
+- **WHEN** it is night in the Ljubljana park
+- **THEN** a circle of light shows around every lamp post, and the rest of the park has the night tint
+
+#### Scenario: Lamps by day
+- **WHEN** it is day in the Ljubljana park
+- **THEN** the lamp posts are drawn without circles of light
 
 ### Requirement: Torch
 The player SHALL be able to switch a torch (*svetilka*) on and off:
