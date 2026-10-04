@@ -42,6 +42,9 @@ export const TIME_TINT: Record<TimeOfDay, string | undefined> = {
   night: 'rgba(10, 14, 40, 0.68)',
 };
 
+/** Underground (a cave) it is darker than night, at any time of day. */
+export const CAVE_TINT = 'rgba(4, 6, 12, 0.86)';
+
 /**
  * Draws the visible part of the map in authored layer order, then closed gates, signposts, stations and NPCs, then the player, then
  * the time-of-day tint over everything.
@@ -174,15 +177,16 @@ export function renderWorld(
     );
   }
 
-  const timeOfDay = world.time.timeOfDay;
-  const tint = TIME_TINT[timeOfDay];
+  const underground = world.isUnderground;
+  const tint = underground ? CAVE_TINT : TIME_TINT[world.time.timeOfDay];
   if (tint) {
-    drawTint(context, tint, world.torchOn && (timeOfDay === 'evening' || timeOfDay === 'night'), {
+    drawTint(context, tint, world.torchOn && world.isDark, {
       x: playerX - camera.x + TILE_SIZE / 2,
       y: playerY - camera.y + TILE_SIZE / 2,
     });
   }
-  drawWeather(context, world.weather, world.elapsedMs, world.reducedMotion);
+  // No weather falls underground.
+  if (!underground) drawWeather(context, world.weather, world.elapsedMs, world.reducedMotion);
 }
 
 /** The time-of-day tint; with the torch lit it clears a soft circle around `torch`, padding with the tint. */

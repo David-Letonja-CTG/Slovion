@@ -21,7 +21,7 @@ internal sealed record IdentificationFile(List<int>? Clues);
 internal sealed record AvailabilityFile(List<string>? Seasons, List<string>? Times, List<string>? AlsoInWeather, List<string>? Sources);
 
 /// <summary>Fictional gameplay traits of an animal: its reaction to the torch.</summary>
-internal sealed record WildlifeFile(string? Torch);
+internal sealed record WildlifeFile(string? Torch, bool? Aquatic);
 
 internal sealed record SpeciesFile(string? Id, string? Group, FactFile? ScientificName, Dictionary<string, SourceFile>? Sources, Dictionary<string, SpeciesTextFile>? Text, AvailabilityFile? Availability, WildlifeFile? Wildlife, IdentificationFile? Identification);
 

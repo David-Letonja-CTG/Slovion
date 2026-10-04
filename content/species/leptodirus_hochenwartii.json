@@ -1,0 +1,120 @@
+{
+  "id": "leptodirus_hochenwartii",
+  "group": "insect",
+  "scientificName": {
+    "value": "Leptodirus hochenwartii F.J.Schmidt, 1832",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "wiki": {
+      "title": "Drobnovratnik",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Drobnovratnik",
+      "accessed": "2026-10-04",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Leptodirus hochenwartii F.J.Schmidt, 1832 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/4445665",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "drobnovratnik",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "family": {
+        "value": "Leiodidae",
+        "sources": [
+          "wiki",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Je prava jamska žival: odvisen je od stalne temperature in vlažnosti jam, zato zunaj njih ne more preživeti. Živi večinoma v velikih jamah, kjer temperatura ne presega 12 °C.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "distribution": {
+        "value": "Je endemit zahodnega dela Dinarskega gorstva, razširjen na krasu od Trnovskega gozda do tržaškega krasa; največ ga je v jamah okoli Grosuplja in na Kočevskem. Je na slovenskem Rdečem seznamu.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "season": {
+        "value": "Hrani se z organskimi ostanki in mrhovino, najpogosteje na stenah jam. Raste in se razmnožuje počasi.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Je majhen hrošč, velik od 8 do 11 mm.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Nima oči in nima pigmenta.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Telo je videti kroglasto zaradi napihnjenega zadka s kupolastimi pokrovkami.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Majhna, ozka glava in oprsje štrlita iz zadka kot vrat; po tem je dobil ime.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Tipalnice in noge so zelo dolge in občutljive na dotik in tresljaje.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Je prvi opisani jamski hrošč na svetu: leta 1831 ga je v Postojnski jami našel Luka Čeč.",
+          "sources": [
+            "wiki"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "wiki"
+    ]
+  },
+  "wildlife": {
+    "torch": "calm"
+  },
+  "identification": {
+    "clues": [
+      2,
+      3,
+      4
+    ]
+  }
+}

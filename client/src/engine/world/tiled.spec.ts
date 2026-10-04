@@ -1,4 +1,5 @@
 import cerknica from '../../../../content/maps/cerknica_lake.json';
+import karst from '../../../../content/maps/rakov_skocjan_karst.json';
 import kocevje from '../../../../content/maps/kocevje_forest.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import pohorje from '../../../../content/maps/pohorje_forest.json';
@@ -146,6 +147,7 @@ describe('parseTiledMap', () => {
     ['pohorje_forest', pohorje, 'pohorje_wolf_1', 'pohorje_forest'],
     ['triglav_alps', triglav, 'triglav_chamois_1', 'triglav_slopes'],
     ['cerknica_lake', cerknica, 'cerknica_heron_1', 'cerknica_lake'],
+    ['rakov_skocjan_karst', karst, 'karst_saxifrage_1', 'rakov_skocjan'],
   ])(
     'parses the region map %s with a reachable signpost, spots and searchable trees',
     (id, json, spotId, area) => {
@@ -187,7 +189,7 @@ describe('parseTiledMap', () => {
     const map = parseTiledMap('kocevje_forest', kocevje);
     const salamander = map.spots.find((spot) => spot.spotId === 'kocevje_salamander_1')!;
 
-    expect(map.tileset.wadeable).toEqual(new Set([46]));
+    expect(map.tileset.wadeable).toEqual(new Set([46, 116])); // the stream and the cave pool
     expect([map.isWadeable(5, 16), map.isWadeable(5, 15)]).toEqual([true, false]);
     expect(salamander.y).toBe(17);
     expect(
@@ -207,6 +209,7 @@ describe('parseTiledMap', () => {
     ['pohorje_forest', pohorje, 'mammal_station', { x: 5, y: 10 }],
     ['triglav_alps', triglav, 'mountain_station', { x: 6, y: 8 }],
     ['cerknica_lake', cerknica, 'bird_station', { x: 6, y: 8 }],
+    ['rakov_skocjan_karst', karst, 'cave_station', { x: 6, y: 8 }],
   ])(
     'places a reachable research station on %s, outside the habitat zones',
     (id, json, stationId, tile) => {
@@ -223,6 +226,39 @@ describe('parseTiledMap', () => {
       expect(faceable).toBe(true);
     },
   );
+
+  it('reads the karst map: a daylit gorge, an underground cave, the olm in the cave pool', () => {
+    const map = parseTiledMap('rakov_skocjan_karst', karst);
+    const spot = (id: string) => map.spots.find((s) => s.spotId === id)!;
+
+    expect([map.areaAt(1, 9), map.isUnderground(1, 9)]).toEqual(['rakov_skocjan', false]);
+    expect([map.areaAt(20, 8), map.isUnderground(20, 8)]).toEqual(['zelske_jame', true]);
+    const olm = spot('karst_olm_1');
+    expect([map.isWadeable(olm.x, olm.y), map.isUnderground(olm.x, olm.y)]).toEqual([true, true]);
+    for (const id of ['karst_beetle_1', 'karst_bat_1']) {
+      expect(
+        [map.isBlocked(spot(id).x, spot(id).y), map.isUnderground(spot(id).x, spot(id).y)],
+        id,
+      ).toEqual([false, true]);
+    }
+    expect(map.habitats.every((zone) => zone.maxX < 18)).toBe(true);
+    expect(map.npcs).toEqual([expect.objectContaining({ npcId: 'tilen', x: 3, y: 10 })]);
+  });
+
+  it('reports an area whose underground property is not a boolean', () => {
+    const json = meadowCopy();
+    const objects = (
+      json.layers.find((layer) => layer['name'] === 'objects') as {
+        objects: Record<string, unknown>[];
+      }
+    ).objects;
+    const area = objects.find((object) => object['type'] === 'area')!;
+    (area['properties'] as unknown[]).push({ name: 'underground', type: 'string', value: 'yes' });
+
+    expect(
+      problemsOf(json).some((problem) => problem.includes('"underground" that is not a boolean')),
+    ).toBe(true);
+  });
 
   it('needs the boots for the water lily and the islet on the lake, and never enters deep water', () => {
     const without = reachableFromSpawn([], 'cerknica_lake', cerknica);

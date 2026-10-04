@@ -1,0 +1,107 @@
+{
+  "id": "saxifraga_rotundifolia",
+  "group": "plant",
+  "scientificName": {
+    "value": "Saxifraga rotundifolia L.",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Okroglolistni kamnokreč",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/rastlinski-svet/kamnokrecevke/okroglolistni-kamnokrec",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Saxifraga rotundifolia L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/7339396",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "okroglolistni kamnokreč",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "kamnokrečevke (Saxifragaceae)",
+        "sources": [
+          "np"
+        ]
+      },
+      "habitat": {
+        "value": "Skalovje, melišča, gozdovi in ruševje; uspeva na bazičnih, svežih tleh, najraje v senci dreves.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je razširjen v alpskem in predalpskem svetu ter po hribovju Dinaridov.",
+        "sources": [
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Cveti od junija do avgusta.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Visok je od 10 do 60 cm.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Pokončno steblo je močno razvejeno in mnogocvetno.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Pritlični listi so dolgopecljati in ledvičasti, z nepravilno nazobčanim robom.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Cvetovi imajo pet belih venčnih listov z rdečimi in rumenimi pikami.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Raste iz zimzelene pritlične listne rozete.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "summer"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "identification": {
+    "clues": [
+      2,
+      1,
+      3
+    ]
+  }
+}

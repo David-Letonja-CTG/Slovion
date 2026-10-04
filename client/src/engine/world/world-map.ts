@@ -62,6 +62,8 @@ export interface AreaZone {
   readonly minY: number;
   readonly maxX: number;
   readonly maxY: number;
+  /** An underground area (a cave) is dark at any time of day. */
+  readonly underground?: boolean;
 }
 
 /** A non-player character standing on a tile, drawn with tileset tile `gid`. It blocks its tile. */
@@ -165,6 +167,15 @@ export class WorldMap implements Obstacles {
   }
 
   /** The area whose zone contains the tile, if any. */
+  /** Whether the tile lies in an area marked underground. */
+  isUnderground(x: number, y: number): boolean {
+    return (
+      this.areas.find(
+        (zone) => x >= zone.minX && x <= zone.maxX && y >= zone.minY && y <= zone.maxY,
+      )?.underground === true
+    );
+  }
+
   areaAt(x: number, y: number): string | undefined {
     return this.areas.find(
       (zone) => x >= zone.minX && x <= zone.maxX && y >= zone.minY && y <= zone.maxY,

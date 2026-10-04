@@ -1,12 +1,13 @@
 import { textMap } from '../world/testing';
 import { World } from '../world/world';
 import { animatedTile } from '../world/world-map';
-import { WorldImages, renderWorld } from './world-renderer';
+import { CAVE_TINT, WorldImages, renderWorld } from './world-renderer';
 
 interface Call {
   readonly op: string;
   readonly image?: string;
   readonly args: readonly number[];
+  readonly style?: unknown;
 }
 
 /** Records canvas calls; jsdom has no canvas implementation. */
@@ -15,7 +16,7 @@ function recordingContext() {
   const context = {
     fillStyle: '' as unknown,
     calls,
-    fillRect: (...args: number[]) => calls.push({ op: 'fillRect', args }),
+    fillRect: (...args: number[]) => calls.push({ op: 'fillRect', args, style: context.fillStyle }),
     drawImage: (image: { name: string }, ...args: number[]) =>
       calls.push({ op: 'drawImage', image: image.name, args }),
     save: () => calls.push({ op: 'save', args: [] }),
@@ -95,6 +96,20 @@ describe('renderWorld', () => {
     expect(calls[mirrored].args).toEqual([-1, 1]);
     expect(calls[mirrored + 1]).toMatchObject({ op: 'drawImage', image: 'hare' });
     expect(calls[mirrored + 2].op).toBe('restore');
+  });
+
+  it('darkens an underground area by day and draws no weather there', () => {
+    const world = new World(
+      textMap(['#S.#'], 'right', () => 'cave'),
+      () => undefined,
+    );
+    world.setWeather('rain');
+
+    const calls = render(world);
+
+    expect(calls.some((call) => call.op === 'fillRect' && call.style === CAVE_TINT)).toBe(true);
+    // Rain would be drawn with strokes this recorder does not support; rendering finished without them.
+    expect(world.isUnderground).toBe(true);
   });
 
   it('draws the lamp after the player only while the torch is on', () => {

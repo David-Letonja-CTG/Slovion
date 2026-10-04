@@ -9,6 +9,8 @@ export interface ResidentInfo {
   readonly spotId: string;
   readonly speciesId: string;
   readonly torch: TorchReaction;
+  /** An aquatic animal lives and wanders on water tiles only. */
+  readonly aquatic?: boolean;
   /** Whether its species is around at the save's in-game time. */
   readonly present: boolean;
 }
@@ -50,6 +52,7 @@ export class Resident {
     readonly speciesId: string,
     readonly torch: TorchReaction,
     readonly home: { readonly x: number; readonly y: number },
+    readonly aquatic = false,
   ) {
     this.tile = { ...home };
     this.random = seededRandom(spotId);

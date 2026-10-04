@@ -1,0 +1,15 @@
+{
+  "id": "cave_station",
+  "species": [
+    "proteus_anguinus",
+    "leptodirus_hochenwartii",
+    "rhinolophus_ferrumequinum"
+  ],
+  "goal": 2,
+  "text": {
+    "sl": {
+      "name": "Raziskovalna postaja v Rakovem Škocjanu",
+      "theme": "Podzemlje"
+    }
+  }
+}

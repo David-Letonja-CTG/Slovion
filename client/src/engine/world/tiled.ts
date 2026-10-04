@@ -145,9 +145,14 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     width,
     height,
     problems,
-  ).map(({ id, ...tiles }) => ({ habitatId: id, ...tiles }));
+  ).map(({ id, minX, minY, maxX, maxY }) => ({ habitatId: id, minX, minY, maxX, maxY }));
+  // Areas may be marked `underground` (a cave): dark at any time of day.
   const areas: AreaZone[] = parseZones(objects, 'area', 'areaId', width, height, problems).map(
-    ({ id, ...tiles }) => ({ areaId: id, ...tiles }),
+    ({ id, underground, ...tiles }) => ({
+      areaId: id,
+      ...tiles,
+      ...(underground ? { underground } : {}),
+    }),
   );
 
   // Every walkable tile lies in an area, so the player always has a location (as on the server).
@@ -281,6 +286,7 @@ interface Zone {
   readonly minY: number;
   readonly maxX: number;
   readonly maxY: number;
+  readonly underground: boolean;
 }
 
 /**
@@ -306,8 +312,13 @@ function parseZones(
     const half = TILE_SIZE / 2;
     const x = object.x ?? 0;
     const y = object.y ?? 0;
+    const underground = property(object, 'underground');
+    if (underground !== undefined && typeof underground !== 'boolean') {
+      problems.push(`${label} has an "underground" that is not a boolean`);
+    }
     const zone: Zone = {
       id,
+      underground: underground === true,
       minX: Math.ceil((x - half) / TILE_SIZE),
       minY: Math.ceil((y - half) / TILE_SIZE),
       maxX: Math.ceil((x + (object.width ?? 0) - half) / TILE_SIZE) - 1,
@@ -326,7 +337,11 @@ function parseZones(
   return zones;
 }
 
-function inZone(zone: Omit<Zone, 'id'>, x: number, y: number): boolean {
+function inZone(
+  zone: Pick<Zone, 'minX' | 'minY' | 'maxX' | 'maxY'>,
+  x: number,
+  y: number,
+): boolean {
   return x >= zone.minX && x <= zone.maxX && y >= zone.minY && y <= zone.maxY;
 }
 

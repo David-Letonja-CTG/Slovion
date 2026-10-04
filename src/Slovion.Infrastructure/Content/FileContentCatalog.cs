@@ -246,7 +246,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
             return null;
         }
 
-        return new WildlifeTraits(torch);
+        return new WildlifeTraits(torch, file.Aquatic ?? false);
     }
 
     /// <summary>Sourced seasons and optional times of day (all times when absent), as lowercase names.</summary>
@@ -610,6 +610,13 @@ public sealed partial class FileContentCatalog : IContentCatalog
             {
                 errors.Add($"{at} refers to unknown {kind} '{id}'.");
                 continue;
+            }
+
+            // An area may be marked underground (dark at any time of day on the client).
+            if (kind == "area" && zone.Properties?.FirstOrDefault(p => p.Name == "underground") is { } underground
+                && underground.Value.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+            {
+                errors.Add($"{at}: 'underground' must be a boolean.");
             }
 
             // Tile x is covered when its centre (16x + 8) lies in [X, X + Width).

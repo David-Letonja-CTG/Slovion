@@ -1,0 +1,108 @@
+{
+  "id": "chrysosplenium_alternifolium",
+  "group": "plant",
+  "scientificName": {
+    "value": "Chrysosplenium alternifolium L.",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "np": {
+      "title": "Premenjalnolistni vraničnik",
+      "publisher": "Notranjski regijski park",
+      "url": "https://notranjski-park.si/odkrijte/enciklopedija/rastlinski-svet/kamnokrecevke/premenjalnolistni-vranicnik",
+      "accessed": "2026-10-04",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Chrysosplenium alternifolium L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/7339315",
+      "accessed": "2026-10-04",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "premenjalnolistni vraničnik",
+        "sources": [
+          "np"
+        ]
+      },
+      "family": {
+        "value": "kamnokrečevke (Saxifragaceae)",
+        "sources": [
+          "np"
+        ]
+      },
+      "habitat": {
+        "value": "Senčni in vlažni gozdovi ter bregovi potokov.",
+        "sources": [
+          "np"
+        ]
+      },
+      "distribution": {
+        "value": "S pritlikami se razraste v preproge na vlažnih tleh ob gozdnih potokih po skoraj vsej Sloveniji.",
+        "sources": [
+          "np"
+        ]
+      },
+      "season": {
+        "value": "Cveti od marca do junija.",
+        "sources": [
+          "np"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Visok je od 5 do 20 cm.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Drobni cvetovi imajo štiri rumene čašne liste in osem prašnikov.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Rumeni ovršni listi so zgoščeni tik pod cvetovi.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Steblo je v prečnem prerezu trikotno.",
+          "sources": [
+            "np"
+          ]
+        },
+        {
+          "value": "Listi so okroglasti do srčasti.",
+          "sources": [
+            "np"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "sources": [
+      "np"
+    ]
+  },
+  "identification": {
+    "clues": [
+      4,
+      2,
+      1
+    ]
+  }
+}
