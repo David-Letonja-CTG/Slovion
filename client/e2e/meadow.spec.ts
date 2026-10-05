@@ -455,3 +455,60 @@ test('the meadow research station shows its theme and progress', async ({ page }
   await page.keyboard.press('Escape');
   await expect(station).toBeHidden();
 });
+
+test('sound starts with the click on Nova igra; mute and volumes are kept after a reload', async ({
+  page,
+}) => {
+  // Counts the audio contexts the game makes.
+  await page.addInitScript(() => {
+    const Original = window.AudioContext;
+    const made: AudioContext[] = [];
+    (window as unknown as { audioContexts: AudioContext[] }).audioContexts = made;
+    window.AudioContext = class extends Original {
+      constructor(options?: AudioContextOptions) {
+        super(options);
+        made.push(this);
+      }
+    };
+  });
+  const contexts = () =>
+    page.evaluate(() =>
+      (window as unknown as { audioContexts: AudioContext[] }).audioContexts.map(
+        (context) => context.state,
+      ),
+    );
+
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: 'Nova igra' })).toBeVisible();
+  expect(await contexts()).toEqual([]);
+  await page.getByRole('button', { name: 'Nova igra' }).click();
+  await waitForTheWorld(page);
+  await expect.poll(contexts).toEqual(['running']);
+
+  const mute = page.locator('.play__mute');
+  await expect(mute).toHaveText('Utišaj');
+  await mute.click();
+  await expect(mute).toHaveText('Vklopi zvok');
+  await expect(mute).toHaveAttribute('aria-pressed', 'true');
+
+  await page.getByRole('button', { name: 'Zvok', exact: true }).click();
+  const settings = page.getByRole('dialog', { name: 'Zvok' });
+  const music = settings.locator('input[data-volume="music"]');
+  await expect(music).toBeFocused();
+  // One arrow press is one step of 10.
+  await page.keyboard.press('ArrowLeft');
+  await expect(music).toHaveValue('40');
+  for (let i = 0; i < 4; i++) await page.keyboard.press('ArrowLeft');
+  await expect(music).toHaveValue('0');
+  await expect(settings.locator('input[data-volume="sounds"]')).toHaveValue('70');
+  await page.keyboard.press('Escape');
+  await expect(settings).toHaveCount(0);
+
+  await page.reload();
+  await page.getByRole('button', { name: 'Nadaljuj' }).click();
+  await waitForTheWorld(page);
+  await expect(mute).toHaveText('Vklopi zvok');
+  await page.getByRole('button', { name: 'Zvok', exact: true }).click();
+  await expect(music).toHaveValue('0');
+  await expect(settings.locator('input[type="checkbox"]')).toBeChecked();
+});

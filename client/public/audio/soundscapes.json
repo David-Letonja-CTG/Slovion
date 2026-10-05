@@ -1,0 +1,47 @@
+{
+  "dravsko_polje_meadow": {
+    "music": "meadow",
+    "day": ["breeze", "birds"],
+    "night": ["breeze", "crickets"]
+  },
+  "kocevje_forest": {
+    "music": "forest",
+    "day": ["wind", "stream", "birds"],
+    "night": ["wind", "stream"]
+  },
+  "pohorje_forest": {
+    "music": "mountain_forest",
+    "day": ["wind", "birds-sparse"],
+    "night": ["wind", "crickets"]
+  },
+  "triglav_alps": {
+    "music": "alps",
+    "day": ["wind", "birds-sparse"],
+    "night": ["wind"]
+  },
+  "cerknica_lake": {
+    "music": "wetland",
+    "day": ["lake", "breeze", "birds"],
+    "night": ["lake", "crickets"]
+  },
+  "rakov_skocjan_karst": {
+    "music": "karst",
+    "day": ["stream", "breeze", "birds-sparse"],
+    "night": ["stream", "crickets"]
+  },
+  "ljubljana_park": {
+    "music": "city",
+    "day": ["breeze", "stream", "birds"],
+    "night": ["stream", "crickets"]
+  },
+  "murska_sobota_village": {
+    "music": "village",
+    "day": ["breeze", "stream", "birds"],
+    "night": ["breeze", "crickets"]
+  },
+  "portoroz_coast": {
+    "music": "coast",
+    "day": ["waves", "breeze", "gulls-generic"],
+    "night": ["waves", "crickets"]
+  }
+}

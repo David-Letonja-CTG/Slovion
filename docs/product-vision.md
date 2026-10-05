@@ -91,12 +91,13 @@ Implemented:
 | `add-ljubljana` | Ljubljana after Tilen's quest: a city park with street lamps, the Ljubljanica and a strip of Ljubljansko barje; Ana's quest. |
 | `add-murska-sobota` | Murska Sobota after Ana's quest: a Prekmurje village with a stork on a chimney, fields, an orchard and an oxbow of the Mura; Štefan's quest. |
 | `add-portoroz` | Portorož after Štefan's quest: the Sečovlje salt pans and the sea; Nina's quest gives a snorkel for the shallows. |
+| `add-sound` | Synthesized chiptune themes per region, nature ambience by day, night and weather, sound effects and sound settings. |
 
 Next candidates, each as its own change once the owner chooses:
 
 1. **More habitats:** e.g. river, coast, town.
 
-Later candidates: offline play (needs D3 revisited), English, accounts/cloud save.
+Later candidates: species calls (each sourced, D6), offline play (needs D3 revisited), English, accounts/cloud save.
 
 ## Capabilities (OpenSpec specs)
 
@@ -104,4 +105,4 @@ First slice: `localization`, `game-viewport`, `input-actions`, `game-session`, `
 
 Added since: `habitat-search`, `world-conditions`, `map-areas`, `wildlife`, `regions`.
 
-Later: `research-stations`.
+Later: `research-stations`, `sound`.

@@ -66,6 +66,12 @@ The bag (*Nahrbtnik*, key I) holds the tools a save has; each one opens a new wa
 | *škornji* (rubber boots) | Maja | wade through streams and shallows |
 | *maska z dihalko* (snorkel) | Nina | swim in shallow sea and meet the life there |
 
+## Sound
+
+Every region has its own soft chiptune theme and a bed of nature sounds: wind, water, generic birdsong, crickets at night. At night the theme plays slower and quieter; caves have their own theme with dripping water. Rain is heard over the ambience and thins out the birds; snow silences them. Short sounds mark an observation, a right or wrong name, research, a finished quest, a new tool, a certificate, travel, the torch and a search. Everything is synthesized in the browser, and no sound stands for a particular species.
+
+Sound starts with the first click or key press. *Utišaj* mutes it; *Zvok* opens separate volumes for music, sounds and nature. Both are remembered on the device.
+
 ## Research stations
 
 Every region has a research station (*raziskovalna postaja*) with a themed list of species, such as forest trees, birds or the sea and salt pans. Fully researching enough of them (★★★) earns a certificate (*potrdilo*) on the journal's *Potrdila* page.
@@ -81,7 +87,7 @@ Every region has a research station (*raziskovalna postaja*) with a themed list 
 | Journal (*Terenski dnevnik*) | M |
 | Close, go back | Esc |
 
-Dialogs use the arrows and Enter. Mouse and touch work everywhere: tap to walk, tap a dialog's buttons.
+The sound settings (*Zvok*) use up and down to choose a volume, left and right to change it, and Enter to mute. Dialogs use the arrows and Enter. Mouse and touch work everywhere: tap to walk, tap a dialog's buttons.
 
 ## Where gameplay is defined
 

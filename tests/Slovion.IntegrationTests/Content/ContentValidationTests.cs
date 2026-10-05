@@ -53,6 +53,17 @@ public sealed class ContentValidationTests
     }
 
     [Fact]
+    public void Every_region_map_has_a_soundscape_in_the_client()
+    {
+        var content = ContentFolder.RepositoryContent();
+        var catalog = FileContentCatalog.Load(content);
+        var soundscapesFile = Path.Combine(content, "..", "client", "public", "audio", "soundscapes.json");
+        var soundscapes = JsonNode.Parse(File.ReadAllText(soundscapesFile))!.AsObject();
+
+        Assert.All(catalog.AllRegions, region => Assert.True(soundscapes.ContainsKey(region.MapId), $"region '{region.Id}' (map '{region.MapId}') has no soundscape in client/public/audio/soundscapes.json"));
+    }
+
+    [Fact]
     public void Repository_content_has_the_regions()
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());

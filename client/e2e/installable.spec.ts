@@ -16,10 +16,10 @@ async function naturalSize(src: string): Promise<string> {
   return `${image.naturalWidth}x${image.naturalHeight}`;
 }
 
-/** Whether the service worker's caches hold the app page (runs in the page). */
-async function holdsTheApp(): Promise<boolean> {
+/** Whether the service worker's caches hold a file, e.g. the app page (runs in the page). */
+async function holds(path: string): Promise<boolean> {
   for (const name of await caches.keys()) {
-    if (await (await caches.open(name)).match('/index.html')) return true;
+    if (await (await caches.open(name)).match(path)) return true;
   }
   return false;
 }
@@ -56,7 +56,7 @@ test('the production build is installable and opens without a connection', async
   await expect
     .poll(() => page.evaluate(() => navigator.serviceWorker.controller !== null))
     .toBe(true);
-  await expect.poll(() => page.evaluate(holdsTheApp), { timeout: 15_000 }).toBe(true);
+  await expect.poll(() => page.evaluate(holds, '/index.html'), { timeout: 15_000 }).toBe(true);
 
   // Offline, the game still opens on the title screen and says a connection is needed.
   await context.setOffline(true);
@@ -64,6 +64,11 @@ test('the production build is installable and opens without a connection', async
   await expect(page.getByRole('heading', { name: 'Slovion' })).toBeVisible();
   await expect(page.getByText('Ni internetne povezave. Za igranje jo potrebuješ.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Nova igra' })).toBeVisible();
+
+  // The music and the soundscapes come from the cache too.
+  const offline = (path: string) => page.evaluate(async (url) => (await fetch(url)).ok, path);
+  expect(await offline('/audio/soundscapes.json')).toBe(true);
+  expect(await offline('/audio/music/meadow.json')).toBe(true);
 
   // Server data is never answered from the cache.
   await page.getByRole('button', { name: 'Nova igra' }).click();

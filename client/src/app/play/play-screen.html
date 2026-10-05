@@ -38,6 +38,23 @@
         <button type="button" class="button play__torch play__bag" (click)="openInventory()">
           {{ 'inventory.button' | transloco }}
         </button>
+        @if (audio.available) {
+          <button
+            type="button"
+            class="button play__torch play__sound"
+            (click)="openSoundSettings()"
+          >
+            {{ 'sound.button' | transloco }}
+          </button>
+          <button
+            type="button"
+            class="button play__torch play__mute"
+            [attr.aria-pressed]="audio.settings().muted"
+            (click)="toggleMute()"
+          >
+            {{ (audio.settings().muted ? 'sound.unmuteButton' : 'sound.muteButton') | transloco }}
+          </button>
+        }
         <p class="play__torch-status" aria-live="polite">
           {{ (torchOn() ? 'torch.on' : 'torch.off') | transloco }}
         </p>
@@ -139,6 +156,9 @@
     }
     @case ('inventory') {
       <app-inventory-panel [items]="progress().items" (closed)="close()" />
+    }
+    @case ('sound') {
+      <app-sound-settings-dialog (closed)="close()" />
     }
     @case ('naturedex') {
       <app-naturedex-panel (closed)="close()" (saveLost)="onSaveLost()" />

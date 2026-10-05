@@ -5,6 +5,7 @@ Everything the player can meet is content: versioned files in [`content/`](../co
 - [Rules for every file](#rules-for-every-file)
 - [File reference](#file-reference)
 - [Maps](#maps)
+- [Sound](#sound)
 - [Checklist: a new species](#checklist-a-new-species)
 - [Checklist: a new region](#checklist-a-new-region)
 
@@ -75,6 +76,19 @@ Maps are [Tiled](https://www.mapeditor.org/) JSON: orthogonal, 16 × 16 tiles, w
 
 By convention a region map is 26 × 20 tiles (the larger first meadow is the exception), with the spawn at (1, 9), the signpost at (2, 8), the region's person at (3, 10) and the station at (6, 8), all outside the habitat zones.
 
+## Sound
+
+Music and nature sounds are synthesized in the browser (no recordings), so they are client data rather than `content/`: small JSON files in [`client/public/audio/`](../client/public/audio/), cached by the installed app. No sound stands for a particular species (D6); species calls are a later feature.
+
+| File | Holds | Notes |
+|---|---|---|
+| `soundscapes.json` | per map ID: its theme (`music`) and its ambience layers by `day` and at `night` | every region's map needs an entry (`dotnet test` checks); no birdsong at night (client test) |
+| `music/<id>.json` | one looping theme: `tempo` (quarter notes per minute) and channels | `cave` plays in every underground area; the night arrangement is derived, not written |
+
+**Channels** have a `wave` (`pulse12`, `pulse25`, `square`, `triangle`, `sine`), a `volume` (keep it under about 0.15) and `notes`: space-separated `<pitch><octave>:<eighths>` tokens (`C#5:2`, `Bb3:4`) or rests (`-:2`). All channels of a theme must have the same length in eighths; a parse error names the theme, the channel and the token.
+
+**Ambience layers:** `breeze`, `wind`, `stream`, `lake`, `waves`, `rain`, `birds`, `birds-sparse`, `gulls-generic`, `crickets`, `drips`, `cave-air`. The weather adjusts them on its own: rain adds `rain` and thins `birds` to `birds-sparse`, snow silences birds and crickets, fog softens everything.
+
 ## Checklist: a new species
 
 1. Gather sources and save the exact wording you paraphrase. Record the scientific name with GBIF.
@@ -89,7 +103,8 @@ By convention a region map is 26 × 20 tiles (the larger first meadow is the exc
 2. **Region:** `regions/<id>.json`, unlocked by the flag of the previous region's quest; update that quest's last lines to point onward.
 3. **Places and habitats:** `areas/` for the place names; `habitats/` if the region brings a new habitat.
 4. **People:** `npcs/<id>.json`, a sprite sheet in `npc-sprites/`, `quests/<id>.json` with a new reward flag, and a station in `stations/`.
-5. **Species:** see the checklist above.
-6. **Tests and docs:** extend the content, travel and station tests that list regions; add the region to the table in [gameplay.md](gameplay.md); rerun the [docs media capture](../client/scripts/docs-media/capture.mjs) (add the region to its `regions` scene and to `JOURNEY`).
+5. **Sound:** an entry for the map in `client/public/audio/soundscapes.json`, using an existing theme or a new one in `client/public/audio/music/` (see [Sound](#sound)).
+6. **Species:** see the checklist above.
+7. **Tests and docs:** extend the content, travel and station tests that list regions; add the region to the table in [gameplay.md](gameplay.md); rerun the [docs media capture](../client/scripts/docs-media/capture.mjs) (add the region to its `regions` scene and to `JOURNEY`).
 
 Each region so far was one OpenSpec change. The archived changes in [`openspec/changes/archive/`](../openspec/changes/archive/) (e.g. `*-add-portoroz`) show a complete example: proposal, design with source notes, tasks and spec deltas.
