@@ -48,6 +48,7 @@ Quest texts are game dialogue, not species facts. They SHALL NOT state biologica
   | `tilen` | `into_the_dark` | 3 species of `karst` | `caves_explored` |
   | `ana` | `city_nature` | 3 species of `city` | `city_explored` |
   | `stefan` | `under_the_storks_nest` | 3 species of `farmland` | `farmland_explored` |
+  | `nina` | `between_salt_and_sea` | 3 species of `saltpan` | `coast_explored`, and the tool `snorkel` |
 
 #### Scenario: Goal habitat too small
 - **WHEN** a quest asks for 4 species of a habitat that lists 3

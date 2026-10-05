@@ -53,6 +53,7 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
   | `rakov_skocjan_karst` | `karst` |
   | `ljubljana_park` | `city` |
   | `murska_sobota_village` | `farmland` |
+  | `portoroz_coast` | `saltpan` |
 
 #### Scenario: Species of the regions on their maps
 - **WHEN** a region map is loaded
@@ -77,6 +78,7 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
   | `rakov_skocjan_karst` | `tilen` |
   | `ljubljana_park` | `ana` |
   | `murska_sobota_village` | `stefan` |
+  | `portoroz_coast` | `nina` |
 
 #### Scenario: Areas of the meadow
 - **WHEN** the meadow is loaded
@@ -114,6 +116,11 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - **THEN** the stork's spot lies on a blocked roof tile that can be faced from a walkable tile
 - **AND** a `farmland` zone covers the fields and the orchard, and a `wetland` zone covers the oxbow, where the otter's spot lies on a wadeable tile, and the Mura's bank
 
+#### Scenario: The Portorož coast
+- **WHEN** `portoroz_coast` is loaded
+- **THEN** it has a promenade with lamp posts, a beach, a band of swimmable shallow sea and deep sea beyond it, and a `saltpan` zone over the salt pans
+- **AND** every spot on land can be reached from the spawn without tools, and the noble pen shell's spot can be faced only from a swimmable tile
+
 ### Requirement: Invalid map is reported
 If a map cannot be loaded or does not satisfy the supported format (orthogonal, fixed tile size, a spawn point, layers referenced by name), the game SHALL show a Slovenian error message instead of a broken or blank world.
 
@@ -144,7 +151,7 @@ The player SHALL NOT enter any of these tiles:
 - a tile with a resident animal
 - a tile with a gate whose flag the save does not have
 
-A blocked tile whose tileset tile is marked `wadeable` SHALL be enterable by a player with the boots (see `inventory`); resident animals SHALL never enter it.
+A blocked tile whose tileset tile is marked `wadeable` SHALL be enterable by a player with the boots, and one marked `swimmable` by a player with the snorkel (see `inventory`); only aquatic resident animals SHALL enter them.
 
 Pressing towards such a tile SHALL turn the player to face it without moving.
 
@@ -167,6 +174,10 @@ Pressing towards such a tile SHALL turn the player to face it without moving.
 #### Scenario: Wading with boots
 - **WHEN** a player with the boots walks into Kočevje's stream
 - **THEN** the player enters the stream tile
+
+#### Scenario: Swimming with the snorkel
+- **WHEN** a player with the snorkel walks into Portorož's shallow sea
+- **THEN** the player enters the sea tile
 
 ### Requirement: Camera follows the player
 The camera SHALL keep the player centred, but SHALL NOT show anything beyond the map edges. Along a dimension where the map is smaller than the view, the map SHALL be centred.

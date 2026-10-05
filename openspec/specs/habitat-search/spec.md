@@ -43,6 +43,8 @@ Content validation SHALL also reject map zones that name an unknown habitat.
   | `karst` | *Kras* | 7 | olm, cave beetle (*drobnovratnik*), greater horseshoe bat, round-leaved saxifrage, alternate-leaved golden saxifrage |
   | `city` | *Mesto* | 8 | common swift, white-breasted hedgehog, kingfisher, black alder |
   | `farmland` | *Kulturna krajina* | 9 | white stork, hoopoe, skylark, field pansy |
+  | `saltpan` | *Soline* | 10 | black-winged stilt, little egret, Mediterranean killifish, glasswort |
+  | `sea` | *Morje* | 11 | salema, noble pen shell |
 
 #### Scenario: Unknown species in a habitat
 - **WHEN** a habitat lists species `vulpes_vulpes`, which does not exist

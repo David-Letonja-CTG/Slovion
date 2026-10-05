@@ -39,6 +39,7 @@ Unlock rules are fictional gameplay data (D6). Content validation SHALL reject a
   | `rakov_skocjan` | `rakov_skocjan_karst` | flag `lake_explored` (Neža) |
   | `ljubljana` | `ljubljana_park` | flag `caves_explored` (Tilen) |
   | `murska_sobota` | `murska_sobota_village` | flag `city_explored` (Ana) |
+  | `portoroz` | `portoroz_coast` | flag `farmland_explored` (Štefan) |
 
 #### Scenario: Region with an unknown flag
 - **WHEN** a region requires flag `secret` and no quest rewards it
@@ -56,7 +57,7 @@ Requests without a valid save token SHALL respond `401` with code `invalid_save_
 
 #### Scenario: A new save
 - **WHEN** a new save requests its regions
-- **THEN** the current region is `dravsko_polje`, Dravsko polje is unlocked, and the other seven are locked
+- **THEN** the current region is `dravsko_polje`, Dravsko polje is unlocked, and the other eight are locked
 
 #### Scenario: After Vera's quest
 - **WHEN** a save that completed Vera's quest requests its regions
@@ -85,6 +86,10 @@ Requests without a valid save token SHALL respond `401` with code `invalid_save_
 #### Scenario: After Ana's quest
 - **WHEN** a save that completed Ana's quest requests its regions
 - **THEN** Murska Sobota is unlocked
+
+#### Scenario: After Štefan's quest
+- **WHEN** a save that completed Štefan's quest requests its regions
+- **THEN** Portorož is unlocked
 
 ### Requirement: Travelling
 `POST /api/save/travel` with a region ID SHALL make that region the save's current region when the region is unlocked for the save, and respond `200` with the region. A locked region SHALL respond `409` with code `region_locked`. An unknown region SHALL respond `404` with code `unknown_region`. A missing region SHALL respond `400` with code `bad_request`. In all error cases the current region SHALL stay unchanged.
