@@ -1,0 +1,184 @@
+name: Deploy
+
+# Puts main online (docs/hosting.md): after CI succeeds on main, or by hand from the Actions tab.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deploy at a time; a newer one waits instead of cancelling a deploy halfway.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  images:
+    name: Build images
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      prefix: ${{ steps.meta.outputs.prefix }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Image names
+        id: meta
+        env:
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          echo "prefix=ghcr.io/${OWNER,,}" >> "$GITHUB_OUTPUT"
+          echo "tag=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Both final stages only copy files, so arm64 builds on this amd64 runner without emulation.
+      - name: API image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deploy/api.Dockerfile
+          platforms: linux/arm64,linux/amd64
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.prefix }}/slovion-api:${{ steps.meta.outputs.tag }}
+            ${{ steps.meta.outputs.prefix }}/slovion-api:latest
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,scope=api,mode=max
+
+      - name: Web image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deploy/web.Dockerfile
+          platforms: linux/arm64,linux/amd64
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.prefix }}/slovion-web:${{ steps.meta.outputs.tag }}
+            ${{ steps.meta.outputs.prefix }}/slovion-web:latest
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+
+  deploy:
+    name: Deploy to the VM
+    needs: images
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://${{ vars.SITE_ADDRESS }}
+    env:
+      TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+      PREFIX: ${{ needs.images.outputs.prefix }}
+      TAG: ${{ needs.images.outputs.tag }}
+      SITE_ADDRESS: ${{ vars.SITE_ADDRESS }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.images.outputs.tag }}
+
+      - name: SSH key and pinned host key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+
+      - name: Configuration for this version
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          BACKUP_URL: ${{ secrets.BACKUP_URL }}
+        run: |
+          umask 077
+          {
+            echo "IMAGE_PREFIX=$PREFIX"
+            echo "TAG=$TAG"
+            echo "SITE_ADDRESS=$SITE_ADDRESS"
+            echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
+            echo "BACKUP_URL=$BACKUP_URL"
+          } > env.next
+
+      - name: Copy the stack to the VM
+        run: scp -q deploy/compose.yml deploy/backup.sh env.next "$TARGET:/opt/slovion/"
+
+      - name: Start the new version
+        env:
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY_USER: ${{ github.actor }}
+        run: |
+          # The token travels on stdin, never on a command line.
+          printf '%s\n' "$REGISTRY_TOKEN" | ssh "$TARGET" "docker login ghcr.io -u '$REGISTRY_USER' --password-stdin >/dev/null"
+          ssh "$TARGET" bash -s <<'EOF'
+          set -euo pipefail
+          cd /opt/slovion
+          chmod +x backup.sh
+          if [ -f .env ]; then cp .env .env.previous; fi
+          mv env.next .env
+          chmod 600 .env
+          docker compose pull --quiet
+          docker compose up -d --remove-orphans
+          EOF
+
+      - name: Wait for the health check
+        id: health
+        run: |
+          for _ in $(seq 1 36); do
+            if curl -fsS -o /dev/null --max-time 5 "https://$SITE_ADDRESS/health"; then
+              echo "healthy"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::https://$SITE_ADDRESS/health did not answer 200 within 3 minutes"
+          exit 1
+
+      - name: Roll back to the previous version
+        if: failure() && steps.health.outcome == 'failure'
+        run: |
+          ssh "$TARGET" bash -s <<'EOF'
+          set -euo pipefail
+          cd /opt/slovion
+          docker compose logs --tail 100 api web || true
+          if [ -f .env.previous ]; then
+            cp .env.previous .env
+            docker compose up -d --remove-orphans
+            echo "rolled back to $(grep '^TAG=' .env)"
+          else
+            echo "no previous version to roll back to"
+          fi
+          EOF
+
+      - name: Remove old images
+        if: success()
+        run: |
+          ssh "$TARGET" bash -s <<'EOF'
+          set -euo pipefail
+          cd /opt/slovion
+          keep=" $(grep '^TAG=' .env | cut -d= -f2) $(grep '^TAG=' .env.previous 2>/dev/null | cut -d= -f2) "
+          docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '/slovion-(api|web):' | while read -r image; do
+            case "$keep" in *" ${image##*:} "*) ;; *) docker rmi "$image" >/dev/null || true ;; esac
+          done
+          docker image prune -f >/dev/null
+          EOF
+
+      - name: Sign out of the registry
+        if: always()
+        run: ssh "$TARGET" "docker logout ghcr.io >/dev/null" || true

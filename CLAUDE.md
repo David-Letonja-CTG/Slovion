@@ -4,7 +4,7 @@ Slovion is an original 2D exploration RPG set in a fictionalized Slovenia. The p
 
 - Product vision, systems and roadmap: `docs/product-vision.md`
 - Binding product/architecture decisions (D1–D11): `docs/decisions.md`
-- How everything is connected (diagrams, flows, data): `docs/architecture.md`; the game as players see it: `docs/gameplay.md`; content files and checklists: `docs/content.md`
+- How everything is connected (diagrams, flows, data): `docs/architecture.md`; the game as players see it: `docs/gameplay.md`; content files and checklists: `docs/content.md`; production hosting and deploys: `docs/hosting.md`
 - Specs and changes: `openspec/` (see Workflow)
 
 Read the relevant doc before working on a feature. If a task conflicts with a decision, raise it — do not silently override.

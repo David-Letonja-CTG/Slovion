@@ -9,6 +9,7 @@ How Slovion fits together, from the browser to the database. The binding rules b
 - [Game engine](#game-engine)
 - [Request flows](#request-flows)
 - [Data](#data)
+- [Deployment](#deployment)
 - [Where to change what](#where-to-change-what)
 
 ## The whole system
@@ -237,6 +238,27 @@ erDiagram
 - **Derived, not stored:** progress flags and tools come from completed quests, unlocked regions from flags, station certificates from research levels, the in-game time from `created_at`. Changing content therefore never needs a data migration.
 - **Migrations** run at API startup (EF Core, `src/Slovion.Infrastructure/Persistence/Migrations`). To add one: `dotnet tool restore`, then `dotnet ef migrations add <Name> --project src/Slovion.Infrastructure --output-dir Persistence/Migrations`.
 
+## Deployment
+
+Production is one Oracle Cloud Always Free Arm VM running a Docker Compose stack (D12):
+
+```mermaid
+flowchart LR
+  Player["Browser"] -- "HTTPS" --> Web
+  subgraph VM["OCI VM — Docker Compose"]
+    Web["web<br/>Caddy: TLS, client files, proxy"] -- "/api, /content, /health" --> Api["api<br/>ASP.NET Core + content"] --> Db[("db<br/>PostgreSQL")]
+  end
+  GH["GitHub Actions"] -- "images" --> GHCR[("ghcr.io")]
+  GH -- "SSH deploy" --> VM
+  VM -- "daily dump" --> Bucket[("Object Storage")]
+```
+
+- **Same origin as in development:** Caddy serves the built client and forwards `/api`, `/content` and `/health` to the API, so the client needs no configuration.
+- **Images:** `deploy/api.Dockerfile` and `deploy/web.Dockerfile`, cross-built for `arm64` and `amd64`. CI builds them on every pull request and runs `deploy/smoke-test.sh` against the whole stack.
+- **Deploys:** CI-green commits on `main` are deployed by `.github/workflows/deploy.yml`, with a health check and an automatic rollback.
+
+Setup, secrets, backups and operations are in [hosting.md](hosting.md).
+
 ## Where to change what
 
 | To… | Change | Specs and tests |
@@ -246,6 +268,7 @@ erDiagram
 | Add something that moves or is drawn | `client/src/engine/` (world, renderer, tiled parser) | Engine tests with `textMap` and a fake environment |
 | Add a screen, dialog or text | `client/src/app/` and `public/i18n/sl.json` | Component tests, `npm run i18n:check` |
 | Store new player state | an entity in `Domain`, its configuration and a migration in `Infrastructure` | Integration tests (need Docker) |
+| Change how the game is hosted or deployed | `deploy/`, `.github/workflows/deploy.yml`, [hosting.md](hosting.md) | The container smoke test in CI |
 | Change the docs' pictures | rerun [`client/scripts/docs-media/capture.mjs`](../client/scripts/docs-media/capture.mjs) | — |
 
 Every change that alters behaviour starts as an OpenSpec change (`openspec/changes/<id>/`) — see the [README](../README.md#how-work-is-done).

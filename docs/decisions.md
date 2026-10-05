@@ -77,3 +77,16 @@ The project uses the OpenSpec CLI (`@fission-ai/openspec`, `spec-driven` schema)
 Each region has its own weather: `clear`, `cloudy`, `rain`, `fog` or `snow` (*jasno*, *oblačno*, *dež*, *megla*, *sneg*). It stays the same within each 6-hour in-game period (00:00, 06:00, 12:00, 18:00) and is picked deterministically from the region ID, the in-game day and the period: a 32-bit FNV-1a hash, modulo the region's weights for the current season. It needs no storage and no injected randomness, and every save at the same in-game moment sees the same weather per region. The weights live in the region content and are fictional gameplay data (D6). The server decides the weather (D3); the client only draws what `GET /api/save/weather` reports and reloads it when the period ends.
 
 Weather affects species only where a source supports it: a species' availability may list weathers in which it is also found at any time of day (`alsoInWeather`), for example the salamanders in rain. Weather never hides a species, and has no other gameplay effect yet.
+
+## D12 — Hosting (Accepted, 2026-10-05)
+
+Slovion runs on **one Oracle Cloud Always Free Arm VM** (Ubuntu 24.04) as a Docker Compose stack: Caddy (TLS, the built client, a reverse proxy), the API with the content baked in, and PostgreSQL with its data on a volume. Only ports 80 and 443 are public.
+
+- **Images** are built for `arm64` and `amd64` and stored in the GitHub Container Registry.
+- **Deploys:** every commit on `main` that passes CI is deployed over SSH, behind a health check with an automatic rollback. A container smoke test runs in CI on every pull request.
+- **Address:** `<ip>.sslip.io` with a real certificate until a domain is bought; then only the `SITE_ADDRESS` variable changes.
+- **Backups:** a daily `pg_dump` goes to OCI Object Storage through a write-only pre-authenticated URL and is kept 14 days.
+- **Secrets** live only in the GitHub `production` environment.
+- **VM setup:** a runbook and one bootstrap script; no infrastructure-as-code yet.
+
+Details and operations: [hosting.md](hosting.md).
