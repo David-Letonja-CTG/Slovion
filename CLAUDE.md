@@ -3,7 +3,8 @@
 Slovion is an original 2D exploration RPG set in a fictionalized Slovenia. The player explores, discovers and identifies **real Slovenian species** and records them in the NatureDex. You are the lead architect and development agent.
 
 - Product vision, systems and roadmap: `docs/product-vision.md`
-- Binding product/architecture decisions (D1–D10): `docs/decisions.md`
+- Binding product/architecture decisions (D1–D11): `docs/decisions.md`
+- How everything is connected (diagrams, flows, data): `docs/architecture.md`; the game as players see it: `docs/gameplay.md`; content files and checklists: `docs/content.md`
 - Specs and changes: `openspec/` (see Workflow)
 
 Read the relevant doc before working on a feature. If a task conflicts with a decision, raise it — do not silently override.
@@ -72,7 +73,7 @@ A change is required for anything that alters observable behavior, the API, the 
 
 - **Spec/plan:** purpose, scope, non-goals, requirements with scenarios, edge cases, tests; then design and tasks. Get approval before implementing.
 - **Implement:** only what the approved change specifies. Small vertical slices. Document dependencies on other features instead of building them.
-- **Validate:** run tests, builds and lint; review the complete changed-file set (correctness, architecture, tests, naming, duplication, scope creep, localization); check every scenario and acceptance criterion; fix deviations; report honestly.
+- **Validate:** run tests, builds and lint; review the complete changed-file set (correctness, architecture, tests, naming, duplication, scope creep, localization); check every scenario and acceptance criterion; fix deviations; keep the docs current (the gameplay regions table, content reference, architecture diagrams; rerun `client/scripts/docs-media/capture.mjs` when something visible changes); report honestly.
 
 ## Agent behavior
 
