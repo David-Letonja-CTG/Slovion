@@ -1,0 +1,35 @@
+# Slovion's web server. SITE_ADDRESS is a host name (HTTPS with an automatic certificate, HTTP redirects to it),
+# e.g. 203-0-113-7.sslip.io, or ":80" for plain HTTP in tests. The API is the compose service "api".
+{
+	admin off
+}
+
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		-Server
+	}
+
+	# Server data: never cached here; the API sets its own cache headers (no-cache for /content).
+	@server path /api/* /content/* /health
+	handle @server {
+		reverse_proxy api:8080
+	}
+
+	handle {
+		root * /srv
+
+		# Hashed bundles never change; everything else must be revalidated so new versions are picked up.
+		@hashed path_regexp \-[A-Z0-9]{8}\.(js|css)$
+		header @hashed Cache-Control "public, max-age=31536000, immutable"
+		@other not path_regexp \-[A-Z0-9]{8}\.(js|css)$
+		header @other Cache-Control "no-cache"
+
+		# Deep links (e.g. /play) load the client.
+		try_files {path} /index.html
+		file_server
+	}
+}

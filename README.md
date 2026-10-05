@@ -61,7 +61,7 @@ npm ci
 npm start                                # game on http://localhost:4200
 ```
 
-Checks (CI runs the same on every push and pull request):
+Checks (CI runs the same on every push and pull request, plus a container smoke test; merges to `main` deploy automatically — see [docs/hosting.md](docs/hosting.md)):
 
 ```bash
 dotnet format Slovion.slnx --verify-no-changes
@@ -80,7 +80,8 @@ src/        backend: Slovion.Domain → Application → Infrastructure → Api
 tests/      backend tests: domain, application, integration, architecture
 client/     Angular app (src/app) and the game engine (src/engine)
 content/    game content: species, maps, quests, regions, art
-docs/       architecture, gameplay, content, decisions, product vision
+deploy/     container images, production stack, VM setup and backup scripts
+docs/       architecture, gameplay, content, hosting, decisions, product vision
 openspec/   capability specs and change proposals
 ```
 
@@ -93,6 +94,7 @@ Slovion grows one validated slice at a time with [OpenSpec](https://github.com/F
 | [docs/architecture.md](docs/architecture.md) | How everything is connected |
 | [docs/gameplay.md](docs/gameplay.md) | The game as the player sees it |
 | [docs/content.md](docs/content.md) | Content files and checklists for new species and regions |
+| [docs/hosting.md](docs/hosting.md) | Production on Oracle Cloud: setup, deploys, backups, operations |
 | [docs/decisions.md](docs/decisions.md) | Binding product and architecture decisions (D1–D11) |
 | [docs/product-vision.md](docs/product-vision.md) | Vision, systems and roadmap |
 | [CLAUDE.md](CLAUDE.md) | Rules for the AI development agent |

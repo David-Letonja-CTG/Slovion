@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Local database dumps made by deploy/backup.sh
+deploy/backups/

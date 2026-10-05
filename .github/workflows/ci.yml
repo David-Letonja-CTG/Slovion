@@ -124,3 +124,67 @@ jobs:
           name: playwright-report
           path: client/playwright-report
           retention-days: 7
+
+  containers:
+    name: Containers (smoke test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: API image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deploy/api.Dockerfile
+          load: true
+          tags: slovion-ci/slovion-api:test
+          cache-from: type=gha,scope=ci-api
+          cache-to: type=gha,scope=ci-api,mode=max
+
+      - name: Web image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deploy/web.Dockerfile
+          load: true
+          tags: slovion-ci/slovion-web:test
+          cache-from: type=gha,scope=ci-web
+          cache-to: type=gha,scope=ci-web,mode=max
+
+      # The production stack, over plain HTTP on high ports, with a throwaway password.
+      - name: Start the stack
+        working-directory: deploy
+        run: |
+          {
+            echo "IMAGE_PREFIX=slovion-ci"
+            echo "TAG=test"
+            echo "SITE_ADDRESS=:80"
+            echo "POSTGRES_PASSWORD=ci-only-password"
+            echo "HTTP_PORT=8080"
+            echo "HTTPS_PORT=8443"
+          } > .env
+          docker compose up -d --wait --wait-timeout 180
+
+      - name: Smoke test
+        run: bash deploy/smoke-test.sh http://localhost:8080
+
+      # Four runs without an upload target: each makes a dump, and only the newest 3 stay.
+      - name: Backup script
+        working-directory: deploy
+        run: |
+          for _ in 1 2 3 4; do bash backup.sh; sleep 1; done
+          test "$(ls backups/slovion-*.dump | wc -l)" -eq 3
+          docker compose cp "$(ls -1t backups/*.dump | head -n 1)" db:/tmp/latest.dump
+          docker compose exec -T db pg_restore --list /tmp/latest.dump > /dev/null
+
+      - name: Logs
+        if: failure()
+        working-directory: deploy
+        run: docker compose logs --tail 200
+
+      - name: Stop the stack
+        if: always()
+        working-directory: deploy
+        run: docker compose down -v

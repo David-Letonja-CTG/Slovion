@@ -1,0 +1,18 @@
+# Build contexts for deploy/*.Dockerfile start at the repository root; keep them small and free of local state.
+.git
+.github
+.vscode
+.vs
+**/bin
+**/obj
+**/node_modules
+**/TestResults
+client/dist
+client/.angular
+client/test-results
+client/playwright-report
+docs
+openspec
+deploy/*.md
+**/.env
+**/*.user
