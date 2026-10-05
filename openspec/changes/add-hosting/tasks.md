@@ -12,7 +12,7 @@
 
 ## 3. Deployment
 
-- [x] 3.1 `.github/workflows/deploy.yml`: on CI success on main and manually; buildx multi-arch push to GHCR; SSH deploy; health check; rollback; image prune
+- [x] 3.1 `.github/workflows/deploy.yml`: on published releases (CI must have passed) and manually with a version tag; buildx multi-arch push to GHCR; SSH deploy; health check; rollback; image prune
 - [x] 3.2 ~~Make the GHCR packages public~~ — not needed: the deploy logs the VM in to GHCR with the run's token (see design notes)
 
 ## 4. Server

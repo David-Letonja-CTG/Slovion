@@ -255,7 +255,7 @@ flowchart LR
 
 - **Same origin as in development:** Caddy serves the built client and forwards `/api`, `/content` and `/health` to the API, so the client needs no configuration.
 - **Images:** `deploy/api.Dockerfile` and `deploy/web.Dockerfile`, cross-built for `arm64` and `amd64`. CI builds them on every pull request and runs `deploy/smoke-test.sh` against the whole stack.
-- **Deploys:** CI-green commits on `main` are deployed by `.github/workflows/deploy.yml`, with a health check and an automatic rollback.
+- **Deploys:** publishing a release deploys it with `.github/workflows/deploy.yml` (CI must have passed for its commit), with a health check and an automatic rollback.
 
 Setup, secrets, backups and operations are in [hosting.md](hosting.md).
 

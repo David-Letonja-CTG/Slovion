@@ -54,26 +54,39 @@ A failing check SHALL fail CI.
 - **WHEN** a pull request makes the API image unable to start
 - **THEN** the smoke test fails and the pull request shows a failed check
 
-### Requirement: Continuous deployment
-When the CI workflow succeeds on `main`, and when started manually, a deploy workflow SHALL:
-1. build and push both images for both platforms to the GitHub Container Registry, tagged with the commit SHA and `latest`
-2. connect to the production VM over SSH with a pinned host key, copy the compose file and backup script, and write the environment file from the `production` environment's secrets and variables with the new tag, keeping the previous tag
-3. pull the images and restart the stack
-4. wait up to 3 minutes for `https://<site address>/health` to return 200
+### Requirement: Release deployment
+Production SHALL change only through releases. When a GitHub Release that is not a pre-release is published, and when started manually with a version tag, a deploy workflow SHALL:
+1. accept only version tags of the form `vMAJOR.MINOR.PATCH`, and only if the CI workflow passed for the tagged commit on `main` (waiting up to 30 minutes for a CI run still in progress)
+2. build and push both images for both platforms to the GitHub Container Registry, tagged with the commit SHA, the version and `latest`
+3. connect to the production VM over SSH with a pinned host key, copy the compose file and backup script, and write the environment file from the `production` environment's secrets and variables with the new tag, keeping the previous tag
+4. pull the images and restart the stack
+5. wait up to 3 minutes for `https://<site address>/health` to return 200
 
-If the health check fails, the workflow SHALL restore the previous tag, restart the stack with it, and fail. After a successful deploy it SHALL remove unused images on the VM. Secrets SHALL NOT appear in the repository or in workflow logs.
+If the health check fails, the workflow SHALL restore the previous tag, restart the stack with it, and fail. After a successful deploy it SHALL remove unused images on the VM. Merging into `main` SHALL only run CI. Secrets SHALL NOT appear in the repository or in workflow logs.
 
-#### Scenario: A merge goes live
-- **WHEN** a pull request is merged into `main` and CI passes
-- **THEN** the deploy workflow runs, and afterwards the site serves the new commit's images
+#### Scenario: A release goes live
+- **WHEN** release `v0.2.0` is published for a commit on `main` whose CI passed
+- **THEN** the deploy workflow runs, and afterwards the site serves that commit's images, also tagged `v0.2.0`
+
+#### Scenario: A merge alone deploys nothing
+- **WHEN** a pull request is merged into `main`
+- **THEN** CI runs and the site keeps serving the current release
+
+#### Scenario: A pre-release deploys nothing
+- **WHEN** a release marked as a pre-release is published
+- **THEN** no deploy runs
 
 #### Scenario: A failed deploy rolls back
 - **WHEN** the new version's health check doesn't pass within 3 minutes
 - **THEN** the previous version is running again and the workflow run is marked failed
 
-#### Scenario: CI fails on main
-- **WHEN** the CI workflow fails on `main`
-- **THEN** nothing is deployed
+#### Scenario: A release of a commit that failed CI
+- **WHEN** a release is published for a commit whose CI run on `main` failed
+- **THEN** the deploy workflow fails before building images, and nothing changes on the VM
+
+#### Scenario: Redeploying a version by hand
+- **WHEN** the deploy workflow is started manually with `v0.2.0`
+- **THEN** that version is deployed again, e.g. to pick up a changed secret
 
 ### Requirement: Database backups
 Every day the production VM SHALL dump the database in PostgreSQL's custom format and upload it to OCI Object Storage through a pre-authenticated write URL, so no cloud credentials are stored on the VM. Each dump is named with its UTC time. The VM SHALL keep the newest 3 dumps locally, and the bucket SHALL delete dumps after 14 days. The hosting documentation SHALL describe how to restore a dump into the stack.
@@ -102,8 +115,8 @@ Running it again SHALL NOT break an already prepared VM. The hosting documentati
 
 #### Scenario: A fresh VM
 - **WHEN** the setup script runs on a new Ubuntu 24.04 Arm VM and the GitHub secrets are set
-- **THEN** a manual run of the deploy workflow brings the game online at the configured address
+- **THEN** publishing a release brings the game online at the configured address
 
 #### Scenario: Switching to a domain
 - **WHEN** the domain's DNS points at the VM and the `SITE_ADDRESS` variable is changed to it
-- **THEN** the next deploy serves the game over HTTPS at the domain
+- **THEN** the next deploy (a release, or a manual run with the current version) serves the game over HTTPS at the domain
