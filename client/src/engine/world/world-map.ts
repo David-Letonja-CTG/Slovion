@@ -18,6 +18,8 @@ export interface Tileset {
   readonly animations?: ReadonlyMap<number, readonly TileFrame[]>;
   /** Tile indexes marked `wadeable`: blocked tiles a player with boots can wade through. */
   readonly wadeable?: ReadonlySet<number>;
+  /** Tile indexes marked `swimmable`: blocked tiles (shallow sea) a player with the snorkel can swim in. */
+  readonly swimmable?: ReadonlySet<number>;
 }
 
 /** One frame of a tile animation: the tile index to show and for how long. */
@@ -146,12 +148,12 @@ export class WorldMap implements Obstacles {
 
   /** Whether any layer's tile at the cell is wadeable (shallow water). */
   isWadeable(x: number, y: number): boolean {
-    const wadeable = this.tileset.wadeable;
-    if (!wadeable || !this.inBounds(x, y)) return false;
-    return this.layers.some((layer) => {
-      const gid = layer.tiles[y * this.width + x];
-      return gid >= this.tileset.firstGid && wadeable.has(gid - this.tileset.firstGid);
-    });
+    return this.hasTileIn(this.tileset.wadeable, x, y);
+  }
+
+  /** Whether any layer's tile at the cell is swimmable (shallow sea). */
+  isSwimmable(x: number, y: number): boolean {
+    return this.hasTileIn(this.tileset.swimmable, x, y);
   }
 
   npcAt(x: number, y: number): MapNpc | undefined {
@@ -199,5 +201,13 @@ export class WorldMap implements Obstacles {
     return this.habitats.find(
       (zone) => x >= zone.minX && x <= zone.maxX && y >= zone.minY && y <= zone.maxY,
     )?.habitatId;
+  }
+
+  private hasTileIn(tiles: ReadonlySet<number> | undefined, x: number, y: number): boolean {
+    if (!tiles || !this.inBounds(x, y)) return false;
+    return this.layers.some((layer) => {
+      const gid = layer.tiles[y * this.width + x];
+      return gid >= this.tileset.firstGid && tiles.has(gid - this.tileset.firstGid);
+    });
   }
 }

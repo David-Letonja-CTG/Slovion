@@ -8,6 +8,8 @@ public enum SpeciesGroup
     Bird,
     Insect,
     Amphibian,
+    Fish,
+    Mollusc,
 }
 
 public static class SpeciesGroups
@@ -19,6 +21,8 @@ public static class SpeciesGroups
         ["bird"] = SpeciesGroup.Bird,
         ["insect"] = SpeciesGroup.Insect,
         ["amphibian"] = SpeciesGroup.Amphibian,
+        ["fish"] = SpeciesGroup.Fish,
+        ["mollusc"] = SpeciesGroup.Mollusc,
     };
 
     /// <summary>Parses the lowercase name used in content and the API.</summary>

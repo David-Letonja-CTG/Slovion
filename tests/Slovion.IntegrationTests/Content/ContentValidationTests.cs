@@ -46,10 +46,10 @@ public sealed class ContentValidationTests
         Assert.Equal("Oko za naravo", quest.Text["sl"].Title);
         Assert.Null(catalog.FindNpcOnMap("other_map", "vera"));
 
-        Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland", "wetland", "karst", "city", "farmland"], catalog.AllHabitats.Select(habitat => habitat.Id));
-        Assert.Equal([60, 60, 50, 55, 50, 50, 55], catalog.AllHabitats.Skip(2).Select(habitat => habitat.SearchChancePercent));
-        Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje", "Mokrišče", "Kras", "Mesto", "Kulturna krajina"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
-        Assert.Equal([1, 2, 3, 4, 5, 6, 7, 8, 9], catalog.AllHabitats.Select(habitat => habitat.Order));
+        Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland", "wetland", "karst", "city", "farmland", "saltpan", "sea"], catalog.AllHabitats.Select(habitat => habitat.Id));
+        Assert.Equal([60, 60, 50, 55, 50, 50, 55, 55, 50], catalog.AllHabitats.Skip(2).Select(habitat => habitat.SearchChancePercent));
+        Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje", "Mokrišče", "Kras", "Mesto", "Kulturna krajina", "Soline", "Morje"], catalog.AllHabitats.Select(habitat => habitat.Names["sl"]));
+        Assert.Equal([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], catalog.AllHabitats.Select(habitat => habitat.Order));
     }
 
     [Fact]
@@ -67,9 +67,10 @@ public sealed class ContentValidationTests
                 ("rakov_skocjan", "rakov_skocjan_karst", new UnlockRule.Flag("lake_explored")),
                 ("ljubljana", "ljubljana_park", new UnlockRule.Flag("caves_explored")),
                 ("murska_sobota", "murska_sobota_village", new UnlockRule.Flag("city_explored")),
+                ("portoroz", "portoroz_coast", new UnlockRule.Flag("farmland_explored")),
             ],
             catalog.AllRegions.Select(region => (region.Id, region.MapId, region.Unlock)));
-        Assert.Equal(["Dravsko polje", "Kočevje", "Pohorje", "Triglav", "Cerkniško jezero", "Rakov Škocjan", "Ljubljana", "Murska Sobota"], catalog.AllRegions.Select(region => region.Text["sl"].Name));
+        Assert.Equal(["Dravsko polje", "Kočevje", "Pohorje", "Triglav", "Cerkniško jezero", "Rakov Škocjan", "Ljubljana", "Murska Sobota", "Portorož"], catalog.AllRegions.Select(region => region.Text["sl"].Name));
     }
 
     [Theory]
@@ -96,12 +97,13 @@ public sealed class ContentValidationTests
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
 
         Assert.Equal(
-            [("lamp", true, "svetilka"), ("binoculars", false, "daljnogled"), ("boots", false, "škornji"), ("magnifier", false, "povečevalno steklo")],
+            [("lamp", true, "svetilka"), ("binoculars", false, "daljnogled"), ("boots", false, "škornji"), ("magnifier", false, "povečevalno steklo"), ("snorkel", false, "maska z dihalko")],
             catalog.AllItems.Select(item => (item.Id, item.IsStart, item.Text["sl"].Name)).OrderBy(item => item.Item1 == "lamp" ? 0 : 1).ThenBy(item => item.Item1, StringComparer.Ordinal));
         Assert.Equal(["binoculars"], catalog.FindQuest("eye_for_nature")!.RewardItems);
         Assert.Equal(["magnifier"], catalog.FindQuest("in_the_shade_of_firs")!.RewardItems);
         Assert.Equal(["boots"], catalog.FindQuest("secrets_of_the_bog")!.RewardItems);
         Assert.Null(catalog.FindQuest("below_the_peaks")!.RewardItems);
+        Assert.Equal(["snorkel"], catalog.FindQuest("between_salt_and_sea")!.RewardItems);
     }
 
     [Fact]
@@ -143,6 +145,7 @@ public sealed class ContentValidationTests
     [InlineData("tilen", "Tilen", "rakov_skocjan_karst", "into_the_dark", "karst", "caves_explored")]
     [InlineData("ana", "Ana", "ljubljana_park", "city_nature", "city", "city_explored")]
     [InlineData("stefan", "Štefan", "murska_sobota_village", "under_the_storks_nest", "farmland", "farmland_explored")]
+    [InlineData("nina", "Nina", "portoroz_coast", "between_salt_and_sea", "saltpan", "coast_explored")]
     public void Repository_content_has_the_people_of_the_regions(string npcId, string name, string mapId, string questId, string habitatId, string flag)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -190,6 +193,12 @@ public sealed class ContentValidationTests
     [InlineData("viola_arvensis", SpeciesGroup.Plant, "njivska vijolica", "farmland")]
     [InlineData("lutra_lutra", SpeciesGroup.Mammal, "vidra", "wetland")]
     [InlineData("salix_purpurea", SpeciesGroup.Plant, "rdeča vrba", "wetland")]
+    [InlineData("himantopus_himantopus", SpeciesGroup.Bird, "polojnik", "saltpan")]
+    [InlineData("egretta_garzetta", SpeciesGroup.Bird, "mala bela čaplja", "saltpan")]
+    [InlineData("salicornia_europaea", SpeciesGroup.Plant, "navadni osočnik", "saltpan")]
+    [InlineData("aphanius_fasciatus", SpeciesGroup.Fish, "solinarka", "saltpan")]
+    [InlineData("sarpa_salpa", SpeciesGroup.Fish, "salpa", "sea")]
+    [InlineData("pinna_nobilis", SpeciesGroup.Mollusc, "veliki leščur", "sea")]
     public void Repository_content_has_more_species_of_the_regions(string id, SpeciesGroup group, string slName, string habitatId)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -270,6 +279,23 @@ public sealed class ContentValidationTests
     }
 
     [Fact]
+    public void The_portoroz_coast_has_the_salt_pans_and_sea_life()
+    {
+        var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
+        const string map = "portoroz_coast";
+
+        Assert.Equal(new WildlifeTraits(TorchReaction.Calm, Aquatic: true), catalog.FindSpecies(SpeciesId.Parse("sarpa_salpa"))!.Wildlife);
+        Assert.Equal(new WildlifeTraits(TorchReaction.Shy, Aquatic: true), catalog.FindSpecies(SpeciesId.Parse("aphanius_fasciatus"))!.Wildlife);
+        Assert.Equal(new WildlifeTraits(TorchReaction.Calm, Perched: true), catalog.FindSpecies(SpeciesId.Parse("pinna_nobilis"))!.Wildlife);
+
+        // The spawn (1, 9), the signpost (2, 8), Nina (3, 10) and the station (6, 8) lie outside the zones, and so does the sea.
+        Assert.All(new[] { (1, 9), (2, 8), (3, 10), (6, 8), (6, 14) }, tile => Assert.Null(catalog.FindHabitatAt(map, tile.Item1, tile.Item2)));
+        Assert.Equal("saltpan", catalog.FindHabitatAt(map, 17, 6)?.Id);
+        string[][] spots = [["saltpan_stilt_1", "himantopus_himantopus"], ["saltpan_egret_1", "egretta_garzetta"], ["saltpan_killifish_1", "aphanius_fasciatus"], ["saltpan_glasswort_1", "salicornia_europaea"], ["sea_salema_1", "sarpa_salpa"], ["sea_pen_shell_1", "pinna_nobilis"]];
+        Assert.All(spots, spot => Assert.Equal(spot[1], catalog.FindSpot(map, spot[0])?.SpeciesId.Value));
+    }
+
+    [Fact]
     public void The_corncrake_lives_in_the_wet_meadow_of_the_lake()
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -312,6 +338,12 @@ public sealed class ContentValidationTests
     [InlineData("lutra_lutra", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     [InlineData("viola_arvensis", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     [InlineData("salix_purpurea", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("himantopus_himantopus", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("egretta_garzetta", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("salicornia_europaea", new[] { Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("aphanius_fasciatus", new[] { Season.Spring, Season.Summer, Season.Autumn }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("sarpa_salpa", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
+    [InlineData("pinna_nobilis", new[] { Season.Spring, Season.Summer, Season.Autumn, Season.Winter }, new[] { TimeOfDay.Morning, TimeOfDay.Day, TimeOfDay.Evening, TimeOfDay.Night })]
     public void Region_species_have_their_sourced_availability(string id, Season[] seasons, TimeOfDay[] times)
     {
         var availability = FileContentCatalog.Load(ContentFolder.RepositoryContent()).FindSpecies(SpeciesId.Parse(id))!.Availability;

@@ -1,0 +1,14 @@
+{
+  "id": "portoroz",
+  "mapId": "portoroz_coast",
+  "order": 9,
+  "position": { "x": 9, "y": 90 },
+  "unlock": { "flag": "farmland_explored" },
+  "weather": {
+    "spring": { "clear": 5, "cloudy": 3, "rain": 2 },
+    "summer": { "clear": 8, "cloudy": 1, "rain": 1 },
+    "autumn": { "clear": 3, "cloudy": 3, "rain": 3, "fog": 1 },
+    "winter": { "clear": 3, "cloudy": 4, "rain": 2, "fog": 1, "snow": 1 }
+  },
+  "text": { "sl": { "name": "Portorož", "lockedHint": "Pomagaj Štefanu v Murski Soboti." } }
+}

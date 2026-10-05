@@ -112,6 +112,24 @@ public sealed class WildlifeTests(PostgresFixture database)
     }
 
     [Fact]
+    public async Task The_sea_life_of_portoroz_is_listed_as_aquatic_or_perched()
+    {
+        await using var factory = Factory();
+        using var client = factory.CreateClient();
+        var token = await CreateSaveAsync(client);
+
+        var (status, body) = await WildlifeAsync(client, token, "portoroz_coast");
+
+        Assert.Equal(HttpStatusCode.OK, status);
+        var byId = body.GetProperty("animals").EnumerateArray().ToDictionary(animal => animal.GetProperty("spotId").GetString()!);
+        Assert.Equal((true, false, true), (byId["sea_salema_1"].GetProperty("aquatic").GetBoolean(), byId["sea_salema_1"].GetProperty("perched").GetBoolean(), byId["sea_salema_1"].GetProperty("present").GetBoolean()));
+        Assert.Equal((false, true, true), (byId["sea_pen_shell_1"].GetProperty("aquatic").GetBoolean(), byId["sea_pen_shell_1"].GetProperty("perched").GetBoolean(), byId["sea_pen_shell_1"].GetProperty("present").GetBoolean()));
+        // A new save is in spring: the stilt and the killifish are around.
+        Assert.True(byId["saltpan_stilt_1"].GetProperty("present").GetBoolean());
+        Assert.True(byId["saltpan_killifish_1"].GetProperty("present").GetBoolean());
+    }
+
+    [Fact]
     public async Task Residents_out_of_season_are_absent()
     {
         await using var factory = Factory();

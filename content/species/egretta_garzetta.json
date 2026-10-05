@@ -1,0 +1,122 @@
+{
+  "id": "egretta_garzetta",
+  "group": "bird",
+  "scientificName": {
+    "value": "Egretta garzetta (Linnaeus, 1766)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "kpss": {
+      "title": "Mala bela čaplja",
+      "publisher": "Krajinski park Sečoveljske soline",
+      "url": "https://www.kpss.si/narava/zivali/gospodarji-neba/mala-bela-caplja",
+      "accessed": "2026-10-05",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "wiki": {
+      "title": "Mala bela čaplja",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Mala_bela_%C4%8Daplja",
+      "accessed": "2026-10-05",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Egretta garzetta (Linnaeus, 1766) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2480876",
+      "accessed": "2026-10-05",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "mala bela čaplja",
+        "sources": [
+          "kpss",
+          "wiki"
+        ]
+      },
+      "family": {
+        "value": "čaplje (Ardeidae)",
+        "sources": [
+          "wiki",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Hrani se v plitvo poplavljenih solnih poljih ali ob robu kanalov, posamič ali v skupinah do več sto ptic.",
+        "sources": [
+          "kpss"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji ne gnezdi. Je najpogostejša od treh čapelj, ki se redno pojavljajo v Sečoveljskih solinah; prezimuje le ob našem morskem obrežju.",
+        "sources": [
+          "kpss"
+        ]
+      },
+      "season": {
+        "value": "V Sečoveljskih solinah se zadržuje vse leto, še posebej veliko jih je septembra.",
+        "sources": [
+          "kpss"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Dolga je od 55 do 65 cm, z razponom kril od 88 do 106 cm.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Perje je popolnoma belo.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Ima dolge črne noge z rumenimi stopali.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Kljun je vitek in črn.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "V času gnezdenja ima na vratu dve dolgi peresi.",
+          "sources": [
+            "wiki"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "kpss"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

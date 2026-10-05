@@ -267,15 +267,8 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
           })),
         ]),
     ),
-    wadeable: new Set(
-      (tileset!.tiles ?? [])
-        .filter(
-          (tile) =>
-            typeof tile.id === 'number' &&
-            tile.properties?.some((p) => p.name === 'wadeable' && p.value === true),
-        )
-        .map((tile) => tile.id!),
-    ),
+    wadeable: tilesWith(tileset!.tiles, 'wadeable'),
+    swimmable: tilesWith(tileset!.tiles, 'swimmable'),
   };
 
   return new WorldMap(
@@ -294,6 +287,19 @@ export function parseTiledMap(id: string, json: unknown): WorldMap {
     signposts,
     stations,
     lamps,
+  );
+}
+
+/** The IDs of the tileset tiles whose boolean property `name` is true. */
+function tilesWith(tiles: TiledTileset['tiles'], name: string): Set<number> {
+  return new Set(
+    (tiles ?? [])
+      .filter(
+        (tile) =>
+          typeof tile.id === 'number' &&
+          tile.properties?.some((p) => p.name === name && p.value === true),
+      )
+      .map((tile) => tile.id!),
   );
 }
 

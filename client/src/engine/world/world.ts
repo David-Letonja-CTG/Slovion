@@ -213,9 +213,15 @@ export class World implements Obstacles {
     return this.isFixedObstacle(x, y) || this.residentList.some((r) => r.occupies(x, y));
   }
 
-  /** Like `isBlocked`, but with boots the player wades through wadeable water; animals never do. */
+  /**
+   * Like `isBlocked`, but with boots the player wades through wadeable water, and with the snorkel swims in swimmable
+   * sea; animals other than aquatic ones never do.
+   */
   isBlockedForPlayer(x: number, y: number): boolean {
-    if (!(this.tools.has('boots') && this.map.isWadeable(x, y))) return this.isBlocked(x, y);
+    const water =
+      (this.tools.has('boots') && this.map.isWadeable(x, y)) ||
+      (this.tools.has('snorkel') && this.map.isSwimmable(x, y));
+    if (!water) return this.isBlocked(x, y);
     const gate = this.map.gateAt(x, y);
     return (
       this.map.npcAt(x, y) !== undefined ||
@@ -227,10 +233,10 @@ export class World implements Obstacles {
     );
   }
 
-  /** A water tile an aquatic resident may swim into: wadeable, with no NPC, signpost, station, lamp or gate on it. */
+  /** A water tile an aquatic resident may swim into: wadeable or swimmable, with no NPC, signpost, station, lamp or gate on it. */
   private isOpenWater(x: number, y: number): boolean {
     return (
-      this.map.isWadeable(x, y) &&
+      (this.map.isWadeable(x, y) || this.map.isSwimmable(x, y)) &&
       this.map.npcAt(x, y) === undefined &&
       this.map.signpostAt(x, y) === undefined &&
       this.map.stationAt(x, y) === undefined &&

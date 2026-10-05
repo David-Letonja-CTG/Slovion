@@ -1,0 +1,111 @@
+{
+  "id": "salicornia_europaea",
+  "group": "plant",
+  "scientificName": {
+    "value": "Salicornia europaea L.",
+    "sources": [
+      "kpss",
+      "gbif"
+    ]
+  },
+  "sources": {
+    "kpss": {
+      "title": "Navadni osočnik",
+      "publisher": "Krajinski park Sečoveljske soline",
+      "url": "https://www.kpss.si/narava/rastline/halofiti/navadni-osocnik-2",
+      "accessed": "2026-10-05",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "habitat": {
+      "title": "Pionirski sestoji vrst rodu Salicornia in drugih enoletnic na mulju in pesku",
+      "publisher": "Krajinski park Sečoveljske soline",
+      "url": "https://www.kpss.si/narava/zivljenjska-okolja/pionirski-sestoji-vrst-rodu-salicornia-in-drugih-enoletnic-na-mulju-in-pesku",
+      "accessed": "2026-10-05",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Salicornia europaea L. (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/9823570",
+      "accessed": "2026-10-05",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "navadni osočnik",
+        "sources": [
+          "kpss"
+        ]
+      },
+      "family": {
+        "value": "Amaranthaceae",
+        "sources": [
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Glinasti, muljasti poloji pod vplivom morske vode, npr. v zatokih in solinah.",
+        "sources": [
+          "habitat"
+        ]
+      },
+      "distribution": {
+        "value": "V Sečoveljskih solinah je najbolj razširjena slanuša enoletnica.",
+        "sources": [
+          "kpss"
+        ]
+      },
+      "season": {
+        "value": "Cveti od julija do septembra.",
+        "sources": [
+          "kpss"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Je slanuša: enoletnica, ki uspeva na slanih tleh.",
+          "sources": [
+            "kpss",
+            "habitat"
+          ]
+        },
+        {
+          "value": "Steblo je mehko in sočno.",
+          "sources": [
+            "kpss"
+          ]
+        },
+        {
+          "value": "Cveti zelo neopazno.",
+          "sources": [
+            "kpss"
+          ]
+        },
+        {
+          "value": "Solinarji so iz nje pripravljali solato, ki so ji rekli sburjon.",
+          "sources": [
+            "kpss"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "sources": [
+      "kpss"
+    ]
+  },
+  "identification": {
+    "clues": [
+      1,
+      0,
+      2
+    ]
+  }
+}

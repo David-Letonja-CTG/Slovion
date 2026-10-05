@@ -32,8 +32,8 @@ public sealed class NatureDexTests(PostgresFixture database)
         var natureDex = await NatureDexAsync(client, token);
 
         var sections = natureDex.GetProperty("habitats").EnumerateArray().ToArray();
-        Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland", "wetland", "karst", "city", "farmland"], sections.Select(section => section.GetProperty("habitatId").GetString()));
-        Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje", "Mokrišče", "Kras", "Mesto", "Kulturna krajina"], sections.Select(section => section.GetProperty("name").GetString()));
+        Assert.Equal(["tall_grass", "hedgerow", "fir_beech_forest", "mountain_forest", "alpine_grassland", "wetland", "karst", "city", "farmland", "saltpan", "sea"], sections.Select(section => section.GetProperty("habitatId").GetString()));
+        Assert.Equal(["Visoka trava", "Mejica", "Jelovo-bukov gozd", "Gorski gozd", "Visokogorje", "Mokrišče", "Kras", "Mesto", "Kulturna krajina", "Soline", "Morje"], sections.Select(section => section.GetProperty("name").GetString()));
         Assert.Equal(MeadowSpecies, sections[0].GetProperty("species").EnumerateArray().Select(slot => slot.GetProperty("speciesId").GetString()));
         Assert.Equal(HedgerowSpecies, sections[1].GetProperty("species").EnumerateArray().Select(slot => slot.GetProperty("speciesId").GetString()));
         Assert.Equal(["ursus_arctos", "cervus_elaphus", "salamandra_salamandra", "allium_ursinum", "galium_odoratum", "abies_alba", "fagus_sylvatica"], sections[2].GetProperty("species").EnumerateArray().Select(slot => slot.GetProperty("speciesId").GetString()));
@@ -75,6 +75,6 @@ public sealed class NatureDexTests(PostgresFixture database)
         var sage = SlotOf(natureDex, Sage);
         Assert.Equal("identified", sage.GetProperty("status").GetString());
         Assert.Equal("travniška kadulja", sage.GetProperty("entry").GetProperty("species").GetProperty("name").GetString());
-        Assert.Equal(47, NatureDexSlots(natureDex).Count(slot => slot.GetProperty("status").GetString() == "unknown"));
+        Assert.Equal(53, NatureDexSlots(natureDex).Count(slot => slot.GetProperty("status").GetString() == "unknown"));
     }
 }

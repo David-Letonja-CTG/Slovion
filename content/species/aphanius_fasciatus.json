@@ -1,0 +1,107 @@
+{
+  "id": "aphanius_fasciatus",
+  "group": "fish",
+  "scientificName": {
+    "value": "Aphanius fasciatus (Valenciennes, 1821)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "kpss": {
+      "title": "Solinarka",
+      "publisher": "Krajinski park Sečoveljske soline",
+      "url": "https://www.kpss.si/narava/zivali/v-vodi/solinarka",
+      "accessed": "2026-10-05",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Aphanius fasciatus (Valenciennes, 1821) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2348104",
+      "accessed": "2026-10-05",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "solinarka",
+        "sources": [
+          "kpss"
+        ]
+      },
+      "family": {
+        "value": "Cyprinodontidae",
+        "sources": [
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Soline, jarki ob morju in izlivni deli rek.",
+        "sources": [
+          "kpss"
+        ]
+      },
+      "distribution": {
+        "value": "V Sečoveljskih solinah je poleti več sto tisoč teh ribic; tam velja za kvalifikacijsko vrsto v ugodnem ohranitvenem stanju.",
+        "sources": [
+          "kpss"
+        ]
+      },
+      "season": {
+        "value": "Zimo preživi zarita v mehkem solinskem blatu ali pod gosto preprogo alg.",
+        "sources": [
+          "kpss"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Velika je do 5 cm.",
+          "sources": [
+            "kpss"
+          ]
+        },
+        {
+          "value": "Telo je podolgovato, bočno sploščeno in prečno progasto.",
+          "sources": [
+            "kpss"
+          ]
+        },
+        {
+          "value": "Samci so pisani, z rumenimi plavutmi in temno pokončno progo na repni plavuti.",
+          "sources": [
+            "kpss"
+          ]
+        },
+        {
+          "value": "Hrani se s solinskimi rakci in drugimi drobnimi nevretenčarji.",
+          "sources": [
+            "kpss"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "sources": [
+      "kpss"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy",
+    "aquatic": true
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      0
+    ]
+  }
+}
