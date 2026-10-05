@@ -172,8 +172,10 @@ jobs:
           ssh "$TARGET" bash -s <<'EOF'
           set -euo pipefail
           cd /opt/slovion
-          keep=" $(grep '^TAG=' .env | cut -d= -f2) $(grep '^TAG=' .env.previous 2>/dev/null | cut -d= -f2) "
-          docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '/slovion-(api|web):' | while read -r image; do
+          # The first deploy has no .env.previous; grep must not end the script then.
+          previous="$(grep '^TAG=' .env.previous 2>/dev/null | cut -d= -f2 || true)"
+          keep=" $(grep '^TAG=' .env | cut -d= -f2) $previous "
+          docker images --format '{{.Repository}}:{{.Tag}}' | { grep -E '/slovion-(api|web):' || true; } | while read -r image; do
             case "$keep" in *" ${image##*:} "*) ;; *) docker rmi "$image" >/dev/null || true ;; esac
           done
           docker image prune -f >/dev/null

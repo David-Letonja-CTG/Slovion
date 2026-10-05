@@ -169,3 +169,37 @@ The OCI side (account, VM shape, network security rules for 80 and 443, bucket, 
   - a forced failed health check, to see the rollback
   - a backup run, its object in the bucket, and a restore
   - installing the app from the HTTPS address
+
+## Implementation notes
+
+### Deviations from the plan
+
+- **Images stay private; the VM logs in per deploy.** The design planned public GHCR packages, so the VM could pull without credentials. Instead, each deploy logs the VM in to GHCR with the run's short-lived `GITHUB_TOKEN`, passed on stdin, and logs out at the end. This works whatever the package visibility, and needs no manual step after the first push.
+- **No HSTS yet.** As planned for `sslip.io`; the runbook says to add it to the `Caddyfile` once the domain is final.
+- **The bootstrap pre-answers `iptables-persistent`'s debconf questions,** so it never waits for input.
+- **Backups are owner-only:** `backup.sh` runs with `umask 077`, and `backups/` is mode 700 (found on the VM after the first deploy).
+- **First-deploy bug, fixed in a follow-up:** the *Remove old images* step stopped with exit code 2. On the first deploy there is no `.env.previous`, so `grep` failed under `set -euo pipefail`. The deploy itself had succeeded. Both `grep`s in that step are now guarded.
+
+### What was verified
+
+- **CI** (pull request #29): the new `containers` job builds both images (amd64) and starts the stack over HTTP.
+  - All 9 smoke checks passed.
+  - Four backup runs left the newest 3 dumps, and the latest one is readable by `pg_restore --list`.
+- **The VM** (OCI Always Free, `VM.Standard.A1.Flex`, Ubuntu 24.04.5, aarch64, 5.9 GB RAM, 45 GB disk), after `bootstrap.sh`:
+  - Docker 29.8 (arm64), compose 5.6
+  - the `slovion` user with the deploy key, Docker access and no sudo
+  - iptables accepting 80 and 443
+  - SSH with `passwordauthentication no` and `permitrootlogin no`
+  - the backup timer scheduled
+- **GitHub:** the `production` environment with `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_KNOWN_HOSTS` and a generated `POSTGRES_PASSWORD`, plus the variable `SITE_ADDRESS = 138-2-144-201.sslip.io`. The deploy key's private half exists only in GitHub; the local copy was deleted.
+- **First deploy** (merge of #29, run 37360076788):
+  - images built for both platforms in 3 min, the stack started, the HTTPS health check passed
+  - from outside, `deploy/smoke-test.sh https://138-2-144-201.sslip.io` passed all 9 checks
+  - the certificate is from Let's Encrypt for `138-2-144-201.sslip.io`, and HTTP answers `308` to HTTPS
+  - in Chromium: a new game, walking, and observing the meadow sage worked; the service worker is registered; no console errors
+- **A backup by hand on the VM** (`systemctl start slovion-backup`) wrote a dump. With no `BACKUP_URL` set yet, it stays local.
+
+### Still to do with the owner
+
+- Set `BACKUP_URL` (the owner's bucket and pre-authenticated request), deploy, and see a dump arrive in the bucket.
+- A forced rollback, and a restore from a dump.

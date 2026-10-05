@@ -4,8 +4,11 @@
 # newest 3 dumps locally. Run by the slovion-backup systemd timer; safe to run by hand.
 set -euo pipefail
 
+# Dumps hold every save; only the deploy user may read them.
+umask 077
 cd "$(dirname "$(readlink -f "$0")")"
 mkdir -p backups
+chmod 700 backups
 
 name="slovion-$(date -u +%Y%m%dT%H%M%SZ).dump"
 docker compose exec -T db pg_dump -U slovion -d slovion -Fc > "backups/$name.partial"
