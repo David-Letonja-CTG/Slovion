@@ -83,7 +83,7 @@ Weather affects species only where a source supports it: a species' availability
 Slovion runs on **one Oracle Cloud Always Free Arm VM** (Ubuntu 24.04) as a Docker Compose stack: Caddy (TLS, the built client, a reverse proxy), the API with the content baked in, and PostgreSQL with its data on a volume. Only ports 80 and 443 are public.
 
 - **Images** are built for `arm64` and `amd64` and stored in the GitHub Container Registry.
-- **Deploys:** every commit on `main` that passes CI is deployed over SSH, behind a health check with an automatic rollback. A container smoke test runs in CI on every pull request.
+- **Deploys:** publishing a GitHub Release (a `vMAJOR.MINOR.PATCH` tag on a commit that passed CI on `main`) deploys it over SSH, behind a health check with an automatic rollback. Merges to `main` only run CI. A container smoke test runs in CI on every pull request.
 - **Address:** `<ip>.sslip.io` with a real certificate until a domain is bought; then only the `SITE_ADDRESS` variable changes.
 - **Backups:** a daily `pg_dump` goes to OCI Object Storage through a write-only pre-authenticated URL and is kept 14 days.
 - **Secrets** live only in the GitHub `production` environment.

@@ -1,6 +1,6 @@
 # Hosting
 
-Slovion runs on one **Oracle Cloud (OCI) Always Free** Arm VM, as a Docker Compose stack (D12). GitHub Actions deploys every commit on `main` that passes CI. This page covers setting it up once, the deploy pipeline, and day-to-day operations.
+Slovion runs on one **Oracle Cloud (OCI) Always Free** Arm VM, as a Docker Compose stack (D12). GitHub Actions deploys each published release. This page covers setting it up once, the deploy pipeline, and day-to-day operations.
 
 - [How it fits together](#how-it-fits-together)
 - [One-time setup](#one-time-setup)
@@ -37,7 +37,7 @@ flowchart LR
 | VM setup (run once) | [`deploy/bootstrap.sh`](../deploy/bootstrap.sh) |
 | Daily backup | [`deploy/backup.sh`](../deploy/backup.sh), a timer installed by the bootstrap |
 | Smoke test (CI and by hand) | [`deploy/smoke-test.sh`](../deploy/smoke-test.sh) |
-| Deploy pipeline | [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) |
+| Deploy pipeline (on releases) | [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) |
 
 Configuration and secrets live in the GitHub environment **`production`**. Each deploy writes them to `/opt/slovion/.env` on the VM, so nothing secret is in the repository:
 
@@ -120,19 +120,29 @@ rm slovion-deploy slovion-deploy.pub   # GitHub and the VM hold everything that 
 
 ## Deploying
 
-- **Automatically:** every push to `main` runs CI. When CI succeeds, the **Deploy** workflow:
-  1. builds both images for `arm64` and `amd64` and pushes them to `ghcr.io/david-letonja-ctg/slovion-api` and `slovion-web`, tagged with the commit
+Merging into `main` only runs CI. The game goes live by **publishing a release**:
+
+```bash
+gh release create v0.2.0 --generate-notes        # or GitHub → Releases → Draft a new release
+```
+
+- Version tags look like `v1.2.3`: raise the last number for fixes, the middle one for new features, the first for big changes.
+- A release marked as a **pre-release** doesn't deploy.
+- The release's commit must be on `main` with a passing CI run; the workflow waits for a CI run still in progress.
+
+When a release is published, the **Deploy** workflow:
+  1. builds both images for `arm64` and `amd64` and pushes them to `ghcr.io/david-letonja-ctg/slovion-api` and `slovion-web`, tagged with the commit and the version
   2. copies `compose.yml`, `backup.sh` and the new `.env` to the VM, then pulls and restarts the stack
   3. waits up to 3 minutes for `https://<SITE_ADDRESS>/health`
 - **Rollback:** if the health check fails, the workflow restores the previous `.env` (the previous image tag), restarts, and marks the run failed.
-- **By hand:** *Actions → Deploy → Run workflow* deploys the current `main`.
+- **By hand:** *Actions → Deploy → Run workflow* with a version tag redeploys that version, e.g. after changing a secret such as `BACKUP_URL`.
 - The API applies database migrations when it starts. A deploy makes the game unavailable for a few seconds.
 
 ## Switching to a domain
 
 1. At the DNS provider, add an `A` record for the domain (and `www` if wanted) pointing to the VM's IP.
 2. `gh variable set SITE_ADDRESS --env production --repo David-Letonja-CTG/Slovion --body example.si`
-3. Run the **Deploy** workflow. Caddy gets a certificate for the domain on the first request.
+3. Run the **Deploy** workflow by hand with the current version (or publish a new release). Caddy gets a certificate for the domain on the first request.
 
 Once the domain is final, strict transport security (HSTS) can be added to the `Caddyfile`. It isn't sent on `sslip.io`, so the host name can still change.
 

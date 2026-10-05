@@ -5,7 +5,7 @@
 Slovion only runs on a developer's machine. The owner wants it online, hosted for free and deployed automatically from GitHub:
 - **Hosting:** one *Always Free* Arm VM on Oracle Cloud Infrastructure (OCI).
 - **Address:** the VM's public IP via `sslip.io` with real HTTPS until a domain is bought. HTTPS is needed to install the app (PWA) and to protect the save token.
-- **Deployment:** every merge to `main` that passes CI goes live.
+- **Deployment:** a published GitHub Release goes live, if CI passed for it (first planned as every merge to `main`; changed by the owner after the first deploy).
 - **Backups:** a daily database backup copied to OCI Object Storage.
 - **VM setup:** a runbook and one setup script, no Terraform.
 
@@ -18,8 +18,8 @@ Slovion only runs on a developer's machine. The owner wants it online, hosted fo
   - only `web` is reachable from outside (ports 80 and 443)
   - the database keeps its data on a named volume and is never published
   - the API runs migrations at startup, as today
-- **Continuous deployment** (`.github/workflows/deploy.yml`):
-  1. when CI succeeds on `main` (or on a manual run), build both images and push them to the GitHub Container Registry (public, like the repo), tagged with the commit
+- **Release deployment** (`.github/workflows/deploy.yml`):
+  1. when a release (not a pre-release) is published, or on a manual run with a version tag, check that CI passed for the tagged commit, then build both images and push them to the GitHub Container Registry, tagged with the commit and the version
   2. connect to the VM over SSH, write the configuration from GitHub secrets, pull and restart the stack
   3. wait for `/health`; on failure, roll back to the previous version and fail the run
 - **A smoke test in CI:** on every pull request, build both images and start the whole stack over plain HTTP. Then check:
@@ -44,7 +44,7 @@ Slovion only runs on a developer's machine. The owner wants it online, hosted fo
 
 ### New Capabilities
 
-- **`hosting`:** container images, the production stack, configuration and secrets, continuous deployment with health check and rollback, backups, and VM setup.
+- **`hosting`:** container images, the production stack, configuration and secrets, release deployment with health check and rollback, backups, and VM setup.
 
 ### Modified Capabilities
 

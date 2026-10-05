@@ -1,12 +1,15 @@
 name: Deploy
 
-# Puts main online (docs/hosting.md): after CI succeeds on main, or by hand from the Actions tab.
+# Puts a release online (docs/hosting.md): when a GitHub Release (not a pre-release) is published, or by hand for an
+# existing version tag, e.g. to redeploy after changing a secret. Merges to main only run CI.
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
+  release:
+    types: [published]
   workflow_dispatch:
+    inputs:
+      version:
+        description: Version tag to deploy (e.g. v0.1.0)
+        required: true
 
 permissions:
   contents: read
@@ -19,18 +22,31 @@ concurrency:
 jobs:
   images:
     name: Build images
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+      actions: read
     outputs:
       prefix: ${{ steps.meta.outputs.prefix }}
       tag: ${{ steps.meta.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
     steps:
+      - name: Version
+        id: version
+        env:
+          VERSION: ${{ github.event.release.tag_name || inputs.version }}
+        run: |
+          if ! [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::'$VERSION' is not a version tag like v1.2.3"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: refs/tags/${{ steps.version.outputs.version }}
 
       - name: Image names
         id: meta
@@ -39,6 +55,26 @@ jobs:
         run: |
           echo "prefix=ghcr.io/${OWNER,,}" >> "$GITHUB_OUTPUT"
           echo "tag=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      # Only commits that passed CI on main go live; waits up to 30 minutes for a CI run still in progress.
+      - name: CI passed for this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.meta.outputs.tag }}
+        run: |
+          for _ in $(seq 1 60); do
+            run=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --commit "$SHA" --event push \
+              --json status,conclusion --jq 'if length == 0 then "" else (.[0] | "\(.status) \(.conclusion)") end')
+            case "$run" in
+              "completed success") echo "CI passed for $SHA"; exit 0 ;;
+              completed*) echo "::error::CI failed for $SHA ($run)"; exit 1 ;;
+              "") echo "::error::no CI run on main for $SHA; release only commits that are on main"; exit 1 ;;
+            esac
+            echo "CI is $run; waiting"
+            sleep 30
+          done
+          echo "::error::CI did not finish within 30 minutes"
+          exit 1
 
       - uses: docker/setup-buildx-action@v4
 
@@ -58,6 +94,7 @@ jobs:
           push: true
           tags: |
             ${{ steps.meta.outputs.prefix }}/slovion-api:${{ steps.meta.outputs.tag }}
+            ${{ steps.meta.outputs.prefix }}/slovion-api:${{ steps.version.outputs.version }}
             ${{ steps.meta.outputs.prefix }}/slovion-api:latest
           cache-from: type=gha,scope=api
           cache-to: type=gha,scope=api,mode=max
@@ -71,6 +108,7 @@ jobs:
           push: true
           tags: |
             ${{ steps.meta.outputs.prefix }}/slovion-web:${{ steps.meta.outputs.tag }}
+            ${{ steps.meta.outputs.prefix }}/slovion-web:${{ steps.version.outputs.version }}
             ${{ steps.meta.outputs.prefix }}/slovion-web:latest
           cache-from: type=gha,scope=web
           cache-to: type=gha,scope=web,mode=max
@@ -86,6 +124,7 @@ jobs:
       TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
       PREFIX: ${{ needs.images.outputs.prefix }}
       TAG: ${{ needs.images.outputs.tag }}
+      VERSION: ${{ needs.images.outputs.version }}
       SITE_ADDRESS: ${{ vars.SITE_ADDRESS }}
     steps:
       - uses: actions/checkout@v7
@@ -111,6 +150,7 @@ jobs:
           {
             echo "IMAGE_PREFIX=$PREFIX"
             echo "TAG=$TAG"
+            echo "VERSION=$VERSION"
             echo "SITE_ADDRESS=$SITE_ADDRESS"
             echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
             echo "BACKUP_URL=$BACKUP_URL"
@@ -172,8 +212,10 @@ jobs:
           ssh "$TARGET" bash -s <<'EOF'
           set -euo pipefail
           cd /opt/slovion
-          keep=" $(grep '^TAG=' .env | cut -d= -f2) $(grep '^TAG=' .env.previous 2>/dev/null | cut -d= -f2) "
-          docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '/slovion-(api|web):' | while read -r image; do
+          # The first deploy has no .env.previous; grep must not end the script then.
+          previous="$(grep '^TAG=' .env.previous 2>/dev/null | cut -d= -f2 || true)"
+          keep=" $(grep '^TAG=' .env | cut -d= -f2) $previous "
+          docker images --format '{{.Repository}}:{{.Tag}}' | { grep -E '/slovion-(api|web):' || true; } | while read -r image; do
             case "$keep" in *" ${image##*:} "*) ;; *) docker rmi "$image" >/dev/null || true ;; esac
           done
           docker image prune -f >/dev/null

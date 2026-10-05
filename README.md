@@ -61,7 +61,7 @@ npm ci
 npm start                                # game on http://localhost:4200
 ```
 
-Checks (CI runs the same on every push and pull request, plus a container smoke test; merges to `main` deploy automatically — see [docs/hosting.md](docs/hosting.md)):
+Checks (CI runs the same on every push and pull request, plus a container smoke test; publishing a release deploys it — see [docs/hosting.md](docs/hosting.md)):
 
 ```bash
 dotnet format Slovion.slnx --verify-no-changes
