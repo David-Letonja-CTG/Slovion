@@ -35,7 +35,7 @@ An unknown map SHALL respond `404` with code `unknown_map`. A missing map ID SHA
 
 ### Requirement: Wandering
 A present resident SHALL wander, unless it is **perched**: from time to time it takes one step to a free neighbouring tile within 3 tiles of its home spot. A free tile is one that is:
-- walkable and inside the map; for an **aquatic** resident instead a water tile (a wadeable tile) inside the map
+- walkable and inside the map; for an **aquatic** resident instead a water tile (a `wadeable` or `swimmable` tile) inside the map
 - not taken by the player, an NPC, a closed gate or another resident
 
 A perched resident SHALL stay on its home spot's tile and never step. Its home MAY be a blocked tile (e.g. a nest on a roof); it still occupies that tile, and the player meets it by facing it, as any resident.
@@ -61,6 +61,10 @@ Each resident SHALL use its own seeded random sequence, so its movement is deter
 #### Scenario: Meeting the stork
 - **WHEN** the player faces the stork's nest from a neighbouring walkable tile and presses `Interact`
 - **THEN** an interaction with the stork's spot ID is started, not a search of the roof
+
+#### Scenario: The salema stays in the sea
+- **WHEN** the salema wanders for a long time
+- **THEN** it is only ever on swimmable tiles of the shallows
 
 ### Requirement: Meeting an animal
 Residents SHALL block movement like NPCs. When the player faces a resident and presses `Interact`, the game SHALL start the encounter of the resident's spot through the existing spot encounter (D3), wherever the resident currently stands. All outcomes and messages are the same as for spots: an encounter, *already recorded*, or *not now*.

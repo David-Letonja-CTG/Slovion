@@ -232,6 +232,25 @@ describe('Interaction', () => {
     expect(withBoots.world.isBlocked(1, 0)).toBe(true);
   });
 
+  it('swims in shallow sea only with the snorkel, which does not wade', () => {
+    const walk = (rows: readonly string[], tools: readonly string[]) => {
+      const { world, input, frames, player } = setup(rows);
+      world.setTools(tools);
+      input.press('MoveRight');
+      frames.frame(STEP_MS);
+      input.release('MoveRight');
+      frames.frames(60, 500);
+      return { world, player };
+    };
+
+    expect(walk(['S%.'], ['boots']).player.position).toEqual({ x: 0, y: 0 });
+    const swimmer = walk(['S%.'], ['snorkel']);
+    expect(swimmer.player.position).toEqual({ x: 1, y: 0 });
+    // Animals still treat the sea as blocked.
+    expect(swimmer.world.isBlocked(1, 0)).toBe(true);
+    expect(walk(['S~.'], ['snorkel']).player.position).toEqual({ x: 0, y: 0 });
+  });
+
   it('reports the Inventory action to the host', () => {
     const input = new ActionState();
     const opened = vi.fn();

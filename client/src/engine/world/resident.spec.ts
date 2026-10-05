@@ -168,6 +168,35 @@ describe('Resident animals', () => {
     expect(visited.size).toBeGreaterThan(3);
   });
 
+  it('swim in the shallow sea when aquatic, but never onto land', () => {
+    const sea = [
+      '#########',
+      '#S......#',
+      '#.%%%%%.#',
+      '#.%%O%%.#',
+      '#.%%%%%.#',
+      '#.......#',
+      '#########',
+    ];
+    const fish: ResidentInfo = {
+      spotId: 'olm',
+      speciesId: 'sarpa_salpa',
+      torch: 'calm',
+      aquatic: true,
+      present: true,
+    };
+    const { world, frames } = setup(sea, [fish]);
+    const visited = new Set<string>();
+
+    for (let second = 0; second < 120; second++) {
+      frames.frames(30, 1000);
+      const at = tileOf(world);
+      visited.add(`${at.x},${at.y}`);
+      expect(sea[at.y][at.x], `${at.x},${at.y}`).toMatch(/[%O]/);
+    }
+    expect([...visited].some((key) => key !== '4,3')).toBe(true);
+  });
+
   it('ignore the torch when calm and by day', () => {
     const calm = setup(['#############', '#.S...R.....#', '#############'], [hare('calm')], NIGHT);
     calm.world.setTorch(true);

@@ -5,6 +5,7 @@ import ljubljana from '../../../../content/maps/ljubljana_park.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import murskaSobota from '../../../../content/maps/murska_sobota_village.json';
 import pohorje from '../../../../content/maps/pohorje_forest.json';
+import portoroz from '../../../../content/maps/portoroz_coast.json';
 import triglav from '../../../../content/maps/triglav_alps.json';
 import { STEP_MS } from '../game-loop';
 import { ActionState } from '../input/action-state';
@@ -152,11 +153,12 @@ describe('parseTiledMap', () => {
     ['rakov_skocjan_karst', karst, 'karst_saxifrage_1', 'rakov_skocjan'],
     ['ljubljana_park', ljubljana, 'city_hedgehog_1', 'ljubljana'],
     ['murska_sobota_village', murskaSobota, 'orchard_hoopoe_1', 'murska_sobota'],
+    ['portoroz_coast', portoroz, 'sea_salema_1', 'portoroz'],
   ])(
     'parses the region map %s with a reachable signpost, spots and searchable trees',
     (id, json, spotId, area) => {
-      // With the boots, so Kočevje's far bank counts too.
-      const { map, reachable } = reachableFromSpawn([], id, json, ['boots']);
+      // With the boots and the snorkel, so Kočevje's far bank and Portorož's shallows count too.
+      const { map, reachable } = reachableFromSpawn([], id, json, ['boots', 'snorkel']);
       const [signpost] = map.signposts;
       const home = map.spots.find((spot) => spot.spotId === spotId)!;
 
@@ -229,6 +231,7 @@ describe('parseTiledMap', () => {
     ['rakov_skocjan_karst', karst, 'cave_station', { x: 6, y: 8 }],
     ['ljubljana_park', ljubljana, 'city_station', { x: 6, y: 8 }],
     ['murska_sobota_village', murskaSobota, 'farmland_station', { x: 6, y: 8 }],
+    ['portoroz_coast', portoroz, 'coast_station', { x: 6, y: 8 }],
   ])(
     'places a reachable research station on %s, outside the habitat zones',
     (id, json, stationId, tile) => {
@@ -308,6 +311,58 @@ describe('parseTiledMap', () => {
       true,
       true,
       false,
+    ]);
+  });
+
+  it('reads the Portorož coast: swimmable shallows the pen shell needs the snorkel for, the salt pans', () => {
+    const map = parseTiledMap('portoroz_coast', portoroz);
+    const spot = (id: string) => map.spots.find((s) => s.spotId === id)!;
+    const faceable = (reachable: (x: number, y: number) => boolean, x: number, y: number) =>
+      [
+        [0, 1],
+        [0, -1],
+        [1, 0],
+        [-1, 0],
+      ].some(([dx, dy]) => reachable(x + dx, y + dy));
+
+    expect(map.npcs).toEqual([expect.objectContaining({ npcId: 'nina', x: 3, y: 10 })]);
+    expect(map.tileset.swimmable).toEqual(new Set([143]));
+    expect(map.lamps).toHaveLength(3);
+    const shell = spot('sea_pen_shell_1');
+    expect([map.isSwimmable(shell.x, shell.y), map.isBlocked(shell.x, shell.y)]).toEqual([
+      true,
+      true,
+    ]);
+    const onFoot = reachableFromSpawn([], 'portoroz_coast', portoroz, ['boots']).reachable;
+    const swimming = reachableFromSpawn([], 'portoroz_coast', portoroz, ['snorkel']).reachable;
+    expect([faceable(onFoot, shell.x, shell.y), faceable(swimming, shell.x, shell.y)]).toEqual([
+      false,
+      true,
+    ]);
+    // The deep sea stays closed even when swimming.
+    expect([swimming(6, 15), swimming(6, 16), map.isSwimmable(6, 16)]).toEqual([
+      true,
+      false,
+      false,
+    ]);
+    // Every spot on land can be reached on foot.
+    for (const id of [
+      'saltpan_stilt_1',
+      'saltpan_egret_1',
+      'saltpan_glasswort_1',
+      'saltpan_glasswort_2',
+    ]) {
+      expect(onFoot(spot(id).x, spot(id).y), id).toBe(true);
+    }
+    const killifish = spot('saltpan_killifish_1');
+    expect([
+      map.isWadeable(killifish.x, killifish.y),
+      map.habitatAt(killifish.x, killifish.y),
+    ]).toEqual([true, 'saltpan']);
+    expect([map.habitatAt(17, 6), map.areaAt(17, 6), map.areaAt(6, 14)]).toEqual([
+      'saltpan',
+      'secoveljske_soline',
+      'portoroz',
     ]);
   });
 

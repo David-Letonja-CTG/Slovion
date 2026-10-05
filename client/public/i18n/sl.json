@@ -48,7 +48,9 @@
       "mammal": "Življenjski prostor",
       "bird": "Življenjski prostor",
       "insect": "Življenjski prostor",
-      "amphibian": "Življenjski prostor"
+      "amphibian": "Življenjski prostor",
+      "fish": "Življenjski prostor",
+      "mollusc": "Življenjski prostor"
     },
     "distribution": "Razširjenost",
     "season": {
@@ -56,7 +58,9 @@
       "insect": "Aktivnost",
       "bird": "Prisotnost v Sloveniji",
       "mammal": "Aktivnost",
-      "amphibian": "Aktivnost"
+      "amphibian": "Aktivnost",
+      "fish": "Aktivnost",
+      "mollusc": "Aktivnost"
     },
     "characteristics": "Prepoznavni znaki",
     "sources": "Viri",
@@ -85,7 +89,9 @@
       "mammal": "Opaziš sesalca",
       "bird": "Opaziš ptico",
       "insect": "Opaziš žuželko",
-      "amphibian": "Opaziš dvoživko"
+      "amphibian": "Opaziš dvoživko",
+      "fish": "Opaziš ribo",
+      "mollusc": "Opaziš mehkužca"
     },
     "question": "Katera vrsta je to?",
     "nextClue": "Nov namig",
@@ -99,7 +105,9 @@
       "mammal": "sesalec",
       "bird": "ptica",
       "insect": "žuželka",
-      "amphibian": "dvoživka"
+      "amphibian": "dvoživka",
+      "fish": "riba",
+      "mollusc": "mehkužec"
     }
   },
   "search": {

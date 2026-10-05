@@ -1,0 +1,38 @@
+{
+  "id": "between_salt_and_sea",
+  "giver": "nina",
+  "goal": {
+    "identifiedSpecies": 3,
+    "habitat": "saltpan"
+  },
+  "reward": {
+    "flag": "coast_explored",
+    "items": ["snorkel"]
+  },
+  "text": {
+    "sl": {
+      "title": "Med solinami in morjem",
+      "summary": "Prepoznaj tri vrste solin.",
+      "returnHint": "Vrni se k Nini.",
+      "dialogue": {
+        "offer": [
+          "Pozdravljeni ob morju! Jaz sem Nina in raziskujem življenje ob obali.",
+          "V solinah se med solnimi polji in kanali skriva veliko živega.",
+          "Prepoznaj tri vrste solin, potem pa ti pokažem še morje."
+        ],
+        "active": [
+          "Prepoznane vrste: {identified} od {goal}.",
+          "Namig: poišči ptice na solnih poljih, ribice v kanalu in rastline na blatnih robovih."
+        ],
+        "ready": [
+          "Odlično! Tudi soline so zdaj v tvojem terenskem dnevniku.",
+          "Tu imaš masko z dihalko. Z njo lahko plavaš v plitvem morju in spoznaš življenje pod gladino.",
+          "S tem je tvoja pot po Sloveniji, od Dravskega polja do morja, končana. Hvala, da tako skrbno opazuješ naravo!"
+        ],
+        "completed": [
+          "Plitvina te čaka: na dnu med morsko travo živi veliki leščur, v jatah pa se pasejo salpe."
+        ]
+      }
+    }
+  }
+}

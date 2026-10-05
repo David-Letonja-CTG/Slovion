@@ -29,12 +29,13 @@ export interface SpeciesInfo {
 
 /**
  * Species groups; labels are looked up dynamically:
- * t(species.group.plant, species.group.mammal, species.group.bird, species.group.insect, species.group.amphibian)
- * t(identification.heading.plant, identification.heading.mammal, identification.heading.bird, identification.heading.insect, identification.heading.amphibian)
- * t(naturedex.season.plant, naturedex.season.mammal, naturedex.season.bird, naturedex.season.insect, naturedex.season.amphibian)
- * t(naturedex.habitat.plant, naturedex.habitat.mammal, naturedex.habitat.bird, naturedex.habitat.insect, naturedex.habitat.amphibian)
+ * t(species.group.plant, species.group.mammal, species.group.bird, species.group.insect, species.group.amphibian, species.group.fish, species.group.mollusc)
+ * t(identification.heading.plant, identification.heading.mammal, identification.heading.bird, identification.heading.insect, identification.heading.amphibian, identification.heading.fish, identification.heading.mollusc)
+ * t(naturedex.season.plant, naturedex.season.mammal, naturedex.season.bird, naturedex.season.insect, naturedex.season.amphibian, naturedex.season.fish, naturedex.season.mollusc)
+ * t(naturedex.habitat.plant, naturedex.habitat.mammal, naturedex.habitat.bird, naturedex.habitat.insect, naturedex.habitat.amphibian, naturedex.habitat.fish, naturedex.habitat.mollusc)
  */
-export type SpeciesGroup = 'plant' | 'mammal' | 'bird' | 'insect' | 'amphibian';
+export type SpeciesGroup =
+  'plant' | 'mammal' | 'bird' | 'insect' | 'amphibian' | 'fish' | 'mollusc';
 
 /** A species in the save's NatureDex; `species` is only present once identified. */
 export interface NatureDexEntry {

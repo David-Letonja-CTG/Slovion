@@ -1,0 +1,18 @@
+{
+  "id": "coast_station",
+  "species": [
+    "himantopus_himantopus",
+    "egretta_garzetta",
+    "salicornia_europaea",
+    "aphanius_fasciatus",
+    "sarpa_salpa",
+    "pinna_nobilis"
+  ],
+  "goal": 3,
+  "text": {
+    "sl": {
+      "name": "Raziskovalna postaja v Portorožu",
+      "theme": "Morje in soline"
+    }
+  }
+}

@@ -33,6 +33,7 @@ The goal is fictional gameplay data (D6); the theme is a game label, not a biolo
   | `cave_station` | `rakov_skocjan_karst` | *Podzemlje* | `proteus_anguinus`, `leptodirus_hochenwartii`, `rhinolophus_ferrumequinum` | 2 |
   | `city_station` | `ljubljana_park` | *Mestna narava* | `apus_apus`, `erinaceus_roumanicus`, `alcedo_atthis`, `alnus_glutinosa` | 3 |
   | `farmland_station` | `murska_sobota_village` | *Kulturna krajina* | `ciconia_ciconia`, `upupa_epops`, `lutra_lutra`, `viola_arvensis`, `salix_purpurea` | 3 |
+  | `coast_station` | `portoroz_coast` | *Morje in soline* | `himantopus_himantopus`, `egretta_garzetta`, `salicornia_europaea`, `aphanius_fasciatus`, `sarpa_salpa`, `pinna_nobilis` | 3 |
 
 #### Scenario: A goal larger than the list
 - **WHEN** a station lists 3 species with goal 4

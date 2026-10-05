@@ -1,0 +1,123 @@
+{
+  "id": "himantopus_himantopus",
+  "group": "bird",
+  "scientificName": {
+    "value": "Himantopus himantopus (Linnaeus, 1758)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "kpss": {
+      "title": "Polojnik",
+      "publisher": "Krajinski park Sečoveljske soline",
+      "url": "https://www.kpss.si/narava/zivali/gospodarji-neba/polojnik",
+      "accessed": "2026-10-05",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "wiki": {
+      "title": "Polojnik",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Polojnik",
+      "accessed": "2026-10-05",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Himantopus himantopus (Linnaeus, 1758) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/5229126",
+      "accessed": "2026-10-05",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "polojnik",
+        "sources": [
+          "kpss",
+          "wiki"
+        ]
+      },
+      "family": {
+        "value": "sabljarke (Recurvirostridae)",
+        "sources": [
+          "wiki",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Plitva mokrišča, od sladkovodnih do slanih. V Sečoveljskih solinah gnezdi v solnih poljih ali na manjših nasipih, ki jih preraščajo slanuše, večinoma v kolonijah.",
+        "sources": [
+          "wiki",
+          "kpss"
+        ]
+      },
+      "distribution": {
+        "value": "V Sloveniji je redek, lokalno razširjen gnezdilec; gnezdenje je bilo potrjeno šele po letu 1990. Sečoveljske soline so njegovo najpomembnejše gnezdišče pri nas.",
+        "sources": [
+          "kpss"
+        ]
+      },
+      "season": {
+        "value": "V solinah ga opazujemo od marca do oktobra, največ od aprila do avgusta; evropski polojniki prezimujejo v Afriki.",
+        "sources": [
+          "kpss",
+          "wiki"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Dolg je od 33 do 36 cm.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Rdečkasto rožnate noge merijo od 17 do 24 cm, skoraj dve tretjini telesne dolžine.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Kljun je raven in tanek skoraj kot igla.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Hrbet in peruti so črni, preostalo perje belo.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "V skupinah se oglaša z nosljatim »kek … kek … kek«.",
+          "sources": [
+            "wiki"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "sources": [
+      "kpss"
+    ]
+  },
+  "wildlife": {
+    "torch": "shy"
+  },
+  "identification": {
+    "clues": [
+      1,
+      2,
+      3
+    ]
+  }
+}

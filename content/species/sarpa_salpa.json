@@ -1,0 +1,115 @@
+{
+  "id": "sarpa_salpa",
+  "group": "fish",
+  "scientificName": {
+    "value": "Sarpa salpa (Linnaeus, 1758)",
+    "sources": [
+      "gbif"
+    ]
+  },
+  "sources": {
+    "wiki": {
+      "title": "Salpa",
+      "publisher": "Wikipedija, prosta enciklopedija",
+      "url": "https://sl.wikipedia.org/wiki/Salpa",
+      "accessed": "2026-10-05",
+      "licence": "CC BY-SA 4.0"
+    },
+    "gbif": {
+      "title": "Sarpa salpa (Linnaeus, 1758) (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/2392628",
+      "accessed": "2026-10-05",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "salpa",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "family": {
+        "value": "špari (Sparidae)",
+        "sources": [
+          "wiki",
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Obalne vode do globine 70 m, običajno do okoli 20 m.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "distribution": {
+        "value": "Pogosta je tudi v Jadranu.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "season": {
+        "value": "Zadržuje se in pase v velikih jatah, ki se pred sovražnikom vse hkrati umikajo v cikcaku.",
+        "sources": [
+          "wiki"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Sivkasto srebrno, bočno stisnjeno telo ima od 10 do 11 ozkih zlato rumenkastih vzdolžnih prog.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Glava in usta so majhni, gobec je top.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Na korenu prsnih plavuti ima črno pego.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Oči so rumene, repna plavut je dvokraka.",
+          "sources": [
+            "wiki"
+          ]
+        },
+        {
+          "value": "Navadno doseže okoli 30 cm, izjemoma do 50 cm.",
+          "sources": [
+            "wiki"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "wiki"
+    ]
+  },
+  "wildlife": {
+    "torch": "calm",
+    "aquatic": true
+  },
+  "identification": {
+    "clues": [
+      0,
+      2,
+      3
+    ]
+  }
+}

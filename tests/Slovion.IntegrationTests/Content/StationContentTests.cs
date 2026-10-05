@@ -63,6 +63,7 @@ public class StationContentTests
                 ("cave_station", "rakov_skocjan_karst", "Podzemlje", 3, 2),
                 ("city_station", "ljubljana_park", "Mestna narava", 4, 3),
                 ("farmland_station", "murska_sobota_village", "Kulturna krajina", 5, 3),
+                ("coast_station", "portoroz_coast", "Morje in soline", 6, 3),
             ],
             catalog.AllStations.Select(station => (station.Id, station.MapId, station.Text["sl"].Theme, station.Species.Count, station.Goal)));
         Assert.Equal(catalog.AllRegions.Select(region => region.MapId), catalog.AllStations.Select(station => station.MapId));

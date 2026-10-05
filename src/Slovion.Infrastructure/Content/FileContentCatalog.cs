@@ -189,7 +189,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
 
         if (!SpeciesGroups.TryParse(file.Group, out var group))
         {
-            errors.Add($"{name}: unknown group '{file.Group}' (expected plant, mammal, bird, insect or amphibian).");
+            errors.Add($"{name}: unknown group '{file.Group}' (expected plant, mammal, bird, insect, amphibian, fish or mollusc).");
         }
 
         var sources = ValidateSources(file.Sources, name, errors);

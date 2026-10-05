@@ -1,0 +1,10 @@
+{
+  "id": "sea",
+  "text": { "sl": { "name": "Morje" } },
+  "order": 11,
+  "searchChancePercent": 50,
+  "species": [
+    { "speciesId": "sarpa_salpa", "weight": 1 },
+    { "speciesId": "pinna_nobilis", "weight": 1 }
+  ]
+}

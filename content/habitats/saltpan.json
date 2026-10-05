@@ -1,0 +1,12 @@
+{
+  "id": "saltpan",
+  "text": { "sl": { "name": "Soline" } },
+  "order": 10,
+  "searchChancePercent": 55,
+  "species": [
+    { "speciesId": "himantopus_himantopus", "weight": 1 },
+    { "speciesId": "egretta_garzetta", "weight": 1 },
+    { "speciesId": "aphanius_fasciatus", "weight": 1 },
+    { "speciesId": "salicornia_europaea", "weight": 40 }
+  ]
+}

@@ -16,7 +16,7 @@ import {
  * `D` a gate opened by flag `gate_open` (tile 6), `R` the home spot `hare` of a resident animal,
  * `P` the signpost (tile 7), `B` a research station (tile 7), `L` a lamp post (tile 7), `T` a tree: a blocked tile inside a `tall_grass` zone, `~` shallow water: a blocked,
  * wadeable tile (tile 8), `O` shallow water holding the home spot `olm`, `^` a blocked tile inside a `tall_grass` zone
- * holding the home spot `hare` (like a nest on a roof). An area named `cave` is underground.
+ * holding the home spot `hare` (like a nest on a roof), `%` shallow sea: a blocked, swimmable tile (tile 9). An area named `cave` is underground.
  */
 export function textMap(
   rows: readonly string[],
@@ -40,8 +40,15 @@ export function textMap(
 
   rows.forEach((row, y) =>
     [...row].forEach((cell, x) => {
-      blocked.push(cell === '#' || cell === 'T' || cell === '~' || cell === 'O' || cell === '^');
-      ground.push(cell === '~' || cell === 'O' ? 8 : 1);
+      blocked.push(
+        cell === '#' ||
+          cell === 'T' ||
+          cell === '~' ||
+          cell === 'O' ||
+          cell === '^' ||
+          cell === '%',
+      );
+      ground.push(cell === '~' || cell === 'O' ? 8 : cell === '%' ? 9 : 1);
       if (cell === 'S' || cell === 'G') spawn = { x, y, facing };
       if (cell === '*') spots.push({ spotId: 'spot', x, y });
       if (cell === 'R' || cell === '^') spots.push({ spotId: 'hare', x, y });
@@ -76,7 +83,14 @@ export function textMap(
     blocked,
     spawn,
     spots,
-    { firstGid: 1, columns: 8, tileCount: 8, image: 'tiles.png', wadeable: new Set([7]) },
+    {
+      firstGid: 1,
+      columns: 8,
+      tileCount: 9,
+      image: 'tiles.png',
+      wadeable: new Set([7]),
+      swimmable: new Set([8]),
+    },
     habitats,
     npcs,
     gates,

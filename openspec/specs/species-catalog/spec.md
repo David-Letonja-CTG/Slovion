@@ -136,6 +136,20 @@ The API SHALL refuse to start when content is invalid, reporting every problem f
   | `salix_purpurea` | `plant` | *rdeča vrba* | Murska Sobota |
 - **AND** `ciconia_ciconia` is perched and `lutra_lutra` is aquatic
 
+#### Scenario: Coast species
+- **WHEN** the API starts with the repository's content
+- **THEN** the following are available, each with sourced Slovenian facts, three clues and a picture, and the animals also with a walk sprite and wildlife traits:
+
+  | Species | Group | Slovenian name | Region |
+  |---|---|---|---|
+  | `himantopus_himantopus` | `bird` | *polojnik* | Portorož |
+  | `egretta_garzetta` | `bird` | *mala bela čaplja* | Portorož |
+  | `salicornia_europaea` | `plant` | *navadni osočnik* | Portorož |
+  | `aphanius_fasciatus` | `fish` | *solinarka* | Portorož |
+  | `sarpa_salpa` | `fish` | *salpa* | Portorož |
+  | `pinna_nobilis` | `mollusc` | *veliki leščur* | Portorož |
+- **AND** `aphanius_fasciatus` and `sarpa_salpa` are aquatic, and `pinna_nobilis` is perched
+
 ### Requirement: Spots reference existing species
 Every interactive spot in a map that names a species SHALL reference an existing species ID.
 
@@ -144,11 +158,15 @@ Every interactive spot in a map that names a species SHALL reference an existing
 - **THEN** content validation fails and names the map and spot
 
 ### Requirement: Species group
-Each species SHALL declare one group: `plant`, `mammal`, `bird`, `insect` or `amphibian`. Any other value SHALL fail content validation.
+Each species SHALL declare one group: `plant`, `mammal`, `bird`, `insect`, `amphibian`, `fish` or `mollusc`. Any other value SHALL fail content validation.
 
 #### Scenario: Unknown group
 - **WHEN** a species declares group `fungus`
 - **THEN** content validation fails and names the species and the group
+
+#### Scenario: Sea life groups
+- **WHEN** species declare groups `fish` and `mollusc`
+- **THEN** they load, and the client shows them as *riba* and *mehkužec* (*Opaziš ribo*, *Opaziš mehkužca* when identifying)
 
 ### Requirement: Identification clues
 Each species SHALL declare exactly three identification clues, each referring to a different one of its identifying characteristics. Clue choice and order are gameplay data; the clue text is the sourced characteristic itself.

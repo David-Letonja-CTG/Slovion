@@ -1,0 +1,109 @@
+{
+  "id": "pinna_nobilis",
+  "group": "mollusc",
+  "scientificName": {
+    "value": "Pinna nobilis Linnaeus, 1758",
+    "sources": [
+      "strunjan",
+      "gbif"
+    ]
+  },
+  "sources": {
+    "strunjan": {
+      "title": "Popis velikega leščurja v Krajinskem parku Strunjan",
+      "publisher": "Krajinski park Strunjan",
+      "url": "https://parkstrunjan.si/popis-velikega-lescurja-v-krajinskem-parku-strunjan/",
+      "accessed": "2026-10-05",
+      "licence": "No licence stated; facts paraphrased with attribution."
+    },
+    "gbif": {
+      "title": "Pinna nobilis Linnaeus, 1758 (GBIF Backbone Taxonomy)",
+      "publisher": "GBIF Secretariat",
+      "url": "https://www.gbif.org/species/4374731",
+      "accessed": "2026-10-05",
+      "licence": "CC BY 4.0"
+    }
+  },
+  "text": {
+    "sl": {
+      "name": {
+        "value": "veliki leščur",
+        "sources": [
+          "strunjan"
+        ]
+      },
+      "family": {
+        "value": "Pinnidae",
+        "sources": [
+          "gbif"
+        ]
+      },
+      "habitat": {
+        "value": "Mehko sedimentno dno sredi morskih travnikov, v globinah od 0,5 do 60 m.",
+        "sources": [
+          "strunjan"
+        ]
+      },
+      "distribution": {
+        "value": "Je endemitska školjka Sredozemlja. Zaradi parazita, ki od leta 2016 povzroča množične pogine, se je populacija zmanjšala za več kot 90 %; je kritično ogrožena in zavarovana.",
+        "sources": [
+          "strunjan"
+        ]
+      },
+      "season": {
+        "value": "Lahko doživi več kot 40 let.",
+        "sources": [
+          "strunjan"
+        ]
+      },
+      "characteristics": [
+        {
+          "value": "Je največja školjka v Sredozemskem morju: zraste do 120 cm.",
+          "sources": [
+            "strunjan"
+          ]
+        },
+        {
+          "value": "Iz njenih bisusnih niti so že stari Rimljani pridobivali »morsko svilo«.",
+          "sources": [
+            "strunjan"
+          ]
+        },
+        {
+          "value": "Na njej živijo pritrjene alge, spužve, ožigalkarji, mehkužci in mnogoščetinci.",
+          "sources": [
+            "strunjan"
+          ]
+        },
+        {
+          "value": "Ob njej pogosto najdemo ribe in rake.",
+          "sources": [
+            "strunjan"
+          ]
+        }
+      ]
+    }
+  },
+  "availability": {
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "sources": [
+      "strunjan"
+    ]
+  },
+  "wildlife": {
+    "torch": "calm",
+    "perched": true
+  },
+  "identification": {
+    "clues": [
+      0,
+      2,
+      1
+    ]
+  }
+}
