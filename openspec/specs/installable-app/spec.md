@@ -14,7 +14,7 @@ The client SHALL publish a web app manifest linked from the page. It SHALL name 
 - **AND** the manifest names *Slovion* with `display` `standalone` and the 192, 512 and maskable icons, each of which loads
 
 ### Requirement: Cached app shell
-Production builds SHALL register a service worker that caches the built app: scripts, styles, `index.html`, fonts, translation catalogs, sprites, images and icons. Once cached, the game SHALL open from the cache without a network connection. Development builds SHALL NOT register it.
+Production builds SHALL register a service worker that caches the built app: scripts, styles, `index.html`, fonts, translation catalogs, sprites, images, icons, and the music and soundscape files. Once cached, the game SHALL open from the cache without a network connection. Development builds SHALL NOT register it.
 
 #### Scenario: Starting without a connection
 - **WHEN** a player who opened the game once before starts it with no network connection
@@ -23,6 +23,10 @@ Production builds SHALL register a service worker that caches the built app: scr
 #### Scenario: Development server
 - **WHEN** the game runs from the development server
 - **THEN** no service worker is registered
+
+#### Scenario: Sound data offline
+- **WHEN** the installed app opens without a connection
+- **THEN** the music and soundscape files load from the cache
 
 ### Requirement: Server data is never cached by the app
 The service worker SHALL NOT cache or answer API requests (`/api`, `/health`) or content files (`/content`). They SHALL always go to the network, with content files keeping their HTTP caching (`no-cache` with revalidation).

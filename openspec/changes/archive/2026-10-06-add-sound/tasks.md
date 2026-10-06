@@ -24,5 +24,5 @@
 - [x] 4.1 Unit and component tests; an E2E check of the settings surviving a reload
 - [x] 4.2 Docs: gameplay (sound, controls), architecture (the audio module), content checklist (a soundscape for a new region)
 - [x] 4.3 Run `npm run check`, `npm run e2e`, `dotnet test`; all succeed
-- [ ] 4.4 Manual listening pass: every region by day and night, a cave, rain, every effect, desktop and phone; first-click start; hidden tab — **open:** needs a person listening; an instrumented Chromium check (context starts on the first click, themes load, notes keep being scheduled, no errors) is recorded in the design notes
+- [ ] 4.4 Manual listening pass: every region by day and night, a cave, rain, every effect, desktop and phone; first-click start; hidden tab — **open:** needs a person listening; an instrumented Chromium check (context starts on the first click, themes load, notes keep being scheduled, no errors) is recorded in the design notes; the owner merged before the listening pass (2026-10-06)
 - [x] 4.5 Run `openspec validate add-sound --strict`, push, and verify all CI jobs pass on the pull request
