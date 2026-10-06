@@ -1,5 +1,6 @@
 import { createGame } from './game';
 import { TIME_TINT, TORCH_INNER_RADIUS, TORCH_OUTER_RADIUS } from './render/world-renderer';
+import { COMPACT_VIEW, UPRIGHT_VIEWS } from './viewport';
 import { STEP_MS } from './game-loop';
 import { Action } from './input/actions';
 import { FakeEnvironment } from './testing/fake-environment';
@@ -98,8 +99,9 @@ describe('createGame', () => {
 
     environment.resize(1000, 700);
 
-    expect([canvas.width, canvas.height]).toEqual([960, 540]);
-    expect([canvas.style.left, canvas.style.top]).toEqual(['20px', '80px']);
+    expect([canvas.width, canvas.height]).toEqual([1280, 720]);
+    expect([canvas.style.width, canvas.style.height]).toEqual(['1000px', '562px']);
+    expect([canvas.style.left, canvas.style.top]).toEqual(['0px', '69px']);
   });
 
   it('recomputes the layout when the device pixel ratio changes', () => {
@@ -121,6 +123,31 @@ describe('createGame', () => {
 
     expect(context.imageSmoothingEnabled).toBe(false);
     expect(canvas.style.imageRendering).toBe('pixelated');
+    expect(context.transform).toEqual([4, 0, 0, 4, 0, 0]);
+  });
+
+  it('switches to other view sizes at once, e.g. when a phone is turned, using the one that fits largest', () => {
+    const { environment, canvas, context, game } = setup();
+    game.start();
+    environment.resize(1280, 720);
+
+    // In a wide area the 4:3 view fits larger than the 3:4 one.
+    game.setViews(UPRIGHT_VIEWS);
+    expect(COMPACT_VIEW).toEqual({ width: 240, height: 180 });
+
+    expect([canvas.width, canvas.height]).toEqual([960, 720]);
+    expect([canvas.style.left, canvas.style.top]).toEqual(['160px', '0px']);
+    expect(context.transform).toEqual([4, 0, 0, 4, 0, 0]);
+  });
+
+  it('between two integer scales, draws at the scale above and resamples only the canvas smoothly', () => {
+    const { environment, canvas, context, game } = setup();
+    game.start();
+
+    environment.resize(1000, 700);
+
+    expect(context.imageSmoothingEnabled).toBe(false);
+    expect(canvas.style.imageRendering).toBe('auto');
     expect(context.transform).toEqual([4, 0, 0, 4, 0, 0]);
   });
 

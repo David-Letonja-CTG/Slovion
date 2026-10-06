@@ -23,7 +23,8 @@
     "loading": "Nalaganje …"
   },
   "play": {
-    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči, pogovori se, beri kažipot ali išči v visoki travi · L: svetilka · I: nahrbtnik · M: Terenski dnevnik"
+    "controlsHint": "Puščice ali WASD: hoja · Shift: tek · E: razišči, pogovori se, beri kažipot ali išči v visoki travi · L: svetilka · I: nahrbtnik · M: Terenski dnevnik",
+    "more": "Več"
   },
   "research": {
     "advanced": "Raziskava napreduje: {{name}} ({{level}}/3). V Terenskem dnevniku je nov zapis.",
@@ -66,6 +67,9 @@
     "characteristics": "Prepoznavni znaki",
     "sources": "Viri",
     "progress": "{{identified}}/{{total}}",
+    "habitats": "Življenjski prostori",
+    "previousHabitat": "Prejšnji življenjski prostor",
+    "nextHabitat": "Naslednji življenjski prostor",
     "unknownLabel": "???",
     "back": "Nazaj",
     "research": "Raziskano: {{level}}/3",

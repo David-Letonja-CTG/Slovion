@@ -39,6 +39,14 @@ describe('moveSelection', () => {
     expect(moveSelection([2, 0, 2], at(2, 0), 'MoveUp')).toEqual(at(0, 0));
   });
 
+  it('moves by rows of the columns the page shows', () => {
+    // Three per row (an upright phone): 7 pictures are rows of 3, 3 and 1.
+    expect(moveSelection(sizes, at(0, 1), 'MoveDown', 3)).toEqual(at(0, 4));
+    expect(moveSelection(sizes, at(0, 4), 'MoveDown', 3)).toEqual(at(0, 6));
+    expect(moveSelection(sizes, at(0, 6), 'MoveUp', 3)).toEqual(at(0, 3));
+    expect(moveSelection(sizes, at(1, 2), 'MoveUp', 3)).toEqual(at(0, 6));
+  });
+
   it('ignores other actions', () => {
     expect(moveSelection(sizes, at(0, 3), 'Confirm')).toEqual(at(0, 3));
   });

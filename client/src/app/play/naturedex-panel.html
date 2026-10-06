@@ -1,6 +1,7 @@
 <div class="overlay">
   <section
     class="dialog naturedex"
+    [class.naturedex--pages]="state().kind === 'loaded' && view().kind === 'grid'"
     role="dialog"
     aria-modal="true"
     aria-labelledby="naturedex-title"
@@ -35,57 +36,114 @@
       @case ('loaded') {
         @let opened = view();
         @if (opened.kind === 'grid') {
-          @if (empty()) {
-            <p class="naturedex__empty">{{ 'naturedex.empty' | transloco }}</p>
-          }
-          @for (section of sections(); track section.habitatId; let s = $index) {
-            <section class="habitat" [attr.data-habitat]="section.habitatId">
-              <h3 class="habitat__heading">
-                <span>{{ section.name }}</span>
+          @if (page(); as shown) {
+            @let s = selected().section;
+            <!-- One habitat per page: an index of the habitats where there is room, page buttons otherwise (CSS). -->
+            @if (empty()) {
+              <p class="naturedex__empty">{{ 'naturedex.empty' | transloco }}</p>
+            }
+            <div class="naturedex__flip">
+              <button
+                type="button"
+                class="flip flip--previous"
+                data-flip="previous"
+                [disabled]="s === 0"
+                [attr.aria-label]="'naturedex.previousHabitat' | transloco"
+                (click)="showPage(s - 1)"
+              ></button>
+              <h3
+                id="habitat-heading"
+                class="habitat__heading"
+                [attr.data-habitat]="shown.habitatId"
+              >
+                <span class="habitat__name">{{ shown.name }}</span>
                 <span class="habitat__count">{{
                   'naturedex.progress'
-                    | transloco
-                      : { identified: identifiedCount(section), total: section.species.length }
+                    | transloco: { identified: identifiedCount(shown), total: shown.species.length }
                 }}</span>
               </h3>
-              <ul class="habitat__grid">
-                @for (slot of section.species; track slot.speciesId; let i = $index) {
-                  @let name = slot.status === 'identified' ? slot.entry?.species?.name : null;
+              <button
+                type="button"
+                class="flip flip--next"
+                data-flip="next"
+                [disabled]="s === sections().length - 1"
+                [attr.aria-label]="'naturedex.nextHabitat' | transloco"
+                (click)="showPage(s + 1)"
+              ></button>
+            </div>
+            <nav class="naturedex__index" [attr.aria-label]="'naturedex.habitats' | transloco">
+              <ul>
+                @for (section of sections(); track section.habitatId; let i = $index) {
                   <li>
                     <button
-                      #picture
                       type="button"
-                      class="picture"
-                      [class]="'picture--' + slot.status"
-                      [class.picture--selected]="isSelected(s, i)"
-                      [attr.data-species]="slot.speciesId"
-                      [attr.data-status]="slot.status"
-                      [attr.aria-disabled]="slot.status === 'unknown' ? 'true' : null"
-                      [attr.aria-label]="
-                        name
-                          ? name +
-                            ' – ' +
-                            ('naturedex.research' | transloco: { level: slot.entry?.researchLevel })
-                          : ('naturedex.unknown' | transloco)
-                      "
-                      (click)="select(s, i, slot)"
+                      class="index__habitat"
+                      [class.index__habitat--complete]="complete(section)"
+                      [attr.data-habitat]="section.habitatId"
+                      [attr.aria-current]="i === s ? 'page' : null"
+                      (click)="showPage(i)"
                     >
-                      <img [src]="pictureUrl(slot.speciesId)" alt="" width="32" height="32" />
-                      @if (name) {
-                        @let gridStars = stars(slot.entry?.researchLevel);
-                        <span class="picture__stars" aria-hidden="true"
-                          >{{ gridStars.filled
-                          }}<span class="stars__empty">{{ gridStars.empty }}</span></span
-                        >
-                      }
-                      <span class="picture__label" aria-hidden="true">{{
-                        name ?? ('naturedex.unknownLabel' | transloco)
+                      <span>{{ section.name }}</span>
+                      <span class="index__count">{{
+                        'naturedex.progress'
+                          | transloco
+                            : {
+                                identified: identifiedCount(section),
+                                total: section.species.length,
+                              }
                       }}</span>
                     </button>
                   </li>
                 }
               </ul>
-            </section>
+            </nav>
+            <ul
+              #grid
+              class="habitat__grid"
+              [attr.data-habitat]="shown.habitatId"
+              aria-labelledby="habitat-heading"
+            >
+              @for (slot of shown.species; track slot.speciesId; let i = $index) {
+                @let name = slot.status === 'identified' ? slot.entry?.species?.name : null;
+                <li>
+                  <button
+                    #picture
+                    type="button"
+                    class="picture"
+                    [class]="'picture--' + slot.status"
+                    [class.picture--selected]="isSelected(i)"
+                    [attr.data-species]="slot.speciesId"
+                    [attr.data-status]="slot.status"
+                    [attr.aria-disabled]="slot.status === 'unknown' ? 'true' : null"
+                    [attr.aria-label]="
+                      name
+                        ? name +
+                          ' – ' +
+                          ('naturedex.research' | transloco: { level: slot.entry?.researchLevel })
+                        : ('naturedex.unknown' | transloco)
+                    "
+                    (click)="select(i, slot)"
+                  >
+                    <img [src]="pictureUrl(slot.speciesId)" alt="" width="32" height="32" />
+                    @if (name) {
+                      @let gridStars = stars(slot.entry?.researchLevel);
+                      <span class="picture__stars" aria-hidden="true"
+                        >{{ gridStars.filled
+                        }}<span class="stars__empty">{{ gridStars.empty }}</span></span
+                      >
+                    }
+                    <span class="picture__label" aria-hidden="true">{{
+                      name ?? ('naturedex.unknownLabel' | transloco)
+                    }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
+            <div class="naturedex__marks" aria-hidden="true">
+              @for (section of sections(); track section.habitatId; let i = $index) {
+                <span class="mark" [class.mark--shown]="i === s"></span>
+              }
+            </div>
           }
         } @else if (opened.kind === 'certificates') {
           <article class="certificates">

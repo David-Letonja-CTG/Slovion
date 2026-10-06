@@ -1,4 +1,4 @@
-import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../viewport';
+import { ViewSize, WIDE_VIEW } from '../viewport';
 
 /** A region's weather as the server reports it (docs/decisions.md D11). */
 export type Weather = 'clear' | 'cloudy' | 'rain' | 'fog' | 'snow';
@@ -39,19 +39,20 @@ export function drawWeather(
   weather: Weather,
   elapsedMs: number,
   reducedMotion: boolean,
+  view: ViewSize = WIDE_VIEW,
 ): void {
   const time = reducedMotion ? 0 : elapsedMs;
   const tint = WEATHER_TINT[weather];
   if (tint) {
     context.fillStyle = tint;
-    context.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+    context.fillRect(0, 0, view.width, view.height);
   }
 
   if (weather === 'rain') {
     context.fillStyle = RAIN_COLOUR;
     for (let i = 0; i < RAIN_DROPS; i++) {
-      const y = wrap(fraction(i) * LOGICAL_HEIGHT + time * RAIN_SPEED, LOGICAL_HEIGHT + 8) - 8;
-      const x = wrap(fraction(i + RAIN_DROPS) * LOGICAL_WIDTH - y * 0.3, LOGICAL_WIDTH);
+      const y = wrap(fraction(i) * view.height + time * RAIN_SPEED, view.height + 8) - 8;
+      const x = wrap(fraction(i + RAIN_DROPS) * view.width - y * 0.3, view.width);
       // A short slanted streak: two 1×3 pixels, the lower one a pixel to the left.
       context.fillRect(Math.round(x), Math.round(y), 1, 3);
       context.fillRect(Math.round(x) - 1, Math.round(y) + 3, 1, 3);
@@ -60,11 +61,11 @@ export function drawWeather(
     context.fillStyle = SNOW_COLOUR;
     for (let i = 0; i < SNOW_FLAKES; i++) {
       const y = wrap(
-        fraction(i) * LOGICAL_HEIGHT + time * SNOW_SPEED * (0.7 + fraction(i + 7) * 0.6),
-        LOGICAL_HEIGHT,
+        fraction(i) * view.height + time * SNOW_SPEED * (0.7 + fraction(i + 7) * 0.6),
+        view.height,
       );
       const sway = reducedMotion ? 0 : Math.sin(time / 800 + i) * 3;
-      const x = wrap(fraction(i + SNOW_FLAKES) * LOGICAL_WIDTH + sway, LOGICAL_WIDTH);
+      const x = wrap(fraction(i + SNOW_FLAKES) * view.width + sway, view.width);
       context.fillRect(Math.round(x), Math.round(y), 2, 2);
     }
   } else if (weather === 'fog') {
@@ -73,8 +74,8 @@ export function drawWeather(
       [40, 28],
       [120, 36],
     ]) {
-      const y = wrap(base + time * FOG_SPEED, LOGICAL_HEIGHT + height) - height;
-      context.fillRect(0, Math.round(y), LOGICAL_WIDTH, height);
+      const y = wrap(base + time * FOG_SPEED, view.height + height) - height;
+      context.fillRect(0, Math.round(y), view.width, height);
     }
   }
 }

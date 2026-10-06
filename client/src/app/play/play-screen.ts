@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import {
   Component,
   DestroyRef,
+  ElementRef,
   InjectionToken,
   computed,
   effect,
@@ -12,10 +13,20 @@ import {
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
-import { Action, Game, Interaction, ResidentInfo, WorldTime, worldTimeAt } from '../../engine';
+import {
+  Action,
+  Game,
+  Interaction,
+  ResidentInfo,
+  UPRIGHT_VIEWS,
+  WIDE_VIEW,
+  WorldTime,
+  worldTimeAt,
+} from '../../engine';
 import { AudioService } from '../audio/audio.service';
 import { SoundSettingsDialog } from '../audio/sound-settings-dialog';
 import { Fullscreen } from '../device/fullscreen';
+import { PORTRAIT } from '../device/portrait';
 import { TOUCH_DEVICE } from '../device/touch-device';
 import {
   AlreadyIdentified,
@@ -35,6 +46,7 @@ import {
   apiErrorCode,
 } from '../api/game-api';
 import { GameCanvas } from '../game/game-canvas';
+import { HudIcon } from './hud-icon';
 import { GameSession } from '../session/game-session';
 import { ConditionsIndicator } from './conditions-indicator';
 import { LocationBanner } from './location-banner';
@@ -118,6 +130,7 @@ type Overlay =
     ConditionsIndicator,
     DialogueBox,
     GameCanvas,
+    HudIcon,
     IdentificationDialog,
     LocationBanner,
     MessageDialog,
@@ -148,7 +161,21 @@ export class PlayScreen {
   protected readonly audio = inject(AudioService);
   /** On touch screens the play screen shows the D-pad and buttons and uses the handheld layout. */
   protected readonly touch = inject(TOUCH_DEVICE);
+  private readonly portrait = inject(PORTRAIT);
   protected readonly fullscreen = inject(Fullscreen);
+  /**
+   * Upright touch screens (the handheld layout) zoom in: a 3:4 world view fills the screen above the buttons, or a 4:3
+   * one where the screen is too short for it (the engine picks the larger fit). Everywhere else the view is 16:9.
+   */
+  protected readonly views = computed(() =>
+    this.touch() && this.portrait() ? UPRIGHT_VIEWS : [WIDE_VIEW],
+  );
+  /** The *Več* menu holds sound, mute, fullscreen and, for keyboard players, the controls hint. */
+  protected readonly hasMore = computed(
+    () => this.audio.available || this.fullscreen.available || !this.touch(),
+  );
+  protected readonly moreOpen = signal(false);
+  private readonly moreButton = viewChild<ElementRef<HTMLButtonElement>>('moreButton');
   private readonly fadeMs = inject(TRAVEL_FADE_MS);
   private game: Game | undefined;
   /** The map of the place the player is in. */
@@ -235,6 +262,11 @@ export class PlayScreen {
     effect(() => {
       const kind = this.overlay().kind;
       this.audio.duck(kind !== 'none' && kind !== 'pending');
+    });
+    // Turning the phone switches the view at once; a new game starts with the current one.
+    effect(() => {
+      const views = this.views();
+      this.game?.setViews(views);
     });
 
     // The game loop pauses while the page is hidden, but the server clock does not: re-sync on return.
@@ -546,8 +578,32 @@ export class PlayScreen {
     this.game?.release(actions);
   }
 
+  /** The *Več* button opens and closes the menu of secondary actions. */
+  protected toggleMore(): void {
+    this.moreOpen.update((open) => !open);
+  }
+
+  /**
+   * `Escape` on *Več* or in its menu closes the menu and gives focus back to *Več*. The key then goes no further, so the
+   * game does not also open the journal; with the menu closed it reaches the game as usual.
+   */
+  protected closeMore(event: Event): void {
+    if (!this.moreOpen()) return;
+    event.stopPropagation();
+    this.moreOpen.set(false);
+    this.moreButton()?.nativeElement.focus();
+  }
+
+  /** A press anywhere outside the menu closes it. */
+  protected onScreenPointerDown(event: PointerEvent): void {
+    if (this.moreOpen() && !(event.target as Element | null)?.closest?.('.play__more')) {
+      this.moreOpen.set(false);
+    }
+  }
+
   /** The fullscreen button; focus goes back to the game. */
   protected toggleFullscreen(): void {
+    this.moreOpen.set(false);
     this.fullscreen.toggle();
     this.canvas()?.focus();
   }
@@ -559,6 +615,7 @@ export class PlayScreen {
 
   /** The quick mute button; focus goes back to the game. */
   protected toggleMute(): void {
+    this.moreOpen.set(false);
     this.audio.update({ muted: !this.audio.settings().muted });
     this.canvas()?.focus();
   }
@@ -606,6 +663,7 @@ export class PlayScreen {
   }
 
   private open(overlay: Overlay): void {
+    this.moreOpen.set(false);
     this.overlay.set(overlay);
     this.game?.setActionConsumer('ui');
   }

@@ -14,7 +14,10 @@ Slovion is about **observing real Slovenian nature**: walk through a region, mee
    - **Plants** are found by searching tall grass, a tree or a shrub inside a habitat.
    - What can be found depends on the **season, the time of day and the weather**, all decided by the server and backed by sources (a winter meadow is quiet; salamanders come out in the rain).
 3. **Identify** the species from clues: one clue at a time, then pick the right name. A wrong guess teaches the name without counting it, and the species can be observed again.
-4. **Learn** on its page in *Terenski dnevnik* (the journal, D10): Slovenian facts, each with its source.
+4. **Learn** on its page in *Terenski dnevnik* (the journal, D10): Slovenian facts, each with its source. The journal has one page per habitat, every picture labelled with its name (or `???` until identified):
+   - **Wide screens:** an index of all habitats with their progress sits beside the page; finished habitats show their count in yellow.
+   - **Phones:** ◀ and ▶ turn the pages.
+   - **Arrow keys and the D-pad:** they also turn the page past its first or last picture.
 5. **Research** further: seeing a species again at another time of day, or on another day, raises its research level up to ★★★ and reveals more of its page.
 6. **Progress:** people in each region give a quest. Finishing it opens the next region, and some quests give a field tool.
 
@@ -87,9 +90,15 @@ Every region has a research station (*raziskovalna postaja*) with a themed list 
 | Journal (*Terenski dnevnik*) | M | *Dnevnik* |
 | Close, go back | Esc | B |
 
-The sound settings (*Zvok*) use up and down to choose a volume, left and right to change it, and Enter to mute. Dialogs use the arrows and Enter, or the D-pad, A and B; their buttons can also be clicked or tapped. The buttons (*Svetilka*, *Nahrbtnik*, *Dnevnik*, *Zvok*, *Utišaj*, *Cel zaslon*) work with mouse and touch. *Cel zaslon* switches to fullscreen where the browser allows it; on iPhone, adding Slovion to the home screen runs it full screen.
+The sound settings (*Zvok*) use up and down to choose a volume, left and right to change it, and Enter to mute. Dialogs use the arrows and Enter, or the D-pad, A and B; their buttons can also be clicked or tapped.
 
-**On phones and tablets** the D-pad and the A and B buttons appear. Held upright, the world is at the top and the controls below it, like a handheld console; held sideways, the world fills the screen and the controls sit see-through in the corners.
+**The screen is the game.** The world takes the largest 16:9 view the screen allows, drawn crisply at a whole multiple of its 320×180 pixels and only smoothed for the last step between two multiples, never stretched. Over it sits a small HUD:
+- top left: the season, time, weather and place, and the active quest, which folds to its title with a click
+- top right: *Svetilka*, *Nahrbtnik*, *Dnevnik* and *Več*, which work with mouse and touch
+
+*Več* (more) holds what is needed less often: *Zvok*, *Utišaj* and *Cel zaslon*, and for keyboard players the list of keys, which also shows over the world for a few seconds when a game starts. *Cel zaslon* switches to fullscreen where the browser allows it; on iPhone, adding Slovion to the home screen runs it full screen.
+
+**On phones and tablets** the D-pad and the A and B buttons appear. Held upright, the world is zoomed in and fills the screen from the top down to the time-and-place line: it shows 11×15 tiles, so everything is much larger than on a wide screen (a short phone shows 15×11). The quest lies over its top-left corner and folds to one line. Below come one row with the game's buttons and the controls at the bottom, like a handheld console. Held sideways, the world fills the screen's height, the HUD buttons show only their icons and the controls sit see-through in the corners. Every button is at least 44 pixels for a finger, and nothing hides under a notch or the home bar.
 
 | Upright | Sideways |
 |---|---|

@@ -1,5 +1,11 @@
-/* The controls take touches only on the D-pad and the buttons; the space between them stays part of the page. */
+/*
+ * The controls take touches only on the D-pad and the buttons; the space between them stays part of the page. They
+ * are drawn like the rest of the HUD: translucent dark panels with the pixel border.
+ */
 :host {
+  --pad-size: 9.5rem;
+  --button-size: 4rem;
+
   display: block;
   pointer-events: none;
 }
@@ -20,8 +26,8 @@
 .touch__pad {
   position: relative;
   flex: none;
-  width: 9.5rem;
-  height: 9.5rem;
+  width: var(--pad-size);
+  height: var(--pad-size);
   border-radius: 50%;
   pointer-events: auto;
   touch-action: none;
@@ -32,7 +38,8 @@
   position: absolute;
   inset: 33.3% 3%;
   border: 2px solid var(--color-panel-border);
-  background: var(--color-panel);
+  background: rgb(28 37 48 / 88%);
+  box-shadow: inset 0 -3px 0 rgb(0 0 0 / 35%);
   content: '';
 }
 
@@ -102,12 +109,13 @@
 }
 
 .touch__button {
-  width: 4rem;
-  height: 4rem;
+  width: var(--button-size);
+  height: var(--button-size);
   border: 2px solid var(--color-panel-border);
   border-radius: 50%;
-  background: var(--color-panel);
-  color: var(--color-text);
+  background: rgb(28 37 48 / 88%);
+  box-shadow: inset 0 -3px 0 rgb(0 0 0 / 35%);
+  color: var(--color-accent);
   font-family: var(--font-ui);
   font-size: 1.4rem;
   pointer-events: auto;
@@ -115,11 +123,25 @@
 }
 
 .touch__button--a {
-  margin-bottom: 2.5rem;
+  margin-bottom: calc(var(--button-size) * 0.625);
 }
 
 .touch__button--held {
   border-color: var(--color-accent);
   background: var(--color-accent);
+  box-shadow: none;
   color: var(--color-accent-text);
+}
+
+/* Sideways the controls lie over the world, so they are a little smaller (still well above 44 CSS pixels). */
+@media (orientation: landscape) {
+  :host {
+    --pad-size: 8rem;
+    --button-size: 3.5rem;
+  }
+
+  .touch {
+    padding-top: 0;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
 }

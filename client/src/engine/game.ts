@@ -5,7 +5,7 @@ import { ActionState } from './input/action-state';
 import { Action } from './input/actions';
 import { GameEnvironment, Unsubscribe, browserEnvironment } from './platform';
 import { WorldImages, renderWorld } from './render/world-renderer';
-import { LOGICAL_WIDTH, ViewportLayout, computeViewport } from './viewport';
+import { ViewSize, ViewportLayout, WIDE_VIEW, chooseView, computeViewport } from './viewport';
 import { ResidentInfo } from './world/resident';
 import { Interaction, World, WorldClock } from './world/world';
 import { WorldTime } from './world/world-time';
@@ -44,6 +44,11 @@ export interface Game {
   setWeather(weather: Weather): void;
   /** Replaces the save's field tools as the server reported them (D3). */
   setTools(tools: readonly string[]): void;
+  /**
+   * Replaces the world view sizes the game may use, e.g. when a phone is turned; it shows the one that fits the
+   * container largest, and the canvas is laid out again at once.
+   */
+  setViews(views: readonly ViewSize[]): void;
 }
 
 export interface GameOptions {
@@ -72,13 +77,15 @@ export interface GameOptions {
   readonly weather?: Weather;
   /** Draws weather without movement, for players who prefer reduced motion. */
   readonly reducedMotion?: boolean;
+  /** The world view sizes the game may use, at the start; it shows the one that fits largest. 320×180 by default. */
+  readonly views?: readonly ViewSize[];
   /** Platform services. Defaults to the browser. */
   readonly environment?: GameEnvironment;
 }
 
 /**
  * Creates the game inside `container`, drawing to `canvas`. The canvas is sized and centred within
- * the container so the logical resolution is shown with crisp, integer scaling.
+ * the container so the world view fills it as far as its shape allows, drawn crisply at an integer scale.
  */
 export function createGame(
   container: HTMLElement,
@@ -99,7 +106,7 @@ export function createGame(
     const layer = darkness.canvas;
     if (layer.width !== canvas.width) layer.width = canvas.width;
     if (layer.height !== canvas.height) layer.height = canvas.height;
-    const drawScale = canvas.width / LOGICAL_WIDTH;
+    const drawScale = canvas.width / view.width;
     darkness.setTransform(drawScale, 0, 0, drawScale, 0, 0);
     return darkness;
   };
@@ -124,6 +131,8 @@ export function createGame(
   world.setTools(options.tools ?? []);
   world.reducedMotion = options.reducedMotion ?? false;
 
+  let views = options.views ?? [WIDE_VIEW];
+  let view = views[0];
   let availableWidth = container.clientWidth;
   let availableHeight = container.clientHeight;
   let subscriptions: Unsubscribe[] = [];
@@ -131,18 +140,19 @@ export function createGame(
   const loop = new GameLoop(
     {
       update: (stepMs) => world.update(input, stepMs),
-      render: () => renderWorld(context, world, options.world, darknessLayer),
+      render: () => renderWorld(context, world, options.world, darknessLayer, view),
     },
     environment.clock,
     environment.scheduler,
   );
 
   canvas.style.position = 'absolute';
-  canvas.style.imageRendering = 'pixelated';
 
   const applyLayout = (): void => {
-    const layout = computeViewport(availableWidth, availableHeight, environment.devicePixelRatio());
-    resizeCanvas(canvas, context, layout);
+    const ratio = environment.devicePixelRatio();
+    view = chooseView(views, availableWidth, availableHeight);
+    const layout = computeViewport(availableWidth, availableHeight, ratio, view);
+    resizeCanvas(canvas, context, layout, view);
   };
 
   return {
@@ -178,6 +188,10 @@ export function createGame(
     setResidents: (residents) => world.setResidents(residents),
     setWeather: (weather) => world.setWeather(weather),
     setTools: (tools) => world.setTools(tools),
+    setViews(next) {
+      views = next.length > 0 ? next : [WIDE_VIEW];
+      applyLayout();
+    },
   };
 }
 
@@ -185,6 +199,7 @@ function resizeCanvas(
   canvas: HTMLCanvasElement,
   context: CanvasRenderingContext2D,
   layout: ViewportLayout,
+  view: ViewSize,
 ): void {
   if (canvas.width !== layout.backingWidth) canvas.width = layout.backingWidth;
   if (canvas.height !== layout.backingHeight) canvas.height = layout.backingHeight;
@@ -193,10 +208,12 @@ function resizeCanvas(
   canvas.style.height = `${layout.cssHeight}px`;
   canvas.style.left = `${layout.cssLeft}px`;
   canvas.style.top = `${layout.cssTop}px`;
+  // Game pixels stay square at an integer scale; between two scales, smoothing only blends their edges.
+  canvas.style.imageRendering = layout.smooth ? 'auto' : 'pixelated';
 
   // Resizing the backing store resets context state, so re-apply it every time.
   // Drawing happens in logical pixels; the transform maps them onto the backing store.
-  const drawScale = layout.backingWidth / LOGICAL_WIDTH;
+  const drawScale = layout.backingWidth / view.width;
   context.setTransform(drawScale, 0, 0, drawScale, 0, 0);
   context.imageSmoothingEnabled = false;
 }

@@ -6,7 +6,7 @@ import karst from '../../../../content/maps/rakov_skocjan_karst.json';
 import kocevje from '../../../../content/maps/kocevje_forest.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import sl from '../../../public/i18n/sl.json';
-import { Action, worldTimeAt } from '../../engine';
+import { Action, UPRIGHT_VIEWS, WIDE_VIEW, worldTimeAt } from '../../engine';
 import {
   NatureDexEntry,
   NatureDexSection,
@@ -19,6 +19,7 @@ import {
 import { AudioService } from '../audio/audio.service';
 import { FakeAudioService } from '../audio/testing/fake-audio-service';
 import { Fullscreen } from '../device/fullscreen';
+import { PORTRAIT } from '../device/portrait';
 import { TOUCH_DEVICE } from '../device/touch-device';
 import { GameSession } from '../session/game-session';
 import { SaveTokenStore } from '../session/save-token-store';
@@ -115,6 +116,12 @@ async function openPlay(
   const root = () => harness.routeNativeElement as HTMLElement;
   const dialogText = () => root().querySelector('[role="dialog"]')?.textContent?.trim();
   return { ...app, harness, root, dialogText, settle: () => settle(harness.fixture) };
+}
+
+/** Opens the *Več* menu, where sound, mute, fullscreen and the controls hint are. */
+async function openMoreMenu(play: Awaited<ReturnType<typeof openPlay>>): Promise<void> {
+  play.root().querySelector<HTMLButtonElement>('.play__more-button')!.click();
+  await play.settle();
 }
 
 describe('Play screen', () => {
@@ -451,10 +458,95 @@ describe('Terenski dnevnik', () => {
 
   it('shows each habitat with its name and how many of its species are identified', async () => {
     const { panel } = await openNatureDex();
-    const heading = panel()!.querySelector('[data-habitat="tall_grass"] h3')!;
+    const heading = panel()!.querySelector('h3[data-habitat="tall_grass"]')!;
 
     expect(heading.textContent).toContain('Visoka trava');
     expect(heading.querySelector('.habitat__count')?.textContent?.trim()).toBe('1/5');
+  });
+
+  describe('pages', () => {
+    /** The tall grass, then a hedgerow with both species identified. */
+    const twoHabitats = (): NatureDexSection[] => [
+      ...tallGrass(),
+      {
+        habitatId: 'hedgerow',
+        name: 'Mejica',
+        species: [
+          slot('crataegus_monogyna', { ...SAGE_ENTRY, status: 'identified' }),
+          slot('lanius_collurio', { ...SAGE_ENTRY, status: 'identified' }),
+        ],
+      },
+    ];
+    const shownHabitat = (panel: () => Element | null) =>
+      panel()!.querySelector('.habitat__grid')?.getAttribute('data-habitat');
+    const habitatInIndex = (panel: () => Element | null, id: string) =>
+      panel()!.querySelector<HTMLButtonElement>(`.index__habitat[data-habitat="${id}"]`)!;
+
+    it('shows one habitat at a time, the first when the journal opens', async () => {
+      const { panel } = await openNatureDex(twoHabitats());
+
+      expect(shownHabitat(panel)).toBe('tall_grass');
+      expect(panel()!.querySelectorAll('.picture')).toHaveLength(5);
+      expect(panel()!.querySelector('.picture[data-species="crataegus_monogyna"]')).toBeNull();
+    });
+
+    it('lists every habitat in the index with its progress, marks the one shown and finished ones', async () => {
+      const { panel } = await openNatureDex(twoHabitats());
+      const index = panel()!.querySelector('nav.naturedex__index')!;
+
+      expect(index.getAttribute('aria-label')).toBe(sl.naturedex.habitats);
+      expect(habitatInIndex(panel, 'tall_grass').textContent).toMatch(/Visoka trava\s*1\/5/);
+      expect(habitatInIndex(panel, 'tall_grass').getAttribute('aria-current')).toBe('page');
+      expect(habitatInIndex(panel, 'hedgerow').getAttribute('aria-current')).toBeNull();
+      expect(habitatInIndex(panel, 'hedgerow').classList).toContain('index__habitat--complete');
+      expect(habitatInIndex(panel, 'tall_grass').classList).not.toContain(
+        'index__habitat--complete',
+      );
+    });
+
+    it('shows a habitat chosen in the index, with its first picture selected', async () => {
+      const { panel, picture, settle } = await openNatureDex(twoHabitats());
+
+      habitatInIndex(panel, 'hedgerow').click();
+      await settle();
+
+      expect(shownHabitat(panel)).toBe('hedgerow');
+      expect(habitatInIndex(panel, 'hedgerow').getAttribute('aria-current')).toBe('page');
+      expect(picture('crataegus_monogyna').classList).toContain('picture--selected');
+      expect(document.activeElement).toBe(picture('crataegus_monogyna'));
+    });
+
+    it('turns pages with the buttons, which stop at the first and last habitat', async () => {
+      const { panel, settle } = await openNatureDex(twoHabitats());
+      const flip = (which: string) =>
+        panel()!.querySelector<HTMLButtonElement>(`[data-flip="${which}"]`)!;
+      expect(flip('previous').disabled).toBe(true);
+      expect(flip('previous').getAttribute('aria-label')).toBe(sl.naturedex.previousHabitat);
+
+      flip('next').click();
+      await settle();
+
+      expect(shownHabitat(panel)).toBe('hedgerow');
+      expect(flip('next').disabled).toBe(true);
+      expect(flip('next').getAttribute('aria-label')).toBe(sl.naturedex.nextHabitat);
+      expect(panel()!.querySelectorAll('.mark--shown')).toHaveLength(1);
+      expect(panel()!.querySelectorAll('.mark')[1].classList).toContain('mark--shown');
+    });
+
+    it('turns the page with the arrows past the last and first picture', async () => {
+      const { panel, picture, press } = await openNatureDex(twoHabitats());
+
+      await press('MoveRight', 'MoveRight', 'MoveRight', 'MoveRight', 'MoveRight');
+      expect(shownHabitat(panel)).toBe('hedgerow');
+      expect(picture('crataegus_monogyna').classList).toContain('picture--selected');
+
+      await press('MoveLeft');
+      expect(shownHabitat(panel)).toBe('tall_grass');
+      expect(picture('salvia_pratensis').classList).toContain('picture--selected');
+
+      await press('MoveDown');
+      expect(shownHabitat(panel)).toBe('hedgerow');
+    });
   });
 
   it('shows unknown species as silhouettes, observed ones grey and identified ones in colour', async () => {
@@ -703,6 +795,26 @@ describe('Quests', () => {
 
     expect(tracker.textContent).toContain('Oko za naravo');
     expect(tracker.querySelector('.tracker__progress')?.textContent?.trim()).toBe('1/3');
+  });
+
+  it('folds the quest summary away and back with a click on its title', async () => {
+    const { root, settle } = await openPlay(meadow, {
+      flags: [],
+      quests: [quest(1)],
+      items: [LAMP],
+    });
+    const details = root().querySelector<HTMLDetailsElement>('app-quest-tracker details')!;
+    const head = details.querySelector<HTMLElement>('summary')!;
+    expect(details.open).toBe(true);
+    expect(head.querySelector('.tracker__progress')).not.toBeNull();
+
+    head.click();
+    await settle();
+    expect(details.open).toBe(false);
+
+    head.click();
+    await settle();
+    expect(details.open).toBe(true);
   });
 
   it('says to return to the giver once the goal is met', async () => {
@@ -1519,12 +1631,15 @@ describe('Sound', () => {
       { provide: AudioService, useValue: audio },
     ]);
     const button = (selector: string) => play.root().querySelector<HTMLButtonElement>(selector);
-    return { ...play, audio, button };
+    return { ...play, audio, button, openMore: () => openMoreMenu(play) };
   }
 
   it('has no sound buttons where the browser cannot play sound', async () => {
-    const { root } = await openPlay();
+    const play = await openPlay();
+    const { root } = play;
+    await openMoreMenu(play);
 
+    expect(root().querySelector('.play__menu')).not.toBeNull();
     expect(root().querySelector('.play__sound')).toBeNull();
     expect(root().querySelector('.play__mute')).toBeNull();
   });
@@ -1685,8 +1800,9 @@ describe('Sound', () => {
     expect(audio.effects).toEqual(['torch', 'torch']);
   });
 
-  it('mutes with the button, which then offers to turn sound back on', async () => {
-    const { audio, button, settle } = await openWithSound();
+  it('mutes with the button in the Več menu, which then offers to turn sound back on', async () => {
+    const { audio, button, settle, openMore } = await openWithSound();
+    await openMore();
     expect(button('.play__mute')?.textContent?.trim()).toBe(sl.sound.muteButton);
     expect(button('.play__mute')?.getAttribute('aria-pressed')).toBe('false');
 
@@ -1694,16 +1810,21 @@ describe('Sound', () => {
     await settle();
 
     expect(audio.settings().muted).toBe(true);
+    // Muting closes the menu; it shows the new state when opened again.
+    expect(button('.play__menu')).toBeNull();
+    await openMore();
     expect(button('.play__mute')?.textContent?.trim()).toBe(sl.sound.unmuteButton);
     expect(button('.play__mute')?.getAttribute('aria-pressed')).toBe('true');
   });
 
   it('opens the sound settings with the button and closes them with Cancel', async () => {
-    const { game, button, root, settle } = await openWithSound();
+    const { game, button, root, settle, openMore } = await openWithSound();
+    await openMore();
 
     button('.play__sound')!.click();
     await settle();
     expect(root().querySelector('app-sound-settings-dialog h2')?.textContent).toBe(sl.sound.title);
+    expect(root().querySelector('.play__menu')).toBeNull();
     expect(game.consumer).toBe('ui');
 
     game.pressUi('MoveRight');
@@ -1743,7 +1864,7 @@ describe('Touch screens and fullscreen', () => {
         control(selector)!.dispatchEvent(event);
       }
     };
-    return { ...play, fullscreen, control, tap };
+    return { ...play, fullscreen, control, tap, openMore: () => openMoreMenu(play) };
   }
 
   it('shows the D-pad and buttons on touch screens, in the handheld layout, without the keyboard hint', async () => {
@@ -1797,8 +1918,9 @@ describe('Touch screens and fullscreen', () => {
   });
 
   it('switches to fullscreen with the button, which shows that it is on', async () => {
-    const { fullscreen, control, settle } = await openOn(false);
+    const { fullscreen, control, settle, openMore } = await openOn(false);
     const button = () => control('.play__fullscreen')!;
+    await openMore();
     expect(button().textContent?.trim()).toBe(sl.fullscreen.button);
     expect(button().getAttribute('aria-pressed')).toBe('false');
 
@@ -1806,13 +1928,133 @@ describe('Touch screens and fullscreen', () => {
     await settle();
 
     expect(fullscreen.toggle).toHaveBeenCalled();
+    await openMore();
     expect(button().getAttribute('aria-pressed')).toBe('true');
     expect(button().classList).toContain('button--primary');
   });
 
-  it('has no fullscreen button where the browser cannot go fullscreen', async () => {
-    const { root } = await openPlay();
+  it('zooms in on an upright touch screen and switches back to 16:9 when the phone is turned', async () => {
+    const portrait = signal(true);
+    const { game, settle } = await openPlay(meadow, NO_PROGRESS, REGIONS, CLEAR_MORNING, [
+      { provide: TOUCH_DEVICE, useValue: signal(true) },
+      { provide: PORTRAIT, useValue: portrait },
+    ]);
+    expect(game.options?.views).toEqual(UPRIGHT_VIEWS);
 
-    expect(root().querySelector('.play__fullscreen')).toBeNull();
+    portrait.set(false);
+    await settle();
+    expect(game.views).toEqual([WIDE_VIEW]);
+
+    portrait.set(true);
+    await settle();
+    expect(game.views).toEqual(UPRIGHT_VIEWS);
+  });
+
+  it('keeps the 16:9 world view with a mouse and keyboard, even in a tall window', async () => {
+    const { game } = await openPlay(meadow, NO_PROGRESS, REGIONS, CLEAR_MORNING, [
+      { provide: TOUCH_DEVICE, useValue: signal(false) },
+      { provide: PORTRAIT, useValue: signal(true) },
+    ]);
+
+    expect(game.options?.views).toEqual([WIDE_VIEW]);
+  });
+
+  it('has no fullscreen button where the browser cannot go fullscreen', async () => {
+    const play = await openPlay();
+    await openMoreMenu(play);
+
+    expect(play.root().querySelector('.play__fullscreen')).toBeNull();
+  });
+});
+
+describe('The Več menu', () => {
+  afterEach(() => TestBed.inject(Router).dispose());
+
+  const more = (root: () => HTMLElement) =>
+    root().querySelector<HTMLButtonElement>('.play__more-button');
+  const menu = (root: () => HTMLElement) => root().querySelector('.play__menu');
+
+  it('opens and closes with its button, which reports whether it is open', async () => {
+    const play = await openPlay();
+    const { root, settle } = play;
+    expect(more(root)?.textContent?.trim()).toBe(sl.play.more);
+    expect(more(root)?.getAttribute('aria-expanded')).toBe('false');
+    expect(menu(root)).toBeNull();
+
+    await openMoreMenu(play);
+    expect(more(root)?.getAttribute('aria-expanded')).toBe('true');
+    expect(menu(root)?.id).toBe(more(root)?.getAttribute('aria-controls'));
+
+    more(root)!.click();
+    await settle();
+    expect(menu(root)).toBeNull();
+  });
+
+  it('holds the controls hint for keyboard players', async () => {
+    const play = await openPlay();
+    await openMoreMenu(play);
+
+    expect(play.root().querySelector('.play__menu-hint')?.textContent).toBe(sl.play.controlsHint);
+  });
+
+  it('closes on Escape, in the menu or on Več, gives focus back to Več and keeps the key from the game', async () => {
+    const play = await openPlay();
+    const { root, settle } = play;
+    // The game's keyboard listens on the window, where Escape would also open the journal.
+    const reachedTheGame = vi.fn();
+    window.addEventListener('keydown', reachedTheGame);
+    const escape = (target: Element) =>
+      target.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+    for (const target of [() => menu(root)!, () => more(root)!]) {
+      await openMoreMenu(play);
+      escape(target());
+      await settle();
+
+      expect(menu(root)).toBeNull();
+      expect(document.activeElement).toBe(more(root));
+    }
+    expect(reachedTheGame).not.toHaveBeenCalled();
+
+    // With the menu closed, Escape on Več reaches the game as usual.
+    escape(more(root)!);
+    expect(reachedTheGame).toHaveBeenCalledTimes(1);
+    window.removeEventListener('keydown', reachedTheGame);
+  });
+
+  it('closes on a press outside it, but not on a press inside it', async () => {
+    const play = await openPlay();
+    const { root, settle } = play;
+    await openMoreMenu(play);
+    const press = (target: Element) =>
+      target.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+
+    press(menu(root)!);
+    await settle();
+    expect(menu(root)).not.toBeNull();
+
+    press(root().querySelector('app-game-canvas')!);
+    await settle();
+    expect(menu(root)).toBeNull();
+  });
+
+  it('closes when a dialog opens', async () => {
+    const play = await openPlay();
+    const { root, game, settle } = play;
+    await openMoreMenu(play);
+
+    game.options!.onOpenInventory!();
+    await settle();
+
+    expect(menu(root)).toBeNull();
+  });
+
+  it('is not offered on a touch screen without sound or fullscreen, where it would be empty', async () => {
+    const { root } = await openPlay(meadow, NO_PROGRESS, REGIONS, CLEAR_MORNING, [
+      { provide: TOUCH_DEVICE, useValue: signal(true) },
+    ]);
+
+    expect(more(root)).toBeNull();
+    expect(root().querySelector('.play__journal')).not.toBeNull();
   });
 });

@@ -16,6 +16,8 @@ import {
   Interaction,
   LoadedWorld,
   ResidentInfo,
+  ViewSize,
+  WIDE_VIEW,
   Weather,
   WorldClock,
   WorldTime,
@@ -65,6 +67,8 @@ export class GameCanvas {
   readonly weather = input<Weather>('clear');
   /** Draws weather without movement, for players who prefer reduced motion. */
   readonly reducedMotion = input(false);
+  /** The world view sizes a game may use when it starts; changes go through `Game.setViews`. */
+  readonly views = input<readonly ViewSize[]>([WIDE_VIEW]);
   /** A new in-game minute (once per in-game minute while playing, and after a re-sync). */
   readonly timeChanged = output<WorldTime>();
   /** The player's tile lies in another place, including at the start. */
@@ -105,6 +109,7 @@ export class GameCanvas {
           residents: this.residents(),
           weather: this.weather(),
           reducedMotion: this.reducedMotion(),
+          views: this.views(),
           onTimeChange: (time) => this.timeChanged.emit(time),
           onAreaChange: (area) => this.areaChanged.emit(area),
           onTorchChange: (on) => this.torchChanged.emit(on),

@@ -1,57 +1,135 @@
+/*
+ * Game first (docs/gameplay.md): the world covers the screen's safe area and the engine fits the largest 16:9 view
+ * into it. Everything else is a compact HUD over the world, except on an upright touch screen (below).
+ */
 .play {
+  --hud-top: max(0.5rem, env(safe-area-inset-top));
+  --hud-right: max(0.5rem, env(safe-area-inset-right));
+  --hud-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  --hud-left: max(0.5rem, env(safe-area-inset-left));
+  --hud-panel: rgb(28 37 48 / 88%);
+  /* The smallest button; on touch screens big enough for a finger. */
+  --hud-target: 2.25rem;
+
   position: relative;
-  display: flex;
-  flex-direction: column;
   height: 100dvh;
+  overflow: hidden;
   /* No double-tap zoom while playing. */
   touch-action: manipulation;
 }
 
 .play__game {
-  flex: 1;
-  min-height: 0;
+  position: absolute;
+  inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
 }
 
-.play__tracker {
+/* Top left: the conditions and the quest. */
+.play__info {
   position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
-  z-index: 5;
-}
-
-.play__conditions {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
+  top: var(--hud-top);
+  left: var(--hud-left);
   z-index: 5;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
+  gap: 0.35rem;
+  max-width: calc(50% - var(--hud-left));
+}
+
+/* Top right: the game's buttons. */
+.play__actions {
+  position: absolute;
+  top: var(--hud-top);
+  right: var(--hud-right);
+  z-index: 5;
+  display: flex;
   gap: 0.35rem;
 }
 
-.play__torch {
-  padding: 0.25rem 0.75rem;
+.play__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: var(--hud-target);
+  min-height: var(--hud-target);
+  padding: 0.25rem 0.6rem;
+  background: var(--hud-panel);
   font-size: 0.85rem;
 }
 
-/* Announces the torch to screen readers only; the button already shows its state. */
-.play__torch-status {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
+.play__button.button--primary {
+  background: var(--color-accent);
 }
 
-.play__hint {
-  margin: 0;
-  padding: 0.35rem 1rem 0.5rem;
+.play__more {
+  position: relative;
+}
+
+.play__more-button[aria-expanded='true'] {
+  border-color: var(--color-accent);
+}
+
+/* The menu of secondary actions, under the Več button. */
+.play__menu {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: max-content;
+  max-width: min(20rem, calc(100vw - var(--hud-left) - var(--hud-right)));
+  padding: 0.5rem;
+  border: 2px solid var(--color-panel-border);
+  background: var(--color-panel);
+}
+
+.play__menu .button {
+  min-height: var(--hud-target);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.play__menu-hint {
+  margin: 0.25rem 0 0;
   color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+/* Over the bottom of the world when a game starts, then it fades out; it stays readable in the Več menu. */
+.play__hint {
+  position: absolute;
+  bottom: var(--hud-bottom);
+  left: 50%;
+  z-index: 5;
+  width: max-content;
+  max-width: calc(100% - var(--hud-left) - var(--hud-right));
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  border: 2px solid var(--color-panel-border);
+  background: var(--hud-panel);
+  color: var(--color-text);
   font-size: 0.85rem;
   text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: play-hint 10s linear forwards;
+}
+
+@keyframes play-hint {
+  0%,
+  92% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 .play__status {
@@ -60,7 +138,7 @@
   text-align: center;
 }
 
-/* Travelling: the screen fades to dark and back. Above the world and banner, below dialogs. */
+/* Travelling: the screen fades to dark and back. Above the world and the HUD, below dialogs. */
 .play__fade {
   position: absolute;
   inset: 0;
@@ -75,10 +153,20 @@
   opacity: 1;
 }
 
+/* Narrow windows: the buttons show only their icons, so both HUD corners fit. */
+@media (max-width: 48rem) {
+  .play:not(.play--touch) .play__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
 /* Touch screens (docs/gameplay.md): buttons big enough for a finger, and the controls above dialogs, which they drive. */
-.play--touch .play__torch {
-  min-width: 44px;
-  min-height: 44px;
+.play--touch {
+  --hud-target: 44px;
 }
 
 .play--touch .play__touch {
@@ -86,44 +174,70 @@
 }
 
 /*
- * Held upright, like a handheld console: the world view at the top at full width with nothing over it; the clock,
- * the buttons, the quest and the controls below it.
+ * Held upright, like a handheld console: the world, zoomed in (see PlayScreen.views), fills the screen from the top
+ * down to the conditions line, with only the quest over its corner; below come the game's buttons in one row (like
+ * Start and Select), then the controls.
  */
 @media (orientation: portrait) {
-  /* The controls area has a fixed height, so dialogs can end above it. */
   .play--touch {
+    /* The controls area has a fixed height, so dialogs can end above it. */
     --play-controls-height: calc(11.5rem + env(safe-area-inset-bottom));
+
+    display: flex;
+    flex-direction: column;
   }
 
   .play--touch .play__game {
-    flex: none;
-    width: 100%;
-    aspect-ratio: 16 / 9;
+    position: relative;
+    inset: auto;
+    /* All the height the conditions, the buttons and the controls leave; the engine fits the zoomed view into it. */
+    flex: 1;
+    min-height: 0;
+    margin: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+    border-bottom: 2px solid var(--color-panel-border);
   }
 
-  .play--touch .play__conditions,
-  .play--touch .play__tracker {
+  .play--touch .play__info,
+  .play--touch .play__actions {
     position: static;
-  }
-
-  .play--touch .play__conditions {
-    order: 1;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: stretch;
-    gap: 0.5rem;
-    padding: 0.75rem max(0.75rem, env(safe-area-inset-right)) 0
+    padding: 0.5rem max(0.75rem, env(safe-area-inset-right)) 0
       max(0.75rem, env(safe-area-inset-left));
   }
 
-  .play--touch .play__conditions > app-conditions-indicator {
-    grid-column: 1 / -1;
-    justify-self: center;
+  /* The quest lies over the world's top-left corner, as on wider screens; it folds to one line. */
+  .play--touch .play__tracker {
+    position: absolute;
+    top: calc(env(safe-area-inset-top) + 0.5rem);
+    left: max(0.5rem, env(safe-area-inset-left));
+    z-index: 5;
   }
 
-  .play--touch .play__tracker {
+  .play--touch .play__info {
+    order: 1;
+    align-items: center;
+    max-width: none;
+  }
+
+  .play--touch .play__actions {
     order: 2;
-    margin: 0.75rem 0.75rem 0;
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    gap: 0.5rem;
+  }
+
+  .play--touch .play__button {
+    flex-direction: column;
+    gap: 0.2rem;
+    width: 100%;
+    padding: 0.35rem 0.25rem;
+    font-size: 0.8rem;
+  }
+
+  /* The menu opens upwards, over the world, from the right end of the row. */
+  .play--touch .play__menu {
+    top: auto;
+    bottom: calc(100% + 0.35rem);
   }
 
   .play--touch .play__touch {
@@ -133,35 +247,24 @@
     flex-direction: column;
     justify-content: flex-end;
     height: var(--play-controls-height);
-    margin-top: auto;
   }
 }
 
 /*
- * Held sideways: the world fills the screen. The buttons make one row along the top edge with the clock at its end,
- * the quest sits below them, and the controls sit see-through in the bottom corners.
+ * Held sideways: the world fills the screen's height. The HUD keeps to the top corners, its buttons as icons, and the
+ * controls sit see-through in the bottom corners.
  */
 @media (orientation: landscape) {
-  .play--touch .play__conditions {
-    top: max(0.5rem, env(safe-area-inset-top));
-    right: max(0.5rem, env(safe-area-inset-right));
-    left: max(0.5rem, env(safe-area-inset-left));
-    flex-flow: row wrap;
-    align-items: flex-start;
-    justify-content: flex-end;
+  .play--touch .play__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
   }
 
-  .play--touch .play__conditions > app-conditions-indicator {
-    order: 1;
-  }
-
-  .play--touch .play__torch {
-    padding: 0.25rem 0.6rem;
-    font-size: 0.8rem;
-  }
-
-  .play--touch .play__tracker {
-    top: calc(max(0.5rem, env(safe-area-inset-top)) + 3.5rem);
+  .play--touch .play__button {
+    padding: 0.25rem;
   }
 
   .play--touch .play__touch {
@@ -169,7 +272,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    opacity: 0.55;
+    opacity: 0.6;
   }
 }
 
