@@ -109,5 +109,11 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "grass_edge",
+      "grassland"
+    ]
   }
 }

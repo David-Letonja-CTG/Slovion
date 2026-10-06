@@ -13,8 +13,15 @@ test('the debug view shows the map, and generated maps say how they were made', 
     )
     .toBeGreaterThan(0);
 
-  // The meadow is authored: the panel names it, with no generation details.
-  await expect(page.locator('.play__debug')).toHaveText('dravsko_polje_meadow');
+  // The panel names the map and how it was generated: the meadow and the hedgerow behind its gate.
+  await expect(page.locator('.play__debug')).toHaveText(
+    'dravsko_polje_meadow seed=1; version=1; biomes=meadow,hedgerow',
+  );
+  // It also tells where the player stands: the spawn, facing right.
+  await expect(page.locator('app-game-canvas canvas')).toHaveAttribute(
+    'data-player',
+    '10,10,right',
+  );
 
   // Natural regions are generated from the save's world seed (fixed to 1 for these tests).
   const world = (mapId: string) =>

@@ -129,6 +129,57 @@ public class TerrainFeatureTests
         }
     }
 
+    [Fact]
+    public void A_barrier_closes_its_edge_except_for_one_gate_that_alone_leads_in()
+    {
+        var hedged = Forest with { Gate = 18 };
+        var area = new GenerationArea(Generated, hedged.Id, "test_hedgerow", false, Species, [], new GatedBarrier(Edge.West, "test_open"));
+        var gates = new HashSet<int>();
+        for (long seed = 0; seed < Seeds; seed++)
+        {
+            var template = Template([area]);
+            var map = WorldGenerator.Generate(template, Biomes(hedged), seed);
+            var gate = Assert.Single(map.Gates);
+            var edge = Enumerable.Range(0, Height).Select(y => Index(Generated.X, y)).ToList();
+
+            Assert.Equal((Generated.X, "test_open", 18), (gate.At.X, gate.Flag, gate.Tile));
+            Assert.InRange(gate.At.Y, 1, Height - 2);
+            Assert.All(edge.Where(cell => cell != Index(gate.At.X, gate.At.Y)), cell => Assert.True(map.Blocked[cell]));
+            Assert.False(map.Blocked[Index(gate.At.X, gate.At.Y)]);
+
+            var open = Reach(map, template);
+            var objects = template.BlockingObjects.Select(point => Index(point.X, point.Y)).Append(Index(gate.At.X, gate.At.Y)).ToHashSet();
+            var closed = GridSearch.Reachable(Width, Height, Index(Spawn.X, Spawn.Y), cell => !map.Blocked[cell] && !objects.Contains(cell));
+            Assert.DoesNotContain(Cells(Generated), cell => closed[cell]);
+            Assert.All(Cells(Generated).Where(cell => !map.Blocked[cell]), cell => Assert.True(open[cell], $"seed {seed}: {cell} not reached through the gate"));
+            gates.Add(gate.At.Y);
+        }
+
+        Assert.True(gates.Count >= 8, $"the gate took only {gates.Count} places");
+    }
+
+    [Theory]
+    [InlineData(6)] // the generated area starts two steps from the spawn
+    [InlineData(1)] // it starts seven steps away
+    public void A_species_marked_near_the_spawn_gets_its_spot_within_six_steps_or_else_the_nearest_fitting_tile(int spawnX)
+    {
+        string[] zones = ["clearing", "stream_bank", "forest_edge", "dense_forest", "forest_floor"];
+        var sage = new SpeciesRequest("salvia_pratensis", new SpeciesPlacement(zones, Tile: 7, NearSpawn: true));
+        var spawn = new GridPoint(spawnX, Spawn.Y);
+        var template = Template([new GenerationArea(Generated, Forest.Id, "test_forest_area", false, [.. Species, sage], [Connector])]) with { Spawn = spawn };
+        for (long seed = 0; seed < Seeds; seed++)
+        {
+            var map = WorldGenerator.Generate(template, TestWorlds.Biomes, seed);
+            var spot = map.Spots.Single(spot => spot.SpeciesId == "salvia_pratensis").At;
+            var objects = template.BlockingObjects.Select(point => Index(point.X, point.Y)).ToHashSet();
+            var steps = GridSearch.Distances(Width, Height, [Index(spawn.X, spawn.Y)], cell => !map.Blocked[cell] && !objects.Contains(cell));
+            var others = map.Spots.Where(other => other.SpeciesId != "salvia_pratensis").Select(other => Index(other.At.X, other.At.Y)).ToHashSet();
+            var nearest = Cells(Generated).Where(cell => !map.Blocked[cell] && map.ZoneKinds[cell] is not null && !others.Contains(cell)).Min(cell => steps[cell]);
+
+            Assert.InRange(steps[Index(spot.X, spot.Y)], 0, Math.Max(6, nearest));
+        }
+    }
+
     private static MapTemplate LakeTemplate() =>
         Template([new GenerationArea(Generated, Lake.Id, "test_lake_area", false, LakeSpecies, [Connector])]) with { WadeableTiles = new HashSet<int> { Shallow } };
 

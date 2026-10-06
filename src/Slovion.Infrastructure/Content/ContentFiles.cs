@@ -42,7 +42,7 @@ internal sealed record BiomeDecorFile(List<int>? Tiles, bool Blocking, double De
 internal sealed record BiomeZoneFile(string? Kind, string? Where, string? Habitat);
 
 /// <summary>A biome (design §5): tiles and rules the generator interprets; gameplay data, not facts (D6).</summary>
-internal sealed record BiomeFile(string? Id, List<int>? Floor, int? PathSet, List<int>? Border, List<BiomeLayerFile>? Layers, BiomeOpeningsFile? Openings, BiomeWaterFile? Water, List<BiomeDecorFile>? Decor, List<BiomeZoneFile>? Zones);
+internal sealed record BiomeFile(string? Id, List<int>? Floor, int? PathSet, List<int>? Border, List<BiomeLayerFile>? Layers, BiomeOpeningsFile? Openings, BiomeWaterFile? Water, List<BiomeDecorFile>? Decor, List<BiomeZoneFile>? Zones, int? Gate);
 
 /// <summary>The subset of the Tiled JSON map format that Slovion uses on the server.</summary>
 internal sealed record TiledMapFile(string? Orientation, int Width, int Height, int TileWidth, int TileHeight, List<TiledLayerFile>? Layers, List<TiledTilesetFile>? Tilesets);

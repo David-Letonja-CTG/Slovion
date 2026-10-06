@@ -19,6 +19,7 @@ public sealed class WorldGenerationContentTests
     private const int Shallows = 46;
 
     [Theory]
+    [InlineData("dravsko_polje_meadow", new[] { "alauda_arvensis", "papilio_machaon", "salvia_pratensis", "taraxacum_officinale", "lepus_europaeus", "lanius_collurio", "crataegus_monogyna" })]
     [InlineData("kocevje_forest", new[] { "ursus_arctos", "cervus_elaphus", "salamandra_salamandra", "allium_ursinum", "galium_odoratum" })]
     [InlineData("pohorje_forest", new[] { "canis_lupus", "sciurus_vulgaris", "drosera_rotundifolia", "vaccinium_myrtillus" })]
     [InlineData("triglav_alps", new[] { "rupicapra_rupicapra", "leontopodium_nivale", "potentilla_nitida", "marmota_marmota", "salamandra_atra" })]
@@ -37,6 +38,35 @@ public sealed class WorldGenerationContentTests
             Assert.NotEmpty(map.Habitats);
             Assert.Equal(seed, map.World?.Seed);
         }
+    }
+
+    [Fact]
+    public void The_meadow_keeps_the_sage_near_the_spawn_and_the_hedgerow_behind_vera_s_gate()
+    {
+        var maps = new WorldMaps(FileContentCatalog.Load(ContentFolder.RepositoryContent()));
+        var gateColumns = new HashSet<int>();
+        for (long seed = 0; seed < 50; seed++)
+        {
+            var map = Served(maps, "dravsko_polje_meadow", seed);
+            var gate = Assert.Single(map.Gates);
+            var spawn = (10 * map.Width) + 10;
+            var actors = map.Actors.ToHashSet();
+
+            // The gate sits in the hedge row (19) and opens with the flag of Vera's quest.
+            Assert.Equal((19, "hedgerow_open"), (gate.Y, gate.Flag));
+            gateColumns.Add(gate.X);
+            var closed = Reachable(map, spawn, cell => !map.Blocked[cell] && !actors.Contains(cell));
+            var open = Reachable(map, spawn, cell => !map.Blocked[cell] && (!actors.Contains(cell) || cell == (gate.Y * map.Width) + gate.X));
+            Assert.DoesNotContain(Enumerable.Range(20 * map.Width, 7 * map.Width), cell => closed[cell]);
+            Assert.Contains(Enumerable.Range(20 * map.Width, 7 * map.Width), cell => open[cell]);
+
+            // The first quest's sage grows within six steps of the spawn.
+            var sage = map.Spots.Single(spot => spot.SpeciesId == "salvia_pratensis");
+            var steps = Steps(map, spawn, cell => !map.Blocked[cell] && !actors.Contains(cell));
+            Assert.InRange(steps[(sage.Y * map.Width) + sage.X], 1, 6);
+        }
+
+        Assert.True(gateColumns.Count >= 8, $"the gate took only {gateColumns.Count} places");
     }
 
     [Fact]
@@ -124,8 +154,35 @@ public sealed class WorldGenerationContentTests
                 (int)(o.GetProperty("x").GetDouble() / TileSize),
                 (int)(o.GetProperty("y").GetDouble() / TileSize)))
             .ToList();
-        return new ServedMap(root.GetProperty("width").GetInt32(), Tiles("ground"), [.. Tiles("collision").Select(tile => tile >= 0)], spots);
+        var tileObjects = layers.Single(layer => layer.GetProperty("type").GetString() == "objectgroup").GetProperty("objects").EnumerateArray()
+            .Where(o => o.TryGetProperty("gid", out _))
+            .Select(o => (Type: o.GetProperty("type").GetString(), X: (int)(o.GetProperty("x").GetDouble() / TileSize), Y: ((int)(o.GetProperty("y").GetDouble() / TileSize)) - 1, Object: o))
+            .ToList();
+        var width = root.GetProperty("width").GetInt32();
+        var gates = tileObjects.Where(o => o.Type == "gate")
+            .Select(o => new ServedGate(o.X, o.Y, o.Object.GetProperty("properties").EnumerateArray().Single(p => p.GetProperty("name").GetString() == "requiresFlag").GetProperty("value").GetString()!))
+            .ToList();
+        return new ServedMap(width, Tiles("ground"), [.. Tiles("collision").Select(tile => tile >= 0)], spots, gates, [.. tileObjects.Select(o => (o.Y * width) + o.X)]);
     }
+
+    private static int[] Steps(ServedMap map, int from, Func<int, bool> passable)
+    {
+        var steps = Enumerable.Repeat(int.MaxValue, map.Ground.Length).ToArray();
+        var queue = new Queue<int>([from]);
+        steps[from] = 0;
+        while (queue.TryDequeue(out var cell))
+        {
+            foreach (var next in Neighbours(map, cell % map.Width, cell / map.Width).Where(next => steps[next] == int.MaxValue && passable(next)))
+            {
+                steps[next] = steps[cell] + 1;
+                queue.Enqueue(next);
+            }
+        }
+
+        return steps;
+    }
+
+    private static bool[] Reachable(ServedMap map, int from, Func<int, bool> passable) => [.. Steps(map, from, passable).Select(step => step != int.MaxValue)];
 
     private static IEnumerable<int> Neighbours(ServedMap map, int x, int y) =>
         new[] { (X: x, Y: y - 1), (X: x + 1, Y: y), (X: x, Y: y + 1), (X: x - 1, Y: y) }
@@ -143,5 +200,8 @@ public sealed class WorldGenerationContentTests
 
     private sealed record ServedSpot(string SpeciesId, int X, int Y);
 
-    private sealed record ServedMap(int Width, int[] Ground, bool[] Blocked, IReadOnlyList<ServedSpot> Spots);
+    private sealed record ServedGate(int X, int Y, string Flag);
+
+    /// <summary><see cref="Actors"/> are the tiles of NPCs, gates, the signpost and stations, which block.</summary>
+    private sealed record ServedMap(int Width, int[] Ground, bool[] Blocked, IReadOnlyList<ServedSpot> Spots, IReadOnlyList<ServedGate> Gates, IReadOnlyList<int> Actors);
 }

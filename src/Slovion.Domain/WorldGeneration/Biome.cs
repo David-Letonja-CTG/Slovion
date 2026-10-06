@@ -5,9 +5,10 @@ namespace Slovion.Domain.WorldGeneration;
 /// <summary>
 /// What a biome looks like, as data (design §5): its floor, terrain layers grown from noise, openings, water, paths,
 /// decoration and the habitat zone kinds derived from all of that. Tiles are tileset indices (Tiled GID − 1); without a
-/// <c>PathSet</c> paths keep the floor (a cave). The generator interprets these generic rules only; it knows no biome by name.
+/// <c>PathSet</c> paths keep the floor (a cave). <c>Gate</c> is the tile of a gate in its border (a barrier, design §4a).
+/// The generator interprets these generic rules only; it knows no biome by name.
 /// </summary>
-public sealed record Biome(string Id, IReadOnlyList<int> Floor, int? PathSet, IReadOnlyList<int> Border, IReadOnlyList<TerrainLayer> Layers, Openings? Openings, Water? Water, IReadOnlyList<DecorRule> Decor, IReadOnlyList<ZoneRule> Zones);
+public sealed record Biome(string Id, IReadOnlyList<int> Floor, int? PathSet, IReadOnlyList<int> Border, IReadOnlyList<TerrainLayer> Layers, Openings? Openings, Water? Water, IReadOnlyList<DecorRule> Decor, IReadOnlyList<ZoneRule> Zones, int? Gate = null);
 
 /// <summary>
 /// A terrain grown from smoothed noise: it covers <paramref name="Coverage"/> of the area, in blobs about

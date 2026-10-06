@@ -121,5 +121,11 @@
       1,
       4
     ]
+  },
+  "placement": {
+    "zones": [
+      "tall_grass",
+      "grassland"
+    ]
   }
 }

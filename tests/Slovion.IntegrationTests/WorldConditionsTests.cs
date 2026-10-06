@@ -12,7 +12,7 @@ namespace Slovion.IntegrationTests;
 [Collection(DatabaseCollectionDefinition.Name)]
 public sealed class WorldConditionsTests(PostgresFixture database)
 {
-    private const string DandelionSpot = "meadow_dandelion_1";
+    private const string DandelionSpot = "dravsko_polje_meadow_taraxacum_officinale_1";
 
     // Real seconds after the save's creation (one real second is one in-game minute).
     private static readonly TimeSpan Summer = TimeSpan.FromSeconds(3840);       // day 4, 00:00
@@ -104,9 +104,10 @@ public sealed class WorldConditionsTests(PostgresFixture database)
         var token = await CreateSaveAsync(client);
         clock.Advance(WinterNight);
 
+        var (x, y) = await HabitatTileAsync(client, token);
         using var request = new HttpRequestMessage(HttpMethod.Post, new Uri("/api/save/searches", UriKind.Relative))
         {
-            Content = System.Net.Http.Json.JsonContent.Create(new { mapId = MeadowMap, x = 12, y = 12 }),
+            Content = System.Net.Http.Json.JsonContent.Create(new { mapId = MeadowMap, x, y }),
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         using var response = await client.SendAsync(request, Token);

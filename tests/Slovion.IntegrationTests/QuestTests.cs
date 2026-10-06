@@ -14,7 +14,7 @@ namespace Slovion.IntegrationTests;
 [Collection(DatabaseCollectionDefinition.Name)]
 public sealed class QuestTests(PostgresFixture database)
 {
-    private const string DandelionSpot = "meadow_dandelion_1";
+    private const string DandelionSpot = "dravsko_polje_meadow_taraxacum_officinale_1";
     private const string Dandelion = "taraxacum_officinale";
 
     private static CancellationToken Token => TestContext.Current.CancellationToken;

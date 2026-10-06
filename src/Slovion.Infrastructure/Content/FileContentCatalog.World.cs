@@ -11,7 +11,7 @@ namespace Slovion.Infrastructure.Content;
 internal sealed record MapContent(string MapId, byte[] Json, IReadOnlyList<MapSpot> Spots, IReadOnlyList<MapZone> Habitats, MapTemplate? Template);
 
 /// <summary>Everything templates and generated maps are checked against.</summary>
-internal sealed record WorldContent(Dictionary<SpeciesId, Species> Species, Dictionary<string, Habitat> Habitats, Dictionary<string, Biome> Biomes, Dictionary<SpeciesId, PlacementFile> Placements, IReadOnlySet<string> Areas);
+internal sealed record WorldContent(Dictionary<SpeciesId, Species> Species, Dictionary<string, Habitat> Habitats, Dictionary<string, Biome> Biomes, Dictionary<SpeciesId, PlacementFile> Placements, IReadOnlySet<string> Areas, IReadOnlySet<string> RewardFlags);
 
 /// <summary>
 /// Biomes, templates and generated maps (docs/decisions.md D13). A template is a map with rectangles of class
@@ -46,7 +46,7 @@ public sealed partial class FileContentCatalog
         var json = ServedJson(map.Json, generated, template);
         var parsed = JsonSerializer.Deserialize<TiledMapFile>(json, JsonOptions)!;
         var errors = new List<string>();
-        var world = new WorldContent(species, habitats, biomes, [], areaIds);
+        var world = new WorldContent(species, habitats, biomes, [], areaIds, new HashSet<string>());
         var (spots, habitatZones) = ReadLayout(parsed, map.MapId, $"generated {map.MapId} (seed {seed})", world, errors);
         if (errors.Count > 0)
         {
@@ -201,7 +201,7 @@ public sealed partial class FileContentCatalog
 
         return errors.Count > errorCount
             ? null
-            : new Biome(file.Id!, file.Floor!, file.PathSet, file.Border ?? [], layers, openings, water, decor, zones);
+            : new Biome(file.Id!, file.Floor!, file.PathSet, file.Border ?? [], layers, openings, water, decor, zones, file.Gate);
     }
 
     private static Edge? ParseEdge(string text) => Enum.TryParse<Edge>(text, ignoreCase: true, out var edge) && Enum.IsDefined(edge) ? edge : null;
@@ -255,12 +255,33 @@ public sealed partial class FileContentCatalog
             }
 
             ValidateBiomeTiles(biome, tileCount, at, errors);
+            var listed = (rectangle.StringProperty("species") ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var nearSpawn = (rectangle.StringProperty("nearSpawn") ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            foreach (var speciesId in nearSpawn.Except(listed))
+            {
+                errors.Add($"{at}: nearSpawn species '{speciesId}' is not one of its species.");
+            }
+
             var requests = new List<SpeciesRequest>();
-            foreach (var speciesId in (rectangle.StringProperty("species") ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            foreach (var speciesId in listed)
             {
                 if (ResolvePlacement(speciesId, biome, world, tileCount, $"{at}: species '{speciesId}'", errors) is { } placement)
                 {
-                    requests.Add(new SpeciesRequest(speciesId, placement));
+                    requests.Add(new SpeciesRequest(speciesId, placement with { NearSpawn = nearSpawn.Contains(speciesId) }));
+                }
+            }
+
+            GatedBarrier? barrier = null;
+            if (rectangle.StringProperty("barrier") is { } barrierEdge)
+            {
+                var gateFlag = rectangle.StringProperty("gateFlag");
+                if (ParseEdge(barrierEdge) is not { } edge || gateFlag is null || !world.RewardFlags.Contains(gateFlag) || biome.Gate is null || biome.Border.Count == 0)
+                {
+                    errors.Add($"{at}: a barrier needs an edge (north, east, south or west), a 'gateFlag' that a quest rewards, and a biome with border and gate tiles.");
+                }
+                else
+                {
+                    barrier = new GatedBarrier(edge, gateFlag);
                 }
             }
 
@@ -279,7 +300,7 @@ public sealed partial class FileContentCatalog
                 }
             }
 
-            areas.Add(new GenerationArea(rect, biomeId, areaId ?? string.Empty, rectangle.BoolProperty("underground") ?? false, requests, inside));
+            areas.Add(new GenerationArea(rect, biomeId, areaId ?? string.Empty, rectangle.BoolProperty("underground") ?? false, requests, inside, barrier));
         }
 
         foreach (var area in objects.Where(o => o.ObjectClass == "area"))
@@ -330,6 +351,7 @@ public sealed partial class FileContentCatalog
             .Concat(biome.Openings?.Floor ?? [])
             .Concat(biome.Water?.Tiles ?? []).Concat(biome.Water?.Bank ?? []).Concat(biome.Water?.Shallow ?? [])
             .Concat(biome.Decor.SelectMany(rule => rule.Tiles))
+            .Concat(biome.Gate is { } gate ? [gate] : [])
             .Concat(new[] { biome.PathSet, biome.Openings?.PathSet }.OfType<int>().SelectMany(set => new[] { set, set + 15 }));
         if (tiles.FirstOrDefault(tile => tile < 0 || tile >= tileCount, -1) is var bad and >= 0)
         {
@@ -458,6 +480,25 @@ public sealed partial class FileContentCatalog
                 ["rotation"] = 0,
                 ["visible"] = true,
                 ["properties"] = new JsonArray(Property("speciesId", spot.SpeciesId), Property("spotId", spotId)),
+            });
+        }
+
+        foreach (var gate in generated.Gates)
+        {
+            // A tile object: anchored at its bottom-left corner.
+            objects.Add(new JsonObject
+            {
+                ["id"] = nextId,
+                ["name"] = string.Create(CultureInfo.InvariantCulture, $"generated_gate_{nextId++}"),
+                ["type"] = "gate",
+                ["gid"] = gate.Tile + firstGid,
+                ["x"] = gate.At.X * TileSize,
+                ["y"] = (gate.At.Y + 1) * TileSize,
+                ["width"] = TileSize,
+                ["height"] = TileSize,
+                ["rotation"] = 0,
+                ["visible"] = true,
+                ["properties"] = new JsonArray(Property("requiresFlag", gate.Flag)),
             });
         }
 

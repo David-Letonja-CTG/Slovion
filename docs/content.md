@@ -82,7 +82,7 @@ A region's natural parts are generated per save (docs/decisions.md D13). Its map
 
 | Class | Shape | Properties | Meaning |
 |---|---|---|---|
-| `generated` | rectangle | `biome`, `areaId`, optional `underground` (bool), `species` (comma-separated IDs) | filled from the biome; becomes the area; holds one spot of each species |
+| `generated` | rectangle | `biome`, `areaId`, optional `underground` (bool), `species` (comma-separated IDs), optional `nearSpawn` (some of those species), optional `barrier` (`north`, `east`, `south` or `west`) with `gateFlag` | filled from the biome; becomes the area; holds one spot of each species, those in `nearSpawn` within six steps of the spawn where they fit; a barrier draws the biome's border along that edge with one gate (the biome's `gate` tile) that opens with the flag, and the area can be reached only through it |
 | `connector` | point | — | on a generated rectangle's edge, where an authored path comes in; generated paths start there |
 
 Rules:
@@ -98,7 +98,8 @@ Rules:
 |---|---|
 | `floor` | the base ground tiles |
 | `pathSet` | first tile of a 16-tile path set: +1/+2/+4/+8 when the north/east/south/west side is closed; without it (a cave) paths keep the floor |
-| `border` | blocking tiles where the area meets the map's edge |
+| `border` | blocking tiles where the area meets the map's edge, and along a barrier |
+| `gate` | the tile of a barrier's gate (optional) |
 | `layers` | terrains grown from smoothed noise: `id`, `coverage` (0–1), `scale` (blob size in tiles), `smooth` (passes), optional `floor`, `blocking` (reeds, cliffs, cave rock) and `bias` (`north`, `east`, `south` or `west`) with `biasStrength` (0–1) to gather it towards that edge |
 | `openings` | clearings that paths lead to: `count` and `radius` ranges, `floor`, optional `pathSet` |
 | `water` | `kind` (`stream`, `pond` or `shore`), `chance`, `size` (a shore's deep rows), `tiles` (`wadeable` tiles let the boots through), optional `bank`; a shore lies along its `edge` with `shallowWidth` rows of `shallow` tiles on the land side |

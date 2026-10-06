@@ -1,10 +1,12 @@
 import { Locator, Page, devices, expect, test } from '@playwright/test';
+import { Direction, face, loadMap, spotOf } from './route';
 
 // A phone held upright, with a touch screen: the game shows its D-pad and buttons.
 test.use({ ...devices['Pixel 7'] });
 
-async function newGame(page: Page): Promise<void> {
-  await page.goto('/');
+/** A new game; with the debug view, the test can walk routes on the generated meadow (D13). */
+async function newGame(page: Page, debug = false): Promise<void> {
+  await page.goto(debug ? '/?debug=world' : '/');
   await page.getByRole('button', { name: 'Nova igra' }).tap();
   const canvas = page.locator('app-game-canvas canvas');
   await expect(canvas).toBeVisible();
@@ -44,14 +46,23 @@ test('upright, the world is at the top at full width and nothing covers it', asy
 test('walk to the meadow sage with the D-pad, observe it with A and leave with B', async ({
   page,
 }) => {
-  await newGame(page);
+  await newGame(page, true);
   const pad = page.locator('.touch__pad');
+  const at: Record<Direction, [number, number]> = {
+    up: [0.5, 0.1],
+    down: [0.5, 0.9],
+    left: [0.1, 0.5],
+    right: [0.9, 0.5],
+  };
 
-  // A tap is one step; the sage is two steps to the right of the spawn.
-  for (let i = 0; i < 2; i++) {
-    await tapAt(page, pad, 0.9, 0.5);
-    await page.waitForTimeout(400);
-  }
+  // A tap is one step; the sage grows within six steps of the spawn.
+  const map = await loadMap(page);
+  await face(page, map, spotOf(map, 'salvia_pratensis'), {
+    press: async (direction) => {
+      await tapAt(page, pad, ...at[direction]);
+      await page.waitForTimeout(400);
+    },
+  });
   await page.locator('[data-button="a"]').tap();
 
   const observation = page.getByRole('dialog', { name: 'Opaziš rastlino' });

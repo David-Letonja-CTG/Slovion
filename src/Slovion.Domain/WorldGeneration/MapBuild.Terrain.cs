@@ -6,7 +6,10 @@ internal sealed partial class MapBuild
     /// <summary>The span of the value noise (a coarse octave plus half a fine one), which a layer's bias is measured against.</summary>
     private const double NoiseRange = 1.5;
 
-    /// <summary>Stage 1: the biome's floor everywhere, and a blocking border where the area meets the map's edge.</summary>
+    /// <summary>
+    /// Stage 1: the biome's floor everywhere, and a blocking border where the area meets the map's edge and along a
+    /// barrier, whose gate lies at a random place with walkable ground on both sides.
+    /// </summary>
     private void Base(int area, Biome biome, WorldRandom stage)
     {
         foreach (var cell in Cells(template.Areas[area].Rect))
@@ -24,6 +27,64 @@ internal sealed partial class MapBuild
                 blocked[cell] = true;
             }
         }
+
+        if (template.Areas[area].Barrier is { } barrier)
+        {
+            BuildBarrier(area, barrier.Edge, biome, stage.Fork("barrier"));
+        }
+    }
+
+    /// <summary>The border along <paramref name="edge"/>, except at one gate (not at a corner) whose outer side is walkable ground.</summary>
+    private void BuildBarrier(int area, Edge edge, Biome biome, WorldRandom stage)
+    {
+        var rect = template.Areas[area].Rect;
+        var line = Cells(rect).Where(cell => edge switch
+        {
+            Edge.North => cell / width == rect.Y,
+            Edge.South => cell / width == rect.Bottom,
+            Edge.West => cell % width == rect.X,
+            _ => cell % width == rect.Right,
+        }).ToList();
+        var candidates = line.Skip(1).SkipLast(1).Where(cell => Outward(cell, edge) is { } outside && TemplateWalkable(outside)).ToList();
+        var gate = candidates.Count > 0 ? stage.Pick(candidates) : -1;
+        foreach (var cell in line.Where(cell => cell != gate))
+        {
+            border[cell] = true;
+            decor[cell] = stage.Pick(biome.Border);
+            blocked[cell] = true;
+        }
+
+        if (gate >= 0)
+        {
+            gates.Add((area, gate));
+            connectors[area].Insert(0, gate);
+        }
+    }
+
+    /// <summary>The tile in front of each gate, outside its area, is cleared so the gate can be reached.</summary>
+    private void OpenGateApproaches()
+    {
+        foreach (var (area, gate) in gates)
+        {
+            var outside = Outward(gate, template.Areas[area].Barrier!.Edge)!.Value;
+            if (areaOf[outside] != Outside && blocked[outside] && !border[outside] && !water[outside])
+            {
+                Unblock(outside);
+            }
+        }
+    }
+
+    /// <summary>The neighbour of <paramref name="cell"/> beyond <paramref name="edge"/>, or <c>null</c> off the map.</summary>
+    private int? Outward(int cell, Edge edge)
+    {
+        var (x, y) = edge switch
+        {
+            Edge.North => (cell % width, (cell / width) - 1),
+            Edge.South => (cell % width, (cell / width) + 1),
+            Edge.West => ((cell % width) - 1, cell / width),
+            _ => ((cell % width) + 1, cell / width),
+        };
+        return x < 0 || y < 0 || x >= width || y >= height ? null : Index(x, y);
     }
 
     /// <summary>
@@ -270,7 +331,8 @@ internal sealed partial class MapBuild
     private void Paths(int area, WorldRandom stage)
     {
         var spec = template.Areas[area];
-        if (spec.Connectors.Count == 0)
+        var connectors = this.connectors[area];
+        if (connectors.Count == 0)
         {
             return;
         }
@@ -281,7 +343,6 @@ internal sealed partial class MapBuild
             jitter[cell] = stage.NextDouble() * 0.6;
         }
 
-        var connectors = spec.Connectors.Select(point => Index(point.X, point.Y)).ToList();
         AddGlades(area, connectors, stage.Fork("glades"));
         path[connectors[0]] = true;
         var targets = connectors.Skip(1)

@@ -122,5 +122,11 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "tall_grass",
+      "grass_edge"
+    ]
   }
 }

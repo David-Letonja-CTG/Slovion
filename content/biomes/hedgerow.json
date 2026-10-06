@@ -1,0 +1,18 @@
+{
+  "id": "hedgerow",
+  "floor": [0, 1, 12, 13],
+  "pathSet": 64,
+  "border": [4],
+  "gate": 18,
+  "layers": [{ "id": "thicket", "coverage": 0.18, "scale": 3, "smooth": 1 }],
+  "openings": { "count": [1, 1], "radius": [2, 2], "floor": [0, 1, 12, 13], "pathSet": 64 },
+  "decor": [
+    { "tiles": [17], "blocking": true, "density": 0.75, "where": "layer:thicket" },
+    { "tiles": [6], "blocking": false, "density": 0.05, "where": "floor" }
+  ],
+  "zones": [
+    { "kind": "thicket", "where": "layer:thicket", "habitat": "hedgerow" },
+    { "kind": "hedge_edge", "where": "edge:thicket:2", "habitat": "hedgerow" },
+    { "kind": "field_margin", "where": "any", "habitat": "hedgerow" }
+  ]
+}

@@ -3,7 +3,7 @@ import karst from '../testing/maps/rakov_skocjan_karst.json';
 // Kočevje and Pohorje are generated per save (D13): their tests use the server's maps for world seed 1.
 import kocevje from '../testing/maps/kocevje_forest.json';
 import ljubljana from '../../../../content/maps/ljubljana_park.json';
-import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
+import meadow from '../testing/maps/dravsko_polje_meadow.json';
 import murskaSobota from '../../../../content/maps/murska_sobota_village.json';
 import pohorje from '../testing/maps/pohorje_forest.json';
 import portoroz from '../../../../content/maps/portoroz_coast.json';
@@ -29,30 +29,33 @@ function problemsOf(json: unknown): readonly string[] {
 }
 
 describe('parseTiledMap', () => {
-  it('parses the real Dravsko polje meadow', () => {
+  it('parses the real Dravsko polje meadow (generated for world seed 1)', () => {
     const map = parseTiledMap('dravsko_polje_meadow', meadow);
 
     expect([map.id, map.width, map.height]).toEqual(['dravsko_polje_meadow', 32, 28]);
     expect(map.spawn).toEqual({ x: 10, y: 10, facing: 'right' });
-    expect(map.spots).toContainEqual({ spotId: 'meadow_sage_1', x: 13, y: 10 });
-    expect(map.spots.map((spot) => spot.spotId).sort()).toEqual([
-      'hedgerow_hawthorn_1',
-      'hedgerow_shrike_1',
-      'meadow_dandelion_1',
-      'meadow_hare_1',
-      'meadow_sage_1',
-      'meadow_skylark_1',
-      'meadow_swallowtail_1',
-    ]);
+    expect(map.spots.map((spot) => spot.spotId).sort()).toEqual(
+      [
+        'alauda_arvensis',
+        'crataegus_monogyna',
+        'lanius_collurio',
+        'lepus_europaeus',
+        'papilio_machaon',
+        'salvia_pratensis',
+        'taraxacum_officinale',
+      ].map((species) => `dravsko_polje_meadow_${species}_1`),
+    );
     expect(map.layers.map((layer) => layer.name)).toEqual(['ground', 'decor']);
-    expect(map.tileset.image).toBe('../tilesets/meadow.png');
+    expect(map.tileset.image).toBe('/content/tilesets/meadow.png'); // as the API serves it
     expect(map.npcs).toEqual([{ npcId: 'vera', x: 7, y: 9, gid: 20 }]);
-    expect(map.gates).toEqual([{ flag: 'hedgerow_open', x: 20, y: 19, gid: 19 }]);
+    // One gate in the hedge row (19), at a place of this world's choosing.
+    expect(map.gates).toEqual([{ flag: 'hedgerow_open', x: expect.any(Number), y: 19, gid: 19 }]);
     expect(map.signposts).toEqual([{ x: 12, y: 9, gid: 31 }]);
     // Trees (tile 5) and tall grass (tile 3) sway between two frames.
     expect(map.tileset.animations?.get(5)?.map((frame) => frame.tile)).toEqual([5, 20]);
     expect(map.tileset.animations?.get(3)?.map((frame) => frame.tile)).toEqual([3, 21]);
-    expect([map.areaAt(10, 10), map.areaAt(20, 19), map.areaAt(20, 20)]).toEqual([
+    const [gate] = map.gates;
+    expect([map.areaAt(10, 10), map.areaAt(10, 18), map.areaAt(gate.x, 20)]).toEqual([
       'meadow',
       'meadow',
       'south_hedgerow',
@@ -65,16 +68,19 @@ describe('parseTiledMap', () => {
     expect(map.isBlocked(0, 0)).toBe(true); // hedge border
     expect(map.isBlocked(10, 8)).toBe(true); // hedge above the spawn
     expect(map.isBlocked(10, 10)).toBe(false); // spawn
-    expect(map.isBlocked(13, 10)).toBe(false); // the sage spot can be walked on
+    expect(map.isBlocked(13, 10)).toBe(false); // the path
     expect(map.isBlocked(-1, 5)).toBe(true);
     expect(map.isBlocked(32, 5)).toBe(true);
   });
 
   it('finds spots by tile', () => {
     const map = parseTiledMap('dravsko_polje_meadow', meadow);
+    const sage = map.spots.find(
+      (spot) => spot.spotId === 'dravsko_polje_meadow_salvia_pratensis_1',
+    )!;
 
-    expect(map.spotAt(13, 10)?.spotId).toBe('meadow_sage_1');
-    expect(map.spotAt(12, 10)).toBeUndefined();
+    expect(map.spotAt(sage.x, sage.y)?.spotId).toBe(sage.spotId);
+    expect(map.spotAt(10, 10)).toBeUndefined();
   });
 
   /** Every tile the player can walk to from the spawn, with the given progress flags. */
@@ -113,7 +119,7 @@ describe('parseTiledMap', () => {
   it('lets the player reach every meadow spot from the spawn', () => {
     const { map, reachable } = reachableFromSpawn();
 
-    for (const spot of map.spots.filter((s) => s.spotId.startsWith('meadow_'))) {
+    for (const spot of map.spots.filter((s) => s.y < 19)) {
       expect(reachable(spot.x, spot.y), spot.spotId).toBe(true);
     }
   });
@@ -131,9 +137,17 @@ describe('parseTiledMap', () => {
   it('lets the player reach the hedgerow and its spot once the gate is open', () => {
     const { map, reachable } = reachableFromSpawn(['hedgerow_open']);
 
-    expect(reachable(20, 19)).toBe(true);
-    const hawthorn = map.spots.find((spot) => spot.spotId === 'hedgerow_hawthorn_1')!;
-    expect(reachable(hawthorn.x, hawthorn.y + 1)).toBe(true);
+    const [gate] = map.gates;
+    expect(reachable(gate.x, gate.y)).toBe(true);
+    // The hawthorn blocks its tile; the player stands beside it.
+    const hawthorn = map.spots.find((spot) => spot.spotId.endsWith('_crataegus_monogyna_1'))!;
+    const beside = [
+      [0, 1],
+      [0, -1],
+      [1, 0],
+      [-1, 0],
+    ].some(([dx, dy]) => reachable(hawthorn.x + dx, hawthorn.y + dy));
+    expect(beside).toBe(true);
   });
 
   it('lets the player reach the signpost next to the spawn', () => {
@@ -531,30 +545,22 @@ describe('parseTiledMap', () => {
 
   it('reads the habitat zones (same tiles as the server)', () => {
     const map = parseTiledMap('dravsko_polje_meadow', meadow);
+    const zoned = (habitat: string) =>
+      map.habitats
+        .filter((zone) => zone.habitatId === habitat)
+        .map((zone) => [zone.minY, zone.maxY]);
 
-    for (const [x, y] of [
-      [12, 12],
-      [18, 15],
-      [8, 3],
-      [13, 6],
-    ]) {
-      expect(map.habitatAt(x, y), `${x},${y}`).toBe('tall_grass');
-    }
-    for (const [x, y] of [
-      [2, 20],
-      [13, 22],
-      [29, 22],
-      [5, 26],
-    ]) {
-      expect(map.habitatAt(x, y), `${x},${y}`).toBe('hedgerow');
-    }
+    // Tall grass on the meadow (rows 1–18), hedgerow behind the hedge (rows 20–26).
+    expect(zoned('tall_grass').length).toBeGreaterThan(0);
+    expect(zoned('tall_grass').every(([minY, maxY]) => minY >= 1 && maxY <= 18)).toBe(true);
+    expect(zoned('hedgerow').length).toBeGreaterThan(0);
+    expect(zoned('hedgerow').every(([minY, maxY]) => minY >= 20 && maxY <= 26)).toBe(true);
+    const [gate] = map.gates;
     for (const [x, y] of [
       [10, 10],
-      [19, 12],
       [12, 11],
-      [20, 21],
-      [10, 23],
-      [20, 19],
+      [7, 10],
+      [gate.x, gate.y],
     ]) {
       expect(map.habitatAt(x, y), `${x},${y}`).toBeUndefined();
     }
@@ -578,11 +584,14 @@ describe('parseTiledMap', () => {
       unknown
     >[];
     json.layers.find((l) => l['name'] === 'objects')!['objects'] = objects.filter(
-      (o) => o['name'] !== 'area_south_hedgerow',
+      (o) =>
+        !(o['properties'] as { value: unknown }[] | undefined)?.some(
+          (property) => property.value === 'south_hedgerow',
+        ),
     );
 
     expect(problemsOf(json).join('\n')).toMatch(
-      /walkable tile\(s\) lie in no area, e\.g\. \(\d+, 2\d\)/,
+      /walkable tile\(s\) lie in no area, e\.g\. \(\d+, (19|2\d)\)/,
     );
   });
 

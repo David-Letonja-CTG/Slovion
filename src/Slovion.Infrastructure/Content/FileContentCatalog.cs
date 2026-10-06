@@ -137,7 +137,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
         var areas = LoadAreas(Path.Combine(rootPath, AreasFolder), errors);
         var stationDrafts = LoadStations(Path.Combine(rootPath, "stations"), species, errors);
         var biomes = LoadBiomes(Path.Combine(rootPath, "biomes"), habitats, errors);
-        var world = new WorldContent(species, habitats, biomes, placements, areas);
+        var world = new WorldContent(species, habitats, biomes, placements, areas, rewardFlags);
         var (maps, mapNpcs, stationPlacements) = LoadMaps(Path.Combine(rootPath, "maps"), world, npcs, rewardFlags, errors);
         var stations = PlaceStations(stationDrafts, stationPlacements, errors);
         var regions = LoadRegions(Path.Combine(rootPath, "regions"), maps.Keys.ToHashSet(StringComparer.Ordinal), rewardFlags, errors);

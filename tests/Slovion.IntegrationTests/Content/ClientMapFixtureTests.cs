@@ -18,6 +18,7 @@ public sealed class ClientMapFixtureTests
     private static readonly JsonSerializerOptions Pretty = new() { WriteIndented = true, IndentSize = 1, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
 
     [Theory]
+    [InlineData("dravsko_polje_meadow")]
     [InlineData("kocevje_forest")]
     [InlineData("pohorje_forest")]
     [InlineData("triglav_alps")]

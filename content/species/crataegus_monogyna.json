@@ -107,5 +107,13 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "hedge_edge",
+      "field_margin"
+    ],
+    "tile": 16,
+    "blocking": true
   }
 }

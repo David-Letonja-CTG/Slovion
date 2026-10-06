@@ -98,5 +98,12 @@
       1,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "grassland",
+      "grass_edge"
+    ],
+    "tile": 8
   }
 }

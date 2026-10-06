@@ -80,7 +80,7 @@ Content validation checks that:
 
 | Region | Authored | Generated |
 |---|---|---|
-| Dravsko polje (32×28) | spawn, Vera, signpost, station (same places) | the meadow including the tutorial corner (`meadow`; the sage is marked near the spawn), the hedge row and its gate (a barrier, §4a), and the hedgerow strip behind it (`hedgerow`, area `south_hedgerow`, the shrike and the hawthorn) | the meadow (`meadow`); the hedgerow strip behind the gate (`hedgerow`, area `south_hedgerow`, the shrike and the hawthorn) |
+| Dravsko polje (32×28) | spawn, Vera, signpost, station (same places), on a strip of rows 8–11 left of x 16 with the path | the meadow around that strip in three rectangles, including the tutorial corner (`meadow`; the sage is marked near the spawn), the hedge row and its gate (a barrier, §4a), and the hedgerow strip behind it (`hedgerow`, area `south_hedgerow`, the shrike and the hawthorn) |
 | Kočevje, Pohorje, Triglav, Cerknica (26×20) | the left strip (columns 0–7: spawn, signpost, person, station) | columns 8–25 |
 | Rakov Škocjan | left strip | the gorge (`karst`); the cave (`cave`, an underground area holding exactly the olm in cave water and the cave beetle and the bat on the cave floor), entered from the gorge |
 | Portorož | left strip | promenade with lamps, salt-pan basins (structures), shore and sea |
@@ -99,6 +99,7 @@ Content validation checks that:
   - without the flag, no cell of the gated rectangle is reachable from the spawn
   - with it, every cell that should be is, and only through the gate
 - So the quest unlock works as today, while the hedge and the gate move per save.
+- **As built (phase 3):** the barrier is the biome's `border` along the edge row of the gated rectangle, the gate a PRNG-chosen cell of it (never a corner) whose outer neighbour is walkable; its tile is the biome's `gate`. The gate is the area's first connector, so its paths start there, and the tile in front of it is cleared. Generation checks both cases: with the gate closed nothing in the area is reachable, with it open everything is. End-to-end tests find their routes on the served map, with the player's tile from the debug view.
 
 **Near the spawn:** a template can mark a species as `nearSpawn`.
 - Its spot is then chosen only among compatible cells within 6 steps of the spawn (falling back to the nearest compatible cell).

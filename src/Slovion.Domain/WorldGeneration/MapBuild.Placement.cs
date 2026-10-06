@@ -37,7 +37,7 @@ internal sealed partial class MapBuild
         var reach = Reach();
         var wading = WadeReach();
         var fromSpawn = GridSearch.Distances(width, height, [spawn], Walkable);
-        var keepAway = spec.Connectors.Select(point => Index(point.X, point.Y)).Append(spawn).ToList();
+        var keepAway = connectors[area].Append(spawn).ToList();
         foreach (var request in spec.Species)
         {
             if ((only is not null && !only.Contains(request.SpeciesId)) || spots.Any(spot => spot.SpeciesId == request.SpeciesId))
@@ -52,12 +52,20 @@ internal sealed partial class MapBuild
                 foreach (var cell in Cells(spec.Rect))
                 {
                     var preference = zoneKind[cell] is { } kind ? IndexOf(placement.Zones, kind) : -1;
-                    if (preference >= 0 && Fits(cell, placement, reach, wading, fromSpawn)
+                    if (preference >= 0 && Fits(cell, placement, reach, wading) && NearSpawn(cell, placement, fromSpawn)
                         && spots.Select(spot => spot.Cell).Concat(keepAway).All(other => Chebyshev(cell, other) >= spacing))
                     {
                         weighted.Add((cell, placement.Zones.Count - preference));
                     }
                 }
+            }
+
+            // Nothing near the spawn fits: the compatible tile nearest to it.
+            if (weighted.Count == 0 && placement.NearSpawn
+                && Cells(spec.Rect).Where(cell => zoneKind[cell] is { } kind && placement.Zones.Contains(kind) && Fits(cell, placement, reach, wading) && spots.All(spot => spot.Cell != cell))
+                    .OrderBy(cell => StepsFromSpawn(cell, fromSpawn)).ThenBy(cell => cell).FirstOrDefault(-1) is var nearest and >= 0)
+            {
+                weighted.Add((nearest, 1));
             }
 
             if (weighted.Count == 0)
@@ -79,7 +87,7 @@ internal sealed partial class MapBuild
         }
     }
 
-    private bool Fits(int cell, SpeciesPlacement placement, bool[] reach, bool[] wading, int[] fromSpawn)
+    private bool Fits(int cell, SpeciesPlacement placement, bool[] reach, bool[] wading)
     {
         if (border[cell] || path[cell])
         {
@@ -96,11 +104,15 @@ internal sealed partial class MapBuild
             WaterNeed.Near => !blocked[cell] && reach[cell] && waterDistance[cell] <= NearWaterTiles,
             _ => !blocked[cell] && reach[cell] && (!placement.Blocking || neighbourReached),
         };
-        var nearSpawn = !placement.NearSpawn || (blocked[cell]
-            ? GridSearch.Neighbours(cell, width, height).Any(next => fromSpawn[next] <= NearSpawnSteps)
-            : fromSpawn[cell] <= NearSpawnSteps);
-        return fits && nearSpawn;
+        return fits;
     }
+
+    private bool NearSpawn(int cell, SpeciesPlacement placement, int[] fromSpawn) =>
+        !placement.NearSpawn || StepsFromSpawn(cell, fromSpawn) <= NearSpawnSteps;
+
+    /// <summary>Steps from the spawn to the tile, or for a blocked tile to the nearest tile beside it.</summary>
+    private int StepsFromSpawn(int cell, int[] fromSpawn) =>
+        blocked[cell] ? GridSearch.Neighbours(cell, width, height).Min(next => fromSpawn[next]) : fromSpawn[cell];
 
     /// <summary>
     /// Path tiles by their neighbours (design §5): a set of 16 per floor, +1/+2/+4/+8 when the north/east/south/west side
