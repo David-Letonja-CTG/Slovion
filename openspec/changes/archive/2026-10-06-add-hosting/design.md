@@ -209,7 +209,39 @@ After the first live deploy the owner asked to deploy only on specific releases 
 
 Merging into `main` only runs CI. The spec's deployment requirement, D12, the runbook, the architecture doc and the README changed with it.
 
-### Still to do with the owner
+### Validation on the real VM (completed 2026-10-06)
 
-- Set `BACKUP_URL` (the owner's bucket and pre-authenticated request), deploy, and see a dump arrive in the bucket.
-- A forced rollback, and a restore from a dump.
+- **Deploys:**
+  - the first deploy (#29)
+  - v0.1.0 through a published release
+  - a redeploy by hand that picked up `BACKUP_URL`
+  - v0.2.0 and v0.3.0 through releases
+
+  Each passed the HTTPS health check.
+- **Backups:**
+  - a backup by hand logged `uploaded slovion-20261005T222313Z.dump`
+  - the timer's first scheduled run uploaded `slovion-20261006T033516Z.dump` at 03:35 UTC on its own
+- **A forced rollback** (run 37415448561):
+  1. `SITE_ADDRESS` set to `rollback-test.invalid`, then v0.3.0 deployed by hand
+  2. the health check failed after 3 minutes, and the rollback restored `.env.previous` (`TAG=c3db6c5`, the real address)
+  3. only `web` was recreated; the API and database kept running
+  4. the variable was restored, and the live smoke test passed again
+  5. the site was unreachable for about 4 minutes
+- **Restores:**
+  - a restore after the first deploy: a backup, a second save, then a restore; the first save's token still worked and the second's answered 401
+  - after rewriting the runbook's restore steps, they were checked again as `slovion` without restoring: copying the newest dump into the database container and reading it with `pg_restore --list` (5 tables with data), then removing the copy
+- **Installing over HTTPS:** on the live site, Chromium found:
+  - a standalone manifest with the 192, 512 and maskable icons
+  - a service worker controlling the page
+  - the app shell and sound data cached
+  - the title screen opening offline
+
+  The install prompt itself is a browser button no script can click.
+
+### Follow-ups found during validation
+
+- **The runbook's restore steps** didn't say to work as `slovion`, and copied the dump from the wrong folder (`/opt/slovion` instead of `backups/`, which only `slovion` can read). Rewritten, including how to bring in a dump from the bucket.
+- **PostgreSQL is pinned to `postgres:18.6`.** The v0.3.0 deploy pulled a newer `postgres:18` image and recreated the database container (on the same volume; no data lost).
+  - Pinned in the production stack, the dev compose file, the CI E2E service and the integration tests, so all four use the version production runs.
+  - `18.6` is the digest production already runs, so the next deploy doesn't restart the database.
+  - `docs/hosting.md` explains how to update it on purpose.

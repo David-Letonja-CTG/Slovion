@@ -1,7 +1,7 @@
 # Local development services. The API and client run on the host.
 services:
   db:
-    image: postgres:18
+    image: postgres:18.6
     environment:
       POSTGRES_DB: slovion
       POSTGRES_USER: slovion

@@ -162,14 +162,23 @@ systemctl list-timers slovion-backup
 journalctl -u slovion-backup --since today
 ```
 
-**Restore** a dump: take a local one from `/opt/slovion/backups/`, or download one from the bucket in the console. Then:
+**Restore** a dump. The dumps belong to the `slovion` user, so work as that user:
 
 ```bash
+sudo -iu slovion
 cd /opt/slovion
+ls backups/                       # the local dumps, newest last
 docker compose stop web api
-docker compose cp slovion-<time>.dump db:/tmp/restore.dump
+docker compose cp backups/slovion-<time>.dump db:/tmp/restore.dump
 docker compose exec -T db pg_restore -U slovion -d slovion --clean --if-exists /tmp/restore.dump
+docker compose exec -T db rm /tmp/restore.dump
 docker compose start api web
+```
+
+For a dump from the bucket, download it in the console, copy it to the VM (`scp slovion-<time>.dump ubuntu@<VM IP>:`), and hand it to `slovion` before the steps above:
+
+```bash
+sudo install -o slovion -g slovion -m 600 ~/slovion-<time>.dump /opt/slovion/backups/
 ```
 
 ## Operations
@@ -184,6 +193,7 @@ All of these run as the `slovion` user (`sudo -iu slovion`) in `/opt/slovion`:
 | Disk usage | `docker system df`, `df -h` |
 
 - **Database password:** PostgreSQL sets its password only when the data volume is first created. To change `POSTGRES_PASSWORD` later, first change it inside the database (`ALTER USER slovion PASSWORD '…'`), then update the secret and deploy.
+- **PostgreSQL version:** the image is pinned (`postgres:18.6`) in `deploy/compose.yml`, `docker-compose.yml`, the E2E job in `.github/workflows/ci.yml` and the integration tests' `PostgresFixture.cs`, so a deploy never restarts the database for a new image by surprise. To update within PostgreSQL 18, change the tag in all four, let CI pass, and release; the deploy recreates the database container on the same data volume. A new major version (19) needs a dump and restore instead.
 - **Renewals:** the pre-authenticated backup URL expires; create a new one and update `BACKUP_URL` before then. TLS certificates renew themselves.
 - **Logs** are capped at 3 × 10 MB per container.
 - **Check from outside**, from a checkout of the repository: `bash deploy/smoke-test.sh https://<SITE_ADDRESS>`.
