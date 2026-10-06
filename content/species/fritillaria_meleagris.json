@@ -115,5 +115,11 @@
       0,
       1
     ]
+  },
+  "placement": {
+    "zones": [
+      "wet_meadow"
+    ],
+    "tile": 127
   }
 }

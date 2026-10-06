@@ -110,5 +110,11 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "river_bank"
+    ],
+    "water": "near"
   }
 }

@@ -41,8 +41,15 @@ internal sealed record BiomeDecorFile(List<int>? Tiles, bool Blocking, double De
 
 internal sealed record BiomeZoneFile(string? Kind, string? Where, string? Habitat);
 
+internal sealed record BiomeStructureFile(string? Prefab, List<int>? Count, string? Along);
+
+internal sealed record BiomeLampsFile(int? Tile, int Spacing);
+
 /// <summary>A biome (design §5): tiles and rules the generator interprets; gameplay data, not facts (D6).</summary>
-internal sealed record BiomeFile(string? Id, List<int>? Floor, int? PathSet, List<int>? Border, List<BiomeLayerFile>? Layers, BiomeOpeningsFile? Openings, BiomeWaterFile? Water, List<BiomeDecorFile>? Decor, List<BiomeZoneFile>? Zones, int? Gate);
+internal sealed record BiomeFile(string? Id, List<int>? Floor, int? PathSet, List<int>? Border, List<BiomeLayerFile>? Layers, BiomeOpeningsFile? Openings, BiomeWaterFile? Water, List<BiomeDecorFile>? Decor, List<BiomeZoneFile>? Zones, int? Gate, List<BiomeStructureFile>? Structures, BiomeLampsFile? Lamps);
+
+/// <summary>A structure placed whole by biomes (design §5a): ground tiles row by row, door and perches relative to its top-left tile.</summary>
+internal sealed record PrefabFile(string? Id, List<List<int>>? Ground, bool Blocking, List<int>? Door, List<List<int>>? Perches, string? Zone, string? PerchZone);
 
 /// <summary>The subset of the Tiled JSON map format that Slovion uses on the server.</summary>
 internal sealed record TiledMapFile(string? Orientation, int Width, int Height, int TileWidth, int TileHeight, List<TiledLayerFile>? Layers, List<TiledTilesetFile>? Tilesets);

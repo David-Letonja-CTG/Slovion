@@ -6,9 +6,23 @@ namespace Slovion.Domain.WorldGeneration;
 /// What a biome looks like, as data (design §5): its floor, terrain layers grown from noise, openings, water, paths,
 /// decoration and the habitat zone kinds derived from all of that. Tiles are tileset indices (Tiled GID − 1); without a
 /// <c>PathSet</c> paths keep the floor (a cave). <c>Gate</c> is the tile of a gate in its border (a barrier, design §4a).
+/// <c>Structures</c> are placed whole (houses, salt-pan basins) and <c>Lamps</c> stand beside the paths (design §5a).
 /// The generator interprets these generic rules only; it knows no biome by name.
 /// </summary>
-public sealed record Biome(string Id, IReadOnlyList<int> Floor, int? PathSet, IReadOnlyList<int> Border, IReadOnlyList<TerrainLayer> Layers, Openings? Openings, Water? Water, IReadOnlyList<DecorRule> Decor, IReadOnlyList<ZoneRule> Zones, int? Gate = null);
+public sealed record Biome(string Id, IReadOnlyList<int> Floor, int? PathSet, IReadOnlyList<int> Border, IReadOnlyList<TerrainLayer> Layers, Openings? Openings, Water? Water, IReadOnlyList<DecorRule> Decor, IReadOnlyList<ZoneRule> Zones, int? Gate = null, IReadOnlyList<StructureRule>? Structures = null, Lamps? Lamps = null);
+
+/// <summary>
+/// A small authored block placed whole (design §5a): its ground tiles row by row and whether it blocks; a door, whose
+/// tile below is kept open and reached by a path; perches (a chimney) for perched species. Its open tiles get the zone
+/// kind <paramref name="Zone"/>, its perches <paramref name="PerchZone"/>.
+/// </summary>
+public sealed record Prefab(string Id, int Width, int Height, IReadOnlyList<int> Ground, bool Blocking, GridPoint? Door, IReadOnlyList<GridPoint> Perches, string? Zone, string? PerchZone);
+
+/// <summary>How many of a structure a biome places, and whether they stand in a row along the area's north edge.</summary>
+public sealed record StructureRule(Prefab Prefab, int MinCount, int MaxCount, bool AlongNorth);
+
+/// <summary>Lamp posts (drawn with <paramref name="Tile"/>) beside the paths, at least <paramref name="Spacing"/> tiles apart.</summary>
+public sealed record Lamps(int Tile, int Spacing);
 
 /// <summary>
 /// A terrain grown from smoothed noise: it covers <paramref name="Coverage"/> of the area, in blobs about
@@ -77,10 +91,13 @@ public enum SelectorKind
 
     /// <summary>Water cells.</summary>
     Water,
+
+    /// <summary>Cells of a structure, which take the structure's own zone kind.</summary>
+    Structure,
 }
 
 /// <summary>
-/// Which cells a rule applies to, written in content as <c>any</c>, <c>floor</c>, <c>opening</c>, <c>water</c>,
+/// Which cells a rule applies to, written in content as <c>any</c>, <c>floor</c>, <c>opening</c>, <c>water</c>, <c>structure</c>,
 /// <c>layer:&lt;id&gt;</c>, <c>edge:&lt;id&gt;[:distance]</c> or <c>near:water[:distance]</c>.
 /// </summary>
 public sealed record CellSelector(SelectorKind Kind, string? Layer = null, int Distance = 1)
@@ -101,6 +118,7 @@ public sealed record CellSelector(SelectorKind Kind, string? Layer = null, int D
             ["floor"] => new CellSelector(SelectorKind.Floor),
             ["opening"] => new CellSelector(SelectorKind.Opening),
             ["water"] => new CellSelector(SelectorKind.Water),
+            ["structure"] => new CellSelector(SelectorKind.Structure),
             ["layer", { Length: > 0 } layer] => new CellSelector(SelectorKind.Layer, layer),
             ["edge", { Length: > 0 } layer] => new CellSelector(SelectorKind.Edge, layer),
             ["edge", { Length: > 0 } layer, _] when distance > 0 => new CellSelector(SelectorKind.Edge, layer, distance),

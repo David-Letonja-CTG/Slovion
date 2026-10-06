@@ -1,0 +1,682 @@
+{
+  "compressionlevel": -1,
+  "height": 20,
+  "infinite": false,
+  "layers": [
+    {
+      "data": [
+        124, 124, 124, 124, 124, 124, 2, 134, 13, 2, 134, 134, 134, 134, 134, 147, 147, 147, 147,
+        47, 147, 147, 146, 146, 146, 147, 124, 124, 124, 124, 124, 124, 13, 134, 1, 14, 134, 134,
+        134, 134, 134, 147, 147, 147, 147, 147, 47, 147, 146, 146, 146, 147, 125, 125, 133, 125,
+        125, 125, 14, 125, 2, 13, 125, 125, 133, 125, 125, 147, 147, 146, 146, 146, 47, 147, 146,
+        146, 146, 147, 123, 123, 123, 123, 123, 123, 123, 123, 74, 70, 70, 70, 72, 1, 14, 147, 147,
+        146, 146, 146, 147, 47, 147, 147, 147, 147, 14, 1, 2, 13, 75, 1, 2, 13, 75, 2, 2, 1, 14, 2,
+        14, 147, 147, 146, 146, 146, 147, 47, 147, 147, 147, 147, 1, 14, 13, 2, 75, 14, 13, 2, 75,
+        13, 2, 1, 13, 13, 1, 147, 147, 147, 147, 147, 147, 47, 147, 147, 147, 147, 2, 13, 14, 1, 75,
+        13, 14, 1, 75, 13, 13, 2, 13, 14, 14, 147, 147, 146, 146, 146, 147, 147, 47, 147, 147, 147,
+        13, 2, 1, 14, 75, 2, 1, 14, 75, 2, 14, 2, 2, 1, 14, 147, 147, 146, 146, 146, 147, 47, 147,
+        147, 147, 147, 14, 1, 2, 13, 75, 1, 2, 13, 75, 1, 14, 1, 2, 13, 13, 147, 147, 146, 146, 146,
+        47, 147, 147, 147, 147, 147, 1, 78, 70, 70, 69, 70, 70, 70, 71, 2, 2, 2, 1, 14, 1, 147, 147,
+        147, 147, 47, 147, 147, 147, 147, 147, 147, 1, 2, 13, 14, 1, 2, 13, 14, 14, 2, 1, 14, 2, 13,
+        13, 147, 147, 147, 147, 47, 147, 147, 147, 147, 147, 147, 143, 143, 143, 143, 143, 143, 143,
+        143, 2, 13, 13, 14, 1, 1, 14, 147, 147, 147, 147, 47, 147, 147, 147, 147, 147, 147, 143,
+        143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143, 143,
+        143, 143, 143, 143, 143, 143, 143, 144, 144, 144, 144, 144, 144, 144, 144, 143, 143, 144,
+        144, 144, 144, 144, 143, 143, 143, 144, 144, 144, 143, 143, 143, 143, 144, 144, 144, 144,
+        144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144,
+        144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144,
+        144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 144, 49, 49, 49, 49, 49, 49, 49,
+        49, 144, 144, 49, 49, 49, 49, 49, 144, 144, 144, 49, 49, 49, 144, 144, 144, 144, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49
+      ],
+      "height": 20,
+      "id": 1,
+      "name": "ground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 148, 0, 0, 0, 0, 0, 0, 7,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "height": 20,
+      "id": 2,
+      "name": "decor",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        5, 5, 5, 5, 5, 5, 0, 5, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5,
+        5, 0, 5, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 0, 5, 5, 0,
+        5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 5, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5,
+        5, 5, 5, 5, 5, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      ],
+      "height": 20,
+      "id": 3,
+      "name": "collision",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": false,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 4,
+      "name": "objects",
+      "objects": [
+        {
+          "height": 0,
+          "id": 1,
+          "name": "spawn",
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ],
+          "rotation": 0,
+          "type": "spawn",
+          "visible": true,
+          "width": 0,
+          "x": 24,
+          "y": 152
+        },
+        {
+          "gid": 31,
+          "height": 16,
+          "id": 2,
+          "name": "signpost",
+          "rotation": 0,
+          "type": "signpost",
+          "visible": true,
+          "width": 16,
+          "x": 32,
+          "y": 144
+        },
+        {
+          "gid": 20,
+          "height": 16,
+          "id": 3,
+          "name": "nina",
+          "properties": [
+            {
+              "name": "npcId",
+              "type": "string",
+              "value": "nina"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 16,
+          "x": 48,
+          "y": 176
+        },
+        {
+          "gid": 57,
+          "height": 16,
+          "id": 4,
+          "name": "coast_station",
+          "properties": [
+            {
+              "name": "stationId",
+              "type": "string",
+              "value": "coast_station"
+            }
+          ],
+          "rotation": 0,
+          "type": "station",
+          "visible": true,
+          "width": 16,
+          "x": 96,
+          "y": 144
+        },
+        {
+          "gid": 127,
+          "height": 16,
+          "id": 5,
+          "name": "lamp_1",
+          "rotation": 0,
+          "type": "lamp",
+          "visible": true,
+          "width": 16,
+          "x": 32,
+          "y": 64
+        },
+        {
+          "gid": 127,
+          "height": 16,
+          "id": 6,
+          "name": "lamp_2",
+          "rotation": 0,
+          "type": "lamp",
+          "visible": true,
+          "width": 16,
+          "x": 112,
+          "y": 64
+        },
+        {
+          "id": 19,
+          "name": "area_portoroz_0_0_8_20",
+          "type": "area",
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 320,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "portoroz"
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "portoroz_coast_himantopus_himantopus_1",
+          "type": "spot",
+          "point": true,
+          "x": 408,
+          "y": 168,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "himantopus_himantopus"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "portoroz_coast_himantopus_himantopus_1"
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "portoroz_coast_egretta_garzetta_1",
+          "type": "spot",
+          "point": true,
+          "x": 248,
+          "y": 56,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "egretta_garzetta"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "portoroz_coast_egretta_garzetta_1"
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "portoroz_coast_aphanius_fasciatus_1",
+          "type": "spot",
+          "point": true,
+          "x": 312,
+          "y": 184,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "aphanius_fasciatus"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "portoroz_coast_aphanius_fasciatus_1"
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "portoroz_coast_salicornia_europaea_1",
+          "type": "spot",
+          "point": true,
+          "x": 344,
+          "y": 104,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "salicornia_europaea"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "portoroz_coast_salicornia_europaea_1"
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "portoroz_coast_sarpa_salpa_1",
+          "type": "spot",
+          "point": true,
+          "x": 152,
+          "y": 232,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "sarpa_salpa"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "portoroz_coast_sarpa_salpa_1"
+            }
+          ]
+        },
+        {
+          "id": 25,
+          "name": "portoroz_coast_pinna_nobilis_1",
+          "type": "spot",
+          "point": true,
+          "x": 360,
+          "y": 248,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "pinna_nobilis"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "portoroz_coast_pinna_nobilis_1"
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "generated_lamp_26",
+          "type": "lamp",
+          "gid": 127,
+          "x": 144,
+          "y": 128,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true
+        },
+        {
+          "id": 27,
+          "name": "generated_lamp_27",
+          "type": "lamp",
+          "gid": 127,
+          "x": 128,
+          "y": 48,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true
+        },
+        {
+          "id": 28,
+          "name": "generated_habitat_28",
+          "type": "habitat",
+          "x": 240,
+          "y": 0,
+          "width": 176,
+          "height": 192,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "saltpan"
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "generated_habitat_29",
+          "type": "habitat",
+          "x": 160,
+          "y": 208,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "sea"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "generated_habitat_30",
+          "type": "habitat",
+          "x": 288,
+          "y": 208,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "sea"
+            }
+          ]
+        },
+        {
+          "id": 31,
+          "name": "generated_habitat_31",
+          "type": "habitat",
+          "x": 400,
+          "y": 208,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "sea"
+            }
+          ]
+        },
+        {
+          "id": 32,
+          "name": "generated_habitat_32",
+          "type": "habitat",
+          "x": 128,
+          "y": 224,
+          "width": 288,
+          "height": 96,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "sea"
+            }
+          ]
+        },
+        {
+          "id": 33,
+          "name": "generated_area_33",
+          "type": "area",
+          "x": 128,
+          "y": 0,
+          "width": 112,
+          "height": 192,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "portoroz"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": 34,
+          "name": "generated_area_34",
+          "type": "area",
+          "x": 240,
+          "y": 0,
+          "width": 176,
+          "height": 192,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "secoveljske_soline"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": 35,
+          "name": "generated_area_35",
+          "type": "area",
+          "x": 128,
+          "y": 192,
+          "width": 288,
+          "height": 128,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "portoroz"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "nextlayerid": 5,
+  "nextobjectid": 36,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.11.0",
+  "tileheight": 16,
+  "tilesets": [
+    {
+      "columns": 8,
+      "firstgid": 1,
+      "image": "/content/tilesets/meadow.png",
+      "imageheight": 304,
+      "imagewidth": 128,
+      "margin": 0,
+      "name": "meadow",
+      "spacing": 0,
+      "tilecount": 152,
+      "tileheight": 16,
+      "tilewidth": 16,
+      "tiles": [
+        {
+          "id": 3,
+          "animation": [
+            {
+              "tileid": 3,
+              "duration": 700
+            },
+            {
+              "tileid": 21,
+              "duration": 700
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "animation": [
+            {
+              "tileid": 5,
+              "duration": 900
+            },
+            {
+              "tileid": 20,
+              "duration": 900
+            }
+          ]
+        },
+        {
+          "id": 46,
+          "animation": [
+            {
+              "tileid": 46,
+              "duration": 600
+            },
+            {
+              "tileid": 47,
+              "duration": 600
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "animation": [
+            {
+              "tileid": 48,
+              "duration": 600
+            },
+            {
+              "tileid": 49,
+              "duration": 600
+            }
+          ]
+        },
+        {
+          "id": 116,
+          "animation": [
+            {
+              "tileid": 116,
+              "duration": 800
+            },
+            {
+              "tileid": 117,
+              "duration": 800
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 143,
+          "animation": [
+            {
+              "tileid": 143,
+              "duration": 800
+            },
+            {
+              "tileid": 144,
+              "duration": 800
+            }
+          ],
+          "properties": [
+            {
+              "name": "swimmable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilewidth": 16,
+  "type": "map",
+  "version": "1.10",
+  "width": 26
+}

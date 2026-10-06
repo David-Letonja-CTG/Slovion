@@ -1,0 +1,905 @@
+{
+  "compressionlevel": -1,
+  "height": 20,
+  "infinite": false,
+  "layers": [
+    {
+      "data": [
+        124, 124, 124, 124, 124, 124, 134, 134, 123, 124, 124, 124, 124, 124, 124, 123, 124, 124,
+        124, 124, 124, 124, 123, 123, 123, 123, 124, 124, 124, 124, 124, 124, 134, 134, 123, 124,
+        124, 124, 124, 124, 124, 123, 124, 124, 124, 124, 124, 124, 123, 123, 123, 123, 125, 125,
+        133, 125, 125, 125, 125, 125, 123, 125, 125, 133, 125, 125, 125, 123, 125, 125, 133, 125,
+        125, 125, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123,
+        123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123,
+        123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123,
+        123, 123, 123, 123, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132,
+        132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132,
+        132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132,
+        132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132,
+        132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132,
+        132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132,
+        132, 78, 70, 70, 70, 70, 70, 70, 68, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132,
+        132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 77, 68, 132, 132, 132,
+        132, 132, 132, 132, 49, 132, 132, 132, 132, 132, 49, 49, 49, 132, 132, 132, 132, 132, 132,
+        132, 132, 49, 75, 132, 132, 132, 132, 132, 49, 49, 49, 49, 49, 132, 49, 49, 49, 49, 49, 132,
+        132, 132, 132, 132, 132, 132, 132, 49, 75, 49, 49, 49, 49, 49, 49, 49, 132, 49, 49, 49, 49,
+        49, 132, 132, 132, 56, 56, 56, 56, 56, 56, 56, 56, 132, 75, 49, 49, 49, 49, 49, 132, 132,
+        132, 132, 132, 49, 132, 132, 132, 132, 132, 49, 49, 49, 49, 49, 51, 51, 49, 132, 77, 70, 70,
+        70, 70, 70, 70, 70, 72, 132, 132, 132, 132, 132, 132, 132, 132, 49, 49, 49, 49, 49, 49, 49,
+        49, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132,
+        132, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52,
+        52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52,
+        52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52,
+        52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52,
+        52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52
+      ],
+      "height": 20,
+      "id": 1,
+      "name": "ground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 131, 131, 131, 131, 131, 131, 131, 131, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0,
+        0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 129, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 4, 53,
+        0, 4, 0, 0, 4, 128, 0, 53, 0, 0, 0, 0, 0, 0, 53, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0,
+        4, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 53, 0, 0, 4, 0, 0, 4, 0, 4, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0,
+        53, 0, 4, 0, 0
+      ],
+      "height": 20,
+      "id": 2,
+      "name": "decor",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,
+        5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0,
+        0, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 5, 5, 5,
+        5, 5, 0, 5, 0, 0, 0, 0, 0, 0, 5, 0, 5, 5, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0,
+        5, 0, 0, 0, 0, 5, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0,
+        5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "height": 20,
+      "id": 3,
+      "name": "collision",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": false,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 4,
+      "name": "objects",
+      "objects": [
+        {
+          "height": 0,
+          "id": 8,
+          "name": "spawn",
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ],
+          "rotation": 0,
+          "type": "spawn",
+          "visible": true,
+          "width": 0,
+          "x": 24,
+          "y": 152
+        },
+        {
+          "gid": 31,
+          "height": 16,
+          "id": 9,
+          "name": "signpost",
+          "rotation": 0,
+          "type": "signpost",
+          "visible": true,
+          "width": 16,
+          "x": 32,
+          "y": 144
+        },
+        {
+          "gid": 20,
+          "height": 16,
+          "id": 10,
+          "name": "ana",
+          "properties": [
+            {
+              "name": "npcId",
+              "type": "string",
+              "value": "ana"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 16,
+          "x": 48,
+          "y": 176
+        },
+        {
+          "gid": 57,
+          "height": 16,
+          "id": 11,
+          "name": "city_station",
+          "properties": [
+            {
+              "name": "stationId",
+              "type": "string",
+              "value": "city_station"
+            }
+          ],
+          "rotation": 0,
+          "type": "station",
+          "visible": true,
+          "width": 16,
+          "x": 96,
+          "y": 144
+        },
+        {
+          "gid": 127,
+          "height": 16,
+          "id": 1,
+          "name": "lamp_1",
+          "rotation": 0,
+          "type": "lamp",
+          "visible": true,
+          "width": 16,
+          "x": 32,
+          "y": 80
+        },
+        {
+          "id": 22,
+          "name": "strip_7_6_1_8",
+          "type": "habitat",
+          "x": 112,
+          "y": 96,
+          "width": 16,
+          "height": 128,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "strip_0_16_8_4",
+          "type": "habitat",
+          "x": 0,
+          "y": 256,
+          "width": 128,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "area_ljubljana_0_0_8_16",
+          "type": "area",
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 256,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "ljubljana"
+            }
+          ]
+        },
+        {
+          "id": 25,
+          "name": "area_ljubljansko_barje_0_16_8_4",
+          "type": "area",
+          "x": 0,
+          "y": 256,
+          "width": 128,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "ljubljansko_barje"
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "ljubljana_park_apus_apus_1",
+          "type": "spot",
+          "point": true,
+          "x": 360,
+          "y": 56,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "apus_apus"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "ljubljana_park_apus_apus_1"
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "name": "ljubljana_park_erinaceus_roumanicus_1",
+          "type": "spot",
+          "point": true,
+          "x": 216,
+          "y": 88,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "erinaceus_roumanicus"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "ljubljana_park_erinaceus_roumanicus_1"
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "ljubljana_park_alcedo_atthis_1",
+          "type": "spot",
+          "point": true,
+          "x": 344,
+          "y": 232,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "alcedo_atthis"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "ljubljana_park_alcedo_atthis_1"
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "ljubljana_park_fritillaria_meleagris_1",
+          "type": "spot",
+          "point": true,
+          "x": 248,
+          "y": 264,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "fritillaria_meleagris"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "ljubljana_park_fritillaria_meleagris_1"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "ljubljana_park_crex_crex_1",
+          "type": "spot",
+          "point": true,
+          "x": 264,
+          "y": 312,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "crex_crex"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "ljubljana_park_crex_crex_1"
+            }
+          ]
+        },
+        {
+          "id": 31,
+          "name": "generated_lamp_31",
+          "type": "lamp",
+          "gid": 127,
+          "x": 128,
+          "y": 48,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true
+        },
+        {
+          "id": 32,
+          "name": "generated_lamp_32",
+          "type": "lamp",
+          "gid": 127,
+          "x": 256,
+          "y": 80,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true
+        },
+        {
+          "id": 33,
+          "name": "generated_lamp_33",
+          "type": "lamp",
+          "gid": 127,
+          "x": 208,
+          "y": 256,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true
+        },
+        {
+          "id": 34,
+          "name": "generated_lamp_34",
+          "type": "lamp",
+          "gid": 127,
+          "x": 128,
+          "y": 144,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true
+        },
+        {
+          "id": 35,
+          "name": "generated_lamp_35",
+          "type": "lamp",
+          "gid": 127,
+          "x": 128,
+          "y": 224,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true
+        },
+        {
+          "id": 36,
+          "name": "generated_lamp_36",
+          "type": "lamp",
+          "gid": 127,
+          "x": 288,
+          "y": 240,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true
+        },
+        {
+          "id": 37,
+          "name": "generated_habitat_37",
+          "type": "habitat",
+          "x": 128,
+          "y": 80,
+          "width": 288,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 38,
+          "name": "generated_habitat_38",
+          "type": "habitat",
+          "x": 144,
+          "y": 144,
+          "width": 272,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 39,
+          "name": "generated_habitat_39",
+          "type": "habitat",
+          "x": 160,
+          "y": 160,
+          "width": 112,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 40,
+          "name": "generated_habitat_40",
+          "type": "habitat",
+          "x": 288,
+          "y": 160,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 41,
+          "name": "generated_habitat_41",
+          "type": "habitat",
+          "x": 160,
+          "y": 176,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 42,
+          "name": "generated_habitat_42",
+          "type": "habitat",
+          "x": 320,
+          "y": 176,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 43,
+          "name": "generated_habitat_43",
+          "type": "habitat",
+          "x": 272,
+          "y": 192,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 44,
+          "name": "generated_habitat_44",
+          "type": "habitat",
+          "x": 368,
+          "y": 192,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 45,
+          "name": "generated_habitat_45",
+          "type": "habitat",
+          "x": 240,
+          "y": 208,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 46,
+          "name": "generated_habitat_46",
+          "type": "habitat",
+          "x": 336,
+          "y": 208,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 47,
+          "name": "generated_habitat_47",
+          "type": "habitat",
+          "x": 128,
+          "y": 208,
+          "width": 16,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "name": "generated_habitat_48",
+          "type": "habitat",
+          "x": 288,
+          "y": 224,
+          "width": 128,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 49,
+          "name": "generated_habitat_49",
+          "type": "habitat",
+          "x": 128,
+          "y": 240,
+          "width": 288,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "city"
+            }
+          ]
+        },
+        {
+          "id": 50,
+          "name": "generated_habitat_50",
+          "type": "habitat",
+          "x": 128,
+          "y": 256,
+          "width": 288,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 51,
+          "name": "generated_area_51",
+          "type": "area",
+          "x": 128,
+          "y": 0,
+          "width": 288,
+          "height": 80,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "ljubljana"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": 52,
+          "name": "generated_area_52",
+          "type": "area",
+          "x": 128,
+          "y": 80,
+          "width": 288,
+          "height": 176,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "ljubljana"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": 53,
+          "name": "generated_area_53",
+          "type": "area",
+          "x": 128,
+          "y": 256,
+          "width": 288,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "ljubljansko_barje"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "nextlayerid": 5,
+  "nextobjectid": 54,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.11.0",
+  "tileheight": 16,
+  "tilesets": [
+    {
+      "columns": 8,
+      "firstgid": 1,
+      "image": "/content/tilesets/meadow.png",
+      "imageheight": 304,
+      "imagewidth": 128,
+      "margin": 0,
+      "name": "meadow",
+      "spacing": 0,
+      "tilecount": 152,
+      "tileheight": 16,
+      "tilewidth": 16,
+      "tiles": [
+        {
+          "id": 3,
+          "animation": [
+            {
+              "tileid": 3,
+              "duration": 700
+            },
+            {
+              "tileid": 21,
+              "duration": 700
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "animation": [
+            {
+              "tileid": 5,
+              "duration": 900
+            },
+            {
+              "tileid": 20,
+              "duration": 900
+            }
+          ]
+        },
+        {
+          "id": 46,
+          "animation": [
+            {
+              "tileid": 46,
+              "duration": 600
+            },
+            {
+              "tileid": 47,
+              "duration": 600
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "animation": [
+            {
+              "tileid": 48,
+              "duration": 600
+            },
+            {
+              "tileid": 49,
+              "duration": 600
+            }
+          ]
+        },
+        {
+          "id": 116,
+          "animation": [
+            {
+              "tileid": 116,
+              "duration": 800
+            },
+            {
+              "tileid": 117,
+              "duration": 800
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 128,
+          "animation": [
+            {
+              "tileid": 128,
+              "duration": 1000
+            },
+            {
+              "tileid": 129,
+              "duration": 1000
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilewidth": 16,
+  "type": "map",
+  "version": "1.10",
+  "width": 26
+}

@@ -125,7 +125,9 @@
   "placement": {
     "zones": [
       "tall_grass",
-      "grassland"
+      "grassland",
+      "fields",
+      "field_margin"
     ]
   }
 }

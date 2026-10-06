@@ -21,7 +21,15 @@ internal sealed partial class MapBuild
                 continue;
             }
 
-            var rule = biome.Zones.FirstOrDefault(rule => Matches(rule.Where, cell, area));
+            if (structure[cell])
+            {
+                // A structure's tiles take its own zone kind (a salt-pan basin, a chimney), with the biome's habitat for it.
+                zoneKind[cell] = structureZone[cell];
+                habitat[cell] = biome.Zones.FirstOrDefault(rule => rule.Kind == structureZone[cell])?.HabitatId;
+                continue;
+            }
+
+            var rule = biome.Zones.FirstOrDefault(rule => rule.Where.Kind != SelectorKind.Structure && Matches(rule.Where, cell, area));
             zoneKind[cell] = rule?.Kind;
             habitat[cell] = rule?.HabitatId;
         }
@@ -100,7 +108,7 @@ internal sealed partial class MapBuild
             WaterNeed.In => water[cell] && neighbourReached,
             WaterNeed.Wade => water[cell] && Wadeable(cell) && wading[cell] && !neighbourReached,
             _ when water[cell] => false,
-            _ when placement.Perched => blocked[cell] && decor[cell] != NoTile && neighbourReached,
+            _ when placement.Perched => blocked[cell] && (decor[cell] != NoTile || perch[cell]) && neighbourReached,
             WaterNeed.Near => !blocked[cell] && reach[cell] && waterDistance[cell] <= NearWaterTiles,
             _ => !blocked[cell] && reach[cell] && (!placement.Blocking || neighbourReached),
         };

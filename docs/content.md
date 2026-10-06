@@ -100,17 +100,21 @@ Rules:
 | `pathSet` | first tile of a 16-tile path set: +1/+2/+4/+8 when the north/east/south/west side is closed; without it (a cave) paths keep the floor |
 | `border` | blocking tiles where the area meets the map's edge, and along a barrier |
 | `gate` | the tile of a barrier's gate (optional) |
+| `structures` | structures placed whole: `prefab` (a file in `structures/`), `count` range, optional `along: "north"` (a row along the area's north edge) |
+| `lamps` | lamp posts beside the paths: `tile`, `spacing` (at least that many tiles apart) |
 | `layers` | terrains grown from smoothed noise: `id`, `coverage` (0–1), `scale` (blob size in tiles), `smooth` (passes), optional `floor`, `blocking` (reeds, cliffs, cave rock) and `bias` (`north`, `east`, `south` or `west`) with `biasStrength` (0–1) to gather it towards that edge |
 | `openings` | clearings that paths lead to: `count` and `radius` ranges, `floor`, optional `pathSet` |
 | `water` | `kind` (`stream`, `pond` or `shore`), `chance`, `size` (a shore's deep rows), `tiles` (`wadeable` tiles let the boots through), optional `bank`; a shore lies along its `edge` with `shallowWidth` rows of `shallow` tiles on the land side |
 | `decor` | `tiles`, `blocking`, `density` and `where` |
 | `zones` | in order, the first match wins: `kind`, `where` and the `habitat` it belongs to (none: placement only, not searchable) |
 
-`where` selects cells: `any`, `floor`, `opening`, `water`, `layer:<id>`, `edge:<id>[:distance]` (both sides of a layer's boundary), `near:water[:distance]`.
+`where` selects cells: `any`, `floor`, `opening`, `water`, `structure` (a structure's tiles take its own zone kind; such a rule gives that kind its habitat), `layer:<id>`, `edge:<id>[:distance]` (both sides of a layer's boundary), `near:water[:distance]`.
+
+**Structures** (`structures/<id>.json`): `ground` (rows of tiles), `blocking`, optional `door` ([x, y]; the tile below it stays open and a path leads there), `perches` (e.g. a chimney, for perched species) with their `perchZone`, and the `zone` of its open tiles (a salt-pan basin).
 
 **Placement** in a species file, gameplay data never shown (D6):
 - `zones`: preferred zone kinds, best first; without it, every zone kind whose habitat lists the species
-- `water`: `in` (aquatic, on water beside land), `near`, or `wade` (on wadeable water away from the shore, reached only with the boots)
+- `water`: `in` (aquatic, on water beside land), `near`, or `wade` (on wadeable or swimmable water away from the shore, reached only with the boots or the snorkel)
 - `tile`: for a plant, the decoration drawn at its spot (required)
 - `blocking`: the plant blocks its tile, like a shrub
 

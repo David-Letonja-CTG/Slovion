@@ -1,0 +1,13 @@
+{
+  "id": "saltpan",
+  "floor": [146],
+  "border": [],
+  "structures": [{ "prefab": "salt_basin", "count": [3, 5] }],
+  "water": { "kind": "stream", "chance": 1.0, "size": 1, "tiles": [46] },
+  "decor": [],
+  "zones": [
+    { "kind": "basin", "where": "structure", "habitat": "saltpan" },
+    { "kind": "channel", "where": "water", "habitat": "saltpan" },
+    { "kind": "dike", "where": "any", "habitat": "saltpan" }
+  ]
+}

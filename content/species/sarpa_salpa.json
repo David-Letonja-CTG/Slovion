@@ -111,5 +111,11 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "sea"
+    ],
+    "water": "in"
   }
 }

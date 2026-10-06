@@ -74,17 +74,15 @@ public sealed class MapTests(PostgresFixture database)
     }
 
     [Fact]
-    public async Task An_authored_map_is_the_same_for_every_save_and_its_tileset_is_addressed_absolutely()
+    public async Task A_map_s_tileset_is_addressed_absolutely()
     {
         await using var factory = new SlovionApiFactory(database.ConnectionString);
         using var client = factory.CreateClient();
 
+        // Every region is generated per save now (D13); the tileset is served from the API either way.
         using var one = await GetMapAsync(client, await CreateSaveAsync(client), "ljubljana_park");
-        using var two = await GetMapAsync(client, await CreateSaveAsync(client), "ljubljana_park");
         using var map = JsonDocument.Parse(await one.Content.ReadAsStringAsync(Token));
 
-        Assert.Equal(one.Headers.ETag?.ToString(), two.Headers.ETag?.ToString());
-        Assert.False(one.Headers.Contains("X-World"));
         Assert.Equal("/content/tilesets/meadow.png", map.RootElement.GetProperty("tilesets")[0].GetProperty("image").GetString());
     }
 

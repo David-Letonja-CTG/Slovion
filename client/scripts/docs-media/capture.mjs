@@ -302,10 +302,11 @@ const scenes = {
       region: 'murska_sobota',
       clearSky: 'murska_sobota_village',
     });
+    // Seed 1: into the yard beside the farmhouse, facing the chimney at (8, 1).
     await keys(page, 'ArrowUp', 6);
-    await keys(page, 'ArrowRight', 5);
+    await keys(page, 'ArrowRight', 4);
     await keys(page, 'ArrowUp', 2);
-    await keys(page, 'ArrowRight');
+    await keys(page, 'ArrowRight', 2);
     await page.waitForTimeout(1500);
     await canvasShot(page, 'stork.png');
     await page.close();
@@ -321,10 +322,9 @@ const scenes = {
     });
     await startRecording(page);
     await page.waitForTimeout(400);
-    await keys(page, 'ArrowDown', 3);
-    await keys(page, 'ArrowRight', 5);
-    await keys(page, 'ArrowDown', 2);
-    await keys(page, 'ArrowRight', 3);
+    // Seed 1: down into the shallows, then swim east to the pen shell at (22, 15).
+    await keys(page, 'ArrowDown', 6);
+    await keys(page, 'ArrowRight', 20);
     await page.waitForTimeout(800);
     await stopRecording(page, 'snorkel.gif');
     await page.close();

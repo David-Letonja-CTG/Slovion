@@ -1,0 +1,21 @@
+{
+  "id": "village",
+  "floor": [0, 1, 12, 13],
+  "pathSet": 64,
+  "border": [],
+  "structures": [
+    { "prefab": "farmhouse", "count": [1, 1], "along": "north" },
+    { "prefab": "brick_house", "count": [1, 1], "along": "north" },
+    { "prefab": "cottage", "count": [0, 1], "along": "north" }
+  ],
+  "layers": [{ "id": "orchard", "coverage": 0.22, "scale": 4, "smooth": 2 }],
+  "decor": [
+    { "tiles": [140], "blocking": true, "density": 0.45, "where": "layer:orchard" },
+    { "tiles": [138], "blocking": true, "density": 0.02, "where": "floor" }
+  ],
+  "zones": [
+    { "kind": "chimney", "where": "structure" },
+    { "kind": "orchard", "where": "layer:orchard", "habitat": "farmland" },
+    { "kind": "village_green", "where": "any" }
+  ]
+}

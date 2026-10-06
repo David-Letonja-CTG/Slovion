@@ -105,5 +105,11 @@
       2,
       1
     ]
+  },
+  "placement": {
+    "zones": [
+      "sea"
+    ],
+    "water": "wade"
   }
 }

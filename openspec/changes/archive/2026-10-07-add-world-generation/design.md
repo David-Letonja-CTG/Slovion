@@ -165,6 +165,7 @@ The owner wants the towns random too. Buildings can't be grown from noise, so th
   - validation checks that every door can be reached
 - **Lamps:** a biome can put `lamp` objects along its paths at an interval, offset to a path's side, never blocking the only way through. They light up as today.
 - **Perched species** (the stork) take perch cells of structures as candidates, so the stork always nests on a chimney.
+- **As built (phase 3b):** structures are placed after the water: at random places (or in a row along the north edge) where they fit whole on dry ground with a free yard tile around them; door steps become path targets, so a street forms. A biome without path tiles keeps its floor on that street (the Ljubljana street). Lamps go beside paths, spaced apart, never on a door step or a connector. Salt-pan basins are walkable structures whose tiles take the zone kind `basin`. The coast, the city park and the village use several rectangles each (street, park, barje; village, fields with the oxbow, the Mura; promenade, salt pans, sea). Spots are one per species, so the second fritillary, pansy and glasswort spots are gone; `wade` now also covers swimmable water, so the pen shell still needs the snorkel.
 - **Templates are kept** for every region, with the left strip authored (the owner keeps the spawn, signpost, station and person with their names and places), so arriving, travel, quests and stations work the same everywhere.
 
 ### 6. Stages

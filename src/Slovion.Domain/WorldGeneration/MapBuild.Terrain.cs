@@ -304,6 +304,119 @@ internal sealed partial class MapBuild
         }
     }
 
+    /// <summary>
+    /// Stage 4a: structures (design §5a), each at a random place where it fits whole on dry ground with a free tile all
+    /// around it (its yard, never decorated) and an open tile before its door, which paths then lead to.
+    /// </summary>
+    private void Structures(int area, Biome biome, WorldRandom stage)
+    {
+        const int Tries = 60;
+        var rect = template.Areas[area].Rect;
+        foreach (var rule in biome.Structures ?? [])
+        {
+            var shape = rule.Prefab;
+            var count = stage.Range(rule.MinCount, rule.MaxCount);
+            for (var placed = 0; placed < count; placed++)
+            {
+                for (var attempt = 0; attempt < Tries; attempt++)
+                {
+                    var x = stage.Range(rect.X, rect.Right - shape.Width + 1);
+                    var y = rule.AlongNorth ? rect.Y : stage.Range(rect.Y, rect.Bottom - shape.Height + 1);
+                    if (StructureFits(area, shape, x, y))
+                    {
+                        PlaceStructure(area, shape, x, y);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private bool StructureFits(int area, Prefab shape, int x, int y)
+    {
+        var rect = template.Areas[area].Rect;
+        bool Free(int cx, int cy) => rect.Contains(cx, cy) && !border[Index(cx, cy)] && !water[Index(cx, cy)] && !structure[Index(cx, cy)];
+        for (var dy = -1; dy <= shape.Height; dy++)
+        {
+            for (var dx = -1; dx <= shape.Width; dx++)
+            {
+                var (cx, cy) = (x + dx, y + dy);
+                var inside = dx >= 0 && dy >= 0 && dx < shape.Width && dy < shape.Height;
+                if (inside ? !Free(cx, cy) : cx >= 0 && cy >= 0 && cx < width && cy < height && structure[Index(cx, cy)])
+                {
+                    return false;
+                }
+            }
+        }
+
+        return shape.Door is not { } door || Free(x + door.X, y + door.Y + 1);
+    }
+
+    private void PlaceStructure(int area, Prefab shape, int x, int y)
+    {
+        for (var dy = -1; dy <= shape.Height; dy++)
+        {
+            for (var dx = -1; dx <= shape.Width; dx++)
+            {
+                var (cx, cy) = (x + dx, y + dy);
+                if (cx < 0 || cy < 0 || cx >= width || cy >= height || areaOf[Index(cx, cy)] != area)
+                {
+                    continue;
+                }
+
+                var cell = Index(cx, cy);
+                if (dx < 0 || dy < 0 || dx >= shape.Width || dy >= shape.Height)
+                {
+                    // The yard: open ground around the structure.
+                    yard[cell] = !border[cell] && !water[cell];
+                    if (yard[cell] && LayerBlocks(cell))
+                    {
+                        Unblock(cell);
+                    }
+
+                    continue;
+                }
+
+                var isPerch = shape.Perches.Contains(new GridPoint(dx, dy));
+                structure[cell] = true;
+                perch[cell] = isPerch;
+                structureZone[cell] = isPerch ? shape.PerchZone : shape.Zone;
+                ground[cell] = shape.Ground[(dy * shape.Width) + dx];
+                decor[cell] = NoTile;
+                blocked[cell] = shape.Blocking;
+                layer[cell] = null;
+                opening[cell] = false;
+            }
+        }
+
+        if (shape.Door is { } door)
+        {
+            openingCenters[area].Add(Index(x + door.X, y + door.Y + 1));
+        }
+    }
+
+    /// <summary>Stage 5a: lamp posts beside the paths, spaced apart; never on a door's step or a connector.</summary>
+    private void PlaceLamps(int area, Biome biome, WorldRandom stage)
+    {
+        if (biome.Lamps is not { } rule)
+        {
+            return;
+        }
+
+        var keepFree = openingCenters[area].Concat(connectors[area]).ToHashSet();
+        var candidates = Cells(template.Areas[area].Rect)
+            .Where(cell => !path[cell] && !border[cell] && !water[cell] && !structure[cell] && !blocked[cell] && !keepFree.Contains(cell)
+                && GridSearch.Neighbours(cell, width, height).Any(next => path[next]))
+            .OrderBy(_ => stage.Next(1 << 20))
+            .ToList();
+        foreach (var cell in candidates.Where(cell => lamps.All(lamp => Chebyshev(cell, lamp.Cell) >= rule.Spacing)))
+        {
+            lamps.Add((cell, rule.Tile));
+            decor[cell] = NoTile;
+            blocked[cell] = true;
+        }
+    }
+
     /// <summary>Distances used by selectors: to water, and to the boundary of every layer.</summary>
     private void Distances(int area, Biome biome)
     {
@@ -351,7 +464,7 @@ internal sealed partial class MapBuild
         foreach (var target in targets.Where(target => !path[target]))
         {
             var route = GridSearch.CheapestPath(width, height, target, cell => path[cell] && areaOf[cell] == area, cell =>
-                areaOf[cell] != area || border[cell] ? -1 : (water[cell] ? 8 : layer[cell] is null ? 1 : 3) + jitter[cell]);
+                areaOf[cell] != area || border[cell] || structure[cell] ? -1 : (water[cell] ? 8 : layer[cell] is null ? 1 : 3) + jitter[cell]);
             foreach (var cell in route ?? [])
             {
                 OpenAsPath(cell);
@@ -416,7 +529,7 @@ internal sealed partial class MapBuild
             foreach (var cell in Cells(template.Areas[area].Rect))
             {
                 var onWater = rule.Where.Kind == SelectorKind.Water;
-                if (border[cell] || path[cell] || decor[cell] != NoTile || water[cell] != onWater || !Matches(rule.Where, cell, area))
+                if (border[cell] || path[cell] || structure[cell] || yard[cell] || Fixed(cell) || decor[cell] != NoTile || water[cell] != onWater || !Matches(rule.Where, cell, area))
                 {
                     continue;
                 }
@@ -446,7 +559,7 @@ internal sealed partial class MapBuild
             }
 
             var route = GridSearch.CheapestPath(width, height, pocket, cell => reach[cell], cell =>
-                areaOf[cell] == Outside ? (TemplateWalkable(cell) ? 1 : -1) : border[cell] || water[cell] ? -1 : blocked[cell] ? 2 : 1);
+                areaOf[cell] == Outside ? (TemplateWalkable(cell) ? 1 : -1) : border[cell] || water[cell] || Fixed(cell) ? -1 : blocked[cell] ? 2 : 1);
             if (route is not null)
             {
                 foreach (var cell in route.Where(cell => areaOf[cell] != Outside && blocked[cell]))
@@ -569,6 +682,7 @@ internal sealed partial class MapBuild
         SelectorKind.Layer => layer[cell] == selector.Layer,
         SelectorKind.Opening => opening[cell],
         SelectorKind.Water => water[cell],
+        SelectorKind.Structure => structure[cell],
         SelectorKind.NearWater => !water[cell] && waterDistance[cell] <= selector.Distance,
         SelectorKind.Edge => edgeDistance.TryGetValue((area, selector.Layer!), out var distance) && distance[cell] < selector.Distance,
         _ => false,

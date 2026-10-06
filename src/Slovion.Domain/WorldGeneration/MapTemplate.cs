@@ -4,7 +4,8 @@ namespace Slovion.Domain.WorldGeneration;
 /// A region's map as authored (design §4): its tiles and the blocking objects (people, signpost, station…) outside the
 /// generated areas, the spawn, and the areas the generator fills. Tiles are tileset indices, −1 for none.
 /// <paramref name="PathTiles"/> are the tiles that count as path when a generated path meets an authored one, and
-/// <paramref name="WadeableTiles"/> the water the boots let the player through.
+/// <paramref name="WadeableTiles"/> the water a field tool lets the player into (wadeable with the boots, swimmable with
+/// the snorkel).
 /// </summary>
 public sealed record MapTemplate(string MapId, int Width, int Height, IReadOnlyList<int> Ground, IReadOnlyList<int> Decor, IReadOnlyList<bool> Blocked, IReadOnlySet<int> PathTiles, GridPoint Spawn, IReadOnlyList<GridPoint> BlockingObjects, IReadOnlyList<GenerationArea> Areas, IReadOnlySet<int>? WadeableTiles = null);
 
@@ -34,7 +35,7 @@ public enum WaterNeed
     /// <summary>On a water tile, beside reachable land.</summary>
     In,
 
-    /// <summary>On wadeable water away from the shore: reached only by wading, with the boots.</summary>
+    /// <summary>On wadeable or swimmable water away from the shore: reached only with the boots or the snorkel.</summary>
     Wade,
 }
 

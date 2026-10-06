@@ -7,7 +7,7 @@ Defines how the player moves through the game world: maps authored as data, tile
 ## Requirements
 
 ### Requirement: Maps are content
-Maps SHALL be loaded from content data (Tiled JSON). A map SHALL define:
+Maps SHALL be content data in Tiled JSON. A map is either **authored** (the same for every save) or a **template** for a natural region, whose `generated` rectangles are filled per save by the generator from the region's biome and the save's world seed (`world-generation`); everything outside them stays as authored. The client SHALL load the current save's map from `GET /api/save/maps/{mapId}`, and the server SHALL use that same map for encounters, searches, wildlife, quests and weather. A map, as served, SHALL define:
 - ground layers and a collision layer
 - a spawn point
 - interactive spots
@@ -41,7 +41,7 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - **AND** the hedgerow strip south of the meadow belongs to a zone of habitat `hedgerow`
 
 #### Scenario: Habitat zones in the regions
-- **WHEN** a region map is loaded
+- **WHEN** a region map is loaded for any save
 - **THEN** part of its walkable ground belongs to zones of the region's habitat, and the path from the spawn to the signpost does not:
 
   | Map | Habitat |
@@ -56,12 +56,12 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
   | `portoroz_coast` | `saltpan` |
 
 #### Scenario: Species of the regions on their maps
-- **WHEN** a region map is loaded
+- **WHEN** a region map is loaded for any save
 - **THEN** it has a resident spot for each of the region's animals and a fixed spot for each of its ground plants, and the player can reach each spot from the spawn
 - **AND** some of its trees or shrubs (on the lake: reeds) lie inside the habitat zones
 
 #### Scenario: Spots reached by wading
-- **WHEN** `cerknica_lake` is loaded
+- **WHEN** `cerknica_lake` is loaded for any save
 - **THEN** the white water lily's spot and the banded demoiselle's spot can be reached from the spawn with the boots, but not without them
 - **AND** every other spot on the lake can be reached without the boots
 
@@ -102,24 +102,32 @@ No map layout SHALL be hardcoded in game code. Content validation SHALL reject:
 - **THEN** it has one research station on a tile beside the path near the spawn, outside the habitat zones, which the player can face from a reachable tile
 
 #### Scenario: The karst gorge and its cave
-- **WHEN** `rakov_skocjan_karst` is loaded
+- **WHEN** `rakov_skocjan_karst` is loaded for any save
 - **THEN** the gorge belongs to an area that is not underground and the cave to an area marked `underground`
 - **AND** the olm's spot lies on a water tile inside the cave, and the cave beetle's and the bat's spots lie on the cave floor
 - **AND** the habitat zones lie in the gorge only
 
 #### Scenario: The Ljubljana park
-- **WHEN** `ljubljana_park` is loaded
+- **WHEN** `ljubljana_park` is loaded for any save
 - **THEN** it has lamp posts along its paths, a `city` zone in the park, and a `wetland` zone on the barje strip with the fritillary's spot and a corncrake resident spot
 
 #### Scenario: The Murska Sobota village
-- **WHEN** `murska_sobota_village` is loaded
-- **THEN** the stork's spot lies on a blocked roof tile that can be faced from a walkable tile
+- **WHEN** `murska_sobota_village` is loaded for any save
+- **THEN** the stork's spot lies on a blocked chimney or roof tile of a generated house that can be faced from a walkable tile
 - **AND** a `farmland` zone covers the fields and the orchard, and a `wetland` zone covers the oxbow, where the otter's spot lies on a wadeable tile, and the Mura's bank
 
 #### Scenario: The Portorož coast
-- **WHEN** `portoroz_coast` is loaded
-- **THEN** it has a promenade with lamp posts, a beach, a band of swimmable shallow sea and deep sea beyond it, and a `saltpan` zone over the salt pans
+- **WHEN** `portoroz_coast` is loaded for any save
+- **THEN** it has a promenade with lamp posts and salt pans (authored), a shore, a band of swimmable shallow sea and deep sea beyond it (generated), and a `saltpan` zone over the salt pans
 - **AND** every spot on land can be reached from the spawn without tools, and the noble pen shell's spot can be faced only from a swimmable tile
+
+#### Scenario: Two saves, two forests
+- **WHEN** two saves with different world seeds load `kocevje_forest`
+- **THEN** their forests differ, while the spawn, signpost, Jure and the station stand on the same tiles in both
+
+#### Scenario: The same save, the same forest
+- **WHEN** a save loads `kocevje_forest`, travels away and comes back, or continues the next day
+- **THEN** it gets exactly the same map
 
 ### Requirement: Invalid map is reported
 If a map cannot be loaded or does not satisfy the supported format (orthogonal, fixed tile size, a spawn point, layers referenced by name), the game SHALL show a Slovenian error message instead of a broken or blank world.

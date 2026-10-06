@@ -1,0 +1,11 @@
+{
+  "id": "barje",
+  "floor": [51],
+  "pathSet": 64,
+  "border": [],
+  "decor": [
+    { "tiles": [3], "blocking": false, "density": 0.12, "where": "any" },
+    { "tiles": [52], "blocking": false, "density": 0.04, "where": "any" }
+  ],
+  "zones": [{ "kind": "wet_meadow", "where": "any", "habitat": "wetland" }]
+}

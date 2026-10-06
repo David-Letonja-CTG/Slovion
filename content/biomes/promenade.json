@@ -1,0 +1,13 @@
+{
+  "id": "promenade",
+  "floor": [0, 1, 12, 13],
+  "pathSet": 64,
+  "border": [],
+  "structures": [{ "prefab": "brick_house", "count": [1, 1], "along": "north" }],
+  "lamps": { "tile": 126, "spacing": 5 },
+  "decor": [
+    { "tiles": [5], "blocking": true, "density": 0.04, "where": "floor" },
+    { "tiles": [6], "blocking": false, "density": 0.05, "where": "floor" }
+  ],
+  "zones": [{ "kind": "town", "where": "any" }]
+}

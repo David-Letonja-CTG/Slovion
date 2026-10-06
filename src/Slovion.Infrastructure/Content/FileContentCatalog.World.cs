@@ -80,14 +80,43 @@ public sealed partial class FileContentCatalog
 
     private static string EntityTag(byte[] json) => $"\"{SeedHash.Of(Convert.ToBase64String(json)):x16}\"";
 
-    private static Dictionary<string, Biome> LoadBiomes(string folder, Dictionary<string, Habitat> habitats, List<string> errors)
+    private static Dictionary<string, Prefab> LoadPrefabs(string folder, List<string> errors)
+    {
+        var result = new Dictionary<string, Prefab>(StringComparer.Ordinal);
+        foreach (var file in Directory.Exists(folder) ? JsonFiles(folder) : [])
+        {
+            var name = $"structures/{Path.GetFileName(file)}";
+            if (Read<PrefabFile>(file, name, errors) is not { } prefab)
+            {
+                continue;
+            }
+
+            var rows = prefab.Ground ?? [];
+            var width = rows.FirstOrDefault()?.Count ?? 0;
+            GridPoint? Point(List<int>? xy) => xy is [var x, var y] && x >= 0 && y >= 0 && x < width && y < rows.Count ? new GridPoint(x, y) : null;
+            var perches = (prefab.Perches ?? []).Select(Point).ToList();
+            if (prefab.Id is null || !MapIdPattern().IsMatch(prefab.Id) || width == 0 || rows.Any(row => row.Count != width)
+                || (prefab.Door is not null && Point(prefab.Door) is null) || perches.Any(perch => perch is null) || (perches.Count > 0 && prefab.PerchZone is null))
+            {
+                errors.Add($"{name}: a structure needs a snake_case ID, rows of ground tiles of one width, and a door and perches inside it (perches with a 'perchZone').");
+            }
+            else if (!result.TryAdd(prefab.Id, new Prefab(prefab.Id, width, rows.Count, [.. rows.SelectMany(row => row)], prefab.Blocking, Point(prefab.Door), [.. perches.OfType<GridPoint>()], prefab.Zone, prefab.PerchZone)))
+            {
+                errors.Add($"{name}: duplicate structure ID '{prefab.Id}'.");
+            }
+        }
+
+        return result;
+    }
+
+    private static Dictionary<string, Biome> LoadBiomes(string folder, Dictionary<string, Prefab> prefabs, Dictionary<string, Habitat> habitats, List<string> errors)
     {
         var result = new Dictionary<string, Biome>(StringComparer.Ordinal);
         foreach (var file in JsonFiles(folder))
         {
             var name = $"biomes/{Path.GetFileName(file)}";
             var biome = Read<BiomeFile>(file, name, errors);
-            if (biome is not null && ValidateBiome(biome, name, habitats, errors) is { } valid && !result.TryAdd(valid.Id, valid))
+            if (biome is not null && ValidateBiome(biome, name, prefabs, habitats, errors) is { } valid && !result.TryAdd(valid.Id, valid))
             {
                 errors.Add($"{name}: duplicate biome ID '{valid.Id}'.");
             }
@@ -96,7 +125,7 @@ public sealed partial class FileContentCatalog
         return result;
     }
 
-    private static Biome? ValidateBiome(BiomeFile file, string name, Dictionary<string, Habitat> habitats, List<string> errors)
+    private static Biome? ValidateBiome(BiomeFile file, string name, Dictionary<string, Prefab> prefabs, Dictionary<string, Habitat> habitats, List<string> errors)
     {
         var errorCount = errors.Count;
         if (file.Id is null || !MapIdPattern().IsMatch(file.Id))
@@ -199,9 +228,32 @@ public sealed partial class FileContentCatalog
             }
         }
 
+        var structures = new List<StructureRule>();
+        foreach (var rule in file.Structures ?? [])
+        {
+            if (rule.Prefab is null || !prefabs.TryGetValue(rule.Prefab, out var prefab) || rule.Count is not [var min, var max] || min < 0 || max < min || rule.Along is not (null or "north"))
+            {
+                errors.Add($"{name}: structure '{rule.Prefab}' needs a known structure, a 'count' range and optionally 'along': 'north'.");
+            }
+            else if (new[] { prefab.Zone, prefab.PerchZone }.OfType<string>().FirstOrDefault(kind => !zones.Any(zone => zone.Kind == kind)) is { } missing)
+            {
+                errors.Add($"{name}: structure '{prefab.Id}' needs a zone '{missing}' (where: structure).");
+            }
+            else
+            {
+                structures.Add(new StructureRule(prefab, min, max, rule.Along == "north"));
+            }
+        }
+
+        if (file.Lamps is { } lampFile && (lampFile.Tile is null || lampFile.Spacing < 1))
+        {
+            errors.Add($"{name}: 'lamps' needs a 'tile' and a 'spacing' of at least 1.");
+        }
+
+        var lamps = file.Lamps is { Tile: { } lampTile } lampRule ? new Lamps(lampTile, lampRule.Spacing) : null;
         return errors.Count > errorCount
             ? null
-            : new Biome(file.Id!, file.Floor!, file.PathSet, file.Border ?? [], layers, openings, water, decor, zones, file.Gate);
+            : new Biome(file.Id!, file.Floor!, file.PathSet, file.Border ?? [], layers, openings, water, decor, zones, file.Gate, structures, lamps);
     }
 
     private static Edge? ParseEdge(string text) => Enum.TryParse<Edge>(text, ignoreCase: true, out var edge) && Enum.IsDefined(edge) ? edge : null;
@@ -328,7 +380,7 @@ public sealed partial class FileContentCatalog
             .OfType<int>()
             .SelectMany(set => Enumerable.Range(set, 16))
             .ToHashSet();
-        var wadeable = (map.Tilesets?.FirstOrDefault()?.Tiles ?? []).Where(tile => tile.IsFlagged("wadeable")).Select(tile => tile.Id).ToHashSet();
+        var wadeable = (map.Tilesets?.FirstOrDefault()?.Tiles ?? []).Where(tile => tile.IsFlagged("wadeable") || tile.IsFlagged("swimmable")).Select(tile => tile.Id).ToHashSet();
         var blockingObjects = objects.Where(o => o.ObjectClass is "npc" or "signpost" or "station" or "gate" or "lamp").Select(tileAt).ToList();
         return new MapTemplate(
             mapId,
@@ -352,6 +404,8 @@ public sealed partial class FileContentCatalog
             .Concat(biome.Water?.Tiles ?? []).Concat(biome.Water?.Bank ?? []).Concat(biome.Water?.Shallow ?? [])
             .Concat(biome.Decor.SelectMany(rule => rule.Tiles))
             .Concat(biome.Gate is { } gate ? [gate] : [])
+            .Concat(biome.Lamps is { } lamps ? [lamps.Tile] : [])
+            .Concat((biome.Structures ?? []).SelectMany(rule => rule.Prefab.Ground))
             .Concat(new[] { biome.PathSet, biome.Openings?.PathSet }.OfType<int>().SelectMany(set => new[] { set, set + 15 }));
         if (tiles.FirstOrDefault(tile => tile < 0 || tile >= tileCount, -1) is var bad and >= 0)
         {
@@ -499,6 +553,23 @@ public sealed partial class FileContentCatalog
                 ["rotation"] = 0,
                 ["visible"] = true,
                 ["properties"] = new JsonArray(Property("requiresFlag", gate.Flag)),
+            });
+        }
+
+        foreach (var lamp in generated.Lamps)
+        {
+            objects.Add(new JsonObject
+            {
+                ["id"] = nextId,
+                ["name"] = string.Create(CultureInfo.InvariantCulture, $"generated_lamp_{nextId++}"),
+                ["type"] = "lamp",
+                ["gid"] = lamp.Tile + firstGid,
+                ["x"] = lamp.At.X * TileSize,
+                ["y"] = (lamp.At.Y + 1) * TileSize,
+                ["width"] = TileSize,
+                ["height"] = TileSize,
+                ["rotation"] = 0,
+                ["visible"] = true,
             });
         }
 

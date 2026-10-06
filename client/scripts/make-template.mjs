@@ -11,7 +11,7 @@
 //   "stripZones": [{ "habitatId": "...", "rect": [x, y, w, h] }],
 //   "stripAreas": [{ "areaId": "...", "rect": [x, y, w, h], "underground": false }],
 //   "stripFloor": [[x, y, tile], ...] }
-// An authored gate inside a rectangle is dropped: a barrier there places its own (design §4a).
+// An authored gate or lamp inside a rectangle is dropped: barriers and biomes there place their own (design §4a, §5a).
 // stripFloor lists authored tiles to turn into plain floor without decoration or collision (e.g. the end of a stream
 // that now continues nowhere, or a plant whose spot is now generated).
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -50,7 +50,10 @@ const tileObjectTile = (o) => [
 ];
 const kept = objects.filter((o) => {
   if (['habitat', 'area', 'generated', 'connector'].includes(o.type)) return false;
-  if (o.type === 'gate' && config.generated.some((area) => inRect(area.rect, ...tileObjectTile(o))))
+  if (
+    ['gate', 'lamp'].includes(o.type) &&
+    config.generated.some((area) => inRect(area.rect, ...tileObjectTile(o)))
+  )
     return false;
   if (o.type === 'spot')
     return (
