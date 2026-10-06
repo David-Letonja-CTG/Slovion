@@ -1,0 +1,15 @@
+{
+  "id": "farmland",
+  "floor": [0, 1, 12, 13],
+  "pathSet": 64,
+  "border": [],
+  "layers": [{ "id": "fields", "coverage": 0.45, "scale": 5, "smooth": 2, "floor": [136] }],
+  "water": { "kind": "pond", "chance": 1.0, "size": 1, "tiles": [46] },
+  "decor": [{ "tiles": [138], "blocking": true, "density": 0.03, "where": "floor" }],
+  "zones": [
+    { "kind": "oxbow", "where": "water", "habitat": "wetland" },
+    { "kind": "oxbow_bank", "where": "near:water:1", "habitat": "wetland" },
+    { "kind": "fields", "where": "layer:fields", "habitat": "farmland" },
+    { "kind": "field_margin", "where": "any", "habitat": "farmland" }
+  ]
+}

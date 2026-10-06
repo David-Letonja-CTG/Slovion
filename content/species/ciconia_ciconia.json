@@ -133,5 +133,10 @@
       2,
       4
     ]
+  },
+  "placement": {
+    "zones": [
+      "chimney"
+    ]
   }
 }

@@ -99,5 +99,12 @@
       3,
       0
     ]
+  },
+  "placement": {
+    "zones": [
+      "field_margin",
+      "fields"
+    ],
+    "tile": 137
   }
 }

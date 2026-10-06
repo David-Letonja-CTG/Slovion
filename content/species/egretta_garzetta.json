@@ -118,5 +118,11 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "dike",
+      "basin"
+    ]
   }
 }

@@ -19,6 +19,9 @@ public sealed class ClientMapFixtureTests
 
     [Theory]
     [InlineData("dravsko_polje_meadow")]
+    [InlineData("ljubljana_park")]
+    [InlineData("murska_sobota_village")]
+    [InlineData("portoroz_coast")]
     [InlineData("kocevje_forest")]
     [InlineData("pohorje_forest")]
     [InlineData("triglav_alps")]

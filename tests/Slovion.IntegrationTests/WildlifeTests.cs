@@ -85,11 +85,11 @@ public sealed class WildlifeTests(PostgresFixture database)
 
         // A new save starts on a spring morning: the swift and the kingfisher are out, the hedgehog is not.
         var morning = Animals((await WildlifeAsync(client, token, "ljubljana_park")).Body);
-        Assert.Equal((true, true, false), (morning["city_swift_1"].Present, morning["city_kingfisher_1"].Present, morning["city_hedgehog_1"].Present));
+        Assert.Equal((true, true, false), (morning["ljubljana_park_apus_apus_1"].Present, morning["ljubljana_park_alcedo_atthis_1"].Present, morning["ljubljana_park_erinaceus_roumanicus_1"].Present));
 
         clock.Advance(TimeSpan.FromMinutes(14)); // 22:00, night
         var night = Animals((await WildlifeAsync(client, token, "ljubljana_park")).Body);
-        Assert.True(night["city_hedgehog_1"].Present);
+        Assert.True(night["ljubljana_park_erinaceus_roumanicus_1"].Present);
     }
 
     [Fact]
@@ -103,12 +103,12 @@ public sealed class WildlifeTests(PostgresFixture database)
 
         Assert.Equal(HttpStatusCode.OK, status);
         var byId = body.GetProperty("animals").EnumerateArray().ToDictionary(animal => animal.GetProperty("spotId").GetString()!);
-        Assert.Equal((true, false, true), (byId["village_stork_1"].GetProperty("perched").GetBoolean(), byId["village_stork_1"].GetProperty("aquatic").GetBoolean(), byId["village_stork_1"].GetProperty("present").GetBoolean()));
-        Assert.Equal((false, true), (byId["oxbow_otter_1"].GetProperty("perched").GetBoolean(), byId["oxbow_otter_1"].GetProperty("aquatic").GetBoolean()));
+        Assert.Equal((true, false, true), (byId["murska_sobota_village_ciconia_ciconia_1"].GetProperty("perched").GetBoolean(), byId["murska_sobota_village_ciconia_ciconia_1"].GetProperty("aquatic").GetBoolean(), byId["murska_sobota_village_ciconia_ciconia_1"].GetProperty("present").GetBoolean()));
+        Assert.Equal((false, true), (byId["murska_sobota_village_lutra_lutra_1"].GetProperty("perched").GetBoolean(), byId["murska_sobota_village_lutra_lutra_1"].GetProperty("aquatic").GetBoolean()));
 
         clock.Advance(TimeSpan.FromMinutes(14)); // 22:00, night: the stork is active by day only
         var night = Animals((await WildlifeAsync(client, token, "murska_sobota_village")).Body);
-        Assert.False(night["village_stork_1"].Present);
+        Assert.False(night["murska_sobota_village_ciconia_ciconia_1"].Present);
     }
 
     [Fact]
@@ -122,11 +122,11 @@ public sealed class WildlifeTests(PostgresFixture database)
 
         Assert.Equal(HttpStatusCode.OK, status);
         var byId = body.GetProperty("animals").EnumerateArray().ToDictionary(animal => animal.GetProperty("spotId").GetString()!);
-        Assert.Equal((true, false, true), (byId["sea_salema_1"].GetProperty("aquatic").GetBoolean(), byId["sea_salema_1"].GetProperty("perched").GetBoolean(), byId["sea_salema_1"].GetProperty("present").GetBoolean()));
-        Assert.Equal((false, true, true), (byId["sea_pen_shell_1"].GetProperty("aquatic").GetBoolean(), byId["sea_pen_shell_1"].GetProperty("perched").GetBoolean(), byId["sea_pen_shell_1"].GetProperty("present").GetBoolean()));
+        Assert.Equal((true, false, true), (byId["portoroz_coast_sarpa_salpa_1"].GetProperty("aquatic").GetBoolean(), byId["portoroz_coast_sarpa_salpa_1"].GetProperty("perched").GetBoolean(), byId["portoroz_coast_sarpa_salpa_1"].GetProperty("present").GetBoolean()));
+        Assert.Equal((false, true, true), (byId["portoroz_coast_pinna_nobilis_1"].GetProperty("aquatic").GetBoolean(), byId["portoroz_coast_pinna_nobilis_1"].GetProperty("perched").GetBoolean(), byId["portoroz_coast_pinna_nobilis_1"].GetProperty("present").GetBoolean()));
         // A new save is in spring: the stilt and the killifish are around.
-        Assert.True(byId["saltpan_stilt_1"].GetProperty("present").GetBoolean());
-        Assert.True(byId["saltpan_killifish_1"].GetProperty("present").GetBoolean());
+        Assert.True(byId["portoroz_coast_himantopus_himantopus_1"].GetProperty("present").GetBoolean());
+        Assert.True(byId["portoroz_coast_aphanius_fasciatus_1"].GetProperty("present").GetBoolean());
     }
 
     [Fact]

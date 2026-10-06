@@ -2,11 +2,11 @@ import cerknica from '../testing/maps/cerknica_lake.json';
 import karst from '../testing/maps/rakov_skocjan_karst.json';
 // Kočevje and Pohorje are generated per save (D13): their tests use the server's maps for world seed 1.
 import kocevje from '../testing/maps/kocevje_forest.json';
-import ljubljana from '../../../../content/maps/ljubljana_park.json';
+import ljubljana from '../testing/maps/ljubljana_park.json';
 import meadow from '../testing/maps/dravsko_polje_meadow.json';
-import murskaSobota from '../../../../content/maps/murska_sobota_village.json';
+import murskaSobota from '../testing/maps/murska_sobota_village.json';
 import pohorje from '../testing/maps/pohorje_forest.json';
-import portoroz from '../../../../content/maps/portoroz_coast.json';
+import portoroz from '../testing/maps/portoroz_coast.json';
 import triglav from '../testing/maps/triglav_alps.json';
 import { STEP_MS } from '../game-loop';
 import { ActionState } from '../input/action-state';
@@ -166,9 +166,9 @@ describe('parseTiledMap', () => {
     ['triglav_alps', triglav, 'triglav_alps_rupicapra_rupicapra_1', 'triglav_slopes'],
     ['cerknica_lake', cerknica, 'cerknica_lake_ardea_cinerea_1', 'cerknica_lake'],
     ['rakov_skocjan_karst', karst, 'rakov_skocjan_karst_saxifraga_rotundifolia_1', 'rakov_skocjan'],
-    ['ljubljana_park', ljubljana, 'city_hedgehog_1', 'ljubljana'],
-    ['murska_sobota_village', murskaSobota, 'orchard_hoopoe_1', 'murska_sobota'],
-    ['portoroz_coast', portoroz, 'sea_salema_1', 'portoroz'],
+    ['ljubljana_park', ljubljana, 'ljubljana_park_erinaceus_roumanicus_1', 'ljubljana'],
+    ['murska_sobota_village', murskaSobota, 'murska_sobota_village_upupa_epops_1', 'murska_sobota'],
+    ['portoroz_coast', portoroz, 'portoroz_coast_sarpa_salpa_1', 'portoroz'],
   ])(
     'parses the region map %s with a reachable signpost, spots and searchable trees',
     (id, json, spotId, area) => {
@@ -288,21 +288,34 @@ describe('parseTiledMap', () => {
     const world = new World(map, () => undefined);
 
     expect(map.npcs).toEqual([expect.objectContaining({ npcId: 'ana', x: 3, y: 10 })]);
-    expect(map.lamps).toHaveLength(7);
+    // Generated for world seed 1 (D13): lamps along the street and the park paths, beyond the authored strip's one.
+    expect(map.lamps.length).toBeGreaterThan(2);
     expect(map.lamps.every((lamp) => lamp.gid === 127 && world.isBlocked(lamp.x, lamp.y))).toBe(
       true,
     );
-    expect(map.lamps.filter((lamp) => lamp.y === 4)).toHaveLength(4); // along the street
-    expect([map.habitatAt(10, 7), map.areaAt(10, 7)]).toEqual(['city', 'ljubljana']);
-    const fritillary = spot('barje_fritillary_1');
+    expect(map.lamps.some((lamp) => lamp.x >= 8 && lamp.y <= 4)).toBe(true); // along the street
+    const park = map.habitats.find((zone) => zone.habitatId === 'city' && zone.minX >= 8)!;
+    expect(map.areaAt(park.minX, park.minY)).toBe('ljubljana');
+    const fritillary = spot('ljubljana_park_fritillaria_meleagris_1');
     expect([
       map.habitatAt(fritillary.x, fritillary.y),
       map.areaAt(fritillary.x, fritillary.y),
     ]).toEqual(['wetland', 'ljubljansko_barje']);
-    expect(map.habitatAt(spot('barje_corncrake_1').x, spot('barje_corncrake_1').y)).toBe('wetland');
-    // The river is deep, not wadeable: only the bridge crosses it.
-    expect(reachable(13, 14)).toBe(true);
-    expect([map.isBlocked(12, 14), map.isWadeable(12, 14)]).toEqual([true, false]);
+    expect(
+      map.habitatAt(spot('ljubljana_park_crex_crex_1').x, spot('ljubljana_park_crex_crex_1').y),
+    ).toBe('wetland');
+    // The river is deep, not wadeable, yet the barje beyond it is reached: a bridge crosses it.
+    expect(
+      reachable(fritillary.x + 1, fritillary.y) ||
+        reachable(fritillary.x - 1, fritillary.y) ||
+        reachable(fritillary.x, fritillary.y),
+    ).toBe(true);
+    let deep = false;
+    for (let y = 5; y < 16; y++) {
+      for (let x = 8; x < map.width; x++)
+        deep ||= map.isBlocked(x, y) && !map.isWadeable(x, y) && !reachable(x, y);
+    }
+    expect(deep).toBe(true);
   });
 
   it("reads the Murska Sobota village: the stork's nest on a roof beside a yard, the fields, the oxbow", () => {
@@ -310,17 +323,19 @@ describe('parseTiledMap', () => {
     const spot = (id: string) => map.spots.find((s) => s.spotId === id)!;
 
     expect(map.npcs).toEqual([expect.objectContaining({ npcId: 'stefan', x: 3, y: 10 })]);
-    const nest = spot('village_stork_1');
-    expect([nest.x, nest.y, map.isBlocked(nest.x, nest.y)]).toEqual([7, 1, true]);
+    const nest = spot('murska_sobota_village_ciconia_ciconia_1');
+    // The nest is on the farmhouse chimney, a roof tile beside the yard.
+    expect([nest.y <= 2, map.isBlocked(nest.x, nest.y)]).toEqual([true, true]);
     expect(reachable(nest.x - 1, nest.y)).toBe(true); // the yard beside the house
     expect(map.habitatAt(nest.x, nest.y)).toBeUndefined();
-    expect([map.habitatAt(12, 6), map.areaAt(12, 6)]).toEqual(['farmland', 'murska_sobota']);
-    const otter = spot('oxbow_otter_1');
+    const fields = map.habitats.find((zone) => zone.habitatId === 'farmland')!;
+    expect(map.areaAt(fields.minX, fields.minY)).toBe('murska_sobota');
+    const otter = spot('murska_sobota_village_lutra_lutra_1');
     expect([
       map.isWadeable(otter.x, otter.y),
       map.habitatAt(otter.x, otter.y),
       map.areaAt(otter.x, otter.y),
-    ]).toEqual([true, 'wetland', 'mura']);
+    ]).toEqual([true, 'wetland', 'murska_sobota']);
     // The Mura is deep: the player stays on the gravel bank.
     expect([reachable(5, 14), map.isBlocked(5, 15), map.isWadeable(5, 15)]).toEqual([
       true,
@@ -342,8 +357,8 @@ describe('parseTiledMap', () => {
 
     expect(map.npcs).toEqual([expect.objectContaining({ npcId: 'nina', x: 3, y: 10 })]);
     expect(map.tileset.swimmable).toEqual(new Set([143]));
-    expect(map.lamps).toHaveLength(3);
-    const shell = spot('sea_pen_shell_1');
+    expect(map.lamps.length).toBeGreaterThan(2); // the strip's two and the promenade's
+    const shell = spot('portoroz_coast_pinna_nobilis_1');
     expect([map.isSwimmable(shell.x, shell.y), map.isBlocked(shell.x, shell.y)]).toEqual([
       true,
       true,
@@ -362,14 +377,13 @@ describe('parseTiledMap', () => {
     ]);
     // Every spot on land can be reached on foot.
     for (const id of [
-      'saltpan_stilt_1',
-      'saltpan_egret_1',
-      'saltpan_glasswort_1',
-      'saltpan_glasswort_2',
+      'portoroz_coast_himantopus_himantopus_1',
+      'portoroz_coast_egretta_garzetta_1',
+      'portoroz_coast_salicornia_europaea_1',
     ]) {
       expect(onFoot(spot(id).x, spot(id).y), id).toBe(true);
     }
-    const killifish = spot('saltpan_killifish_1');
+    const killifish = spot('portoroz_coast_aphanius_fasciatus_1');
     expect([
       map.isWadeable(killifish.x, killifish.y),
       map.habitatAt(killifish.x, killifish.y),

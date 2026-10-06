@@ -1,0 +1,907 @@
+{
+  "compressionlevel": -1,
+  "height": 20,
+  "infinite": false,
+  "layers": [
+    {
+      "data": [
+        134, 134, 134, 134, 134, 14, 13, 14, 124, 124, 124, 124, 124, 124, 1, 1, 2, 1, 134, 134,
+        134, 134, 134, 2, 1, 1, 134, 134, 134, 134, 134, 1, 2, 13, 135, 124, 124, 124, 124, 124, 1,
+        14, 2, 14, 134, 134, 134, 134, 134, 13, 2, 2, 125, 125, 133, 125, 125, 2, 1, 13, 125, 125,
+        125, 133, 125, 125, 74, 70, 70, 68, 125, 125, 133, 125, 125, 2, 13, 14, 70, 70, 70, 70, 66,
+        70, 70, 70, 70, 70, 70, 70, 70, 70, 71, 13, 1, 77, 70, 70, 72, 1, 1, 1, 14, 13, 1, 14, 13,
+        2, 75, 14, 13, 13, 13, 1, 13, 14, 13, 2, 1, 1, 14, 13, 1, 14, 1, 13, 2, 14, 2, 13, 14, 1, 2,
+        13, 75, 1, 2, 13, 1, 13, 1, 14, 2, 2, 13, 1, 2, 14, 1, 13, 2, 13, 14, 2, 1, 13, 13, 2, 1,
+        14, 75, 2, 1, 14, 1, 2, 14, 2, 2, 14, 14, 13, 14, 2, 13, 13, 14, 2, 2, 13, 2, 1, 2, 13, 14,
+        1, 75, 13, 14, 2, 13, 14, 14, 1, 2, 13, 14, 13, 14, 13, 13, 13, 2, 13, 1, 13, 1, 1, 1, 14,
+        13, 2, 75, 14, 13, 13, 13, 13, 14, 13, 2, 2, 14, 13, 14, 1, 1, 14, 14, 2, 2, 2, 2, 13, 14,
+        78, 70, 70, 69, 70, 70, 72, 137, 137, 137, 137, 137, 137, 13, 14, 14, 13, 1, 1, 2, 1, 14,
+        14, 13, 14, 2, 1, 14, 13, 2, 1, 14, 137, 137, 47, 137, 137, 137, 137, 13, 2, 14, 13, 2, 1,
+        2, 2, 13, 1, 13, 13, 13, 14, 1, 2, 13, 14, 1, 137, 47, 47, 47, 137, 137, 2, 13, 2, 13, 14,
+        2, 2, 14, 14, 2, 14, 13, 14, 14, 13, 2, 1, 14, 13, 2, 137, 47, 47, 137, 137, 14, 13, 2, 2,
+        137, 137, 137, 137, 137, 14, 13, 2, 13, 14, 1, 2, 13, 14, 1, 2, 13, 137, 137, 137, 137, 1,
+        14, 13, 1, 2, 137, 137, 137, 137, 137, 1, 2, 2, 1, 14, 140, 140, 140, 140, 140, 140, 140,
+        140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140,
+        140, 49, 49, 49, 49, 49, 49, 49, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140,
+        140, 140, 140, 140, 140, 140, 47, 49, 49, 49, 49, 49, 49, 49, 140, 140, 47, 140, 140, 47,
+        47, 47, 140, 47, 47, 47, 47, 47, 47, 47, 47, 47, 49, 49, 49, 49, 49, 49, 49, 49, 47, 47, 49,
+        47, 47, 49, 49, 49, 47, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49
+      ],
+      "height": 20,
+      "id": 1,
+      "name": "ground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 141, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 141, 141, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 141, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        141, 141, 0, 0, 0, 0, 0, 0, 141, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 141, 0,
+        141, 141, 0, 0, 0, 0, 141, 141, 0, 0, 0, 0, 0, 0, 0, 0, 0, 141, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 139, 139, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 138, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 139, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 139, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 139, 0, 139, 0, 0, 0,
+        139, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "height": 20,
+      "id": 2,
+      "name": "decor",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        5, 5, 5, 5, 5, 0, 0, 0, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 5, 5, 5, 5, 5, 5,
+        0, 0, 0, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 5, 5,
+        5, 5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0,
+        0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 5, 5, 0, 0, 0, 0, 5, 5, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 5, 0, 5, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 5, 0, 0, 5, 5, 5, 0, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      ],
+      "height": 20,
+      "id": 3,
+      "name": "collision",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": false,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 4,
+      "name": "objects",
+      "objects": [
+        {
+          "height": 0,
+          "id": 1,
+          "name": "spawn",
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ],
+          "rotation": 0,
+          "type": "spawn",
+          "visible": true,
+          "width": 0,
+          "x": 24,
+          "y": 152
+        },
+        {
+          "gid": 31,
+          "height": 16,
+          "id": 2,
+          "name": "signpost",
+          "rotation": 0,
+          "type": "signpost",
+          "visible": true,
+          "width": 16,
+          "x": 32,
+          "y": 144
+        },
+        {
+          "gid": 20,
+          "height": 16,
+          "id": 3,
+          "name": "stefan",
+          "properties": [
+            {
+              "name": "npcId",
+              "type": "string",
+              "value": "stefan"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 16,
+          "x": 48,
+          "y": 176
+        },
+        {
+          "gid": 57,
+          "height": 16,
+          "id": 4,
+          "name": "farmland_station",
+          "properties": [
+            {
+              "name": "stationId",
+              "type": "string",
+              "value": "farmland_station"
+            }
+          ],
+          "rotation": 0,
+          "type": "station",
+          "visible": true,
+          "width": 16,
+          "x": 96,
+          "y": 144
+        },
+        {
+          "id": 20,
+          "name": "strip_0_14_7_1",
+          "type": "habitat",
+          "x": 0,
+          "y": 224,
+          "width": 112,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "area_murska_sobota_0_0_7_14",
+          "type": "area",
+          "x": 0,
+          "y": 0,
+          "width": 112,
+          "height": 224,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "murska_sobota"
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "area_mura_0_14_7_6",
+          "type": "area",
+          "x": 0,
+          "y": 224,
+          "width": 112,
+          "height": 96,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "mura"
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "murska_sobota_village_ciconia_ciconia_1",
+          "type": "spot",
+          "point": true,
+          "x": 136,
+          "y": 24,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "ciconia_ciconia"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "murska_sobota_village_ciconia_ciconia_1"
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "murska_sobota_village_upupa_epops_1",
+          "type": "spot",
+          "point": true,
+          "x": 376,
+          "y": 56,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "upupa_epops"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "murska_sobota_village_upupa_epops_1"
+            }
+          ]
+        },
+        {
+          "id": 25,
+          "name": "murska_sobota_village_alauda_arvensis_1",
+          "type": "spot",
+          "point": true,
+          "x": 248,
+          "y": 168,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "alauda_arvensis"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "murska_sobota_village_alauda_arvensis_1"
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "murska_sobota_village_viola_arvensis_1",
+          "type": "spot",
+          "point": true,
+          "x": 344,
+          "y": 168,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "viola_arvensis"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "murska_sobota_village_viola_arvensis_1"
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "name": "murska_sobota_village_lutra_lutra_1",
+          "type": "spot",
+          "point": true,
+          "x": 168,
+          "y": 184,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "lutra_lutra"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "murska_sobota_village_lutra_lutra_1"
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "generated_habitat_28",
+          "type": "habitat",
+          "x": 368,
+          "y": 0,
+          "width": 48,
+          "height": 48,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "generated_habitat_29",
+          "type": "habitat",
+          "x": 240,
+          "y": 48,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "generated_habitat_30",
+          "type": "habitat",
+          "x": 352,
+          "y": 48,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 31,
+          "name": "generated_habitat_31",
+          "type": "habitat",
+          "x": 224,
+          "y": 64,
+          "width": 64,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 32,
+          "name": "generated_habitat_32",
+          "type": "habitat",
+          "x": 352,
+          "y": 64,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 33,
+          "name": "generated_habitat_33",
+          "type": "habitat",
+          "x": 112,
+          "y": 80,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 34,
+          "name": "generated_habitat_34",
+          "type": "habitat",
+          "x": 128,
+          "y": 144,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 35,
+          "name": "generated_habitat_35",
+          "type": "habitat",
+          "x": 144,
+          "y": 144,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 36,
+          "name": "generated_habitat_36",
+          "type": "habitat",
+          "x": 160,
+          "y": 144,
+          "width": 256,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 37,
+          "name": "generated_habitat_37",
+          "type": "habitat",
+          "x": 112,
+          "y": 160,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 38,
+          "name": "generated_habitat_38",
+          "type": "habitat",
+          "x": 128,
+          "y": 160,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 39,
+          "name": "generated_habitat_39",
+          "type": "habitat",
+          "x": 176,
+          "y": 160,
+          "width": 240,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 40,
+          "name": "generated_habitat_40",
+          "type": "habitat",
+          "x": 112,
+          "y": 176,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 41,
+          "name": "generated_habitat_41",
+          "type": "habitat",
+          "x": 192,
+          "y": 176,
+          "width": 224,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 42,
+          "name": "generated_habitat_42",
+          "type": "habitat",
+          "x": 112,
+          "y": 192,
+          "width": 64,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 43,
+          "name": "generated_habitat_43",
+          "type": "habitat",
+          "x": 176,
+          "y": 192,
+          "width": 240,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 44,
+          "name": "generated_habitat_44",
+          "type": "habitat",
+          "x": 112,
+          "y": 208,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 45,
+          "name": "generated_habitat_45",
+          "type": "habitat",
+          "x": 128,
+          "y": 208,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 46,
+          "name": "generated_habitat_46",
+          "type": "habitat",
+          "x": 160,
+          "y": 208,
+          "width": 256,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "farmland"
+            }
+          ]
+        },
+        {
+          "id": 47,
+          "name": "generated_habitat_47",
+          "type": "habitat",
+          "x": 112,
+          "y": 224,
+          "width": 304,
+          "height": 96,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "name": "generated_area_48",
+          "type": "area",
+          "x": 112,
+          "y": 0,
+          "width": 304,
+          "height": 144,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "murska_sobota"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": 49,
+          "name": "generated_area_49",
+          "type": "area",
+          "x": 112,
+          "y": 144,
+          "width": 304,
+          "height": 80,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "murska_sobota"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": 50,
+          "name": "generated_area_50",
+          "type": "area",
+          "x": 112,
+          "y": 224,
+          "width": 304,
+          "height": 96,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "mura"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "nextlayerid": 5,
+  "nextobjectid": 51,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.11.0",
+  "tileheight": 16,
+  "tilesets": [
+    {
+      "columns": 8,
+      "firstgid": 1,
+      "image": "/content/tilesets/meadow.png",
+      "imageheight": 304,
+      "imagewidth": 128,
+      "margin": 0,
+      "name": "meadow",
+      "spacing": 0,
+      "tilecount": 152,
+      "tileheight": 16,
+      "tilewidth": 16,
+      "tiles": [
+        {
+          "id": 3,
+          "animation": [
+            {
+              "tileid": 3,
+              "duration": 700
+            },
+            {
+              "tileid": 21,
+              "duration": 700
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "animation": [
+            {
+              "tileid": 5,
+              "duration": 900
+            },
+            {
+              "tileid": 20,
+              "duration": 900
+            }
+          ]
+        },
+        {
+          "id": 46,
+          "animation": [
+            {
+              "tileid": 46,
+              "duration": 600
+            },
+            {
+              "tileid": 47,
+              "duration": 600
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "animation": [
+            {
+              "tileid": 48,
+              "duration": 600
+            },
+            {
+              "tileid": 49,
+              "duration": 600
+            }
+          ]
+        },
+        {
+          "id": 116,
+          "animation": [
+            {
+              "tileid": 116,
+              "duration": 800
+            },
+            {
+              "tileid": 117,
+              "duration": 800
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 140,
+          "animation": [
+            {
+              "tileid": 140,
+              "duration": 1000
+            },
+            {
+              "tileid": 141,
+              "duration": 1000
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilewidth": 16,
+  "type": "map",
+  "version": "1.10",
+  "width": 26
+}

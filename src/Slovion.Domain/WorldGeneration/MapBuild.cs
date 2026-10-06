@@ -31,6 +31,11 @@ internal sealed partial class MapBuild
     private readonly int[] waterDistance;
     private readonly List<int>[] connectors;
     private readonly List<(int Area, int Cell)> gates = [];
+    private readonly bool[] structure;
+    private readonly bool[] yard;
+    private readonly bool[] perch;
+    private readonly string?[] structureZone;
+    private readonly List<(int Cell, int Tile)> lamps = [];
     private readonly Dictionary<(int Area, string Layer), int[]> edgeDistance = [];
     private readonly List<List<int>> openingCenters = [];
     private readonly List<(string SpeciesId, int Cell)> spots = [];
@@ -58,6 +63,10 @@ internal sealed partial class MapBuild
         zoneKind = new string?[cells];
         habitat = new string?[cells];
         waterDistance = Enumerable.Repeat(int.MaxValue, cells).ToArray();
+        structure = new bool[cells];
+        yard = new bool[cells];
+        perch = new bool[cells];
+        structureZone = new string?[cells];
         connectors = [.. template.Areas.Select(area => area.Connectors.Select(point => Index(point.X, point.Y)).ToList())];
         foreach (var point in template.BlockingObjects)
         {
@@ -77,8 +86,10 @@ internal sealed partial class MapBuild
             Layers(area, biome, areaRandom.Fork("layers"));
             Openings(area, biome, areaRandom.Fork("openings"));
             Water(area, biome, areaRandom.Fork("water"));
+            Structures(area, biome, areaRandom.Fork("structures"));
             Distances(area, biome);
             Paths(area, areaRandom.Fork("paths"));
+            PlaceLamps(area, biome, areaRandom.Fork("lamps"));
             Decorate(area, biome, areaRandom.Fork("decor"));
         }
 
@@ -184,7 +195,8 @@ internal sealed partial class MapBuild
             new GridPoint(gate.Cell % width, gate.Cell / width),
             template.Areas[gate.Area].Barrier!.Flag,
             biomes[template.Areas[gate.Area].BiomeId].Gate!.Value)).ToList();
-        return new GeneratedMap(width, height, [.. ground], [.. decor], [.. blocked], placed, habitats, areas, placedGates, [.. zoneKind], attempts, repaired);
+        var placedLamps = lamps.Select(lamp => new GeneratedLamp(new GridPoint(lamp.Cell % width, lamp.Cell / width), lamp.Tile)).ToList();
+        return new GeneratedMap(width, height, [.. ground], [.. decor], [.. blocked], placed, habitats, areas, placedGates, placedLamps, [.. zoneKind], attempts, repaired);
     }
 
     private int Index(int x, int y) => (y * width) + x;
@@ -206,7 +218,7 @@ internal sealed partial class MapBuild
 
     private bool[] Reach() => GridSearch.Reachable(width, height, spawn, Walkable);
 
-    /// <summary>Water the boots let the player through: a wadeable ground tile with no blocking object on it.</summary>
+    /// <summary>Water a field tool lets the player into (boots, snorkel), with no blocking object on it.</summary>
     private bool Wadeable(int cell) => template.WadeableTiles?.Contains(ground[cell]) == true && !objectCell[cell];
 
     /// <summary>What the player reaches with the boots, wading through wadeable water.</summary>
@@ -220,7 +232,7 @@ internal sealed partial class MapBuild
     private void Carve(int target, bool[] reach)
     {
         var route = GridSearch.CheapestPath(width, height, target, cell => reach[cell], cell =>
-            areaOf[cell] == Outside ? (TemplateWalkable(cell) ? 1 : -1) : border[cell] ? -1 : 1);
+            areaOf[cell] == Outside ? (TemplateWalkable(cell) ? 1 : -1) : border[cell] || Fixed(cell) ? -1 : 1);
         if (route is null)
         {
             return;
@@ -234,6 +246,9 @@ internal sealed partial class MapBuild
             }
         }
     }
+
+    /// <summary>A structure or lamp post: never cleared to make a way.</summary>
+    private bool Fixed(int cell) => structure[cell] || lamps.Any(lamp => lamp.Cell == cell);
 
     /// <summary>Makes a generated cell a walkable path (a ford where it was water).</summary>
     private void OpenAsPath(int cell)

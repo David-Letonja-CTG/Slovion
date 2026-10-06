@@ -17,9 +17,13 @@ public sealed class WorldGenerationContentTests
     /// <summary>Tiles of the tileset: the cave pool and the lake's wadeable shallows.</summary>
     private const int CavePool = 116;
     private const int Shallows = 46;
+    private const int Chimney = 134;
 
     [Theory]
     [InlineData("dravsko_polje_meadow", new[] { "alauda_arvensis", "papilio_machaon", "salvia_pratensis", "taraxacum_officinale", "lepus_europaeus", "lanius_collurio", "crataegus_monogyna" })]
+    [InlineData("ljubljana_park", new[] { "apus_apus", "erinaceus_roumanicus", "alcedo_atthis", "fritillaria_meleagris", "crex_crex" })]
+    [InlineData("murska_sobota_village", new[] { "ciconia_ciconia", "upupa_epops", "alauda_arvensis", "viola_arvensis", "lutra_lutra" })]
+    [InlineData("portoroz_coast", new[] { "himantopus_himantopus", "egretta_garzetta", "aphanius_fasciatus", "salicornia_europaea", "sarpa_salpa", "pinna_nobilis" })]
     [InlineData("kocevje_forest", new[] { "ursus_arctos", "cervus_elaphus", "salamandra_salamandra", "allium_ursinum", "galium_odoratum" })]
     [InlineData("pohorje_forest", new[] { "canis_lupus", "sciurus_vulgaris", "drosera_rotundifolia", "vaccinium_myrtillus" })]
     [InlineData("triglav_alps", new[] { "rupicapra_rupicapra", "leontopodium_nivale", "potentilla_nitida", "marmota_marmota", "salamandra_atra" })]
@@ -67,6 +71,22 @@ public sealed class WorldGenerationContentTests
         }
 
         Assert.True(gateColumns.Count >= 8, $"the gate took only {gateColumns.Count} places");
+    }
+
+    [Fact]
+    public void The_stork_nests_on_the_farmhouse_chimney_and_the_towns_have_lamps_or_houses()
+    {
+        var maps = new WorldMaps(FileContentCatalog.Load(ContentFolder.RepositoryContent()));
+        for (long seed = 0; seed < 50; seed++)
+        {
+            var village = Served(maps, "murska_sobota_village", seed);
+            var stork = village.Spots.Single(spot => spot.SpeciesId == "ciconia_ciconia");
+            Assert.Equal(Chimney, village.Ground[(stork.Y * village.Width) + stork.X]);
+
+            // Ljubljana's park paths have lamp posts (tile objects beyond the authored strip's one).
+            var city = Served(maps, "ljubljana_park", seed);
+            Assert.True(city.Actors.Count(cell => cell % city.Width >= 8) >= 2, $"seed {seed}: no lamps in the city");
+        }
     }
 
     [Fact]

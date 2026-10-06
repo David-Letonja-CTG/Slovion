@@ -1,0 +1,12 @@
+{
+  "id": "city_street",
+  "floor": [122],
+  "border": [],
+  "structures": [
+    { "prefab": "red_house", "count": [1, 2], "along": "north" },
+    { "prefab": "brick_house", "count": [1, 2], "along": "north" }
+  ],
+  "lamps": { "tile": 126, "spacing": 6 },
+  "decor": [],
+  "zones": [{ "kind": "street", "where": "any" }]
+}

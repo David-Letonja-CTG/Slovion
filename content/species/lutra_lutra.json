@@ -121,5 +121,11 @@
       4,
       1
     ]
+  },
+  "placement": {
+    "zones": [
+      "oxbow"
+    ],
+    "water": "in"
   }
 }

@@ -1,0 +1,12 @@
+{
+  "id": "sea",
+  "floor": [142],
+  "pathSet": 64,
+  "border": [],
+  "water": { "kind": "shore", "edge": "south", "chance": 1.0, "size": 4, "tiles": [48], "shallow": [143], "shallowWidth": 3 },
+  "decor": [],
+  "zones": [
+    { "kind": "sea", "where": "water", "habitat": "sea" },
+    { "kind": "beach", "where": "any" }
+  ]
+}

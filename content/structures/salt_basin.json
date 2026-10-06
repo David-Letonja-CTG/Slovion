@@ -1,0 +1,10 @@
+{
+  "id": "salt_basin",
+  "ground": [
+    [145, 145, 145],
+    [145, 145, 145],
+    [145, 145, 145]
+  ],
+  "blocking": false,
+  "zone": "basin"
+}

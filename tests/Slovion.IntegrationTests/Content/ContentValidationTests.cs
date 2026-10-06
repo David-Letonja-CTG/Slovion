@@ -266,10 +266,11 @@ public sealed class ContentValidationTests
         // The spawn (1, 9), the signpost (2, 8) and Ana (3, 10) lie outside the zones.
         Assert.Null(HabitatAt(catalog, map, 1, 9));
         Assert.Null(HabitatAt(catalog, map, 2, 8));
-        Assert.Equal("city", HabitatAt(catalog, map, 10, 7)?.Id);
+        // The generated park (rows 5–15) is city habitat, the barje beyond the river (rows 16–19) wetland.
+        Assert.Contains(Map(catalog, map)!.Habitats, zone => zone.HabitatId == "city" && zone.MinY >= 5 && zone.MaxY <= 15);
         Assert.Equal("wetland", HabitatAt(catalog, map, 8, 17)?.Id);
         Assert.Null(HabitatAt(catalog, map, 13, 3)); // the street
-        string[][] spots = [["barje_corncrake_1", "crex_crex"], ["barje_fritillary_1", "fritillaria_meleagris"], ["barje_fritillary_2", "fritillaria_meleagris"], ["city_hedgehog_1", "erinaceus_roumanicus"], ["city_kingfisher_1", "alcedo_atthis"], ["city_swift_1", "apus_apus"]];
+        string[][] spots = [["ljubljana_park_crex_crex_1", "crex_crex"], ["ljubljana_park_fritillaria_meleagris_1", "fritillaria_meleagris"], ["ljubljana_park_erinaceus_roumanicus_1", "erinaceus_roumanicus"], ["ljubljana_park_alcedo_atthis_1", "alcedo_atthis"], ["ljubljana_park_apus_apus_1", "apus_apus"]];
         Assert.All(spots, spot => Assert.Equal(spot[1], SpotOn(catalog, map, spot[0])?.SpeciesId.Value));
     }
 
@@ -285,11 +286,12 @@ public sealed class ContentValidationTests
 
         // The spawn (1, 9), the signpost (2, 8), Štefan (3, 10) and the station (6, 8) lie outside the zones.
         Assert.All(new[] { (1, 9), (2, 8), (3, 10), (6, 8) }, tile => Assert.Null(HabitatAt(catalog, map, tile.Item1, tile.Item2)));
-        Assert.Equal("farmland", HabitatAt(catalog, map, 12, 6)?.Id);
-        Assert.Equal("farmland", HabitatAt(catalog, map, 21, 6)?.Id);
-        Assert.Equal("wetland", HabitatAt(catalog, map, 22, 10)?.Id);
+        // Generated: the orchard and the fields are farmland, the oxbow and the Mura wetland.
+        var village = Map(catalog, map)!;
+        Assert.Contains(village.Habitats, zone => zone.HabitatId == "farmland" && zone.MaxY <= 13);
+        Assert.Contains(village.Habitats, zone => zone.HabitatId == "wetland" && zone.MinY >= 9);
         Assert.Equal("wetland", HabitatAt(catalog, map, 5, 14)?.Id);
-        string[][] spots = [["village_stork_1", "ciconia_ciconia"], ["orchard_hoopoe_1", "upupa_epops"], ["field_skylark_1", "alauda_arvensis"], ["field_pansy_1", "viola_arvensis"], ["oxbow_otter_1", "lutra_lutra"]];
+        string[][] spots = [["murska_sobota_village_ciconia_ciconia_1", "ciconia_ciconia"], ["murska_sobota_village_upupa_epops_1", "upupa_epops"], ["murska_sobota_village_alauda_arvensis_1", "alauda_arvensis"], ["murska_sobota_village_viola_arvensis_1", "viola_arvensis"], ["murska_sobota_village_lutra_lutra_1", "lutra_lutra"]];
         Assert.All(spots, spot => Assert.Equal(spot[1], SpotOn(catalog, map, spot[0])?.SpeciesId.Value));
     }
 
@@ -306,7 +308,7 @@ public sealed class ContentValidationTests
         // The spawn (1, 9), the signpost (2, 8), Nina (3, 10) and the station (6, 8) lie outside the zones, and so does the sea.
         Assert.All(new[] { (1, 9), (2, 8), (3, 10), (6, 8), (6, 14) }, tile => Assert.Null(HabitatAt(catalog, map, tile.Item1, tile.Item2)));
         Assert.Equal("saltpan", HabitatAt(catalog, map, 17, 6)?.Id);
-        string[][] spots = [["saltpan_stilt_1", "himantopus_himantopus"], ["saltpan_egret_1", "egretta_garzetta"], ["saltpan_killifish_1", "aphanius_fasciatus"], ["saltpan_glasswort_1", "salicornia_europaea"], ["sea_salema_1", "sarpa_salpa"], ["sea_pen_shell_1", "pinna_nobilis"]];
+        string[][] spots = [["portoroz_coast_himantopus_himantopus_1", "himantopus_himantopus"], ["portoroz_coast_egretta_garzetta_1", "egretta_garzetta"], ["portoroz_coast_aphanius_fasciatus_1", "aphanius_fasciatus"], ["portoroz_coast_salicornia_europaea_1", "salicornia_europaea"], ["portoroz_coast_sarpa_salpa_1", "sarpa_salpa"], ["portoroz_coast_pinna_nobilis_1", "pinna_nobilis"]];
         Assert.All(spots, spot => Assert.Equal(spot[1], SpotOn(catalog, map, spot[0])?.SpeciesId.Value));
     }
 

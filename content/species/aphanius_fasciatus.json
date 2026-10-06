@@ -103,5 +103,11 @@
       2,
       0
     ]
+  },
+  "placement": {
+    "zones": [
+      "channel"
+    ],
+    "water": "in"
   }
 }

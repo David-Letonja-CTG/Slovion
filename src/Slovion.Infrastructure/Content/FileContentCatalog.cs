@@ -136,7 +136,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
         var rewardFlags = quests.Values.Select(quest => quest.RewardFlag).ToHashSet(StringComparer.Ordinal);
         var areas = LoadAreas(Path.Combine(rootPath, AreasFolder), errors);
         var stationDrafts = LoadStations(Path.Combine(rootPath, "stations"), species, errors);
-        var biomes = LoadBiomes(Path.Combine(rootPath, "biomes"), habitats, errors);
+        var biomes = LoadBiomes(Path.Combine(rootPath, "biomes"), LoadPrefabs(Path.Combine(rootPath, "structures"), errors), habitats, errors);
         var world = new WorldContent(species, habitats, biomes, placements, areas, rewardFlags);
         var (maps, mapNpcs, stationPlacements) = LoadMaps(Path.Combine(rootPath, "maps"), world, npcs, rewardFlags, errors);
         var stations = PlaceStations(stationDrafts, stationPlacements, errors);
