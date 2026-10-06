@@ -29,4 +29,4 @@
 
 - [x] 6.1 `dotnet format`, `dotnet test`, `npm run check`, E2E and the container smoke test all pass in CI (no application code changed)
 - [x] 6.2 Run `openspec validate add-hosting --strict`, push, and verify all CI jobs pass on the pull request
-- [ ] 6.3 With the owner on the real VM: first deploy, a second deploy, a forced rollback, a backup and a restore, installing the app over HTTPS
+- [x] 6.3 With the owner on the real VM: first deploy, a second deploy, a forced rollback, a backup and a restore, installing the app over HTTPS — done 2026-10-06; see "Validation on the real VM" in the design notes (the install prompt itself needs a person)

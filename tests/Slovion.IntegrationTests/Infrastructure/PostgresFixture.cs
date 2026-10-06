@@ -5,7 +5,7 @@ namespace Slovion.IntegrationTests.Infrastructure;
 /// <summary>Starts one PostgreSQL container shared by all tests in the <see cref="DatabaseCollectionDefinition"/>.</summary>
 public sealed class PostgresFixture : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer container = new PostgreSqlBuilder("postgres:18").Build();
+    private readonly PostgreSqlContainer container = new PostgreSqlBuilder("postgres:18.6").Build();
 
     public string ConnectionString => container.GetConnectionString();
 
