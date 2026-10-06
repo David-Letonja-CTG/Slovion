@@ -1,0 +1,125 @@
+/* The controls take touches only on the D-pad and the buttons; the space between them stays part of the page. */
+:host {
+  display: block;
+  pointer-events: none;
+}
+
+.touch {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom))
+    max(1rem, env(safe-area-inset-left));
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* The pad is a round touch area with a plus-shaped D-pad drawn on it. */
+.touch__pad {
+  position: relative;
+  flex: none;
+  width: 9.5rem;
+  height: 9.5rem;
+  border-radius: 50%;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.touch__pad::before,
+.touch__pad::after {
+  position: absolute;
+  inset: 33.3% 3%;
+  border: 2px solid var(--color-panel-border);
+  background: var(--color-panel);
+  content: '';
+}
+
+.touch__pad::after {
+  inset: 3% 33.3%;
+}
+
+.touch__arrow {
+  position: absolute;
+  z-index: 1;
+  width: 0;
+  height: 0;
+  border: 0.55rem solid transparent;
+  transform: translate(-50%, -50%);
+}
+
+.touch__arrow--MoveUp {
+  top: 15%;
+  left: 50%;
+  border-top-width: 0;
+  border-bottom-color: var(--color-text-muted);
+}
+
+.touch__arrow--MoveDown {
+  top: 85%;
+  left: 50%;
+  border-bottom-width: 0;
+  border-top-color: var(--color-text-muted);
+}
+
+.touch__arrow--MoveLeft {
+  top: 50%;
+  left: 15%;
+  border-left-width: 0;
+  border-right-color: var(--color-text-muted);
+}
+
+.touch__arrow--MoveRight {
+  top: 50%;
+  left: 85%;
+  border-right-width: 0;
+  border-left-color: var(--color-text-muted);
+}
+
+.touch__arrow--held.touch__arrow--MoveUp {
+  border-bottom-color: var(--color-accent);
+}
+
+.touch__arrow--held.touch__arrow--MoveDown {
+  border-top-color: var(--color-accent);
+}
+
+.touch__arrow--held.touch__arrow--MoveLeft {
+  border-right-color: var(--color-accent);
+}
+
+.touch__arrow--held.touch__arrow--MoveRight {
+  border-left-color: var(--color-accent);
+}
+
+/* B sits lower left of A, like on a handheld. */
+.touch__buttons {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.9rem;
+  flex: none;
+}
+
+.touch__button {
+  width: 4rem;
+  height: 4rem;
+  border: 2px solid var(--color-panel-border);
+  border-radius: 50%;
+  background: var(--color-panel);
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  font-size: 1.4rem;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.touch__button--a {
+  margin-bottom: 2.5rem;
+}
+
+.touch__button--held {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+}

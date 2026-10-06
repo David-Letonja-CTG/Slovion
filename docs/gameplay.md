@@ -8,7 +8,7 @@ Slovion is about **observing real Slovenian nature**: walk through a region, mee
 
 ## The core loop
 
-1. **Explore** a region on foot: tile by tile, with keyboard, mouse or touch.
+1. **Explore** a region on foot: tile by tile, with the keyboard or the on-screen D-pad.
 2. **Discover** species:
    - **Animals** live in the world as residents: they wander near home, wait when the player comes close, and react to the torch at night.
    - **Plants** are found by searching tall grass, a tree or a shrub inside a habitat.
@@ -78,16 +78,22 @@ Every region has a research station (*raziskovalna postaja*) with a themed list 
 
 ## Controls
 
-| Action | Keys |
-|---|---|
-| Walk / run | arrow keys or WASD / hold Shift |
-| Interact: talk, observe, search, read the signpost | E, Enter or Space |
-| Torch | L |
-| Bag | I |
-| Journal (*Terenski dnevnik*) | M |
-| Close, go back | Esc |
+| Action | Keys | Touch |
+|---|---|---|
+| Walk / run | arrow keys or WASD / hold Shift | D-pad / hold B while walking |
+| Interact: talk, observe, search, read the signpost | E, Enter or Space | A |
+| Torch | L | *Svetilka* |
+| Bag | I | *Nahrbtnik* |
+| Journal (*Terenski dnevnik*) | M | *Dnevnik* |
+| Close, go back | Esc | B |
 
-The sound settings (*Zvok*) use up and down to choose a volume, left and right to change it, and Enter to mute. Dialogs use the arrows and Enter. Mouse and touch work everywhere: tap to walk, tap a dialog's buttons.
+The sound settings (*Zvok*) use up and down to choose a volume, left and right to change it, and Enter to mute. Dialogs use the arrows and Enter, or the D-pad, A and B; their buttons can also be clicked or tapped. The buttons (*Svetilka*, *Nahrbtnik*, *Dnevnik*, *Zvok*, *Utišaj*, *Cel zaslon*) work with mouse and touch. *Cel zaslon* switches to fullscreen where the browser allows it; on iPhone, adding Slovion to the home screen runs it full screen.
+
+**On phones and tablets** the D-pad and the A and B buttons appear. Held upright, the world is at the top and the controls below it, like a handheld console; held sideways, the world fills the screen and the controls sit see-through in the corners.
+
+| Upright | Sideways |
+|---|---|
+| ![The game on a phone held upright](images/phone.png) | ![The game on a phone held sideways](images/phone-sideways.png) |
 
 ## Where gameplay is defined
 

@@ -15,6 +15,8 @@ import { firstValueFrom } from 'rxjs';
 import { Action, Game, Interaction, ResidentInfo, WorldTime, worldTimeAt } from '../../engine';
 import { AudioService } from '../audio/audio.service';
 import { SoundSettingsDialog } from '../audio/sound-settings-dialog';
+import { Fullscreen } from '../device/fullscreen';
+import { TOUCH_DEVICE } from '../device/touch-device';
 import {
   AlreadyIdentified,
   AnswerResult,
@@ -44,6 +46,7 @@ import { QuestTracker } from './quest-tracker';
 import { TravelMap } from './travel-map';
 import { InventoryPanel } from './inventory-panel';
 import { StationDialog } from './station-dialog';
+import { TouchControls } from './touch-controls';
 import { LoadedPlace, WorldLoader } from './world-loader';
 
 /** How long the screen takes to fade out (and in again) when travelling; none for players who prefer reduced motion. */
@@ -125,6 +128,7 @@ type Overlay =
     InventoryPanel,
     SoundSettingsDialog,
     StationDialog,
+    TouchControls,
   ],
   templateUrl: './play-screen.html',
   styleUrl: './play-screen.css',
@@ -142,6 +146,9 @@ export class PlayScreen {
   private readonly stationDialog = viewChild(StationDialog);
   private readonly soundSettings = viewChild(SoundSettingsDialog);
   protected readonly audio = inject(AudioService);
+  /** On touch screens the play screen shows the D-pad and buttons and uses the handheld layout. */
+  protected readonly touch = inject(TOUCH_DEVICE);
+  protected readonly fullscreen = inject(Fullscreen);
   private readonly fadeMs = inject(TRAVEL_FADE_MS);
   private game: Game | undefined;
   /** The map of the place the player is in. */
@@ -528,6 +535,21 @@ export class PlayScreen {
 
   protected onMenu(): void {
     this.open({ kind: 'naturedex' });
+  }
+
+  /** The on-screen controls press and release actions like keys (docs/gameplay.md). */
+  protected onTouchPressed(actions: readonly Action[]): void {
+    this.game?.press(actions);
+  }
+
+  protected onTouchReleased(actions: readonly Action[]): void {
+    this.game?.release(actions);
+  }
+
+  /** The fullscreen button; focus goes back to the game. */
+  protected toggleFullscreen(): void {
+    this.fullscreen.toggle();
+    this.canvas()?.focus();
   }
 
   /** The sound settings, from the button; focus returns to the game when they close. */

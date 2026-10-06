@@ -1,6 +1,7 @@
+/* Dialogs cover the screen, except the touch controls below the world on an upright phone (play-screen.css). */
 .overlay {
   position: fixed;
-  inset: 0;
+  inset: 0 0 var(--play-controls-height, 0);
   z-index: 10;
   display: flex;
   align-items: center;

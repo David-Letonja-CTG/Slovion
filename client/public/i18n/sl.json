@@ -31,6 +31,7 @@
     "complete": "Ta vrsta je v Terenskem dnevniku v celoti raziskana: {{name}}"
   },
   "naturedex": {
+    "button": "Dnevnik",
     "title": "Terenski dnevnik",
     "certificates": {
       "button": "Potrdila",
@@ -173,6 +174,20 @@
     "muteButton": "Utišaj",
     "unmuteButton": "Vklopi zvok",
     "hint": "Puščici gor in dol izbereta glasnost, levo in desno jo spremenita, Enter utiša ali vklopi zvok."
+  },
+  "touch": {
+    "pad": "Smerne tipke za hojo",
+    "a": {
+      "label": "A",
+      "name": "A: razišči, pogovori se ali potrdi"
+    },
+    "b": {
+      "label": "B",
+      "name": "B: nazaj; drži med hojo za tek"
+    }
+  },
+  "fullscreen": {
+    "button": "Cel zaslon"
   },
   "area": {
     "label": "Lokacija"
