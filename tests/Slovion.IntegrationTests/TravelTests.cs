@@ -58,7 +58,7 @@ public sealed class TravelTests(PostgresFixture database)
     {
         await SendAsync(client, token, HttpMethod.Post, "/api/save/conversations", new { mapId = MeadowMap, npcId = "vera" });
         await IdentifyAsync(client, token, SageSpot, Sage);
-        await IdentifyAsync(client, token, "meadow_dandelion_1", "taraxacum_officinale");
+        await IdentifyAsync(client, token, "dravsko_polje_meadow_taraxacum_officinale_1", "taraxacum_officinale");
         await IdentifyAsync(client, token, HareSpot, Hare);
         await SendAsync(client, token, HttpMethod.Post, "/api/save/conversations", new { mapId = MeadowMap, npcId = "vera" });
     }
@@ -251,8 +251,8 @@ public sealed class TravelTests(PostgresFixture database)
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
         await CompleteVerasQuestAsync(client, token);
-        await IdentifyOnMapAsync(client, token, "meadow_skylark_1", "alauda_arvensis", "dravsko_polje_meadow");
-        await IdentifyOnMapAsync(client, token, "meadow_swallowtail_1", "papilio_machaon", "dravsko_polje_meadow");
+        await IdentifyOnMapAsync(client, token, "dravsko_polje_meadow_alauda_arvensis_1", "alauda_arvensis", "dravsko_polje_meadow");
+        await IdentifyOnMapAsync(client, token, "dravsko_polje_meadow_papilio_machaon_1", "papilio_machaon", "dravsko_polje_meadow");
         await IdentifyOnMapAsync(client, token, "kocevje_forest_allium_ursinum_1", "allium_ursinum", "kocevje_forest");
 
         var (_, offer) = await SendAsync(client, token, HttpMethod.Post, "/api/save/conversations", new { mapId = "kocevje_forest", npcId = "jure" });

@@ -23,7 +23,7 @@ internal sealed class ScriptedRandomSource(params int[] values) : IRandomSource
 [Collection(DatabaseCollectionDefinition.Name)]
 public sealed class SearchTests(PostgresFixture database)
 {
-    // Tile (12, 12) lies in the south tall-grass zone of the meadow; (10, 10) is the spawn on the path.
+    // Any tile for requests that fail before the map is read; (10, 10) is the spawn on the path.
     private const int GrassX = 12;
     private const int GrassY = 12;
 
@@ -43,8 +43,11 @@ public sealed class SearchTests(PostgresFixture database)
         return client.SendAsync(request, Token);
     }
 
-    private static Task<HttpResponseMessage> SearchGrassAsync(HttpClient client, string token) =>
-        SearchAsync(client, token, new { mapId = MeadowMap, x = GrassX, y = GrassY });
+    private static async Task<HttpResponseMessage> SearchGrassAsync(HttpClient client, string token)
+    {
+        var (x, y) = await HabitatTileAsync(client, token);
+        return await SearchAsync(client, token, new { mapId = MeadowMap, x, y });
+    }
 
     [Fact]
     public async Task A_found_species_opens_an_encounter_and_records_where_it_was_seen()
@@ -107,7 +110,7 @@ public sealed class SearchTests(PostgresFixture database)
         await using var factory = Factory(0, 0);
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
-        await IdentifyAsync(client, token, "meadow_dandelion_1", "taraxacum_officinale");
+        await IdentifyAsync(client, token, "dravsko_polje_meadow_taraxacum_officinale_1", "taraxacum_officinale");
 
         using var response = await SearchGrassAsync(client, token);
 

@@ -22,9 +22,14 @@ public static class WorldGenerator
         ArgumentNullException.ThrowIfNull(biomes);
         foreach (var area in template.Areas)
         {
-            if (!biomes.ContainsKey(area.BiomeId))
+            if (!biomes.TryGetValue(area.BiomeId, out var biome))
             {
                 throw new ArgumentException($"{template.MapId}: unknown biome '{area.BiomeId}'.", nameof(biomes));
+            }
+
+            if (area.Barrier is not null && (biome.Gate is null || biome.Border.Count == 0))
+            {
+                throw new ArgumentException($"{template.MapId}: area '{area.AreaId}' has a barrier, but biome '{biome.Id}' has no border or gate tile.", nameof(biomes));
             }
         }
 

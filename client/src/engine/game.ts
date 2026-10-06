@@ -142,8 +142,14 @@ export function createGame(
   const loop = new GameLoop(
     {
       update: (stepMs) => world.update(input, stepMs),
-      render: () =>
-        renderWorld(context, world, options.world, darknessLayer, view, options.debug ?? false),
+      render: () => {
+        renderWorld(context, world, options.world, darknessLayer, view, options.debug ?? false);
+        if (options.debug) {
+          // The debug view tells where the player stands, so end-to-end tests can walk generated maps (D13).
+          const { tileX, tileY, facing } = world.player;
+          canvas.dataset['player'] = `${tileX},${tileY},${facing}`;
+        }
+      },
     },
     environment.clock,
     environment.scheduler,

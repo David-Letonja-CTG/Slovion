@@ -80,8 +80,8 @@ public sealed class StationTests(PostgresFixture database)
             var created = DateTimeOffset.UtcNow.AddMinutes(-15);
             await db.Database.ExecuteSqlAsync($"update save_slots set created_at = {created} where id = {slotId}", Token);
             db.Discoveries.AddRange(
-                Researched(slotId, "taraxacum_officinale", "meadow_dandelion_1", created, 3),
-                Researched(slotId, "crataegus_monogyna", "hedgerow_hawthorn_1", created, 3),
+                Researched(slotId, "taraxacum_officinale", "dravsko_polje_meadow_taraxacum_officinale_1", created, 3),
+                Researched(slotId, "crataegus_monogyna", "dravsko_polje_meadow_crataegus_monogyna_1", created, 3),
                 Researched(slotId, Sage, SageSpot, created, 2));
             await db.SaveChangesAsync(Token);
         }

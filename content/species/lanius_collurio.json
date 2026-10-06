@@ -142,5 +142,11 @@
       1,
       2
     ]
+  },
+  "placement": {
+    "zones": [
+      "hedge_edge",
+      "field_margin"
+    ]
   }
 }

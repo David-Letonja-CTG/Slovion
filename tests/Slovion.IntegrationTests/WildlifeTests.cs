@@ -50,10 +50,10 @@ public sealed class WildlifeTests(PostgresFixture database)
         Assert.Equal(
             new Dictionary<string, (string, string, bool)>
             {
-                ["hedgerow_shrike_1"] = ("lanius_collurio", "shy", true),
-                ["meadow_hare_1"] = ("lepus_europaeus", "curious", true),
-                ["meadow_skylark_1"] = ("alauda_arvensis", "calm", true),
-                ["meadow_swallowtail_1"] = ("papilio_machaon", "calm", true),
+                ["dravsko_polje_meadow_lanius_collurio_1"] = ("lanius_collurio", "shy", true),
+                ["dravsko_polje_meadow_lepus_europaeus_1"] = ("lepus_europaeus", "curious", true),
+                ["dravsko_polje_meadow_alauda_arvensis_1"] = ("alauda_arvensis", "calm", true),
+                ["dravsko_polje_meadow_papilio_machaon_1"] = ("papilio_machaon", "calm", true),
             },
             Animals(body));
     }
@@ -139,10 +139,10 @@ public sealed class WildlifeTests(PostgresFixture database)
 
         var animals = Animals((await WildlifeAsync(client, token, MeadowMap)).Body);
 
-        Assert.False(animals["meadow_swallowtail_1"].Present);
-        Assert.False(animals["hedgerow_shrike_1"].Present);
-        Assert.True(animals["meadow_hare_1"].Present);
-        Assert.True(animals["meadow_skylark_1"].Present);
+        Assert.False(animals["dravsko_polje_meadow_papilio_machaon_1"].Present);
+        Assert.False(animals["dravsko_polje_meadow_lanius_collurio_1"].Present);
+        Assert.True(animals["dravsko_polje_meadow_lepus_europaeus_1"].Present);
+        Assert.True(animals["dravsko_polje_meadow_alauda_arvensis_1"].Present);
     }
 
     [Theory]

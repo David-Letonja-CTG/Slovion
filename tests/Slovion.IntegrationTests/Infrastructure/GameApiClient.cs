@@ -8,11 +8,27 @@ namespace Slovion.IntegrationTests.Infrastructure;
 public static class GameApiClient
 {
     public const string MeadowMap = "dravsko_polje_meadow";
-    public const string SageSpot = "meadow_sage_1";
+    public const string SageSpot = "dravsko_polje_meadow_salvia_pratensis_1";
     public const string Sage = "salvia_pratensis";
-    public const string HareSpot = "meadow_hare_1";
+    public const string HareSpot = "dravsko_polje_meadow_lepus_europaeus_1";
     public const string Hare = "lepus_europaeus";
-    public const string SkylarkSpot = "meadow_skylark_1";
+    public const string SkylarkSpot = "dravsko_polje_meadow_alauda_arvensis_1";
+
+    /// <summary>
+    /// A tile of a habitat zone on the save's map. The meadow is generated per save (docs/decisions.md D13), so its zones
+    /// are read from the map the API serves.
+    /// </summary>
+    public static async Task<(int X, int Y)> HabitatTileAsync(HttpClient client, string token, string habitatId = "tall_grass", string mapId = MeadowMap)
+    {
+        using var response = await SendAsync(client, new HttpRequestMessage(HttpMethod.Get, new Uri($"/api/save/maps/{mapId}", UriKind.Relative)), token, acceptLanguage: null);
+        response.EnsureSuccessStatusCode();
+        using var map = await ReadJsonAsync(response);
+        var zone = map.RootElement.GetProperty("layers").EnumerateArray()
+            .Single(layer => layer.GetProperty("type").GetString() == "objectgroup").GetProperty("objects").EnumerateArray()
+            .First(o => o.GetProperty("type").GetString() == "habitat"
+                && o.GetProperty("properties").EnumerateArray().Any(p => p.GetProperty("name").GetString() == "habitatId" && p.GetProperty("value").GetString() == habitatId));
+        return ((int)(zone.GetProperty("x").GetDouble() / 16), (int)(zone.GetProperty("y").GetDouble() / 16));
+    }
 
     public static async Task<string> CreateSaveAsync(HttpClient client)
     {

@@ -1,0 +1,1200 @@
+{
+  "compressionlevel": -1,
+  "height": 28,
+  "infinite": false,
+  "layers": [
+    {
+      "data": [
+        13, 2, 1, 14, 13, 2, 1, 14, 13, 2, 14, 1, 2, 13, 14, 1, 2, 13, 14, 1, 1, 14, 13, 2, 1, 14,
+        13, 2, 1, 14, 2, 13, 2, 2, 14, 14, 2, 1, 1, 1, 14, 14, 14, 14, 2, 13, 1, 1, 14, 1, 13, 2,
+        14, 1, 2, 13, 2, 14, 13, 1, 13, 1, 13, 2, 1, 13, 13, 1, 14, 14, 1, 2, 1, 13, 1, 14, 2, 1, 1,
+        13, 2, 14, 1, 1, 1, 13, 2, 2, 13, 14, 13, 13, 14, 13, 13, 1, 14, 1, 1, 1, 2, 14, 13, 13, 2,
+        1, 13, 13, 13, 1, 1, 13, 2, 13, 14, 1, 13, 14, 14, 13, 1, 1, 14, 1, 14, 1, 13, 14, 13, 14,
+        1, 13, 1, 14, 1, 14, 13, 13, 1, 1, 1, 2, 1, 1, 2, 14, 14, 1, 1, 2, 13, 13, 1, 13, 14, 1, 13,
+        14, 13, 13, 2, 1, 2, 13, 1, 2, 1, 2, 2, 1, 14, 1, 14, 2, 1, 14, 14, 1, 14, 14, 14, 13, 1,
+        14, 13, 13, 2, 2, 1, 1, 13, 2, 1, 1, 1, 13, 14, 14, 13, 13, 14, 13, 1, 2, 2, 1, 13, 13, 2,
+        2, 13, 2, 14, 13, 1, 13, 2, 14, 13, 2, 2, 14, 1, 1, 14, 1, 13, 1, 14, 2, 2, 13, 2, 1, 2, 2,
+        1, 13, 1, 13, 1, 1, 13, 13, 1, 14, 14, 14, 1, 2, 2, 1, 13, 13, 2, 14, 13, 2, 1, 14, 13, 2,
+        1, 14, 13, 2, 14, 1, 2, 13, 14, 1, 1, 2, 2, 14, 1, 14, 2, 14, 2, 2, 2, 2, 1, 1, 13, 13, 2,
+        13, 14, 1, 2, 13, 14, 1, 2, 13, 1, 14, 13, 2, 1, 14, 13, 13, 14, 2, 1, 14, 2, 2, 13, 2, 13,
+        13, 14, 2, 14, 2, 14, 78, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 72, 13, 2,
+        14, 14, 2, 1, 14, 2, 14, 2, 13, 1, 2, 1, 14, 1, 2, 13, 14, 1, 2, 13, 14, 1, 2, 14, 13, 2, 1,
+        14, 13, 13, 14, 1, 2, 1, 13, 2, 1, 2, 14, 1, 2, 13, 1, 14, 1, 2, 1, 1, 13, 2, 2, 1, 13, 2,
+        13, 14, 1, 13, 14, 13, 1, 1, 14, 14, 13, 1, 14, 14, 2, 13, 14, 14, 2, 14, 13, 13, 2, 13, 1,
+        2, 1, 13, 2, 13, 1, 2, 14, 13, 14, 14, 1, 1, 14, 2, 14, 1, 1, 14, 13, 13, 1, 2, 1, 14, 14,
+        13, 1, 14, 13, 14, 2, 14, 1, 14, 14, 1, 14, 14, 2, 13, 14, 13, 1, 1, 2, 13, 1, 13, 1, 1, 14,
+        2, 14, 1, 1, 1, 14, 13, 13, 1, 14, 1, 14, 14, 1, 13, 2, 13, 14, 1, 2, 14, 2, 14, 2, 13, 1,
+        1, 1, 1, 13, 13, 14, 1, 13, 1, 2, 14, 13, 13, 14, 13, 1, 2, 1, 2, 2, 14, 2, 1, 14, 13, 14,
+        2, 14, 1, 13, 2, 13, 14, 1, 1, 13, 2, 1, 2, 1, 1, 14, 1, 13, 2, 13, 13, 2, 13, 1, 13, 14,
+        14, 2, 14, 14, 2, 1, 14, 13, 14, 1, 13, 13, 14, 13, 1, 2, 13, 14, 1, 13, 14, 1, 2, 1, 13, 1,
+        1, 13, 14, 13, 13, 2, 1, 13, 1, 14, 2, 1, 2, 14, 2, 1, 2, 14, 14, 1, 2, 13, 14, 2, 14, 2,
+        13, 13, 2, 14, 14, 1, 14, 14, 1, 1, 2, 2, 76, 13, 2, 13, 2, 13, 13, 2, 2, 1, 14, 14, 14, 13,
+        13, 14, 2, 1, 1, 14, 14, 14, 2, 1, 14, 13, 14, 1, 1, 14, 2, 13, 77, 70, 70, 70, 70, 70, 70,
+        70, 70, 70, 70, 68, 13, 13, 13, 14, 2, 13, 2, 14, 14, 14, 1, 1, 13, 14, 1, 1, 14, 1, 1, 13,
+        14, 13, 2, 13, 2, 13, 2, 13, 13, 14, 14, 77, 70, 68, 2, 1, 13, 14, 13, 2, 1, 13, 2, 13, 2,
+        2, 14, 14, 13, 2, 13, 13, 1, 14, 14, 13, 13, 13, 13, 14, 2, 13, 1, 1, 14, 77, 70, 70, 70,
+        70, 70, 70, 70, 70, 70, 72, 1, 14, 1, 13, 2, 14, 1, 13, 1, 2, 13, 13, 2, 1, 1, 13, 14, 2,
+        14, 1, 1, 2, 2, 1, 13, 13, 14, 2, 1, 2, 1, 2, 13, 2, 2, 2, 1, 14, 14, 2, 13, 1, 13, 14, 14,
+        14, 1, 14, 2, 2, 2, 13, 1, 14, 13, 14, 13, 14, 2, 2, 13, 1, 13, 13, 2, 1, 14, 1, 14, 1, 2,
+        14, 13, 2, 2, 2, 1, 14, 2, 1, 1, 2, 1, 1, 14, 14, 14, 1, 2, 13, 13, 1, 14, 13, 14, 2, 13, 1,
+        14, 14, 13, 13, 14, 14, 14, 13, 13, 1, 14, 14, 1, 2, 13, 1, 1, 14, 14, 1, 13, 2, 14, 14, 14,
+        1, 2, 13, 13, 14, 13, 14, 14, 13, 2, 1, 14, 13, 2, 1, 14, 13, 2, 1, 13, 14, 1, 2, 13, 14, 1,
+        2, 13, 14, 14, 13, 2, 1, 14, 13, 2, 1, 14, 13, 1, 2
+      ],
+      "height": 28,
+      "id": 1,
+      "name": "ground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 32,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 5, 5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0,
+        0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0,
+        0, 0, 7, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 4, 4, 4, 0, 7, 0, 0, 7, 4, 4, 0, 0,
+        0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 6, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0,
+        0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0,
+        0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 4, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 5, 5, 0, 0, 4, 0, 0, 0, 0, 0, 4, 0, 8, 0, 0, 0, 0, 0,
+        0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 7, 0, 0,
+        4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 4, 4, 4, 4, 0, 0, 0, 4, 4, 0, 0, 0, 0,
+        4, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 4, 4, 4, 4, 0, 0, 4, 0, 0, 0, 0, 0,
+        0, 0, 4, 4, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0,
+        18, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 18, 0, 0,
+        0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0,
+        0, 7, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 18, 0, 0, 7, 0, 18, 0, 7, 0, 0, 0, 7, 0, 0, 18, 18, 0, 5,
+        5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 18, 0,
+        0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 18, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5
+      ],
+      "height": 28,
+      "id": 2,
+      "name": "decor",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 32,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 5, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5,
+        0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 0, 0, 0, 0,
+        5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 5, 5, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 5, 5, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      ],
+      "height": 28,
+      "id": 3,
+      "name": "collision",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": false,
+      "width": 32,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 4,
+      "name": "objects",
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "objects": [
+        {
+          "height": 0,
+          "id": 1,
+          "name": "spawn",
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ],
+          "rotation": 0,
+          "type": "spawn",
+          "visible": true,
+          "width": 0,
+          "x": 168,
+          "y": 168
+        },
+        {
+          "gid": 20,
+          "height": 16,
+          "id": 13,
+          "name": "vera",
+          "properties": [
+            {
+              "name": "npcId",
+              "type": "string",
+              "value": "vera"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 16,
+          "x": 112,
+          "y": 160
+        },
+        {
+          "gid": 31,
+          "height": 16,
+          "id": 18,
+          "name": "signpost",
+          "rotation": 0,
+          "type": "signpost",
+          "visible": true,
+          "width": 16,
+          "x": 192,
+          "y": 160
+        },
+        {
+          "gid": 57,
+          "height": 16,
+          "id": 19,
+          "name": "meadow_station",
+          "properties": [
+            {
+              "name": "stationId",
+              "type": "string",
+              "value": "meadow_station"
+            }
+          ],
+          "rotation": 0,
+          "type": "station",
+          "visible": true,
+          "width": 16,
+          "x": 224,
+          "y": 144
+        },
+        {
+          "id": 20,
+          "name": "area_meadow_1_8_15_4",
+          "type": "area",
+          "x": 16,
+          "y": 128,
+          "width": 240,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "meadow"
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "dravsko_polje_meadow_alauda_arvensis_1",
+          "type": "spot",
+          "point": true,
+          "x": 488,
+          "y": 40,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "alauda_arvensis"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "dravsko_polje_meadow_alauda_arvensis_1"
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "dravsko_polje_meadow_papilio_machaon_1",
+          "type": "spot",
+          "point": true,
+          "x": 488,
+          "y": 184,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "papilio_machaon"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "dravsko_polje_meadow_papilio_machaon_1"
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "dravsko_polje_meadow_salvia_pratensis_1",
+          "type": "spot",
+          "point": true,
+          "x": 184,
+          "y": 232,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "salvia_pratensis"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "dravsko_polje_meadow_salvia_pratensis_1"
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "dravsko_polje_meadow_taraxacum_officinale_1",
+          "type": "spot",
+          "point": true,
+          "x": 376,
+          "y": 280,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "taraxacum_officinale"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "dravsko_polje_meadow_taraxacum_officinale_1"
+            }
+          ]
+        },
+        {
+          "id": 25,
+          "name": "dravsko_polje_meadow_lepus_europaeus_1",
+          "type": "spot",
+          "point": true,
+          "x": 152,
+          "y": 280,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "lepus_europaeus"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "dravsko_polje_meadow_lepus_europaeus_1"
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "dravsko_polje_meadow_lanius_collurio_1",
+          "type": "spot",
+          "point": true,
+          "x": 184,
+          "y": 360,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "lanius_collurio"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "dravsko_polje_meadow_lanius_collurio_1"
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "name": "dravsko_polje_meadow_crataegus_monogyna_1",
+          "type": "spot",
+          "point": true,
+          "x": 216,
+          "y": 424,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "crataegus_monogyna"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "dravsko_polje_meadow_crataegus_monogyna_1"
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "generated_gate_28",
+          "type": "gate",
+          "gid": 19,
+          "x": 64,
+          "y": 320,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "requiresFlag",
+              "type": "string",
+              "value": "hedgerow_open"
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "generated_habitat_29",
+          "type": "habitat",
+          "x": 192,
+          "y": 16,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "generated_habitat_30",
+          "type": "habitat",
+          "x": 16,
+          "y": 16,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 31,
+          "name": "generated_habitat_31",
+          "type": "habitat",
+          "x": 176,
+          "y": 32,
+          "width": 64,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 32,
+          "name": "generated_habitat_32",
+          "type": "habitat",
+          "x": 176,
+          "y": 48,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 33,
+          "name": "generated_habitat_33",
+          "type": "habitat",
+          "x": 336,
+          "y": 64,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 34,
+          "name": "generated_habitat_34",
+          "type": "habitat",
+          "x": 320,
+          "y": 80,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 35,
+          "name": "generated_habitat_35",
+          "type": "habitat",
+          "x": 160,
+          "y": 64,
+          "width": 96,
+          "height": 48,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 36,
+          "name": "generated_habitat_36",
+          "type": "habitat",
+          "x": 336,
+          "y": 96,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 37,
+          "name": "generated_habitat_37",
+          "type": "habitat",
+          "x": 160,
+          "y": 112,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 38,
+          "name": "generated_habitat_38",
+          "type": "habitat",
+          "x": 272,
+          "y": 160,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 39,
+          "name": "generated_habitat_39",
+          "type": "habitat",
+          "x": 256,
+          "y": 176,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 40,
+          "name": "generated_habitat_40",
+          "type": "habitat",
+          "x": 416,
+          "y": 160,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 41,
+          "name": "generated_habitat_41",
+          "type": "habitat",
+          "x": 208,
+          "y": 192,
+          "width": 48,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 42,
+          "name": "generated_habitat_42",
+          "type": "habitat",
+          "x": 48,
+          "y": 224,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 43,
+          "name": "generated_habitat_43",
+          "type": "habitat",
+          "x": 288,
+          "y": 224,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 44,
+          "name": "generated_habitat_44",
+          "type": "habitat",
+          "x": 32,
+          "y": 240,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 45,
+          "name": "generated_habitat_45",
+          "type": "habitat",
+          "x": 128,
+          "y": 224,
+          "width": 32,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 46,
+          "name": "generated_habitat_46",
+          "type": "habitat",
+          "x": 256,
+          "y": 240,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 47,
+          "name": "generated_habitat_47",
+          "type": "habitat",
+          "x": 16,
+          "y": 256,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "name": "generated_habitat_48",
+          "type": "habitat",
+          "x": 128,
+          "y": 256,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 49,
+          "name": "generated_habitat_49",
+          "type": "habitat",
+          "x": 240,
+          "y": 256,
+          "width": 64,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 50,
+          "name": "generated_habitat_50",
+          "type": "habitat",
+          "x": 32,
+          "y": 272,
+          "width": 64,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 51,
+          "name": "generated_habitat_51",
+          "type": "habitat",
+          "x": 128,
+          "y": 272,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 52,
+          "name": "generated_habitat_52",
+          "type": "habitat",
+          "x": 256,
+          "y": 272,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 53,
+          "name": "generated_habitat_53",
+          "type": "habitat",
+          "x": 48,
+          "y": 288,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "tall_grass"
+            }
+          ]
+        },
+        {
+          "id": 54,
+          "name": "generated_habitat_54",
+          "type": "habitat",
+          "x": 16,
+          "y": 320,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "hedgerow"
+            }
+          ]
+        },
+        {
+          "id": 55,
+          "name": "generated_habitat_55",
+          "type": "habitat",
+          "x": 256,
+          "y": 320,
+          "width": 240,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "hedgerow"
+            }
+          ]
+        },
+        {
+          "id": 56,
+          "name": "generated_habitat_56",
+          "type": "habitat",
+          "x": 16,
+          "y": 336,
+          "width": 224,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "hedgerow"
+            }
+          ]
+        },
+        {
+          "id": 57,
+          "name": "generated_habitat_57",
+          "type": "habitat",
+          "x": 288,
+          "y": 336,
+          "width": 208,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "hedgerow"
+            }
+          ]
+        },
+        {
+          "id": 58,
+          "name": "generated_habitat_58",
+          "type": "habitat",
+          "x": 16,
+          "y": 352,
+          "width": 256,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "hedgerow"
+            }
+          ]
+        },
+        {
+          "id": 59,
+          "name": "generated_habitat_59",
+          "type": "habitat",
+          "x": 448,
+          "y": 352,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "hedgerow"
+            }
+          ]
+        },
+        {
+          "id": 60,
+          "name": "generated_habitat_60",
+          "type": "habitat",
+          "x": 16,
+          "y": 368,
+          "width": 480,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "hedgerow"
+            }
+          ]
+        },
+        {
+          "id": 61,
+          "name": "generated_area_61",
+          "type": "area",
+          "x": 16,
+          "y": 16,
+          "width": 480,
+          "height": 112,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "meadow"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": 62,
+          "name": "generated_area_62",
+          "type": "area",
+          "x": 256,
+          "y": 128,
+          "width": 240,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "meadow"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": 63,
+          "name": "generated_area_63",
+          "type": "area",
+          "x": 16,
+          "y": 192,
+          "width": 480,
+          "height": 112,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "meadow"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": 64,
+          "name": "generated_area_64",
+          "type": "area",
+          "x": 16,
+          "y": 304,
+          "width": 480,
+          "height": 128,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "south_hedgerow"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "nextlayerid": 5,
+  "nextobjectid": 65,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.11.2",
+  "tileheight": 16,
+  "tilesets": [
+    {
+      "columns": 8,
+      "firstgid": 1,
+      "image": "/content/tilesets/meadow.png",
+      "imageheight": 304,
+      "imagewidth": 128,
+      "margin": 0,
+      "name": "meadow",
+      "spacing": 0,
+      "tilecount": 152,
+      "tileheight": 16,
+      "tilewidth": 16,
+      "tiles": [
+        {
+          "id": 3,
+          "animation": [
+            {
+              "tileid": 3,
+              "duration": 700
+            },
+            {
+              "tileid": 21,
+              "duration": 700
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "animation": [
+            {
+              "tileid": 5,
+              "duration": 900
+            },
+            {
+              "tileid": 20,
+              "duration": 900
+            }
+          ]
+        },
+        {
+          "id": 46,
+          "animation": [
+            {
+              "tileid": 46,
+              "duration": 600
+            },
+            {
+              "tileid": 47,
+              "duration": 600
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "animation": [
+            {
+              "tileid": 48,
+              "duration": 600
+            },
+            {
+              "tileid": 49,
+              "duration": 600
+            }
+          ]
+        },
+        {
+          "id": 116,
+          "animation": [
+            {
+              "tileid": 116,
+              "duration": 800
+            },
+            {
+              "tileid": 117,
+              "duration": 800
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilewidth": 16,
+  "type": "map",
+  "version": "1.10",
+  "width": 32
+}

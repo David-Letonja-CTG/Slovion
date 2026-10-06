@@ -7,10 +7,11 @@
 //
 // The config: { "map": "kocevje_forest",
 //   "generated": [{ "rect": [x, y, w, h], "biome": "...", "areaId": "...", "underground": false, "species": [...],
-//     "connectors": [[x, y], ...], "floor": 14 }],
+//     "connectors": [[x, y], ...], "floor": 14, "nearSpawn": [...], "barrier": "north", "gateFlag": "..." }],
 //   "stripZones": [{ "habitatId": "...", "rect": [x, y, w, h] }],
 //   "stripAreas": [{ "areaId": "...", "rect": [x, y, w, h], "underground": false }],
 //   "stripFloor": [[x, y, tile], ...] }
+// An authored gate inside a rectangle is dropped: a barrier there places its own (design §4a).
 // stripFloor lists authored tiles to turn into plain floor without decoration or collision (e.g. the end of a stream
 // that now continues nowhere, or a plant whose spot is now generated).
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -43,8 +44,14 @@ for (const [x, y, tile] of config.stripFloor ?? []) setFloor(x, y, tile);
 const species = config.generated.flatMap((area) => area.species);
 const objects = map.layers.find((l) => l.type === 'objectgroup').objects;
 const tileOf = (o) => [Math.floor(o.x / 16), Math.floor(o.y / 16)];
+const tileObjectTile = (o) => [
+  Math.floor((o.x + o.width / 2) / 16),
+  Math.floor((o.y - o.height / 2) / 16),
+];
 const kept = objects.filter((o) => {
   if (['habitat', 'area', 'generated', 'connector'].includes(o.type)) return false;
+  if (o.type === 'gate' && config.generated.some((area) => inRect(area.rect, ...tileObjectTile(o))))
+    return false;
   if (o.type === 'spot')
     return (
       !config.generated.some((area) => inRect(area.rect, ...tileOf(o))) &&
@@ -88,6 +95,8 @@ for (const area of config.generated) {
       string('biome', area.biome),
       string('species', area.species.join(',')),
       ...(area.underground ? [bool('underground', true)] : []),
+      ...(area.nearSpawn ? [string('nearSpawn', area.nearSpawn.join(','))] : []),
+      ...(area.barrier ? [string('barrier', area.barrier), string('gateFlag', area.gateFlag)] : []),
     ]),
   );
   for (const [x, y] of area.connectors) {

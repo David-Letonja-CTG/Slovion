@@ -1,0 +1,17 @@
+{
+  "id": "meadow",
+  "floor": [0, 1, 12, 13],
+  "pathSet": 64,
+  "border": [4],
+  "layers": [{ "id": "tall_grass", "coverage": 0.25, "scale": 4, "smooth": 2 }],
+  "decor": [
+    { "tiles": [3], "blocking": false, "density": 0.85, "where": "layer:tall_grass" },
+    { "tiles": [5], "blocking": true, "density": 0.02, "where": "floor" },
+    { "tiles": [6], "blocking": false, "density": 0.04, "where": "floor" }
+  ],
+  "zones": [
+    { "kind": "tall_grass", "where": "layer:tall_grass", "habitat": "tall_grass" },
+    { "kind": "grass_edge", "where": "edge:tall_grass:2" },
+    { "kind": "grassland", "where": "any" }
+  ]
+}

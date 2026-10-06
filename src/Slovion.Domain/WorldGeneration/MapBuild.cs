@@ -29,6 +29,8 @@ internal sealed partial class MapBuild
     private readonly string?[] zoneKind;
     private readonly string?[] habitat;
     private readonly int[] waterDistance;
+    private readonly List<int>[] connectors;
+    private readonly List<(int Area, int Cell)> gates = [];
     private readonly Dictionary<(int Area, string Layer), int[]> edgeDistance = [];
     private readonly List<List<int>> openingCenters = [];
     private readonly List<(string SpeciesId, int Cell)> spots = [];
@@ -56,6 +58,7 @@ internal sealed partial class MapBuild
         zoneKind = new string?[cells];
         habitat = new string?[cells];
         waterDistance = Enumerable.Repeat(int.MaxValue, cells).ToArray();
+        connectors = [.. template.Areas.Select(area => area.Connectors.Select(point => Index(point.X, point.Y)).ToList())];
         foreach (var point in template.BlockingObjects)
         {
             objectCell[Index(point.X, point.Y)] = true;
@@ -79,6 +82,7 @@ internal sealed partial class MapBuild
             Decorate(area, biome, areaRandom.Fork("decor"));
         }
 
+        OpenGateApproaches();
         CleanUpPockets();
         for (var area = 0; area < template.Areas.Count; area++)
         {
@@ -99,14 +103,19 @@ internal sealed partial class MapBuild
         var problems = new List<string>();
         var reach = Reach();
         var wading = WadeReach();
-        foreach (var area in template.Areas)
+        foreach (var connector in connectors.SelectMany(cells => cells).Where(cell => !reach[cell]))
         {
-            foreach (var connector in area.Connectors)
+            problems.Add($"connector ({connector % width}, {connector / width}) unreachable");
+        }
+
+        // A barrier keeps its area closed until the gate opens: without the flag nothing in it can be reached.
+        var gateCells = gates.Select(gate => gate.Cell).ToHashSet();
+        var closed = GridSearch.Reachable(width, height, spawn, cell => Walkable(cell) && !gateCells.Contains(cell));
+        foreach (var (area, _) in gates)
+        {
+            if (Cells(template.Areas[area].Rect).Any(cell => closed[cell]))
             {
-                if (!reach[Index(connector.X, connector.Y)])
-                {
-                    problems.Add($"connector ({connector.X}, {connector.Y}) unreachable");
-                }
+                problems.Add($"area {template.Areas[area].AreaId} reachable without its gate");
             }
         }
 
@@ -136,7 +145,7 @@ internal sealed partial class MapBuild
     {
         var reach = Reach();
         var wading = WadeReach();
-        var targets = template.Areas.SelectMany(area => area.Connectors).Select(point => Index(point.X, point.Y))
+        var targets = connectors.SelectMany(cells => cells)
             .Concat(spots.Select(spot => spot.Cell))
             .Where(cell => !CanReach(cell, reach) && !wading[cell])
             .ToList();
@@ -171,7 +180,11 @@ internal sealed partial class MapBuild
         }
 
         var placed = spots.Select(spot => new GeneratedSpot(spot.SpeciesId, new GridPoint(spot.Cell % width, spot.Cell / width))).ToList();
-        return new GeneratedMap(width, height, [.. ground], [.. decor], [.. blocked], placed, habitats, areas, [.. zoneKind], attempts, repaired);
+        var placedGates = gates.Select(gate => new GeneratedGate(
+            new GridPoint(gate.Cell % width, gate.Cell / width),
+            template.Areas[gate.Area].Barrier!.Flag,
+            biomes[template.Areas[gate.Area].BiomeId].Gate!.Value)).ToList();
+        return new GeneratedMap(width, height, [.. ground], [.. decor], [.. blocked], placed, habitats, areas, placedGates, [.. zoneKind], attempts, repaired);
     }
 
     private int Index(int x, int y) => (y * width) + x;

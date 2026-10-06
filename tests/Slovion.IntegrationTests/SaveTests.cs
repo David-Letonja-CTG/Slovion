@@ -73,7 +73,7 @@ public sealed class SaveTests(PostgresFixture database)
                      new HttpRequestMessage(HttpMethod.Get, new Uri("/api/save/naturedex", UriKind.Relative)),
                      new HttpRequestMessage(HttpMethod.Post, new Uri("/api/save/encounters", UriKind.Relative))
                      {
-                         Content = new StringContent("""{"mapId":"dravsko_polje_meadow","spotId":"meadow_sage_1"}""", Encoding.UTF8, "application/json"),
+                         Content = new StringContent("""{"mapId":"dravsko_polje_meadow","spotId":"dravsko_polje_meadow_salvia_pratensis_1"}""", Encoding.UTF8, "application/json"),
                      },
                      new HttpRequestMessage(HttpMethod.Post, new Uri($"/api/save/encounters/{Guid.NewGuid()}/identification", UriKind.Relative))
                      {

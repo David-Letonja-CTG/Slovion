@@ -32,7 +32,7 @@ public sealed class DiscoveryTests(PostgresFixture database)
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
 
-        using var response = await StartEncounterAsync(client, token, "meadow_dandelion_1");
+        using var response = await StartEncounterAsync(client, token, "dravsko_polje_meadow_taraxacum_officinale_1");
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         using var body = await ReadJsonAsync(response);
@@ -74,7 +74,7 @@ public sealed class DiscoveryTests(PostgresFixture database)
         await using var factory = Factory(time);
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
-        var encounterId = await OpenEncounterAsync(client, token, "meadow_dandelion_1");
+        var encounterId = await OpenEncounterAsync(client, token, "dravsko_polje_meadow_taraxacum_officinale_1");
         time.Advance(TimeSpan.FromMinutes(5));
 
         using var response = await AnswerAsync(client, token, encounterId, "taraxacum_officinale");
@@ -95,7 +95,7 @@ public sealed class DiscoveryTests(PostgresFixture database)
         await using var factory = Factory();
         using var client = factory.CreateClient();
         var token = await CreateSaveAsync(client);
-        using var start = await StartEncounterAsync(client, token, "meadow_dandelion_1");
+        using var start = await StartEncounterAsync(client, token, "dravsko_polje_meadow_taraxacum_officinale_1");
         using var startBody = await ReadJsonAsync(start);
         var encounterId = startBody.RootElement.GetProperty("encounterId").GetGuid();
         var wrong = startBody.RootElement.GetProperty("candidates").EnumerateArray()

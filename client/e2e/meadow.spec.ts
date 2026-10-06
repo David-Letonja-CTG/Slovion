@@ -1,4 +1,8 @@
 import { Page, expect, test } from '@playwright/test';
+import { face, loadMap, spotOf, walkIntoHabitat, walkTo } from './route';
+
+// The meadow is generated per save (docs/decisions.md D13; the tests' API fixes world seed 1). The debug view tells
+// the tests where the player stands, so they walk routes found on the save's map, not fixed key presses.
 
 /** One step takes 250 ms; wait a little longer so every tap is exactly one finished step. */
 async function step(page: Page, key: string): Promise<void> {
@@ -15,13 +19,18 @@ async function waitForTheWorld(page: Page): Promise<void> {
     .toBeGreaterThan(0);
 }
 
-/** New game, then walk to the meadow sage (three tiles right of the spawn) and observe it. */
-async function observeTheSage(page: Page) {
-  await page.goto('/');
+/** A new game with the debug view, so routes can be walked. */
+async function newGame(page: Page): Promise<void> {
+  await page.goto('/?debug=world');
   await page.getByRole('button', { name: 'Nova igra' }).click();
   await waitForTheWorld(page);
-  await step(page, 'ArrowRight');
-  await step(page, 'ArrowRight');
+}
+
+/** New game, then walk to the meadow sage (always within six steps of the spawn) and observe it. */
+async function observeTheSage(page: Page) {
+  await newGame(page);
+  const map = await loadMap(page);
+  await face(page, map, spotOf(map, 'salvia_pratensis'));
   await page.keyboard.press('KeyE');
 
   const observation = page.getByRole('dialog', { name: 'Opaziš rastlino' });
@@ -128,15 +137,8 @@ test('a wrong answer leaves the species unknown until it is identified', async (
 });
 
 test('searching the tall grass finds something sooner or later', async ({ page }) => {
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Nova igra' }).click();
-  await waitForTheWorld(page);
-
-  // From the spawn (10,10): two steps right, two down into the south tall-grass patch at (12,12).
-  await step(page, 'ArrowRight');
-  await step(page, 'ArrowRight');
-  await step(page, 'ArrowDown');
-  await step(page, 'ArrowDown');
+  await newGame(page);
+  await walkIntoHabitat(page, await loadMap(page), 'tall_grass');
 
   const observation = page.getByRole('dialog', { name: /^Opaziš / });
   let found = false;
@@ -186,15 +188,17 @@ async function readDialogue(page: Page): Promise<void> {
   }
 }
 
-/** From the spawn (10,10): to the gate column, down through the southern hedge, one step into the hedgerow. */
+/** Through the gate in the hedge row into the hedgerow strip, then onto its habitat. */
 async function walkIntoTheHedgerow(page: Page): Promise<void> {
-  await walk(page, 'ArrowRight', 10);
-  await walk(page, 'ArrowDown', 10);
+  const map = await loadMap(page);
+  const gate = map.actors.find((actor) => actor.type === 'gate')!;
+  const open = { openFlags: ['hedgerow_open'] };
+  await walkTo(page, map, { x: gate.x, y: gate.y + 1 }, open);
   // Through the gate the player enters another place, announced by the banner.
   await expect(page.locator('app-location-banner')).toHaveText('Južna mejica');
   await expect(page.locator('.conditions__location')).toHaveText('Južna mejica');
-  await walk(page, 'ArrowLeft', 1);
-  // (19, 20) lies in a hedgerow zone: searching there proves the player got through.
+  // Searching in a hedgerow zone proves the player got through.
+  await walkIntoHabitat(page, map, 'hedgerow', open);
   await page.keyboard.press('KeyE');
   await expect(page.getByRole('dialog')).toContainText(/Opaziš |Tu ni ničesar/);
   await page.keyboard.press('Escape');
@@ -202,50 +206,43 @@ async function walkIntoTheHedgerow(page: Page): Promise<void> {
 
 test('Vera opens the hedgerow once three species are identified', async ({ page }) => {
   test.setTimeout(120_000);
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Nova igra' }).click();
-  await waitForTheWorld(page);
+  await newGame(page);
+  const map = await loadMap(page);
   const tracker = page.locator('app-quest-tracker');
   await expect(tracker).toHaveCount(0);
 
-  // Vera stands at (7,9): three steps left, then face up.
-  await walk(page, 'ArrowLeft', 3);
-  await step(page, 'ArrowUp');
+  // Vera stands at (7,9), by the path.
+  const vera = map.actors.find((actor) => actor.type === 'npc')!;
+  await face(page, map, vera);
   await page.keyboard.press('KeyE');
   await expect(page.getByRole('dialog', { name: 'Vera' })).toContainText('Jaz sem Vera');
   await readDialogue(page);
   await expect(tracker).toContainText('Oko za naravo');
   await expect(tracker).toContainText('0/3');
 
-  // Meadow sage (13,10): from (7,10) five steps right, facing it.
-  await walk(page, 'ArrowRight', 5);
+  await face(page, map, spotOf(map, 'salvia_pratensis'));
   await identifyAhead(page, 'Opaziš rastlino', 'travniška kadulja');
   await expect(tracker).toContainText('1/3');
 
-  // Dandelion (7,12): back to (7,10), one step down, facing it.
-  await walk(page, 'ArrowLeft', 5);
-  await step(page, 'ArrowDown');
+  await face(page, map, spotOf(map, 'taraxacum_officinale'));
   await identifyAhead(page, 'Opaziš rastlino', 'navadni regrat');
 
   // The brown hare wanders around its home, so walking up to it is not deterministic: identify it through
   // the API (the same encounter the game opens when the player meets it); engine tests cover the meeting.
-  await identifyThroughApi(page, 'meadow_hare_1', 'lepus_europaeus');
+  await identifyThroughApi(page, spotOf(map, 'lepus_europaeus').spotId, 'lepus_europaeus');
 
-  // Back to Vera at (7,9): up to the path, then face her. She completes the quest; the gate opens as the
-  // dialogue closes.
-  await step(page, 'ArrowUp');
-  await step(page, 'ArrowUp');
+  // Back to Vera. She completes the quest; the gate opens as the dialogue closes.
+  await face(page, map, vera);
   await page.keyboard.press('KeyE');
   await expect(page.getByRole('dialog', { name: 'Vera' })).toContainText('Odlično!');
   await readDialogue(page);
   await expect(tracker).toHaveCount(0);
 
-  // From (7,10): to the spawn column, then the usual route into the hedgerow.
-  await walk(page, 'ArrowRight', 3);
   await walkIntoTheHedgerow(page);
 
-  // After a reload the gate is still open.
-  await page.reload();
+  // After loading the game again the gate is still open (the title screen drops the address's query, so load the
+  // debug view afresh).
+  await page.goto('/?debug=world');
   await page.getByRole('button', { name: 'Nadaljuj' }).click();
   await waitForTheWorld(page);
   await expect(tracker).toHaveCount(0);
@@ -307,9 +304,10 @@ async function completeVerasQuestThroughApi(page: Page): Promise<void> {
       });
     });
   await talk();
-  await identifyThroughApi(page, 'meadow_sage_1', 'salvia_pratensis');
-  await identifyThroughApi(page, 'meadow_dandelion_1', 'taraxacum_officinale');
-  await identifyThroughApi(page, 'meadow_hare_1', 'lepus_europaeus');
+  // Generated spots are named after their species (D13).
+  for (const species of ['salvia_pratensis', 'taraxacum_officinale', 'lepus_europaeus']) {
+    await identifyThroughApi(page, `dravsko_polje_meadow_${species}_1`, species);
+  }
   await talk();
 }
 

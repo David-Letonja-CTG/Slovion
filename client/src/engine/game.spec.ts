@@ -44,6 +44,10 @@ function fakeContext(name = 'view') {
     clearRect() {
       this.draws.push({ image: 'clear', sx: 0, sy: 0, dx: 0, dy: 0 });
     },
+    // The debug view's outlines and state; not recorded.
+    save: () => undefined,
+    restore: () => undefined,
+    strokeRect: () => undefined,
     fillRect() {
       const image = this.globalCompositeOperation === 'destination-out' ? 'hole' : 'backdrop';
       this.draws.push({ image, style: this.fillStyle, sx: 0, sy: 0, dx: 0, dy: 0 });
@@ -62,7 +66,7 @@ function fakeContext(name = 'view') {
   };
 }
 
-function setup(rows: readonly string[] = ['#S*#', '....']) {
+function setup(rows: readonly string[] = ['#S*#', '....'], debug = false) {
   const environment = new FakeEnvironment();
   const container = document.createElement('div');
   const canvas = document.createElement('canvas');
@@ -77,6 +81,7 @@ function setup(rows: readonly string[] = ['#S*#', '....']) {
       playerSprite: { name: 'player' } as unknown as CanvasImageSource,
     },
     onInteract: (interaction) => interactions.push(interaction),
+    debug,
   });
   return { environment, canvas, context, game, interactions };
 }
@@ -161,6 +166,21 @@ describe('createGame', () => {
     expect(order[0]).toBe('backdrop');
     expect(order.at(-1)).toBe('player');
     expect(order.filter((image) => image === 'tileset')).toHaveLength(8); // 4×2 map, all tiles
+  });
+
+  it('in the debug view, tells where the player stands and faces (for tests on generated maps)', () => {
+    const debug = setup(['#S..', '....'], true);
+    const plain = setup(['#S..', '....']);
+    for (const { environment, game } of [debug, plain]) {
+      game.start();
+      environment.input.press('MoveRight');
+      for (let i = 0; i < 40; i++) environment.frames.frame(STEP_MS);
+      environment.input.release('MoveRight');
+      environment.frames.frame(STEP_MS);
+    }
+
+    expect(debug.canvas.dataset['player']).toBe('3,0,right');
+    expect(plain.canvas.dataset['player']).toBeUndefined();
   });
 
   it('draws closed gates and NPCs above the map and below the player', () => {

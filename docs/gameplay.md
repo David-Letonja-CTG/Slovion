@@ -27,7 +27,7 @@ Slovion is about **observing real Slovenian nature**: walk through a region, mee
 
 ## Every save, its own world
 
-The forests of Kočevje and Pohorje, the slopes under Triglav, the shore of Cerknica and the gorge and cave of Rakov Škocjan are generated for each save (docs/decisions.md D13): a new game gets its own stands of trees, scree and snowfields, reed beds and shallows, a river through the gorge and a cave pool, and paths through them, and keeps them for good. The spawn, the signpost, the person and the station stay where they always are, so quests and travel work the same. The animals and plants live where they belong: the red deer at the forest edge or in a clearing, the edelweiss by the scree, the water lily out in the shallows (bring the boots), the olm in the cave pool. The meadow and the towns follow in the next step.
+The Dravsko polje meadow, the forests of Kočevje and Pohorje, the slopes under Triglav, the shore of Cerknica and the gorge and cave of Rakov Škocjan are generated for each save (docs/decisions.md D13): a new game gets its own patches of tall grass, its own place for the gate in the hedge, stands of trees, scree and snowfields, reed beds and shallows, a river through the gorge and a cave pool, and paths through them, and keeps them for good. The spawn, the signpost, the person and the station stay where they always are, so quests and travel work the same. The animals and plants live where they belong: the meadow sage close to the spawn for the first quest, the red deer at the forest edge or in a clearing, the edelweiss by the scree, the water lily out in the shallows (bring the boots), the olm in the cave pool. The towns and the coast follow in the next step.
 
 ## Time, seasons and weather
 

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import karst from '../../engine/testing/maps/rakov_skocjan_karst.json';
 import kocevje from '../../engine/testing/maps/kocevje_forest.json';
-import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
+import meadow from '../../engine/testing/maps/dravsko_polje_meadow.json';
 import sl from '../../../public/i18n/sl.json';
 import { Action, UPRIGHT_VIEWS, WIDE_VIEW, worldTimeAt } from '../../engine';
 import {

@@ -11,8 +11,15 @@ public sealed record MapTemplate(string MapId, int Width, int Height, IReadOnlyL
 /// <summary>
 /// A rectangle the generator fills with <paramref name="BiomeId"/>: it becomes area <paramref name="AreaId"/> and holds
 /// one spot of each listed species. <paramref name="Connectors"/> are tiles on its edge where authored paths come in.
+/// A <paramref name="Barrier"/> closes one of its edges with a single gate (design §4a).
 /// </summary>
-public sealed record GenerationArea(GridRect Rect, string BiomeId, string AreaId, bool Underground, IReadOnlyList<SpeciesRequest> Species, IReadOnlyList<GridPoint> Connectors);
+public sealed record GenerationArea(GridRect Rect, string BiomeId, string AreaId, bool Underground, IReadOnlyList<SpeciesRequest> Species, IReadOnlyList<GridPoint> Connectors, GatedBarrier? Barrier = null);
+
+/// <summary>
+/// The biome's border drawn along <paramref name="Edge"/> of a generated area, with one gate on it that opens once the
+/// save has <paramref name="Flag"/>: without it nothing in the area can be reached, with it everything through the gate.
+/// </summary>
+public sealed record GatedBarrier(Edge Edge, string Flag);
 
 /// <summary>A species to place, with where it may live (already resolved against the biome by the caller).</summary>
 public sealed record SpeciesRequest(string SpeciesId, SpeciesPlacement Placement);

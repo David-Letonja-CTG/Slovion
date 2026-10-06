@@ -1,7 +1,8 @@
 // Regenerates the screenshots and GIFs in docs/images/ from the running game, so the docs stay current.
 //
 // Needs the database (docker compose up -d db), the API and the client (npm start). Each scene starts a new save,
-// moves its in-game clock and marks quests as done directly in the database, then plays a short route.
+// moves its in-game clock and marks quests as done directly in the database, then plays a short route. The routes
+// fit the generated regions of world seed 1 (docs/decisions.md D13), so run the API with WorldGeneration__FixedSeed=1.
 //
 //   cd client
 //   node scripts/docs-media/capture.mjs              # all scenes, against http://localhost:4200
@@ -159,12 +160,14 @@ const canvasImage = (page) =>
   );
 
 const scenes = {
-  /** Walking along the Dravsko polje meadow on a spring morning. */
+  /** Walking across the Dravsko polje meadow on a spring morning, past the sage towards the brown hare. */
   async hero(browser) {
     const page = await newGame(browser, { minutes: 60, clearSky: 'dravsko_polje_meadow' });
     await startRecording(page);
     await page.waitForTimeout(600);
-    await keys(page, 'ArrowRight', 8);
+    // Seed 1: from the spawn (10, 10) down past the sage at (11, 14), then right; the hare lives at (9, 17).
+    await keys(page, 'ArrowDown', 5);
+    await keys(page, 'ArrowRight', 3);
     await page.waitForTimeout(600);
     await stopRecording(page, 'hero.gif');
     await page.close();
@@ -173,7 +176,9 @@ const scenes = {
   /** Observing the meadow sage, then its page in Terenski dnevnik. */
   async journal(browser) {
     const page = await newGame(browser, { minutes: 60 });
-    await keys(page, 'ArrowRight', 2);
+    // Seed 1's sage grows at (11, 14): from the spawn (10, 10), one step right, then down until it is ahead.
+    await keys(page, 'ArrowRight');
+    await keys(page, 'ArrowDown', 3);
     await page.keyboard.press('KeyE');
     const observation = page.getByRole('dialog', { name: 'Opaziš rastlino' });
     await observation.waitFor();

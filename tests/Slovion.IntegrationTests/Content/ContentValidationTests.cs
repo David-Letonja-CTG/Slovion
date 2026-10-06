@@ -26,27 +26,20 @@ public sealed class ContentValidationTests
         var sage = catalog.FindSpecies(SpeciesId.Parse("salvia_pratensis"));
         Assert.NotNull(sage);
         Assert.Equal("travniška kadulja", sage.Text["sl"].Name.Value);
-        Assert.Equal(sage.Id, SpotOn(catalog, "dravsko_polje_meadow", "meadow_sage_1")?.SpeciesId);
+        Assert.Equal(sage.Id, SpotOn(catalog, "dravsko_polje_meadow", "dravsko_polje_meadow_salvia_pratensis_1")?.SpeciesId);
         Assert.Contains("sl", catalog.Languages);
 
-        // The tall grass patches south and north of the path are habitat; the path and spawn are not.
-        Assert.Equal(70, HabitatAt(catalog, "dravsko_polje_meadow", 12, 12)?.SearchChancePercent);
-        Assert.Equal("tall_grass", HabitatAt(catalog, "dravsko_polje_meadow", 18, 15)?.Id);
-        Assert.Equal("tall_grass", HabitatAt(catalog, "dravsko_polje_meadow", 8, 3)?.Id);
-        Assert.Equal("tall_grass", HabitatAt(catalog, "dravsko_polje_meadow", 13, 6)?.Id);
-        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 10, 10));
-        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 19, 12));
-        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 12, 11));
+        // The generated meadow (D13): patches of tall grass are habitat, the rest of the meadow and the spawn's
+        // surroundings (the authored path with Vera, the signpost and the station) are not.
+        var meadow = Map(catalog, "dravsko_polje_meadow")!;
+        Assert.Equal(70, catalog.FindHabitat("tall_grass")?.SearchChancePercent);
+        Assert.Contains(meadow.Habitats, zone => zone.HabitatId == "tall_grass" && zone.MaxY < 19);
+        Assert.All(new[] { (10, 10), (12, 11), (7, 10), (14, 9) }, tile => Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", tile.Item1, tile.Item2)));
 
-        // The hedgerow strip south of the meadow: zones beside the track; the track and the hedge are not.
-        Assert.Equal("hedgerow", HabitatAt(catalog, "dravsko_polje_meadow", 2, 20)?.Id);
-        Assert.Equal("hedgerow", HabitatAt(catalog, "dravsko_polje_meadow", 13, 22)?.Id);
-        Assert.Equal("hedgerow", HabitatAt(catalog, "dravsko_polje_meadow", 29, 22)?.Id);
-        Assert.Equal("hedgerow", HabitatAt(catalog, "dravsko_polje_meadow", 5, 26)?.Id);
-        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 20, 21));
-        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 10, 23));
-        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 20, 19));
-        Assert.Equal(SpeciesId.Parse("crataegus_monogyna"), SpotOn(catalog, "dravsko_polje_meadow", "hedgerow_hawthorn_1")?.SpeciesId);
+        // The hedgerow strip behind the hedge (rows 20–26) is hedgerow habitat; the hedge row (19) is not.
+        Assert.Contains(meadow.Habitats, zone => zone.HabitatId == "hedgerow");
+        Assert.All(meadow.Habitats.Where(zone => zone.HabitatId == "hedgerow"), zone => Assert.InRange(zone.MinY, 20, 26));
+        Assert.Equal(SpeciesId.Parse("crataegus_monogyna"), SpotOn(catalog, "dravsko_polje_meadow", "dravsko_polje_meadow_crataegus_monogyna_1")?.SpeciesId);
 
         // Vera stands on the meadow and gives the first quest, whose flag opens the hedgerow gate.
         Assert.Equal("Vera", catalog.FindNpcOnMap("dravsko_polje_meadow", "vera")?.Npc.Names["sl"]);
@@ -404,7 +397,7 @@ public sealed class ContentValidationTests
 
         Assert.Equal(torch, catalog.FindSpecies(SpeciesId.Parse(id))!.Wildlife?.Torch);
         Assert.Null(catalog.FindSpecies(SpeciesId.Parse("salvia_pratensis"))!.Wildlife);
-        Assert.Equal(SpeciesId.Parse("lanius_collurio"), SpotOn(catalog, "dravsko_polje_meadow", "hedgerow_shrike_1")?.SpeciesId);
+        Assert.Equal(SpeciesId.Parse("lanius_collurio"), SpotOn(catalog, "dravsko_polje_meadow", "dravsko_polje_meadow_lanius_collurio_1")?.SpeciesId);
     }
 
     [Theory]
