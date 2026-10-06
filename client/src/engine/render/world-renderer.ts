@@ -1,5 +1,6 @@
 import { Direction } from '../input/actions';
 import { ViewSize, WIDE_VIEW } from '../viewport';
+import { drawDebugOverlay } from './debug-overlay';
 import { drawWeather } from './weather';
 import { cameraOffset } from '../world/camera';
 import { World } from '../world/world';
@@ -66,6 +67,7 @@ export function renderWorld(
   images: WorldImages,
   darknessLayer: DarknessLayerFactory,
   view: ViewSize = WIDE_VIEW,
+  debug = false,
 ): void {
   const { map, player } = world;
   const position = player.position;
@@ -211,6 +213,7 @@ export function renderWorld(
   }
   // No weather falls underground.
   if (!underground) drawWeather(context, world.weather, world.elapsedMs, world.reducedMotion, view);
+  if (debug) drawDebugOverlay(context, map, camera, view);
 }
 
 /** Whether a circle of `radius` around `point` reaches into the view. */

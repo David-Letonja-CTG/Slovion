@@ -77,6 +77,8 @@ export interface GameOptions {
   readonly weather?: Weather;
   /** Draws weather without movement, for players who prefer reduced motion. */
   readonly reducedMotion?: boolean;
+  /** Draws the debug view of the world over it (development only, D13). */
+  readonly debug?: boolean;
   /** The world view sizes the game may use, at the start; it shows the one that fits largest. 320×180 by default. */
   readonly views?: readonly ViewSize[];
   /** Platform services. Defaults to the browser. */
@@ -140,7 +142,8 @@ export function createGame(
   const loop = new GameLoop(
     {
       update: (stepMs) => world.update(input, stepMs),
-      render: () => renderWorld(context, world, options.world, darknessLayer, view),
+      render: () =>
+        renderWorld(context, world, options.world, darknessLayer, view, options.debug ?? false),
     },
     environment.clock,
     environment.scheduler,

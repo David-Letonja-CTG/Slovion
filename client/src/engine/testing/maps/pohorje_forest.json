@@ -1,0 +1,584 @@
+{
+  "compressionlevel": -1,
+  "height": 20,
+  "infinite": false,
+  "layers": [
+    {
+      "data": [
+        25, 25, 16, 15, 15, 15, 25, 25, 25, 26, 25, 25, 26, 26, 15, 25, 26, 15, 15, 25, 25, 15, 25,
+        26, 25, 16, 16, 15, 15, 16, 25, 16, 16, 15, 16, 25, 16, 16, 25, 26, 15, 13, 1, 1, 25, 25,
+        26, 26, 26, 25, 26, 25, 15, 15, 15, 25, 16, 16, 16, 16, 26, 25, 15, 25, 25, 26, 1, 2, 14, 2,
+        1, 25, 26, 16, 15, 26, 25, 15, 25, 16, 25, 15, 15, 25, 15, 25, 26, 16, 15, 25, 25, 14, 14,
+        14, 2, 13, 13, 15, 16, 16, 25, 25, 25, 26, 16, 15, 15, 16, 16, 26, 15, 16, 26, 15, 15, 26,
+        26, 2, 13, 13, 76, 13, 2, 1, 26, 16, 25, 26, 25, 15, 15, 16, 25, 25, 15, 15, 25, 25, 26, 25,
+        25, 25, 25, 74, 70, 70, 71, 1, 1, 1, 26, 16, 16, 15, 15, 16, 25, 16, 25, 15, 25, 15, 25, 15,
+        90, 86, 86, 86, 86, 87, 13, 13, 14, 13, 2, 15, 26, 26, 25, 26, 25, 15, 16, 25, 16, 16, 16,
+        16, 16, 1, 91, 16, 26, 25, 25, 16, 15, 1, 14, 25, 26, 25, 25, 15, 15, 25, 26, 16, 15, 15,
+        15, 16, 25, 16, 15, 2, 91, 26, 25, 16, 15, 26, 25, 25, 25, 16, 25, 25, 16, 16, 25, 15, 25,
+        25, 25, 94, 86, 86, 86, 86, 84, 13, 91, 25, 25, 25, 25, 25, 26, 15, 25, 16, 26, 25, 26, 26,
+        25, 25, 15, 26, 16, 15, 25, 16, 25, 25, 93, 86, 87, 16, 14, 14, 13, 26, 25, 16, 15, 25, 15,
+        25, 25, 25, 25, 25, 15, 26, 25, 25, 15, 15, 15, 16, 16, 16, 25, 14, 39, 39, 39, 13, 16, 25,
+        15, 15, 25, 25, 16, 26, 25, 26, 16, 26, 15, 16, 15, 15, 16, 15, 16, 16, 14, 39, 39, 39, 39,
+        14, 16, 25, 15, 26, 25, 16, 25, 16, 25, 16, 26, 25, 16, 15, 16, 25, 25, 25, 25, 15, 14, 39,
+        39, 39, 39, 39, 13, 16, 25, 16, 16, 16, 25, 16, 16, 25, 16, 16, 15, 16, 16, 25, 15, 16, 25,
+        15, 13, 39, 39, 39, 39, 13, 15, 15, 26, 25, 26, 25, 26, 16, 25, 16, 16, 15, 16, 15, 25, 16,
+        16, 15, 15, 25, 25, 13, 39, 39, 13, 25, 26, 26, 15, 15, 25, 15, 25, 26, 26, 25, 25, 26, 25,
+        25, 25, 16, 25, 25, 26, 25, 15, 25, 13, 14, 15, 26, 26, 25, 25, 26, 25, 26, 25, 25, 25, 16,
+        16, 25, 15, 16, 15, 15, 15, 16, 16, 16, 26, 26, 26, 26, 15, 16, 16, 16, 16, 16, 15, 25, 26,
+        15, 25, 26, 25, 25, 25, 25, 15, 16, 15, 15, 16, 15, 16, 25, 25, 15, 25, 16, 25, 16, 15, 15,
+        25, 16, 26, 26, 25, 26, 25, 25, 15, 16, 16, 15, 16, 25, 25, 25, 26, 25, 26, 16, 25, 25, 25,
+        25, 25, 25, 15, 25, 25, 16, 15, 26, 26, 25
+      ],
+      "height": 20,
+      "id": 1,
+      "name": "ground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+        32, 32, 32, 32, 40, 0, 40, 0, 0, 40, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 40, 29, 0,
+        0, 32, 32, 0, 40, 0, 0, 40, 0, 0, 27, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 40, 29, 40, 0,
+        32, 32, 40, 0, 0, 40, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 32, 32,
+        0, 0, 40, 0, 0, 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 40, 0, 33, 0, 32, 32, 0, 40,
+        0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 32, 32, 40, 0, 0, 40, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 32, 32, 0, 0, 40, 0, 0, 0, 0, 0,
+        40, 0, 40, 27, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 32, 32, 0, 0, 0, 0, 40, 0, 0, 0, 40, 0,
+        27, 0, 0, 0, 29, 0, 0, 40, 0, 0, 29, 0, 0, 40, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 40, 40, 29,
+        40, 0, 0, 40, 27, 0, 0, 40, 0, 29, 0, 40, 29, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 27, 29,
+        0, 0, 40, 29, 29, 0, 40, 0, 0, 0, 0, 40, 32, 32, 40, 0, 0, 40, 0, 0, 0, 0, 40, 0, 0, 0, 40,
+        0, 0, 40, 40, 0, 29, 0, 29, 0, 0, 40, 32, 32, 0, 44, 40, 0, 0, 0, 40, 29, 0, 0, 0, 0, 27, 0,
+        29, 27, 29, 0, 40, 29, 40, 0, 0, 27, 32, 32, 0, 40, 0, 0, 40, 0, 0, 40, 0, 0, 0, 0, 0, 29,
+        27, 0, 27, 40, 27, 29, 27, 0, 29, 29, 32, 32, 40, 0, 0, 0, 40, 0, 0, 43, 0, 0, 0, 0, 27, 40,
+        40, 0, 0, 0, 0, 40, 0, 40, 40, 27, 32, 32, 0, 0, 40, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 40,
+        40, 0, 0, 0, 0, 0, 0, 0, 0, 32, 32, 0, 40, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 29, 0, 40, 0, 0,
+        0, 0, 0, 29, 0, 27, 29, 32, 32, 40, 0, 0, 40, 0, 0, 0, 0, 0, 0, 27, 27, 40, 40, 0, 0, 0, 0,
+        0, 0, 29, 0, 44, 29, 32, 32, 0, 0, 40, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 40, 0, 0, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+        32, 32, 32, 32, 32, 32, 32
+      ],
+      "height": 20,
+      "id": 2,
+      "name": "decor",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 5, 0,
+        0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 5, 5, 0, 5, 0, 0, 5, 0, 0, 5, 5,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 5, 5, 5, 0, 5, 5, 5, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 5, 5, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        5, 5, 0, 5, 0, 5, 5, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,
+        5, 5, 5, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 5, 5, 0, 0, 5,
+        0, 0, 0, 0, 0, 5, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0,
+        5, 0, 5, 0, 0, 0, 5, 0, 0, 5, 0, 0, 5, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0,
+        0, 5, 5, 0, 0, 5, 0, 5, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 5, 5, 5, 0,
+        5, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 5, 5, 0, 5, 0, 5, 0, 0,
+        5, 5, 5, 0, 0, 5, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 0, 5, 5, 5, 0, 5, 5, 5, 0, 0, 5, 5, 5, 0, 5,
+        0, 0, 5, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 0, 0, 0, 5, 0, 0,
+        0, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 5, 0, 5, 5, 5, 5, 5, 0, 0, 5, 0, 0, 0, 5, 0, 0, 5, 5, 0,
+        0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 5, 0, 5, 0, 0,
+        0, 0, 0, 5, 0, 5, 5, 5, 5, 5, 0, 0, 5, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 5, 0,
+        0, 5, 5, 5, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      ],
+      "height": 20,
+      "id": 3,
+      "name": "collision",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": false,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 4,
+      "name": "objects",
+      "objects": [
+        {
+          "height": 0,
+          "id": 1,
+          "name": "spawn",
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ],
+          "rotation": 0,
+          "type": "spawn",
+          "visible": true,
+          "width": 0,
+          "x": 24,
+          "y": 152
+        },
+        {
+          "gid": 31,
+          "height": 16,
+          "id": 2,
+          "name": "signpost",
+          "rotation": 0,
+          "type": "signpost",
+          "visible": true,
+          "width": 16,
+          "x": 32,
+          "y": 144
+        },
+        {
+          "gid": 20,
+          "height": 16,
+          "id": 13,
+          "name": "maja",
+          "properties": [
+            {
+              "name": "npcId",
+              "type": "string",
+              "value": "maja"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 16,
+          "x": 48,
+          "y": 176
+        },
+        {
+          "gid": 57,
+          "height": 16,
+          "id": 14,
+          "name": "mammal_station",
+          "properties": [
+            {
+              "name": "stationId",
+              "type": "string",
+              "value": "mammal_station"
+            }
+          ],
+          "rotation": 0,
+          "type": "station",
+          "visible": true,
+          "width": 16,
+          "x": 80,
+          "y": 176
+        },
+        {
+          "id": 20,
+          "name": "strip_1_1_7_7",
+          "type": "habitat",
+          "x": 16,
+          "y": 16,
+          "width": 112,
+          "height": 112,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "mountain_forest"
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "strip_3_8_5_1",
+          "type": "habitat",
+          "x": 48,
+          "y": 128,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "mountain_forest"
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "strip_1_11_7_8",
+          "type": "habitat",
+          "x": 16,
+          "y": 176,
+          "width": 112,
+          "height": 128,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "mountain_forest"
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "area_pohorje_forest_strip",
+          "type": "area",
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 320,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "pohorje_forest"
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "pohorje_forest_canis_lupus_1",
+          "type": "spot",
+          "point": true,
+          "x": 136,
+          "y": 296,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "canis_lupus"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "pohorje_forest_canis_lupus_1"
+            }
+          ]
+        },
+        {
+          "id": 25,
+          "name": "pohorje_forest_sciurus_vulgaris_1",
+          "type": "spot",
+          "point": true,
+          "x": 280,
+          "y": 248,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "sciurus_vulgaris"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "pohorje_forest_sciurus_vulgaris_1"
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "pohorje_forest_drosera_rotundifolia_1",
+          "type": "spot",
+          "point": true,
+          "x": 136,
+          "y": 232,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "drosera_rotundifolia"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "pohorje_forest_drosera_rotundifolia_1"
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "name": "pohorje_forest_vaccinium_myrtillus_1",
+          "type": "spot",
+          "point": true,
+          "x": 376,
+          "y": 280,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "vaccinium_myrtillus"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "pohorje_forest_vaccinium_myrtillus_1"
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "generated_habitat_28",
+          "type": "habitat",
+          "x": 128,
+          "y": 16,
+          "width": 272,
+          "height": 48,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "mountain_forest"
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "generated_habitat_29",
+          "type": "habitat",
+          "x": 128,
+          "y": 64,
+          "width": 128,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "mountain_forest"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "generated_habitat_30",
+          "type": "habitat",
+          "x": 128,
+          "y": 80,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "mountain_forest"
+            }
+          ]
+        },
+        {
+          "id": 31,
+          "name": "generated_habitat_31",
+          "type": "habitat",
+          "x": 272,
+          "y": 64,
+          "width": 128,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "mountain_forest"
+            }
+          ]
+        },
+        {
+          "id": 32,
+          "name": "generated_habitat_32",
+          "type": "habitat",
+          "x": 224,
+          "y": 96,
+          "width": 176,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "mountain_forest"
+            }
+          ]
+        },
+        {
+          "id": 33,
+          "name": "generated_habitat_33",
+          "type": "habitat",
+          "x": 144,
+          "y": 112,
+          "width": 256,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "mountain_forest"
+            }
+          ]
+        },
+        {
+          "id": 34,
+          "name": "generated_habitat_34",
+          "type": "habitat",
+          "x": 128,
+          "y": 176,
+          "width": 272,
+          "height": 128,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "mountain_forest"
+            }
+          ]
+        },
+        {
+          "id": 35,
+          "name": "generated_area_35",
+          "type": "area",
+          "x": 128,
+          "y": 0,
+          "width": 288,
+          "height": 320,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "pohorje_forest"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "nextlayerid": 5,
+  "nextobjectid": 36,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.11.2",
+  "tileheight": 16,
+  "tilesets": [
+    {
+      "columns": 8,
+      "firstgid": 1,
+      "image": "/content/tilesets/meadow.png",
+      "imageheight": 304,
+      "imagewidth": 128,
+      "margin": 0,
+      "name": "meadow",
+      "spacing": 0,
+      "tilecount": 152,
+      "tileheight": 16,
+      "tilewidth": 16,
+      "tiles": [
+        {
+          "id": 46,
+          "animation": [
+            {
+              "tileid": 46,
+              "duration": 600
+            },
+            {
+              "tileid": 47,
+              "duration": 600
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "animation": [
+            {
+              "tileid": 48,
+              "duration": 600
+            },
+            {
+              "tileid": 49,
+              "duration": 600
+            }
+          ]
+        },
+        {
+          "id": 116,
+          "animation": [
+            {
+              "tileid": 116,
+              "duration": 800
+            },
+            {
+              "tileid": 117,
+              "duration": 800
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilewidth": 16,
+  "type": "map",
+  "version": "1.10",
+  "width": 26
+}

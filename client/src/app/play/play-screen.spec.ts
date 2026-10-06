@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import karst from '../../../../content/maps/rakov_skocjan_karst.json';
-import kocevje from '../../../../content/maps/kocevje_forest.json';
+import kocevje from '../../engine/testing/maps/kocevje_forest.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import sl from '../../../public/i18n/sl.json';
 import { Action, UPRIGHT_VIEWS, WIDE_VIEW, worldTimeAt } from '../../engine';
@@ -99,7 +99,7 @@ async function openPlay(
   } else {
     progress.flush(progressResponse);
   }
-  const map = app.http.expectOne(`/content/maps/${current.mapId}.json`);
+  const map = app.http.expectOne(`/api/save/maps/${current.mapId}`);
   if (mapResponse === 404) {
     map.flush(null, { status: 404, statusText: 'Not Found' });
   } else {
@@ -1184,7 +1184,7 @@ describe('Travel', () => {
     expect(wildlife.request.params.get('mapId')).toBe('kocevje_forest');
     wildlife.flush({ animals: [] });
     play.http.expectOne((r) => r.url === '/api/save/weather').flush(CLEAR_MORNING);
-    play.http.expectOne('/content/maps/kocevje_forest.json').flush(kocevje);
+    play.http.expectOne('/api/save/maps/kocevje_forest').flush(kocevje);
     await play.settle();
     for (const request of play.http.match((r) => r.url.startsWith('/content/areas/'))) {
       request.flush({ text: { sl: { name: 'Kočevski gozd' } } });
@@ -1245,7 +1245,7 @@ describe('Travel', () => {
     play.http.expectOne('/api/save/time').flush(SPRING_MORNING);
     play.http.expectOne((r) => r.url === '/api/save/wildlife').flush({ animals: [] });
     play.http.expectOne((r) => r.url === '/api/save/weather').flush(CLEAR_MORNING);
-    play.http.expectOne('/content/maps/kocevje_forest.json').flush(kocevje);
+    play.http.expectOne('/api/save/maps/kocevje_forest').flush(kocevje);
     await play.settle();
     for (const request of play.http.match((r) => r.url.startsWith('/content/areas/'))) {
       request.flush({ text: { sl: { name: 'Kočevski gozd' } } });
@@ -1334,7 +1334,7 @@ describe('Travel', () => {
     play.http.expectOne((r) => r.url === '/api/save/wildlife').flush({ animals: [] });
     play.http.expectOne((r) => r.url === '/api/save/weather').flush(CLEAR_MORNING);
     play.http
-      .expectOne('/content/maps/kocevje_forest.json')
+      .expectOne('/api/save/maps/kocevje_forest')
       .flush(null, { status: 404, statusText: 'Not Found' });
     await play.settle();
 

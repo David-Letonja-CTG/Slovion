@@ -43,7 +43,11 @@ const objects = map.layers.find((l) => l.type === 'objectgroup').objects;
 const tileOf = (o) => [Math.floor(o.x / 16), Math.floor(o.y / 16)];
 const kept = objects.filter((o) => {
   if (['habitat', 'area', 'generated', 'connector'].includes(o.type)) return false;
-  if (o.type === 'spot') return !inRect(...tileOf(o)) && !config.species.includes(o.properties.find((p) => p.name === 'speciesId').value);
+  if (o.type === 'spot')
+    return (
+      !inRect(...tileOf(o)) &&
+      !config.species.includes(o.properties.find((p) => p.name === 'speciesId').value)
+    );
   return true;
 });
 
@@ -61,8 +65,15 @@ const rect = (type, name, [x, y, w, h], properties) => ({
   visible: true,
   properties,
 });
-for (const zone of config.stripZones) kept.push(rect('habitat', `strip_${zone.rect.join('_')}`, zone.rect, [string('habitatId', zone.habitatId)]));
-kept.push(rect('area', `area_${config.areaId}_strip`, config.stripArea, [string('areaId', config.areaId)]));
+for (const zone of config.stripZones)
+  kept.push(
+    rect('habitat', `strip_${zone.rect.join('_')}`, zone.rect, [
+      string('habitatId', zone.habitatId),
+    ]),
+  );
+kept.push(
+  rect('area', `area_${config.areaId}_strip`, config.stripArea, [string('areaId', config.areaId)]),
+);
 kept.push(
   rect('generated', `generated_${config.biome}`, config.rect, [
     string('areaId', config.areaId),
@@ -71,10 +82,23 @@ kept.push(
   ]),
 );
 for (const [x, y] of config.connectors) {
-  kept.push({ id: nextId++, name: `connector_${x}_${y}`, type: 'connector', point: true, x: x * 16 + 8, y: y * 16 + 8, width: 0, height: 0, rotation: 0, visible: true });
+  kept.push({
+    id: nextId++,
+    name: `connector_${x}_${y}`,
+    type: 'connector',
+    point: true,
+    x: x * 16 + 8,
+    y: y * 16 + 8,
+    width: 0,
+    height: 0,
+    rotation: 0,
+    visible: true,
+  });
 }
 
 map.layers.find((l) => l.type === 'objectgroup').objects = kept;
 map.nextobjectid = nextId;
 writeFileSync(file, JSON.stringify(map, null, 1) + '\n');
-console.log(`${config.map}: template with ${config.species.length} species, ${config.connectors.length} connector(s)`);
+console.log(
+  `${config.map}: template with ${config.species.length} species, ${config.connectors.length} connector(s)`,
+);

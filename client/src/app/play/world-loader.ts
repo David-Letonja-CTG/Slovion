@@ -18,19 +18,27 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('IMAGE_LOADER', {
   },
 });
 
+/** Where map files live; tileset paths inside them are relative to it. */
+const MAPS_FOLDER = '/content/maps/';
+
 export const PLAYER_SPRITE_URL = '/sprites/player.png';
 export const LAMP_SPRITE_URL = '/sprites/lamp.png';
 
 /** A loaded map plus the names of its places in the player's language (content, D7). */
 export interface LoadedPlace extends LoadedWorld {
   readonly areaNames: Readonly<Record<string, string>>;
+  /** How a generated map was made (seed, version, biomes); the server sends it in development only. */
+  readonly worldDetails?: string;
 }
 
 interface AreaFile {
   readonly text?: Readonly<Record<string, { readonly name?: string } | undefined>>;
 }
 
-/** Fetches a map from the API's content files plus the images it needs (design §6–7). */
+/**
+ * Fetches the save's map from the API plus the images it needs (design §6–7). Natural maps are generated per save on
+ * the server (docs/decisions.md D13); the engine parses them like any Tiled map.
+ */
 @Injectable({ providedIn: 'root' })
 export class WorldLoader {
   private readonly http = inject(HttpClient);
@@ -40,11 +48,13 @@ export class WorldLoader {
 
   /** @throws when the map, its images or its area names cannot be loaded, or the map is invalid. */
   async load(mapId: string): Promise<LoadedPlace> {
-    const mapUrl = `/content/maps/${mapId}.json`;
-    const map = parseTiledMap(mapId, await firstValueFrom(this.http.get<unknown>(mapUrl)));
+    const mapUrl = `/api/save/maps/${encodeURIComponent(mapId)}`;
+    const response = await firstValueFrom(this.http.get<unknown>(mapUrl, { observe: 'response' }));
+    const map = parseTiledMap(mapId, response.body);
 
-    // The tileset path in the map is relative to the map file.
-    const tilesetUrl = new URL(map.tileset.image, new URL(mapUrl, this.document.baseURI)).pathname;
+    // The tileset path in a map file is relative to the content maps folder (the server sends it absolute).
+    const tilesetUrl = new URL(map.tileset.image, new URL(MAPS_FOLDER, this.document.baseURI))
+      .pathname;
     const areaIds = [...new Set(map.areas.map((area) => area.areaId))];
     const npcIds = [...new Set(map.npcs.map((npc) => npc.npcId))];
     const [tileset, playerSprite, lampSprite, npcSheets, ...areaFiles] = await Promise.all([
@@ -72,6 +82,7 @@ export class WorldLoader {
       lampSprite: lampSprite as CanvasImageSource,
       npcSprites: npcSheets as Record<string, CanvasImageSource>,
       areaNames,
+      worldDetails: response.headers.get('X-World') ?? undefined,
     };
   }
 

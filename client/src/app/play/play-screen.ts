@@ -7,6 +7,7 @@ import {
   computed,
   effect,
   inject,
+  isDevMode,
   signal,
   viewChild,
 } from '@angular/core';
@@ -144,7 +145,7 @@ type Overlay =
     TouchControls,
   ],
   templateUrl: './play-screen.html',
-  styleUrl: './play-screen.css',
+  styleUrls: ['./play-screen.css', './play-debug.css'],
 })
 export class PlayScreen {
   private readonly api = inject(GameApi);
@@ -208,6 +209,14 @@ export class PlayScreen {
   /** The current region's weather and when it next changes, as the server last reported it (D11). */
   protected readonly weather = signal<WeatherInfo | undefined>(undefined);
   /** Weather is drawn without movement for players who prefer reduced motion. */
+  /**
+   * The world's debug view (`?debug=world`): development builds only (docs/decisions.md D13); production builds never
+   * enable it, whatever the address says.
+   */
+  protected readonly debugWorld =
+    isDevMode() &&
+    new URLSearchParams(inject(DOCUMENT).defaultView?.location.search ?? '').get('debug') ===
+      'world';
   protected readonly reducedMotion =
     inject(DOCUMENT).defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   private weatherLoading = false;

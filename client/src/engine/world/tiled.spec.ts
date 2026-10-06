@@ -1,10 +1,11 @@
 import cerknica from '../../../../content/maps/cerknica_lake.json';
 import karst from '../../../../content/maps/rakov_skocjan_karst.json';
-import kocevje from '../../../../content/maps/kocevje_forest.json';
+// Kočevje and Pohorje are generated per save (D13): their tests use the server's maps for world seed 1.
+import kocevje from '../testing/maps/kocevje_forest.json';
 import ljubljana from '../../../../content/maps/ljubljana_park.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import murskaSobota from '../../../../content/maps/murska_sobota_village.json';
-import pohorje from '../../../../content/maps/pohorje_forest.json';
+import pohorje from '../testing/maps/pohorje_forest.json';
 import portoroz from '../../../../content/maps/portoroz_coast.json';
 import triglav from '../../../../content/maps/triglav_alps.json';
 import { STEP_MS } from '../game-loop';
@@ -146,8 +147,8 @@ describe('parseTiledMap', () => {
   });
 
   it.each([
-    ['kocevje_forest', kocevje, 'kocevje_bear_1', 'kocevje_forest'],
-    ['pohorje_forest', pohorje, 'pohorje_wolf_1', 'pohorje_forest'],
+    ['kocevje_forest', kocevje, 'kocevje_forest_ursus_arctos_1', 'kocevje_forest'],
+    ['pohorje_forest', pohorje, 'pohorje_forest_canis_lupus_1', 'pohorje_forest'],
     ['triglav_alps', triglav, 'triglav_chamois_1', 'triglav_slopes'],
     ['cerknica_lake', cerknica, 'cerknica_heron_1', 'cerknica_lake'],
     ['rakov_skocjan_karst', karst, 'karst_saxifrage_1', 'rakov_skocjan'],
@@ -204,22 +205,19 @@ describe('parseTiledMap', () => {
     },
   );
 
-  it("reads wadeable tiles: Kočevje's stream needs the boots to cross", () => {
+  it("reads wadeable tiles: Kočevje's generated stream needs the boots to wade", () => {
     const map = parseTiledMap('kocevje_forest', kocevje);
-    const salamander = map.spots.find((spot) => spot.spotId === 'kocevje_salamander_1')!;
+    const stream: { x: number; y: number }[] = [];
+    for (let y = 0; y < map.height; y++) {
+      for (let x = 0; x < map.width; x++) if (map.isWadeable(x, y)) stream.push({ x, y });
+    }
+    const without = reachableFromSpawn([], 'kocevje_forest', kocevje);
+    const withBoots = reachableFromSpawn([], 'kocevje_forest', kocevje, ['boots']);
 
     expect(map.tileset.wadeable).toEqual(new Set([46, 116])); // the stream and the cave pool
-    expect([map.isWadeable(5, 16), map.isWadeable(5, 15)]).toEqual([true, false]);
-    expect(salamander.y).toBe(17);
-    expect(
-      reachableFromSpawn([], 'kocevje_forest', kocevje).reachable(salamander.x, salamander.y),
-    ).toBe(false);
-    expect(
-      reachableFromSpawn([], 'kocevje_forest', kocevje, ['boots']).reachable(
-        salamander.x,
-        salamander.y,
-      ),
-    ).toBe(true);
+    expect(stream.length).toBeGreaterThan(10);
+    expect(stream.every(({ x, y }) => map.isBlocked(x, y) && !without.reachable(x, y))).toBe(true);
+    expect(stream.some(({ x, y }) => withBoots.reachable(x, y))).toBe(true);
   });
 
   it.each([
