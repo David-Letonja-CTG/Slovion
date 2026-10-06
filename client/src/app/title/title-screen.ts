@@ -59,7 +59,8 @@ export class TitleScreen {
       this.error.set(error);
       this.hasSave.set(this.session.hasSavedGame());
     } else {
-      await this.router.navigate(['/play']);
+      // The address's query (e.g. the development-only ?debug=world) carries over to the game.
+      await this.router.navigate(['/play'], { queryParamsHandling: 'preserve' });
     }
   }
 }

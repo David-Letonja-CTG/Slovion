@@ -55,7 +55,7 @@ No accounts and no login. A new game creates an **anonymous save slot** identifi
 ## D7 — Content storage (Accepted, 2026-10-02)
 
 - Game content (species, habitats, maps, quests, dialogue, localized content text) lives as **versioned data files in the repository** under `content/`, validated in CI.
-- Maps are authored in **Tiled** and stored as Tiled JSON; collision and habitat zones are layers in the same map so client and server read one source.
+- Maps are authored in **Tiled** and stored as Tiled JSON; collision and habitat zones are layers in the same map so client and server read one source. Natural parts of maps are generated per save from templates (D13).
 - The backend loads content at startup and serves it; PostgreSQL stores **player state only**, not content.
 - UI strings (menus, buttons, system messages) live in the Angular translation catalog. Content text (species facts, dialogue, quest text) lives with the content, keyed by locale.
 - The API never returns player-facing prose for UI messages; it returns stable codes and content IDs.
@@ -90,3 +90,19 @@ Slovion runs on **one Oracle Cloud Always Free Arm VM** (Ubuntu 24.04) as a Dock
 - **VM setup:** a runbook and one bootstrap script; no infrastructure-as-code yet.
 
 Details and operations: [hosting.md](hosting.md).
+
+## D13 — Generated worlds (Accepted, 2026-10-06)
+
+The natural parts of the regions are **generated per save**, amending D7's "maps are authored in Tiled". The owner chose a seed per save and generation for every region.
+
+- **Templates:** a region's Tiled map is a template.
+  - The spawn, signpost, person and station stay authored, with their names and places, and so does anything a quest depends on.
+  - Rectangles of class `generated` name a biome, an area and the species they hold; the generator fills them.
+- **Determinism:** a generated map is a pure function of the template, the biomes, the save's **world seed** and the **generation version** (stored per save, never changed). It uses a seeded SplitMix64 generator, never `Random` or a clock.
+  - Bumping the version is how the algorithm changes without silently changing existing worlds.
+  - Editing a biome or a template changes every save's world. That is accepted, because quests, discoveries and research never depend on layout.
+- **Biomes are data** (`content/biomes/`): terrain layers, openings, water, paths, decoration and zone kinds, each zone kind belonging to a habitat. The generator knows no biome by name.
+- **Placement data is gameplay data (D6):** a species' `placement` (preferred zone kinds, water) decides where its spot goes. It is never shown to players.
+- **Authority (D3):** the server generates, caches and validates every map: everything that must be reachable from the spawn is. It serves maps at `GET /api/save/maps/{mapId}`; the client only draws them. Encounters, searches and wildlife use the save's map.
+- **Encounters stay dynamic:** the world is static per save; time, season and weather still decide what is around (D8, D11).
+- **Development and tests** may fix the seed (`WorldGeneration:FixedSeed`); the server refuses it outside development.

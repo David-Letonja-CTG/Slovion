@@ -1677,7 +1677,7 @@
      "y": 176
     },
     {
-     "id": 15,
+     "id": 20,
      "name": "strip_1_1_7_7",
      "type": "habitat",
      "x": 16,
@@ -1695,7 +1695,25 @@
      ]
     },
     {
-     "id": 16,
+     "id": 21,
+     "name": "strip_3_8_5_1",
+     "type": "habitat",
+     "x": 48,
+     "y": 128,
+     "width": 80,
+     "height": 16,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "habitatId",
+       "type": "string",
+       "value": "mountain_forest"
+      }
+     ]
+    },
+    {
+     "id": 22,
      "name": "strip_1_11_7_8",
      "type": "habitat",
      "x": 16,
@@ -1713,7 +1731,7 @@
      ]
     },
     {
-     "id": 17,
+     "id": 23,
      "name": "area_pohorje_forest_strip",
      "type": "area",
      "x": 0,
@@ -1731,7 +1749,7 @@
      ]
     },
     {
-     "id": 18,
+     "id": 24,
      "name": "generated_mountain_forest",
      "type": "generated",
      "x": 128,
@@ -1759,7 +1777,7 @@
      ]
     },
     {
-     "id": 19,
+     "id": 25,
      "name": "connector_8_10",
      "type": "connector",
      "point": true,
@@ -1779,7 +1797,7 @@
   }
  ],
  "nextlayerid": 5,
- "nextobjectid": 20,
+ "nextobjectid": 26,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.11.2",

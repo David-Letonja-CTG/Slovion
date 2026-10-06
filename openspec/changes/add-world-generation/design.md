@@ -40,7 +40,7 @@ Motivation and owner decisions: see proposal.md.
 
 ### 2. Determinism
 
-- **PRNG:** `Pcg32` (or SplitMix64), a small, well-known, testable algorithm in the Domain. No `Random`, no clocks.
+- **PRNG:** SplitMix64, a small, well-known, testable algorithm in the Domain, checked against its published test vectors. No `Random`, no clocks.
 - **Map seed:** the 64-bit FNV-1a hash of `worldSeed / mapId / biomeId / version`, the same hashing family as D11.
 - **Sub-streams:** each stage gets its own stream (`seed ⊕ hash(stageName)`). Changing one stage's tuning doesn't reshuffle the others.
 - **Version:**
@@ -217,11 +217,11 @@ Species files gain an optional block of gameplay placement data:
 
 ### 8. Per-save maps on the server
 
-- **`SaveMaps`:**
+- **`WorldMaps`:**
   - authored maps come from the catalog, the same for every save
   - natural maps come from the cache, or are generated from the template, biome and the save's seed and version
   - it returns a `MapLayout` (spots, habitat rectangles, NPC placements, spawn) and the Tiled JSON
-- **The four layout lookups move from `IContentCatalog` to `SaveMaps`:** `EncounterService`, `QuestService`, `WildlifeService` and `WeatherService` take the save.
+- **The layout lookups move from `IContentCatalog` to `IWorldMaps`** (implemented by `WorldMaps`): spots and habitat zones per save, used by `EncounterService` and `WildlifeService`. `WeatherService` only asks whether a map exists. People are authored, so `QuestService` keeps finding them in the catalog.
   - The catalog keeps only global content: species, habitats, regions, quests, stations, items, biomes and templates.
 - **`GET /api/save/maps/{mapId}`:**
   - `200` with the Tiled JSON and an `ETag` of `(seed, version, content hash)`

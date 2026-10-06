@@ -1677,7 +1677,7 @@
      "y": 144
     },
     {
-     "id": 13,
+     "id": 18,
      "name": "strip_1_1_7_7",
      "type": "habitat",
      "x": 16,
@@ -1695,7 +1695,25 @@
      ]
     },
     {
-     "id": 14,
+     "id": 19,
+     "name": "strip_3_8_3_1",
+     "type": "habitat",
+     "x": 48,
+     "y": 128,
+     "width": 48,
+     "height": 16,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "habitatId",
+       "type": "string",
+       "value": "fir_beech_forest"
+      }
+     ]
+    },
+    {
+     "id": 20,
      "name": "strip_1_11_7_8",
      "type": "habitat",
      "x": 16,
@@ -1713,7 +1731,7 @@
      ]
     },
     {
-     "id": 15,
+     "id": 21,
      "name": "area_kocevje_forest_strip",
      "type": "area",
      "x": 0,
@@ -1731,7 +1749,7 @@
      ]
     },
     {
-     "id": 16,
+     "id": 22,
      "name": "generated_fir_beech_forest",
      "type": "generated",
      "x": 128,
@@ -1759,7 +1777,7 @@
      ]
     },
     {
-     "id": 17,
+     "id": 23,
      "name": "connector_8_9",
      "type": "connector",
      "point": true,
@@ -1779,7 +1797,7 @@
   }
  ],
  "nextlayerid": 5,
- "nextobjectid": 18,
+ "nextobjectid": 24,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.11.2",

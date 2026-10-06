@@ -25,6 +25,10 @@ Slovion is about **observing real Slovenian nature**: walk through a region, mee
 |---|---|---|
 | ![The observation dialog](images/identify.png) | ![Terenski dnevnik](images/journal.png) | ![A species page with sources](images/species-page.png) |
 
+## Every save, its own world
+
+The forests of Kočevje and Pohorje are generated for each save (docs/decisions.md D13): a new game gets its own stands of trees, clearings, a stream or a bog, and paths through them, and keeps them for good. The spawn, the signpost, the person and the station stay where they always are, so quests and travel work the same. The animals and plants live where they belong: the red deer at the forest edge or in a clearing, the sundew at the edge of the bog. The other regions follow in the next steps.
+
 ## Time, seasons and weather
 
 - **One real second is one in-game minute.** A day has a morning, day, evening and night; a season lasts three in-game days. The clock belongs to the save and runs on the server (D8).
