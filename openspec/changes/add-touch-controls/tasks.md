@@ -22,4 +22,4 @@
 - [x] 4.2 Docs: gameplay controls with touch (and remove "tap to walk"), architecture (input sources), a phone screenshot in the docs media
 - [x] 4.3 Run `npm run check`, `npm run e2e`, `dotnet test`; all succeed
 - [ ] 4.4 Manual check on a real phone (upright and sideways) and fullscreen on desktop and Android — **open:** needs a real phone; Chromium phone emulation and screenshots are recorded in the design notes
-- [ ] 4.5 Run `openspec validate add-touch-controls --strict`, push, and verify all CI jobs pass on the pull request
+- [x] 4.5 Run `openspec validate add-touch-controls --strict`, push, and verify all CI jobs pass on the pull request
