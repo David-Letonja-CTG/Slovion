@@ -10,7 +10,7 @@ import { Component, input, output } from '@angular/core';
   styles: `
     :host {
       position: absolute;
-      top: 0.75rem;
+      top: max(0.75rem, env(safe-area-inset-top));
       left: 50%;
       z-index: 6;
       transform: translateX(-50%);

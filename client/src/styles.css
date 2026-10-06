@@ -32,6 +32,8 @@ body {
 }
 
 body {
+  /* No browser tap flash on touch screens: buttons show their own state. */
+  -webkit-tap-highlight-color: transparent;
   background: var(--color-backdrop);
   color: var(--color-text);
   font-family: var(--font-ui);
@@ -60,6 +62,16 @@ button {
 .button:focus-visible {
   outline: 3px solid var(--color-warning);
   outline-offset: 2px;
+}
+
+/* Read by screen readers, not shown. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .button:disabled {

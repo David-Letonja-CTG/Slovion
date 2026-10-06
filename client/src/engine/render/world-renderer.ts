@@ -1,5 +1,5 @@
 import { Direction } from '../input/actions';
-import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../viewport';
+import { ViewSize, WIDE_VIEW } from '../viewport';
 import { drawWeather } from './weather';
 import { cameraOffset } from '../world/camera';
 import { World } from '../world/world';
@@ -65,6 +65,7 @@ export function renderWorld(
   world: World,
   images: WorldImages,
   darknessLayer: DarknessLayerFactory,
+  view: ViewSize = WIDE_VIEW,
 ): void {
   const { map, player } = world;
   const position = player.position;
@@ -74,16 +75,16 @@ export function renderWorld(
   const camera = cameraOffset(
     { x: playerX + TILE_SIZE / 2, y: playerY + TILE_SIZE / 2 },
     { width: map.width * TILE_SIZE, height: map.height * TILE_SIZE },
-    { width: LOGICAL_WIDTH, height: LOGICAL_HEIGHT },
+    { width: view.width, height: view.height },
   );
 
   context.fillStyle = BACKDROP;
-  context.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+  context.fillRect(0, 0, view.width, view.height);
 
   const firstX = Math.max(0, Math.floor(camera.x / TILE_SIZE));
-  const lastX = Math.min(map.width - 1, Math.floor((camera.x + LOGICAL_WIDTH - 1) / TILE_SIZE));
+  const lastX = Math.min(map.width - 1, Math.floor((camera.x + view.width - 1) / TILE_SIZE));
   const firstY = Math.max(0, Math.floor(camera.y / TILE_SIZE));
-  const lastY = Math.min(map.height - 1, Math.floor((camera.y + LOGICAL_HEIGHT - 1) / TILE_SIZE));
+  const lastY = Math.min(map.height - 1, Math.floor((camera.y + view.height - 1) / TILE_SIZE));
   const { firstGid, columns, tileCount } = map.tileset;
 
   for (const layer of map.layers) {
@@ -203,22 +204,22 @@ export function renderWorld(
           x: lamp.x * TILE_SIZE - camera.x + TILE_SIZE / 2,
           y: lamp.y * TILE_SIZE - camera.y + TILE_SIZE / 2,
         };
-        if (inView(light, TORCH_OUTER_RADIUS)) lights.push(light);
+        if (inView(light, TORCH_OUTER_RADIUS, view)) lights.push(light);
       }
     }
-    drawTint(context, tint, lights, darknessLayer);
+    drawTint(context, tint, lights, darknessLayer, view);
   }
   // No weather falls underground.
-  if (!underground) drawWeather(context, world.weather, world.elapsedMs, world.reducedMotion);
+  if (!underground) drawWeather(context, world.weather, world.elapsedMs, world.reducedMotion, view);
 }
 
 /** Whether a circle of `radius` around `point` reaches into the view. */
-function inView(point: Point, radius: number): boolean {
+function inView(point: Point, radius: number, view: ViewSize): boolean {
   return (
     point.x + radius > 0 &&
     point.y + radius > 0 &&
-    point.x - radius < LOGICAL_WIDTH &&
-    point.y - radius < LOGICAL_HEIGHT
+    point.x - radius < view.width &&
+    point.y - radius < view.height
   );
 }
 
@@ -231,18 +232,19 @@ function drawTint(
   tint: string,
   lights: readonly Point[],
   darknessLayer: DarknessLayerFactory,
+  view: ViewSize,
 ): void {
   if (lights.length === 0) {
     context.fillStyle = tint;
-    context.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+    context.fillRect(0, 0, view.width, view.height);
     return;
   }
 
   const layer = darknessLayer();
   layer.globalCompositeOperation = 'source-over';
-  layer.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+  layer.clearRect(0, 0, view.width, view.height);
   layer.fillStyle = tint;
-  layer.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+  layer.fillRect(0, 0, view.width, view.height);
   // Fully clear within the inner radius, fading back to the tint at the outer one.
   layer.globalCompositeOperation = 'destination-out';
   for (const light of lights) {
@@ -265,5 +267,5 @@ function drawTint(
     );
   }
   layer.globalCompositeOperation = 'source-over';
-  context.drawImage(layer.canvas, 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+  context.drawImage(layer.canvas, 0, 0, view.width, view.height);
 }

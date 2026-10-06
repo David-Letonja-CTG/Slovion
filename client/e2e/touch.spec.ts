@@ -27,10 +27,11 @@ test('upright, the world is at the top at full width and nothing covers it', asy
   const viewport = page.viewportSize()!;
   const world = (await page.locator('app-game-canvas canvas').boundingBox())!;
 
-  expect(world.width).toBeGreaterThanOrEqual(viewport.width * 0.85);
+  expect(world.width).toBeGreaterThanOrEqual(viewport.width * 0.99);
   expect(world.y).toBeLessThan(40);
   for (const selector of [
-    '.play__conditions',
+    'app-conditions-indicator',
+    '.play__actions',
     'app-touch-controls .touch__pad',
     '[data-button="a"]',
   ]) {
@@ -75,7 +76,7 @@ test('sideways, the D-pad and the buttons sit in the bottom corners', async ({ p
   const a = (await page.locator('[data-button="a"]').boundingBox())!;
   const world = (await page.locator('app-game-canvas canvas').boundingBox())!;
 
-  expect(world.height).toBeGreaterThanOrEqual(400);
+  expect(world.height).toBeGreaterThanOrEqual(411);
   expect(pad.x).toBeLessThan(40);
   expect(pad.y + pad.height).toBeGreaterThan(412 - 40);
   expect(a.x + a.width).toBeGreaterThan(915 - 40);

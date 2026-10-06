@@ -21,7 +21,7 @@ import {
   StationInfo,
   apiErrorCode,
 } from '../api/game-api';
-import { Selection, moveSelection } from './naturedex-selection';
+import { GRID_COLUMNS, Selection, moveSelection } from './naturedex-selection';
 
 type PanelState =
   | { readonly kind: 'loading' }
@@ -35,14 +35,15 @@ type View =
   | { readonly kind: 'certificates'; readonly stations: readonly StationInfo[] | null };
 
 /**
- * The NatureDex, shown to players as "Terenski dnevnik" (docs/decisions.md D10): one picture grid per
- * habitat. Keyboard input arrives as UI actions from the play screen; mouse and touch click directly.
+ * The NatureDex, shown to players as "Terenski dnevnik" (docs/decisions.md D10): one page per habitat with its picture
+ * grid, reached from an index of the habitats where there is room, or by turning pages otherwise. The page shown is the
+ * selection's section. Keyboard input arrives as UI actions from the play screen; mouse and touch click directly.
  */
 @Component({
   selector: 'app-naturedex-panel',
   imports: [DatePipe, TranslocoPipe],
   templateUrl: './naturedex-panel.html',
-  styleUrls: ['./overlay.css', './naturedex-panel.css'],
+  styleUrls: ['./overlay.css', './naturedex-panel.css', './naturedex-pages.css'],
 })
 export class NatureDexPanel {
   readonly closed = output<void>();
@@ -56,12 +57,15 @@ export class NatureDexPanel {
     const state = this.state();
     return state.kind === 'loaded' ? state.sections : [];
   });
+  /** The habitat whose page is shown: the one with the selected picture. */
+  protected readonly page = computed(() => this.sections()[this.selected().section]);
   /** Nothing observed yet: the grid shows only silhouettes, with an encouraging message. */
   protected readonly empty = computed(() =>
     this.sections().every((section) => section.species.every((slot) => slot.entry === null)),
   );
 
   private readonly pictures = viewChildren<ElementRef<HTMLButtonElement>>('picture');
+  private readonly grid = viewChild<ElementRef<HTMLElement>>('grid');
   private readonly backButton = viewChild<ElementRef<HTMLButtonElement>>('backButton');
 
   private readonly api = inject(GameApi);
@@ -80,7 +84,7 @@ export class NatureDexPanel {
     // visible focus, the shown label and screen readers stay in sync.
     effect(() => {
       if (this.view().kind === 'grid') {
-        this.pictures()[this.flatIndex(this.selected())]?.nativeElement.focus();
+        this.pictures()[this.selected().index]?.nativeElement.focus();
       } else {
         this.backButton()?.nativeElement.focus();
       }
@@ -112,14 +116,21 @@ export class NatureDexPanel {
     } else {
       const sizes = this.sections().map((section) => section.species.length);
       if (sizes.some((size) => size > 0)) {
-        this.selected.update((current) => moveSelection(sizes, current, action));
+        const columns = this.columns();
+        this.selected.update((current) => moveSelection(sizes, current, action, columns));
       }
     }
   }
 
-  protected select(section: number, index: number, slot: NatureDexSlot): void {
-    this.selected.set({ section, index });
+  protected select(index: number, slot: NatureDexSlot): void {
+    this.selected.update(({ section }) => ({ section, index }));
     this.open(slot);
+  }
+
+  /** Shows a habitat's page, from the index or the page buttons, with its first picture selected. */
+  protected showPage(section: number): void {
+    if (section < 0 || section >= this.sections().length) return;
+    this.selected.set({ section, index: 0 });
   }
 
   protected back(): void {
@@ -153,9 +164,13 @@ export class NatureDexPanel {
       .map((species) => species.name!);
   }
 
-  protected isSelected(section: number, index: number): boolean {
-    const selected = this.selected();
-    return selected.section === section && selected.index === index;
+  protected isSelected(index: number): boolean {
+    return this.selected().index === index;
+  }
+
+  /** Every species of the habitat is identified. */
+  protected complete(section: NatureDexSection): boolean {
+    return this.identifiedCount(section) === section.species.length;
   }
 
   protected identifiedCount(section: NatureDexSection): number {
@@ -176,11 +191,15 @@ export class NatureDexPanel {
     });
   }
 
-  private flatIndex({ section, index }: Selection): number {
-    return (
-      this.sections()
-        .slice(0, section)
-        .reduce((sum, s) => sum + s.species.length, 0) + index
-    );
+  /**
+   * Pictures per row as the page shows them (it depends on the screen), so up and down match what the player sees;
+   * the default where the layout can't be read.
+   */
+  private columns(): number {
+    const grid = this.grid()?.nativeElement;
+    const tracks = grid ? getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/) : [];
+    return tracks.length > 0 && tracks.every((track) => /^[\d.]+px$/.test(track))
+      ? tracks.length
+      : GRID_COLUMNS;
   }
 }

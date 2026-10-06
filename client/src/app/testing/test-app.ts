@@ -6,7 +6,7 @@ import { provideRouter } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import sl from '../../../public/i18n/sl.json';
-import { Action, ResidentInfo, Game, GameOptions, Weather } from '../../engine';
+import { Action, ResidentInfo, Game, GameOptions, ViewSize, Weather } from '../../engine';
 import { AnswerResult, Encounter, NatureDexEntry, RegionsInfo } from '../api/game-api';
 import { gameApiInterceptor } from '../api/game-api.interceptor';
 import { routes } from '../app.routes';
@@ -32,6 +32,8 @@ export class FakeGame implements Game {
   weather: Weather | undefined;
   /** The tools last given with `setTools`. */
   tools: readonly string[] | undefined;
+  /** The view sizes last given with `setViews`. */
+  views: readonly ViewSize[] | undefined;
   private readonly uiListeners = new Set<(action: Action) => void>();
 
   start = vi.fn();
@@ -60,6 +62,10 @@ export class FakeGame implements Game {
 
   setWeather(weather: Weather): void {
     this.weather = weather;
+  }
+
+  setViews(views: readonly ViewSize[]): void {
+    this.views = views;
   }
 
   setTorch(on: boolean): void {

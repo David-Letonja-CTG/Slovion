@@ -1,5 +1,6 @@
 import { textMap } from '../world/testing';
 import { World } from '../world/world';
+import { COMPACT_VIEW, TALL_VIEW, ViewSize } from '../viewport';
 import { animatedTile } from '../world/world-map';
 import {
   CAVE_TINT,
@@ -53,13 +54,19 @@ const IMAGES: WorldImages = {
 };
 
 /** Renders one frame; the darkness layer, if the frame needed one, records into `layers`. */
-function render(world: World, layers: ReturnType<typeof recordingContext>[] = []) {
+function render(world: World, layers: ReturnType<typeof recordingContext>[] = [], view?: ViewSize) {
   const context = recordingContext();
-  renderWorld(context as unknown as CanvasRenderingContext2D, world, IMAGES, () => {
-    const layer = recordingContext('darkness');
-    layers.push(layer);
-    return layer as unknown as CanvasRenderingContext2D;
-  });
+  renderWorld(
+    context as unknown as CanvasRenderingContext2D,
+    world,
+    IMAGES,
+    () => {
+      const layer = recordingContext('darkness');
+      layers.push(layer);
+      return layer as unknown as CanvasRenderingContext2D;
+    },
+    view,
+  );
   return context.calls;
 }
 
@@ -97,6 +104,22 @@ describe('animatedTile', () => {
 });
 
 describe('renderWorld', () => {
+  it('draws only what fits in the view: 20 tiles across in the wide view, 15 in the compact one, 12 in the tall one', () => {
+    const world = new World(textMap(['#S' + '.'.repeat(28) + '#']), () => undefined);
+    const columns = (calls: readonly Call[]) =>
+      new Set(drawsOf(calls, 'tileset').map((call) => call.args[4])).size;
+
+    const compact = render(world, [], COMPACT_VIEW);
+    const tall = render(world, [], TALL_VIEW);
+
+    expect(columns(render(world))).toBe(20);
+    expect(columns(compact)).toBe(15);
+    expect(compact[0]).toMatchObject({ op: 'fillRect', args: [0, 0, 240, 180] });
+    // 180 pixels: 11 whole tiles and part of a twelfth.
+    expect(columns(tall)).toBe(12);
+    expect(tall[0]).toMatchObject({ op: 'fillRect', args: [0, 0, 180, 240] });
+  });
+
   it('draws an NPC from its sheet, in the row of its facing', () => {
     const world = new World(textMap(['#SN#']), () => undefined);
 

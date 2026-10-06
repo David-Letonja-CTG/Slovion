@@ -146,13 +146,13 @@ flowchart LR
   Host -- "residents, flags, tools,<br/>time, weather" --> World
   Loop --> Renderer["renderWorld<br/>tiles, objects, animals, player,<br/>darkness and light, weather"]
   World --> Renderer
-  Renderer --> CanvasEl["canvas<br/>320 × 180, integer-scaled"]
+  Renderer --> CanvasEl["canvas<br/>320 × 180 (zoomed in upright),<br/>fills the screen"]
 ```
 
 - **`createGame`** (`game.ts`) wires everything: input, the loop, the world, the renderer and a `GameEnvironment` (clock, frame scheduler, size and visibility), which tests replace with fakes.
 - **Logical actions only.** Game code reacts to `MoveUp`, `Interact`, `Torch`…, never to keys or touches. The keyboard map lives in one place (`input/keyboard.ts`); the on-screen D-pad and A/B buttons (`play/touch-controls.ts`) press the same actions through `Game.press` and `Game.release`, and the dispatcher routes both to the world or to the open dialog.
 - **Maps are data.** `tiled.ts` parses and validates Tiled JSON into a `WorldMap`; tile properties (`wadeable`, `swimmable`) and object classes (`spot`, `habitat`, `area`, `npc`, `gate`, `signpost`, `station`, `lamp`) drive behaviour. See [content.md](content.md).
-- **Drawing** happens at a logical 320 × 180, scaled by whole numbers for crisp pixel art. The time-of-day tint goes into an offscreen layer, and the torch and lamp posts cut soft circles of light out of it.
+- **Drawing** happens at a logical 320 × 180 (`WIDE_VIEW`), or on upright touch screens 180 × 240 (`TALL_VIEW`, 3:4) or 240 × 180 (`COMPACT_VIEW`, 4:3), whichever `chooseView` finds shown largest. The play screen offers the views and switches them with `Game.setViews` when the phone is turned. `viewport.ts` shows the view at the largest size of its shape that fits, in whole device pixels. It draws at the whole-number scale at or above that size, so every game pixel is the same size, and lets the browser smooth only the last step down ("sharp bilinear"); at an exact multiple the canvas is shown unresampled. The time-of-day tint goes into an offscreen layer, and the torch and lamp posts cut soft circles of light out of it.
 
 ## Request flows
 

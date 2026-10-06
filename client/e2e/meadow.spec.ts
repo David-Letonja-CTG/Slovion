@@ -58,18 +58,21 @@ test('identify the meadow sage, read about it, and keep it after a reload', asyn
 
   await page.keyboard.press('KeyM');
   const natureDex = page.getByRole('dialog', { name: 'Terenski dnevnik' });
-  await expect(natureDex.locator('[data-habitat="tall_grass"] h3')).toContainText('Visoka trava');
-  await expect(natureDex.locator('[data-habitat="tall_grass"] .habitat__count')).toHaveText('1/5');
-  await expect(natureDex.locator('[data-habitat="hedgerow"] h3')).toContainText('Mejica');
-  await expect(natureDex.locator('[data-habitat="hedgerow"] .habitat__count')).toHaveText('0/2');
+  // The first page is the tall grass; the index lists every habitat with its progress.
+  await expect(natureDex.locator('h3[data-habitat="tall_grass"]')).toContainText('Visoka trava');
+  await expect(natureDex.locator('h3[data-habitat="tall_grass"] .habitat__count')).toHaveText(
+    '1/5',
+  );
+  await expect(natureDex.locator('.index__habitat[data-habitat="hedgerow"]')).toContainText(
+    /Mejica\s*0\/2/,
+  );
 
-  // Hovering shows the name of the identified sage and ??? for a species not yet found.
+  // Every picture shows its name: the identified sage by name, a species not yet found as ???.
   const sage = pictureOf(page, 'salvia_pratensis');
-  await sage.hover();
   await expect(sage.locator('.picture__label')).toBeVisible();
   await expect(sage.locator('.picture__label')).toHaveText('travniška kadulja');
   const skylark = pictureOf(page, 'alauda_arvensis');
-  await skylark.hover();
+  await expect(skylark.locator('.picture__label')).toBeVisible();
   await expect(skylark.locator('.picture__label')).toHaveText('???');
 
   await sage.click();
@@ -485,9 +488,14 @@ test('sound starts with the click on Nova igra; mute and volumes are kept after 
   await waitForTheWorld(page);
   await expect.poll(contexts).toEqual(['running']);
 
+  // Sound and mute are in the Več menu, which closes after each choice.
+  const more = page.getByRole('button', { name: 'Več' });
   const mute = page.locator('.play__mute');
+  await more.click();
   await expect(mute).toHaveText('Utišaj');
   await mute.click();
+  await expect(mute).toHaveCount(0);
+  await more.click();
   await expect(mute).toHaveText('Vklopi zvok');
   await expect(mute).toHaveAttribute('aria-pressed', 'true');
 
@@ -507,6 +515,7 @@ test('sound starts with the click on Nova igra; mute and volumes are kept after 
   await page.reload();
   await page.getByRole('button', { name: 'Nadaljuj' }).click();
   await waitForTheWorld(page);
+  await more.click();
   await expect(mute).toHaveText('Vklopi zvok');
   await page.getByRole('button', { name: 'Zvok', exact: true }).click();
   await expect(music).toHaveValue('0');

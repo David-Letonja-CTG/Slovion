@@ -1,4 +1,4 @@
-<main class="play" [class.play--touch]="touch()">
+<main class="play" [class.play--touch]="touch()" (pointerdown)="onScreenPointerDown($event)">
   @if (loadError(); as reason) {
     <p class="play__status" role="alert">{{ 'errors.' + reason | transloco }}</p>
   } @else if (world(); as loaded) {
@@ -10,6 +10,7 @@
       [residents]="residents()"
       [weather]="weather()?.weather ?? 'clear'"
       [reducedMotion]="reducedMotion"
+      [views]="views()"
       [tools]="toolIds()"
       (inventoryRequested)="openInventory()"
       (timeChanged)="onTimeChanged($event)"
@@ -19,57 +20,96 @@
       (interaction)="onInteraction($event)"
       (menuRequested)="onMenu()"
     />
-    @if (time(); as now) {
-      <div class="play__conditions">
+    <!-- The HUD: what is going on at the top left, the game's buttons at the top right (docs/gameplay.md). -->
+    <div class="play__info">
+      @if (time(); as now) {
         <app-conditions-indicator
           [time]="now"
           [location]="areaName()"
           [weather]="weather()?.weather"
         />
+      }
+      @if (activeQuest(); as quest) {
+        <app-quest-tracker class="play__tracker" [quest]="quest" />
+      }
+    </div>
+    @if (time()) {
+      <div class="play__actions">
         <button
           type="button"
-          class="button play__torch"
+          class="button play__button play__torch"
           [class.button--primary]="torchOn()"
           [attr.aria-pressed]="torchOn()"
           (click)="toggleTorch()"
         >
-          {{ 'torch.button' | transloco }}
+          <app-hud-icon name="torch" />
+          <span class="play__label">{{ 'torch.button' | transloco }}</span>
         </button>
-        <button type="button" class="button play__torch play__bag" (click)="openInventory()">
-          {{ 'inventory.button' | transloco }}
+        <button type="button" class="button play__button play__bag" (click)="openInventory()">
+          <app-hud-icon name="bag" />
+          <span class="play__label">{{ 'inventory.button' | transloco }}</span>
         </button>
-        <button type="button" class="button play__torch play__journal" (click)="onMenu()">
-          {{ 'naturedex.button' | transloco }}
+        <button type="button" class="button play__button play__journal" (click)="onMenu()">
+          <app-hud-icon name="journal" />
+          <span class="play__label">{{ 'naturedex.button' | transloco }}</span>
         </button>
-        @if (audio.available) {
-          <button
-            type="button"
-            class="button play__torch play__sound"
-            (click)="openSoundSettings()"
-          >
-            {{ 'sound.button' | transloco }}
-          </button>
-          <button
-            type="button"
-            class="button play__torch play__mute"
-            [attr.aria-pressed]="audio.settings().muted"
-            (click)="toggleMute()"
-          >
-            {{ (audio.settings().muted ? 'sound.unmuteButton' : 'sound.muteButton') | transloco }}
-          </button>
+        @if (hasMore()) {
+          <div class="play__more">
+            <button
+              #moreButton
+              type="button"
+              class="button play__button play__more-button"
+              aria-controls="play-more"
+              (keydown.escape)="closeMore($event)"
+              [attr.aria-expanded]="moreOpen()"
+              (click)="toggleMore()"
+            >
+              <app-hud-icon name="more" />
+              <span class="play__label">{{ 'play.more' | transloco }}</span>
+            </button>
+            @if (moreOpen()) {
+              <div
+                id="play-more"
+                class="play__menu"
+                tabindex="-1"
+                (keydown.escape)="closeMore($event)"
+              >
+                @if (audio.available) {
+                  <button type="button" class="button play__sound" (click)="openSoundSettings()">
+                    {{ 'sound.button' | transloco }}
+                  </button>
+                  <button
+                    type="button"
+                    class="button play__mute"
+                    [attr.aria-pressed]="audio.settings().muted"
+                    (click)="toggleMute()"
+                  >
+                    {{
+                      (audio.settings().muted ? 'sound.unmuteButton' : 'sound.muteButton')
+                        | transloco
+                    }}
+                  </button>
+                }
+                @if (fullscreen.available) {
+                  <button
+                    type="button"
+                    class="button play__fullscreen"
+                    [class.button--primary]="fullscreen.active()"
+                    [attr.aria-pressed]="fullscreen.active()"
+                    (click)="toggleFullscreen()"
+                  >
+                    {{ 'fullscreen.button' | transloco }}
+                  </button>
+                }
+                @if (!touch()) {
+                  <p class="play__menu-hint">{{ 'play.controlsHint' | transloco }}</p>
+                }
+              </div>
+            }
+          </div>
         }
-        @if (fullscreen.available) {
-          <button
-            type="button"
-            class="button play__torch play__fullscreen"
-            [class.button--primary]="fullscreen.active()"
-            [attr.aria-pressed]="fullscreen.active()"
-            (click)="toggleFullscreen()"
-          >
-            {{ 'fullscreen.button' | transloco }}
-          </button>
-        }
-        <p class="play__torch-status" aria-live="polite">
+        <!-- Announces the torch to screen readers; the button already shows its state. -->
+        <p class="play__torch-status visually-hidden" aria-live="polite">
           {{ (torchOn() ? 'torch.on' : 'torch.off') | transloco }}
         </p>
       </div>
@@ -79,9 +119,6 @@
         <app-location-banner [name]="item.name" (done)="onBannerDone(item.key)" />
       }
     }
-    @if (activeQuest(); as quest) {
-      <app-quest-tracker class="play__tracker" [quest]="quest" />
-    }
     @if (touch()) {
       <app-touch-controls
         class="play__touch"
@@ -89,6 +126,7 @@
         (released)="onTouchReleased($event)"
       />
     } @else {
+      <!-- Shown over the world when a game starts, then fades out; the same text stays in the Več menu. -->
       <p class="play__hint">{{ 'play.controlsHint' | transloco }}</p>
     }
     <div class="play__fade" [class.play__fade--dark]="fading()" aria-hidden="true"></div>

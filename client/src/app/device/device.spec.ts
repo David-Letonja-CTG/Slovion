@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { Fullscreen } from './fullscreen';
+import { PORTRAIT } from './portrait';
 import { TOUCH_DEVICE } from './touch-device';
 
 /** jsdom has no PointerEvent: a mouse event with the pointer's type. */
@@ -28,6 +29,25 @@ describe('TOUCH_DEVICE', () => {
 
     pointerDown('touch');
     expect(touch()).toBe(true);
+  });
+});
+
+describe('PORTRAIT', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('follows the orientation media query as the device is turned', () => {
+    const listeners: ((event: { matches: boolean }) => void)[] = [];
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query === '(orientation: portrait)',
+      addEventListener: (_: string, listener: (event: { matches: boolean }) => void) =>
+        listeners.push(listener),
+    }));
+    const portrait = TestBed.inject(PORTRAIT);
+    expect(portrait()).toBe(true);
+
+    listeners.forEach((listener) => listener({ matches: false }));
+
+    expect(portrait()).toBe(false);
   });
 });
 

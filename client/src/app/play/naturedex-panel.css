@@ -23,28 +23,7 @@
   color: var(--color-text-muted);
 }
 
-/* Habitat sections: a heading with progress, then a fixed five-column picture grid. */
-
-.habitat__heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin: 0 0 0.5rem;
-  font-size: 1.15rem;
-}
-
-.habitat__count {
-  color: var(--color-text-muted);
-}
-
-.habitat__grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
+/* A habitat's pictures; the page around them is in naturedex-pages.css. */
 
 .picture {
   position: relative;
@@ -82,21 +61,19 @@
   cursor: default;
 }
 
-/* Labels show on hover and for the selected picture; their two lines are always reserved. */
+/* Every picture shows its name (or ??? until identified), in two reserved lines. */
 .picture__label {
   height: 2.2em;
   overflow: hidden;
-  font-size: 0.75rem;
+  font-size: 0.75em;
   line-height: 1.1;
   text-align: center;
   overflow-wrap: anywhere;
-  visibility: hidden;
 }
 
-.picture:hover .picture__label,
-.picture:focus-visible .picture__label,
-.picture--selected .picture__label {
-  visibility: visible;
+.picture--unknown .picture__label,
+.picture--observed .picture__label {
+  color: var(--color-text-muted);
 }
 
 .picture--selected,
@@ -175,14 +152,6 @@
 }
 
 @media (max-width: 30rem) {
-  .habitat__grid {
-    gap: 0.25rem;
-  }
-
-  .picture__label {
-    font-size: 0.6rem;
-  }
-
   .entry__facts {
     grid-template-columns: 1fr;
   }
@@ -273,4 +242,12 @@
   margin-top: 0.2rem !important;
   color: var(--color-text-muted);
   font-size: 0.9rem;
+}
+
+/* Fingers: every button at least 44 CSS pixels high. */
+@media (pointer: coarse) {
+  .naturedex__actions .button,
+  .index__habitat {
+    min-height: 44px;
+  }
 }

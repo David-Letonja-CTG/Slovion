@@ -1,0 +1,315 @@
+/*
+ * The journal's pages (docs/gameplay.md): one habitat at a time, so nothing scrolls. Where there is room (at least
+ * 640×544) an index of the habitats sits beside the page; otherwise the page buttons beside the habitat's name turn the
+ * pages. The grid's columns are read back by the panel for up and down, so they live only here.
+ */
+.naturedex--pages {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'title actions'
+    'flip flip'
+    'empty empty'
+    'grid grid'
+    'marks marks';
+  align-content: start;
+  gap: 0.5rem;
+  height: 100%;
+}
+
+/* A new save's encouragement, kept short so the page still fits on a phone. */
+.naturedex--pages .naturedex__empty {
+  font-size: 0.8em;
+}
+
+.naturedex--pages .naturedex__header {
+  display: contents;
+}
+
+.naturedex--pages h2 {
+  grid-area: title;
+  align-self: center;
+}
+
+.naturedex--pages .naturedex__actions {
+  grid-area: actions;
+}
+
+.naturedex--pages .naturedex__empty {
+  grid-area: empty;
+}
+
+.naturedex__flip {
+  display: flex;
+  grid-area: flip;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.habitat__heading {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  font-size: 1.15em;
+  text-align: center;
+}
+
+.habitat__count {
+  color: var(--color-text-muted);
+  font-size: 0.8em;
+}
+
+/* The page buttons: square, with a triangle drawn like the D-pad's arrows. */
+.flip {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--color-panel-border);
+  background: var(--color-panel);
+  cursor: pointer;
+}
+
+.flip::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 0.5rem solid transparent;
+  transform: translate(-50%, -50%);
+  content: '';
+}
+
+.flip--previous::before {
+  border-left-width: 0;
+  border-right-color: var(--color-text);
+}
+
+.flip--next::before {
+  border-right-width: 0;
+  border-left-color: var(--color-text);
+}
+
+.flip:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.flip:focus-visible,
+.index__habitat:focus-visible {
+  outline: 3px solid var(--color-warning);
+  outline-offset: 2px;
+}
+
+.naturedex__index {
+  display: none;
+  grid-area: index;
+}
+
+.habitat__grid {
+  display: grid;
+  grid-area: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.naturedex__marks {
+  display: flex;
+  grid-area: marks;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.mark {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--color-panel-border);
+}
+
+.mark--shown {
+  background: var(--color-accent);
+}
+
+/* Upright phones and narrow windows: less frame around the page, so four rows of three fit above the controls. */
+@media (max-width: 39.99rem) {
+  .overlay {
+    padding: 0.5rem;
+  }
+
+  .naturedex--pages {
+    padding: 0.75rem;
+  }
+
+  .naturedex--pages h2 {
+    font-size: 1.2rem;
+  }
+
+  .naturedex--pages .naturedex__actions .button {
+    padding: 0.4rem 0.7rem;
+    font-size: 1rem;
+  }
+
+  .naturedex--pages .picture {
+    padding: 0.2rem 0.25rem;
+  }
+}
+
+/* Phones held sideways: one row for the title, the page buttons and the actions, then two rows of five. */
+@media (min-width: 40rem) and (max-height: 33.99rem) {
+  .overlay {
+    padding: 0.5rem;
+  }
+
+  .naturedex {
+    width: 100%;
+    max-width: none;
+  }
+
+  .naturedex--pages {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'title flip actions'
+      'empty empty empty'
+      'grid grid grid'
+      'marks marks marks';
+    padding: 0.75rem;
+  }
+
+  .habitat__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/*
+ * Where there is room: the index beside the page, five bigger pictures per row. The journal grows with the screen,
+ * its text too (the panel's font size; the parts inside use em), and the pictures are whole multiples of their 32
+ * pixels: 64 px, 96 px from 960 px wide (then five per row instead of four), 128 px on large screens.
+ */
+@media (min-width: 40rem) and (min-height: 34rem) {
+  .naturedex {
+    width: min(80rem, 90vw);
+    max-width: none;
+    font-size: clamp(1rem, 0.5rem + 0.6vw, 1.3rem);
+  }
+
+  .naturedex .button {
+    font-size: 1em;
+  }
+
+  .naturedex--pages {
+    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-areas:
+      'title actions'
+      'index empty'
+      'index flip'
+      'index grid'
+      'index .';
+    gap: 0.75rem 1.25rem;
+    height: auto;
+  }
+
+  .naturedex--pages h2 {
+    white-space: nowrap;
+  }
+
+  .naturedex--pages .naturedex__actions {
+    justify-self: end;
+  }
+
+  /* An opened species or the certificates keep a readable line length in the wider panel. */
+  .entry,
+  .certificates {
+    max-width: 48em;
+  }
+
+  .naturedex__index {
+    display: block;
+    padding-right: 1rem;
+    border-right: 2px solid var(--color-panel-border);
+  }
+
+  .naturedex__index ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .habitat__heading {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .flip,
+  .naturedex__marks {
+    display: none;
+  }
+
+  .habitat__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .picture__stars {
+    font-size: 0.8em;
+  }
+}
+
+@media (min-width: 60rem) and (min-height: 34rem) {
+  .habitat__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .picture img {
+    width: 96px;
+  }
+}
+
+@media (min-width: 75rem) and (min-height: 45rem) {
+  .picture img {
+    width: 128px;
+  }
+}
+
+.index__habitat {
+  display: flex;
+  white-space: nowrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 2px solid transparent;
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.index__habitat:hover {
+  border-color: var(--color-accent);
+}
+
+.index__habitat[aria-current='page'] {
+  border-color: var(--color-accent);
+  background: var(--color-tile);
+}
+
+.index__count {
+  color: var(--color-text-muted);
+}
+
+/* A finished habitat stands out. */
+.index__habitat--complete .index__count {
+  color: var(--color-warning);
+}
