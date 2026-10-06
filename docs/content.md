@@ -97,11 +97,11 @@ Rules:
 | Field | Meaning |
 |---|---|
 | `floor` | the base ground tiles |
-| `pathSet` | first tile of a 16-tile path set: +1/+2/+4/+8 when the north/east/south/west side is closed |
+| `pathSet` | first tile of a 16-tile path set: +1/+2/+4/+8 when the north/east/south/west side is closed; without it (a cave) paths keep the floor |
 | `border` | blocking tiles where the area meets the map's edge |
-| `layers` | terrains grown from smoothed noise: `id`, `coverage` (0–1), `scale` (blob size in tiles), `smooth` (passes), optional `floor` |
-| `openings` | clearings that paths lead to: `count` and `radius` ranges, `floor`, `pathSet` |
-| `water` | `kind` (`stream` or `pond`), `chance`, `size`, `tiles` (`wadeable` tiles let the boots through), optional `bank` |
+| `layers` | terrains grown from smoothed noise: `id`, `coverage` (0–1), `scale` (blob size in tiles), `smooth` (passes), optional `floor`, `blocking` (reeds, cliffs, cave rock) and `bias` (`north`, `east`, `south` or `west`) with `biasStrength` (0–1) to gather it towards that edge |
+| `openings` | clearings that paths lead to: `count` and `radius` ranges, `floor`, optional `pathSet` |
+| `water` | `kind` (`stream`, `pond` or `shore`), `chance`, `size` (a shore's deep rows), `tiles` (`wadeable` tiles let the boots through), optional `bank`; a shore lies along its `edge` with `shallowWidth` rows of `shallow` tiles on the land side |
 | `decor` | `tiles`, `blocking`, `density` and `where` |
 | `zones` | in order, the first match wins: `kind`, `where` and the `habitat` it belongs to (none: placement only, not searchable) |
 
@@ -109,7 +109,7 @@ Rules:
 
 **Placement** in a species file, gameplay data never shown (D6):
 - `zones`: preferred zone kinds, best first; without it, every zone kind whose habitat lists the species
-- `water`: `in` (aquatic) or `near`
+- `water`: `in` (aquatic, on water beside land), `near`, or `wade` (on wadeable water away from the shore, reached only with the boots)
 - `tile`: for a plant, the decoration drawn at its spot (required)
 - `blocking`: the plant blocks its tile, like a shrub
 

@@ -25,17 +25,17 @@ internal sealed record WildlifeFile(string? Torch, bool? Aquatic, bool? Perched)
 
 /// <summary>
 /// Where a species gets its spot on generated maps (fictional gameplay data, D6, never shown): preferred zone kinds in
-/// order, its need for water (<c>in</c> or <c>near</c>), and for a plant the decoration tile drawn at its spot and whether it blocks.
+/// order, its need for water (<c>in</c>, <c>near</c> or <c>wade</c>), and for a plant the decoration tile drawn at its spot and whether it blocks.
 /// </summary>
 internal sealed record PlacementFile(List<string>? Zones, string? Water, int? Tile, bool? Blocking);
 
 internal sealed record SpeciesFile(string? Id, string? Group, FactFile? ScientificName, Dictionary<string, SourceFile>? Sources, Dictionary<string, SpeciesTextFile>? Text, AvailabilityFile? Availability, WildlifeFile? Wildlife, IdentificationFile? Identification, PlacementFile? Placement);
 
-internal sealed record BiomeLayerFile(string? Id, double Coverage, int Scale, int Smooth, List<int>? Floor);
+internal sealed record BiomeLayerFile(string? Id, double Coverage, int Scale, int Smooth, List<int>? Floor, bool Blocking, string? Bias, double BiasStrength);
 
 internal sealed record BiomeOpeningsFile(List<int>? Count, List<int>? Radius, List<int>? Floor, int? PathSet);
 
-internal sealed record BiomeWaterFile(string? Kind, double Chance, int Size, List<int>? Tiles, List<int>? Bank);
+internal sealed record BiomeWaterFile(string? Kind, double Chance, int Size, List<int>? Tiles, List<int>? Bank, string? Edge, List<int>? Shallow, int ShallowWidth);
 
 internal sealed record BiomeDecorFile(List<int>? Tiles, bool Blocking, double Density, string? Where);
 
@@ -49,8 +49,12 @@ internal sealed record TiledMapFile(string? Orientation, int Width, int Height, 
 
 internal sealed record TiledTilesetFile(int Tilecount, List<TiledTileFile>? Tiles);
 
-/// <summary>Per-tile data of a tileset; Slovion uses only frame animations.</summary>
-internal sealed record TiledTileFile(int Id, List<TiledFrameFile>? Animation);
+/// <summary>Per-tile data of a tileset: frame animations, and flags such as <c>wadeable</c>.</summary>
+internal sealed record TiledTileFile(int Id, List<TiledFrameFile>? Animation, List<TiledPropertyFile>? Properties)
+{
+    public bool IsFlagged(string name) =>
+        Properties?.Any(property => property.Name == name && property.Value.ValueKind == JsonValueKind.True) ?? false;
+}
 
 internal sealed record TiledFrameFile(int Tileid, int Duration);
 

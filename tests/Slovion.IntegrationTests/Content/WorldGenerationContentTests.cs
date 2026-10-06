@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Slovion.Application.Saves;
@@ -11,10 +12,18 @@ namespace Slovion.IntegrationTests.Content;
 public sealed class WorldGenerationContentTests
 {
     private const int Seeds = 300;
+    private const int TileSize = 16;
+
+    /// <summary>Tiles of the tileset: the cave pool and the lake's wadeable shallows.</summary>
+    private const int CavePool = 116;
+    private const int Shallows = 46;
 
     [Theory]
     [InlineData("kocevje_forest", new[] { "ursus_arctos", "cervus_elaphus", "salamandra_salamandra", "allium_ursinum", "galium_odoratum" })]
     [InlineData("pohorje_forest", new[] { "canis_lupus", "sciurus_vulgaris", "drosera_rotundifolia", "vaccinium_myrtillus" })]
+    [InlineData("triglav_alps", new[] { "rupicapra_rupicapra", "leontopodium_nivale", "potentilla_nitida", "marmota_marmota", "salamandra_atra" })]
+    [InlineData("cerknica_lake", new[] { "ardea_cinerea", "hyla_arborea", "crex_crex", "calopteryx_splendens", "iris_pseudacorus", "iris_sibirica", "nymphaea_alba" })]
+    [InlineData("rakov_skocjan_karst", new[] { "saxifraga_rotundifolia", "chrysosplenium_alternifolium", "leptodirus_hochenwartii", "rhinolophus_ferrumequinum", "proteus_anguinus" })]
     public void Every_seed_gives_a_valid_map_with_one_spot_per_species(string mapId, string[] species)
     {
         var maps = new WorldMaps(FileContentCatalog.Load(ContentFolder.RepositoryContent()));
@@ -27,6 +36,38 @@ public sealed class WorldGenerationContentTests
             Assert.All(map.Spots, spot => Assert.Equal($"{mapId}_{spot.SpeciesId.Value}_1", spot.SpotId));
             Assert.NotEmpty(map.Habitats);
             Assert.Equal(seed, map.World?.Seed);
+        }
+    }
+
+    [Fact]
+    public void The_cave_holds_only_its_own_species_and_the_olm_swims_in_its_pool()
+    {
+        var maps = new WorldMaps(FileContentCatalog.Load(ContentFolder.RepositoryContent()));
+        for (long seed = 0; seed < 50; seed++)
+        {
+            var map = Served(maps, "rakov_skocjan_karst", seed);
+
+            // Zelške jame is the generated cave east of the entrance (x 18–25).
+            Assert.All(map.Spots, spot => Assert.Equal(spot.SpeciesId is "leptodirus_hochenwartii" or "rhinolophus_ferrumequinum" or "proteus_anguinus", spot.X >= 18));
+            var olm = map.Spots.Single(spot => spot.SpeciesId == "proteus_anguinus");
+            Assert.Equal(CavePool, map.Ground[(olm.Y * map.Width) + olm.X]);
+        }
+    }
+
+    [Fact]
+    public void The_water_lily_and_the_demoiselle_are_reached_by_wading()
+    {
+        var maps = new WorldMaps(FileContentCatalog.Load(ContentFolder.RepositoryContent()));
+        for (long seed = 0; seed < 50; seed++)
+        {
+            var map = Served(maps, "cerknica_lake", seed);
+
+            foreach (var spot in map.Spots.Where(spot => spot.SpeciesId is "nymphaea_alba" or "calopteryx_splendens"))
+            {
+                Assert.Equal(Shallows, map.Ground[(spot.Y * map.Width) + spot.X]);
+                // Away from the shore: no walkable land beside it, so only the boots reach it.
+                Assert.All(Neighbours(map, spot.X, spot.Y), cell => Assert.True(map.Blocked[cell]));
+            }
         }
     }
 
@@ -68,6 +109,29 @@ public sealed class WorldGenerationContentTests
         Assert.NotEqual(seeds.NextSeed(), seeds.NextSeed());
     }
 
+    /// <summary>A generated map as served: its ground tiles, collision and the tiles of its spots.</summary>
+    private static ServedMap Served(WorldMaps maps, string mapId, long seed)
+    {
+        var json = maps.Find(SaveSlot.Create(Guid.NewGuid(), [1], DateTimeOffset.UnixEpoch, seed), mapId)!.Json;
+        using var document = JsonDocument.Parse(json);
+        var root = document.RootElement;
+        var layers = root.GetProperty("layers").EnumerateArray().ToList();
+        int[] Tiles(string name) => [.. layers.First(layer => layer.GetProperty("name").GetString() == name).GetProperty("data").EnumerateArray().Select(gid => gid.GetInt32() - 1)];
+        var spots = layers.Single(layer => layer.GetProperty("type").GetString() == "objectgroup").GetProperty("objects").EnumerateArray()
+            .Where(o => o.GetProperty("type").GetString() == "spot")
+            .Select(o => new ServedSpot(
+                o.GetProperty("properties").EnumerateArray().First(p => p.GetProperty("name").GetString() == "speciesId").GetProperty("value").GetString()!,
+                (int)(o.GetProperty("x").GetDouble() / TileSize),
+                (int)(o.GetProperty("y").GetDouble() / TileSize)))
+            .ToList();
+        return new ServedMap(root.GetProperty("width").GetInt32(), Tiles("ground"), [.. Tiles("collision").Select(tile => tile >= 0)], spots);
+    }
+
+    private static IEnumerable<int> Neighbours(ServedMap map, int x, int y) =>
+        new[] { (X: x, Y: y - 1), (X: x + 1, Y: y), (X: x, Y: y + 1), (X: x - 1, Y: y) }
+            .Where(p => p.X >= 0 && p.Y >= 0 && p.X < map.Width && p.Y < map.Ground.Length / map.Width)
+            .Select(p => (p.Y * map.Width) + p.X);
+
     private static IConfiguration Configuration(string? fixedSeed) => new ConfigurationBuilder()
         .AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -76,4 +140,8 @@ public sealed class WorldGenerationContentTests
             [DependencyInjection.FixedWorldSeedSetting] = fixedSeed,
         })
         .Build();
+
+    private sealed record ServedSpot(string SpeciesId, int X, int Y);
+
+    private sealed record ServedMap(int Width, int[] Ground, bool[] Blocked, IReadOnlyList<ServedSpot> Spots);
 }

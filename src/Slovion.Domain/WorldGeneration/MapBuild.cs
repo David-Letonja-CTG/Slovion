@@ -98,6 +98,7 @@ internal sealed partial class MapBuild
     {
         var problems = new List<string>();
         var reach = Reach();
+        var wading = WadeReach();
         foreach (var area in template.Areas)
         {
             foreach (var connector in area.Connectors)
@@ -111,7 +112,7 @@ internal sealed partial class MapBuild
 
         foreach (var (speciesId, cell) in spots)
         {
-            if (!CanReach(cell, reach))
+            if (!CanReach(cell, reach) && !wading[cell])
             {
                 problems.Add($"spot of {speciesId} unreachable");
             }
@@ -134,9 +135,10 @@ internal sealed partial class MapBuild
     public void Repair()
     {
         var reach = Reach();
+        var wading = WadeReach();
         var targets = template.Areas.SelectMany(area => area.Connectors).Select(point => Index(point.X, point.Y))
             .Concat(spots.Select(spot => spot.Cell))
-            .Where(cell => !CanReach(cell, reach))
+            .Where(cell => !CanReach(cell, reach) && !wading[cell])
             .ToList();
         foreach (var target in targets)
         {
@@ -190,6 +192,12 @@ internal sealed partial class MapBuild
     private bool Walkable(int cell) => areaOf[cell] == Outside ? TemplateWalkable(cell) : !blocked[cell];
 
     private bool[] Reach() => GridSearch.Reachable(width, height, spawn, Walkable);
+
+    /// <summary>Water the boots let the player through: a wadeable ground tile with no blocking object on it.</summary>
+    private bool Wadeable(int cell) => template.WadeableTiles?.Contains(ground[cell]) == true && !objectCell[cell];
+
+    /// <summary>What the player reaches with the boots, wading through wadeable water.</summary>
+    private bool[] WadeReach() => GridSearch.Reachable(width, height, spawn, cell => Walkable(cell) || Wadeable(cell));
 
     /// <summary>A walkable cell the player reaches, or a blocked one (water, a shrub, a perch) beside such a cell.</summary>
     private bool CanReach(int cell, bool[] reach) =>

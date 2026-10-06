@@ -3,6 +3,9 @@ namespace Slovion.Domain.WorldGeneration;
 /// <summary>Terrain stages: base, layers, openings, water, paths, decoration and pocket cleanup.</summary>
 internal sealed partial class MapBuild
 {
+    /// <summary>The span of the value noise (a coarse octave plus half a fine one), which a layer's bias is measured against.</summary>
+    private const double NoiseRange = 1.5;
+
     /// <summary>Stage 1: the biome's floor everywhere, and a blocking border where the area meets the map's edge.</summary>
     private void Base(int area, Biome biome, WorldRandom stage)
     {
@@ -25,7 +28,8 @@ internal sealed partial class MapBuild
 
     /// <summary>
     /// Stage 2: each layer covers its share of the area in coherent blobs: value noise thresholded at the quantile that
-    /// gives the coverage, then smoothed by a cellular automaton (a cell joins with 5+ of 9, leaves with 3 or fewer).
+    /// gives the coverage, then smoothed by a cellular automaton (a cell joins with 5+ of 9, leaves with 3 or fewer). A
+    /// biased layer's noise rises towards its edge, so it gathers there.
     /// </summary>
     private void Layers(int area, Biome biome, WorldRandom stage)
     {
@@ -35,6 +39,14 @@ internal sealed partial class MapBuild
         {
             var layerRandom = stage.Fork(terrain.Id);
             var noise = Noise(rect, terrain.Scale, layerRandom.Fork("noise"));
+            if (terrain.Bias is { } edge)
+            {
+                foreach (var cell in cells)
+                {
+                    noise[cell] += terrain.BiasStrength * NoiseRange * (1 - Depth(cell, rect, edge));
+                }
+            }
+
             var count = (int)Math.Round(terrain.Coverage * cells.Count);
             if (count <= 0)
             {
@@ -64,6 +76,7 @@ internal sealed partial class MapBuild
             foreach (var cell in cells.Where(cell => inside[cell]))
             {
                 layer[cell] = terrain.Id;
+                blocked[cell] = terrain.Blocking;
                 if (terrain.Floor is { Count: > 0 } tiles)
                 {
                     ground[cell] = floor.Pick(tiles);
@@ -102,13 +115,18 @@ internal sealed partial class MapBuild
                 {
                     opening[cell] = true;
                     layer[cell] = null;
+                    blocked[cell] = false;
                     ground[cell] = stage.Pick(openings.Floor);
                 }
             }
         }
     }
 
-    /// <summary>Stage 4: a meandering stream across the area, or a round pond; water blocks (wadeable tiles let boots through).</summary>
+    /// <summary>
+    /// Stage 4: a meandering stream across the area, a round pond, or a shore along one edge whose shallows lie towards
+    /// the land; water blocks (wadeable tiles let boots through). A shore also covers the border, so the water reaches
+    /// the map's edge.
+    /// </summary>
     private void Water(int area, Biome biome, WorldRandom stage)
     {
         if (biome.Water is not { } spec || !stage.Chance(spec.Chance))
@@ -118,7 +136,12 @@ internal sealed partial class MapBuild
 
         var rect = template.Areas[area].Rect;
         var cells = new List<int>();
-        if (spec.Kind == WaterKind.Stream)
+        var shallow = new HashSet<int>();
+        if (spec.Kind == WaterKind.Shore)
+        {
+            Shore(rect, spec, stage, cells, shallow);
+        }
+        else if (spec.Kind == WaterKind.Stream)
         {
             var vertical = rect.Height >= rect.Width;
             var length = vertical ? rect.Height : rect.Width;
@@ -165,22 +188,57 @@ internal sealed partial class MapBuild
             }
         }
 
-        foreach (var cell in cells.Where(cell => !border[cell]))
+        foreach (var cell in cells.Where(cell => spec.Kind == WaterKind.Shore || !border[cell]))
         {
             water[cell] = true;
             opening[cell] = false;
             layer[cell] = null;
-            ground[cell] = stage.Pick(spec.Tiles);
+            ground[cell] = shallow.Contains(cell) && !border[cell] && spec.Shallow is { Count: > 0 } shallows ? stage.Pick(shallows) : stage.Pick(spec.Tiles);
             decor[cell] = NoTile;
             blocked[cell] = true;
         }
 
+        // An opening the water drowned is no longer somewhere for a path to lead.
+        openingCenters[area].RemoveAll(cell => water[cell]);
         if (spec.Bank is { Count: > 0 } bank)
         {
-            foreach (var cell in Cells(rect).Where(cell => !water[cell] && !border[cell] && !opening[cell]
+            foreach (var cell in Cells(rect).Where(cell => !water[cell] && !border[cell] && !opening[cell] && !blocked[cell]
                 && GridSearch.Neighbours(cell, width, height).Any(next => water[next])))
             {
                 ground[cell] = stage.Pick(bank);
+            }
+        }
+    }
+
+    /// <summary>A shore along the water's edge: per row (or column) its depth wanders by a tile around its size plus the shallows.</summary>
+    private void Shore(GridRect rect, Water spec, WorldRandom stage, List<int> cells, HashSet<int> shallow)
+    {
+        var alongX = spec.Edge is Edge.North or Edge.South;
+        var length = alongX ? rect.Width : rect.Height;
+        var span = alongX ? rect.Height : rect.Width;
+        var full = spec.Size + spec.ShallowWidth;
+        var depth = Math.Clamp(full + stage.Next(3) - 1, 1, span - 1);
+        for (var t = 0; t < length; t++)
+        {
+            if (t > 0)
+            {
+                depth = Math.Clamp(depth + stage.Next(4) switch { 0 => -1, 3 => 1, _ => 0 }, Math.Max(1, full - 1), Math.Min(span - 1, full + 1));
+            }
+
+            for (var k = 0; k < depth; k++)
+            {
+                var cell = spec.Edge switch
+                {
+                    Edge.North => Index(rect.X + t, rect.Y + k),
+                    Edge.South => Index(rect.X + t, rect.Bottom - k),
+                    Edge.West => Index(rect.X + k, rect.Y + t),
+                    _ => Index(rect.Right - k, rect.Y + t),
+                };
+                cells.Add(cell);
+                if (k >= depth - spec.ShallowWidth)
+                {
+                    shallow.Add(cell);
+                }
             }
         }
     }
@@ -278,6 +336,7 @@ internal sealed partial class MapBuild
             {
                 opening[cell] = true;
                 layer[cell] = null;
+                blocked[cell] = false;
                 if (biome.Openings is { } openings)
                 {
                     ground[cell] = stage.Pick(openings.Floor);
@@ -331,8 +390,7 @@ internal sealed partial class MapBuild
             {
                 foreach (var cell in route.Where(cell => areaOf[cell] != Outside && blocked[cell]))
                 {
-                    decor[cell] = NoTile;
-                    blocked[cell] = false;
+                    Unblock(cell);
                 }
 
                 continue;
@@ -350,6 +408,36 @@ internal sealed partial class MapBuild
                 }
             }
         }
+    }
+
+    /// <summary>Opens a generated cell: its decoration goes, and a blocking layer there gives way to the biome's floor.</summary>
+    private void Unblock(int cell)
+    {
+        decor[cell] = NoTile;
+        blocked[cell] = false;
+        if (LayerBlocks(cell))
+        {
+            var floor = biomes[template.Areas[areaOf[cell]].BiomeId].Floor;
+            layer[cell] = null;
+            ground[cell] = floor[cell % floor.Count];
+        }
+    }
+
+    private bool LayerBlocks(int cell) =>
+        layer[cell] is { } id && biomes[template.Areas[areaOf[cell]].BiomeId].Layers.Any(terrain => terrain.Id == id && terrain.Blocking);
+
+    /// <summary>How far <paramref name="cell"/> lies from <paramref name="edge"/> of <paramref name="rect"/>: 0 on it, 1 on the opposite side.</summary>
+    private double Depth(int cell, GridRect rect, Edge edge)
+    {
+        var x = (cell % width) - rect.X;
+        var y = (cell / width) - rect.Y;
+        return edge switch
+        {
+            Edge.North => y / (double)Math.Max(1, rect.Height - 1),
+            Edge.South => 1 - (y / (double)Math.Max(1, rect.Height - 1)),
+            Edge.West => x / (double)Math.Max(1, rect.Width - 1),
+            _ => 1 - (x / (double)Math.Max(1, rect.Width - 1)),
+        };
     }
 
     /// <summary>Value noise: random values on a lattice <paramref name="scale"/> tiles apart, smoothly interpolated, plus a finer octave.</summary>

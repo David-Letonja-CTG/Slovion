@@ -1,0 +1,768 @@
+{
+  "compressionlevel": -1,
+  "height": 20,
+  "infinite": false,
+  "layers": [
+    {
+      "data": [
+        38, 38, 38, 38, 38, 38, 38, 38, 24, 36, 36, 24, 36, 23, 24, 24, 24, 36, 36, 36, 24, 24, 36,
+        23, 24, 36, 38, 38, 38, 38, 38, 38, 35, 35, 35, 35, 35, 35, 35, 34, 34, 34, 36, 36, 35, 35,
+        35, 35, 35, 34, 24, 36, 38, 38, 38, 38, 35, 35, 35, 35, 35, 35, 35, 35, 34, 34, 34, 34, 38,
+        38, 38, 38, 35, 35, 35, 35, 34, 23, 38, 38, 35, 35, 35, 34, 34, 34, 34, 34, 34, 34, 34, 34,
+        34, 34, 38, 38, 38, 38, 35, 35, 35, 35, 35, 36, 38, 35, 35, 34, 34, 34, 34, 24, 34, 34, 34,
+        34, 34, 34, 34, 34, 34, 38, 34, 36, 35, 35, 35, 35, 35, 24, 38, 35, 34, 34, 34, 36, 23, 23,
+        34, 34, 34, 34, 34, 34, 34, 34, 34, 24, 34, 24, 23, 24, 36, 34, 34, 36, 38, 34, 34, 24, 23,
+        24, 24, 23, 34, 34, 34, 34, 34, 34, 34, 36, 36, 23, 24, 24, 24, 36, 23, 23, 24, 36, 38, 34,
+        24, 23, 24, 23, 36, 36, 34, 34, 34, 34, 23, 23, 23, 23, 24, 108, 36, 23, 24, 23, 23, 23, 24,
+        36, 38, 24, 24, 23, 23, 23, 23, 23, 34, 34, 34, 24, 24, 24, 36, 35, 23, 107, 24, 36, 24, 24,
+        23, 36, 36, 24, 38, 110, 102, 102, 102, 102, 102, 102, 100, 34, 23, 23, 24, 24, 36, 24, 106,
+        103, 24, 23, 23, 23, 24, 23, 36, 23, 38, 36, 23, 23, 24, 36, 24, 24, 109, 102, 102, 102,
+        102, 100, 36, 24, 107, 23, 24, 24, 24, 23, 24, 36, 24, 23, 38, 23, 36, 24, 23, 23, 23, 36,
+        23, 23, 36, 24, 23, 109, 102, 102, 103, 23, 23, 34, 34, 34, 24, 24, 23, 23, 38, 24, 36, 24,
+        36, 24, 23, 36, 23, 24, 24, 24, 24, 24, 23, 36, 24, 23, 24, 34, 34, 34, 24, 23, 24, 24, 38,
+        36, 24, 36, 24, 36, 36, 23, 24, 23, 24, 24, 23, 24, 23, 36, 24, 23, 24, 34, 34, 34, 23, 24,
+        36, 23, 38, 23, 24, 24, 36, 24, 36, 23, 23, 23, 36, 23, 24, 23, 24, 23, 23, 23, 24, 24, 23,
+        23, 24, 24, 24, 24, 38, 34, 23, 36, 24, 36, 24, 24, 24, 36, 36, 24, 23, 36, 36, 23, 24, 36,
+        24, 23, 23, 24, 36, 24, 24, 24, 38, 34, 34, 36, 23, 23, 36, 24, 24, 36, 23, 24, 23, 24, 23,
+        24, 36, 24, 36, 24, 23, 24, 23, 24, 23, 23, 38, 34, 34, 34, 36, 24, 24, 36, 36, 24, 24, 24,
+        36, 23, 36, 23, 36, 23, 24, 24, 36, 23, 24, 23, 23, 24, 38, 34, 34, 34, 34, 34, 23, 23, 36,
+        24, 36, 24, 36, 23, 23, 23, 36, 23, 36, 24, 24, 23, 36, 24, 24, 23, 38, 38, 38, 38, 38, 38,
+        38, 38, 36, 23, 24, 23, 24, 23, 23, 36, 23, 23, 24, 24, 24, 24, 24, 23, 24, 23
+      ],
+      "height": 20,
+      "id": 1,
+      "name": "ground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        0, 0, 0, 0, 0, 0, 0, 0, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38,
+        38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 46,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 37, 0, 33, 0, 38, 0, 0, 0, 0, 0, 0, 0, 37, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 37, 0, 37, 38, 0, 0, 0, 0, 37, 0, 0, 0, 0, 0, 33, 0, 37, 33, 33, 0, 0, 0, 0, 0,
+        0, 33, 0, 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37, 33, 0, 37,
+        0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 38,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 37, 0, 38, 0, 0, 0,
+        37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 38, 0, 0, 0, 0, 0, 33,
+        0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0, 37, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 45, 0, 0, 37, 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 33, 33,
+        0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37, 0, 37, 0, 0,
+        38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0,
+        0, 0, 0, 0, 0, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38
+      ],
+      "height": 20,
+      "id": 2,
+      "name": "decor",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0,
+        0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 5, 0,
+        5, 5, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 5, 5, 5, 0, 0, 0,
+        5, 0, 0, 0, 0, 0, 5, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 5, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0,
+        0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 5, 0, 5, 0, 5, 5, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0,
+        0, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 5, 5, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0,
+        0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 5,
+        0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      ],
+      "height": 20,
+      "id": 3,
+      "name": "collision",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": false,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 4,
+      "name": "objects",
+      "objects": [
+        {
+          "height": 0,
+          "id": 1,
+          "name": "spawn",
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ],
+          "rotation": 0,
+          "type": "spawn",
+          "visible": true,
+          "width": 0,
+          "x": 24,
+          "y": 152
+        },
+        {
+          "gid": 31,
+          "height": 16,
+          "id": 2,
+          "name": "signpost",
+          "rotation": 0,
+          "type": "signpost",
+          "visible": true,
+          "width": 16,
+          "x": 32,
+          "y": 144
+        },
+        {
+          "gid": 20,
+          "height": 16,
+          "id": 11,
+          "name": "luka",
+          "properties": [
+            {
+              "name": "npcId",
+              "type": "string",
+              "value": "luka"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 16,
+          "x": 48,
+          "y": 176
+        },
+        {
+          "gid": 57,
+          "height": 16,
+          "id": 13,
+          "name": "mountain_station",
+          "properties": [
+            {
+              "name": "stationId",
+              "type": "string",
+              "value": "mountain_station"
+            }
+          ],
+          "rotation": 0,
+          "type": "station",
+          "visible": true,
+          "width": 16,
+          "x": 96,
+          "y": 144
+        },
+        {
+          "id": 14,
+          "name": "strip_4_5_4_3",
+          "type": "habitat",
+          "x": 64,
+          "y": 80,
+          "width": 64,
+          "height": 48,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "name": "strip_1_11_7_7",
+          "type": "habitat",
+          "x": 16,
+          "y": 176,
+          "width": 112,
+          "height": 112,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "name": "area_triglav_slopes_0_0_8_20",
+          "type": "area",
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 320,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "triglav_slopes"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "name": "triglav_alps_rupicapra_rupicapra_1",
+          "type": "spot",
+          "point": true,
+          "x": 216,
+          "y": 72,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "rupicapra_rupicapra"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "triglav_alps_rupicapra_rupicapra_1"
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "name": "triglav_alps_leontopodium_nivale_1",
+          "type": "spot",
+          "point": true,
+          "x": 328,
+          "y": 232,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "leontopodium_nivale"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "triglav_alps_leontopodium_nivale_1"
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "triglav_alps_potentilla_nitida_1",
+          "type": "spot",
+          "point": true,
+          "x": 168,
+          "y": 72,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "potentilla_nitida"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "triglav_alps_potentilla_nitida_1"
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "triglav_alps_marmota_marmota_1",
+          "type": "spot",
+          "point": true,
+          "x": 248,
+          "y": 216,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "marmota_marmota"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "triglav_alps_marmota_marmota_1"
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "triglav_alps_salamandra_atra_1",
+          "type": "spot",
+          "point": true,
+          "x": 264,
+          "y": 264,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "salamandra_atra"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "triglav_alps_salamandra_atra_1"
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "generated_habitat_22",
+          "type": "habitat",
+          "x": 208,
+          "y": 16,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "generated_habitat_23",
+          "type": "habitat",
+          "x": 368,
+          "y": 16,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "generated_habitat_24",
+          "type": "habitat",
+          "x": 192,
+          "y": 32,
+          "width": 64,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 25,
+          "name": "generated_habitat_25",
+          "type": "habitat",
+          "x": 384,
+          "y": 32,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "generated_habitat_26",
+          "type": "habitat",
+          "x": 128,
+          "y": 48,
+          "width": 128,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "name": "generated_habitat_27",
+          "type": "habitat",
+          "x": 128,
+          "y": 64,
+          "width": 144,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "generated_habitat_28",
+          "type": "habitat",
+          "x": 288,
+          "y": 64,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "generated_habitat_29",
+          "type": "habitat",
+          "x": 128,
+          "y": 80,
+          "width": 272,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "generated_habitat_30",
+          "type": "habitat",
+          "x": 128,
+          "y": 112,
+          "width": 144,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 31,
+          "name": "generated_habitat_31",
+          "type": "habitat",
+          "x": 128,
+          "y": 128,
+          "width": 112,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 32,
+          "name": "generated_habitat_32",
+          "type": "habitat",
+          "x": 256,
+          "y": 128,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 33,
+          "name": "generated_habitat_33",
+          "type": "habitat",
+          "x": 144,
+          "y": 144,
+          "width": 112,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 34,
+          "name": "generated_habitat_34",
+          "type": "habitat",
+          "x": 288,
+          "y": 112,
+          "width": 112,
+          "height": 48,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 35,
+          "name": "generated_habitat_35",
+          "type": "habitat",
+          "x": 224,
+          "y": 160,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 36,
+          "name": "generated_habitat_36",
+          "type": "habitat",
+          "x": 128,
+          "y": 176,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 37,
+          "name": "generated_habitat_37",
+          "type": "habitat",
+          "x": 272,
+          "y": 160,
+          "width": 128,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 38,
+          "name": "generated_habitat_38",
+          "type": "habitat",
+          "x": 128,
+          "y": 192,
+          "width": 272,
+          "height": 112,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "alpine_grassland"
+            }
+          ]
+        },
+        {
+          "id": 39,
+          "name": "generated_area_39",
+          "type": "area",
+          "x": 128,
+          "y": 0,
+          "width": 288,
+          "height": 320,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "triglav_slopes"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "nextlayerid": 5,
+  "nextobjectid": 40,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.11.2",
+  "tileheight": 16,
+  "tilesets": [
+    {
+      "columns": 8,
+      "firstgid": 1,
+      "image": "/content/tilesets/meadow.png",
+      "imageheight": 304,
+      "imagewidth": 128,
+      "margin": 0,
+      "name": "meadow",
+      "spacing": 0,
+      "tilecount": 152,
+      "tileheight": 16,
+      "tilewidth": 16,
+      "tiles": [
+        {
+          "id": 46,
+          "animation": [
+            {
+              "tileid": 46,
+              "duration": 600
+            },
+            {
+              "tileid": 47,
+              "duration": 600
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "animation": [
+            {
+              "tileid": 48,
+              "duration": 600
+            },
+            {
+              "tileid": 49,
+              "duration": 600
+            }
+          ]
+        },
+        {
+          "id": 116,
+          "animation": [
+            {
+              "tileid": 116,
+              "duration": 800
+            },
+            {
+              "tileid": 117,
+              "duration": 800
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilewidth": 16,
+  "type": "map",
+  "version": "1.10",
+  "width": 26
+}

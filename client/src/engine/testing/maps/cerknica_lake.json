@@ -1,0 +1,626 @@
+{
+  "compressionlevel": -1,
+  "height": 20,
+  "infinite": false,
+  "layers": [
+    {
+      "data": [
+        16, 25, 16, 15, 15, 15, 15, 25, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52,
+        52, 52, 52, 25, 52, 52, 52, 52, 52, 52, 52, 13, 14, 1, 13, 1, 2, 14, 1, 1, 1, 13, 52, 52,
+        52, 52, 1, 2, 52, 25, 52, 52, 52, 52, 52, 52, 52, 14, 13, 2, 2, 1, 2, 14, 13, 2, 14, 2, 52,
+        52, 52, 52, 2, 13, 52, 15, 52, 52, 52, 52, 52, 52, 52, 52, 14, 14, 2, 13, 2, 2, 52, 52, 1,
+        14, 2, 52, 52, 52, 52, 52, 52, 15, 52, 52, 52, 52, 52, 52, 52, 52, 52, 13, 14, 13, 1, 52,
+        52, 52, 13, 14, 14, 52, 52, 52, 52, 52, 52, 16, 52, 52, 52, 52, 52, 52, 52, 52, 52, 13, 1,
+        2, 52, 52, 52, 14, 14, 76, 14, 14, 52, 52, 52, 52, 52, 16, 52, 52, 52, 52, 52, 52, 52, 74,
+        70, 70, 70, 70, 70, 70, 70, 70, 70, 71, 13, 1, 52, 52, 52, 52, 52, 25, 52, 52, 52, 52, 52,
+        52, 52, 75, 52, 52, 52, 52, 52, 52, 2, 14, 13, 14, 14, 13, 14, 1, 13, 1, 52, 15, 1, 2, 13,
+        14, 1, 2, 13, 75, 1, 52, 52, 52, 52, 52, 13, 14, 2, 13, 13, 13, 1, 13, 14, 1, 52, 16, 78,
+        70, 70, 70, 70, 70, 70, 71, 14, 52, 52, 52, 52, 52, 13, 2, 1, 13, 14, 1, 52, 52, 52, 52, 52,
+        16, 2, 13, 14, 1, 2, 13, 14, 1, 2, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52,
+        52, 52, 15, 56, 56, 56, 56, 56, 56, 56, 1, 14, 52, 52, 52, 52, 52, 52, 52, 52, 51, 52, 52,
+        52, 52, 52, 52, 52, 25, 51, 51, 51, 51, 51, 56, 51, 2, 14, 52, 52, 52, 52, 52, 52, 52, 51,
+        51, 52, 52, 52, 52, 52, 52, 52, 16, 51, 51, 51, 51, 51, 56, 51, 52, 52, 52, 52, 52, 56, 56,
+        56, 51, 51, 52, 52, 52, 52, 52, 52, 52, 52, 49, 47, 47, 47, 47, 47, 47, 47, 52, 52, 56, 56,
+        56, 47, 47, 47, 47, 56, 56, 56, 56, 52, 52, 52, 56, 52, 49, 47, 47, 47, 47, 47, 47, 47, 56,
+        56, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 56, 56, 56, 47, 49, 49, 47, 47, 47, 47, 47,
+        47, 47, 47, 47, 47, 47, 47, 49, 49, 49, 49, 47, 47, 47, 47, 47, 47, 47, 47, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 47, 47, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 47, 47, 47, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49
+      ],
+      "height": 20,
+      "id": 1,
+      "name": "ground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+        32, 32, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32,
+        32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 32, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 32, 0, 0, 0, 0, 0, 0, 0,
+        0, 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 32,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 32, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 32, 32, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 53, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 55, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "height": 20,
+      "id": 2,
+      "name": "decor",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 5, 0, 0, 0,
+        0, 5, 5, 5, 5, 5, 5, 5, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5,
+        5, 5, 5, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      ],
+      "height": 20,
+      "id": 3,
+      "name": "collision",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": false,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 4,
+      "name": "objects",
+      "objects": [
+        {
+          "height": 0,
+          "id": 1,
+          "name": "spawn",
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ],
+          "rotation": 0,
+          "type": "spawn",
+          "visible": true,
+          "width": 0,
+          "x": 24,
+          "y": 152
+        },
+        {
+          "gid": 31,
+          "height": 16,
+          "id": 2,
+          "name": "signpost",
+          "rotation": 0,
+          "type": "signpost",
+          "visible": true,
+          "width": 16,
+          "x": 32,
+          "y": 144
+        },
+        {
+          "gid": 20,
+          "height": 16,
+          "id": 3,
+          "name": "neza",
+          "properties": [
+            {
+              "name": "npcId",
+              "type": "string",
+              "value": "neza"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 16,
+          "x": 48,
+          "y": 176
+        },
+        {
+          "gid": 57,
+          "height": 16,
+          "id": 14,
+          "name": "bird_station",
+          "properties": [
+            {
+              "name": "stationId",
+              "type": "string",
+              "value": "bird_station"
+            }
+          ],
+          "rotation": 0,
+          "type": "station",
+          "visible": true,
+          "width": 16,
+          "x": 96,
+          "y": 144
+        },
+        {
+          "id": 15,
+          "name": "strip_1_1_7_7",
+          "type": "habitat",
+          "x": 16,
+          "y": 16,
+          "width": 112,
+          "height": 112,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "name": "strip_1_11_7_6",
+          "type": "habitat",
+          "x": 16,
+          "y": 176,
+          "width": 112,
+          "height": 96,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "name": "area_cerknica_lake_0_0_8_20",
+          "type": "area",
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 320,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "cerknica_lake"
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "name": "cerknica_lake_ardea_cinerea_1",
+          "type": "spot",
+          "point": true,
+          "x": 184,
+          "y": 232,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "ardea_cinerea"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "cerknica_lake_ardea_cinerea_1"
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "cerknica_lake_hyla_arborea_1",
+          "type": "spot",
+          "point": true,
+          "x": 248,
+          "y": 200,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "hyla_arborea"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "cerknica_lake_hyla_arborea_1"
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "cerknica_lake_crex_crex_1",
+          "type": "spot",
+          "point": true,
+          "x": 376,
+          "y": 168,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "crex_crex"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "cerknica_lake_crex_crex_1"
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "cerknica_lake_calopteryx_splendens_1",
+          "type": "spot",
+          "point": true,
+          "x": 264,
+          "y": 248,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "calopteryx_splendens"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "cerknica_lake_calopteryx_splendens_1"
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "cerknica_lake_iris_pseudacorus_1",
+          "type": "spot",
+          "point": true,
+          "x": 392,
+          "y": 216,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "iris_pseudacorus"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "cerknica_lake_iris_pseudacorus_1"
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "cerknica_lake_iris_sibirica_1",
+          "type": "spot",
+          "point": true,
+          "x": 152,
+          "y": 72,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "iris_sibirica"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "cerknica_lake_iris_sibirica_1"
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "cerknica_lake_nymphaea_alba_1",
+          "type": "spot",
+          "point": true,
+          "x": 376,
+          "y": 280,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "nymphaea_alba"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "cerknica_lake_nymphaea_alba_1"
+            }
+          ]
+        },
+        {
+          "id": 25,
+          "name": "generated_habitat_25",
+          "type": "habitat",
+          "x": 128,
+          "y": 16,
+          "width": 272,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "generated_habitat_26",
+          "type": "habitat",
+          "x": 128,
+          "y": 80,
+          "width": 160,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "name": "generated_habitat_27",
+          "type": "habitat",
+          "x": 304,
+          "y": 80,
+          "width": 96,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "generated_habitat_28",
+          "type": "habitat",
+          "x": 144,
+          "y": 112,
+          "width": 256,
+          "height": 48,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "generated_habitat_29",
+          "type": "habitat",
+          "x": 128,
+          "y": 160,
+          "width": 272,
+          "height": 144,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "wetland"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "generated_area_30",
+          "type": "area",
+          "x": 128,
+          "y": 0,
+          "width": 288,
+          "height": 320,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "cerknica_lake"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "nextlayerid": 5,
+  "nextobjectid": 31,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.11.0",
+  "tileheight": 16,
+  "tilesets": [
+    {
+      "columns": 8,
+      "firstgid": 1,
+      "image": "/content/tilesets/meadow.png",
+      "imageheight": 304,
+      "imagewidth": 128,
+      "margin": 0,
+      "name": "meadow",
+      "spacing": 0,
+      "tilecount": 152,
+      "tileheight": 16,
+      "tilewidth": 16,
+      "tiles": [
+        {
+          "id": 26,
+          "animation": [
+            {
+              "tileid": 26,
+              "duration": 900
+            },
+            {
+              "tileid": 28,
+              "duration": 900
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "animation": [
+            {
+              "tileid": 27,
+              "duration": 1100
+            },
+            {
+              "tileid": 29,
+              "duration": 1100
+            }
+          ]
+        },
+        {
+          "id": 46,
+          "animation": [
+            {
+              "tileid": 46,
+              "duration": 600
+            },
+            {
+              "tileid": 47,
+              "duration": 600
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "animation": [
+            {
+              "tileid": 48,
+              "duration": 600
+            },
+            {
+              "tileid": 49,
+              "duration": 600
+            }
+          ]
+        },
+        {
+          "id": 116,
+          "animation": [
+            {
+              "tileid": 116,
+              "duration": 800
+            },
+            {
+              "tileid": 117,
+              "duration": 800
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilewidth": 16,
+  "type": "map",
+  "version": "1.10",
+  "width": 26
+}

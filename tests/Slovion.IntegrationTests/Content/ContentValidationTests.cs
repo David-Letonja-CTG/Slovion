@@ -98,7 +98,7 @@ public sealed class ContentValidationTests
     [Theory]
     [InlineData("ursus_arctos", "rjavi medved", "kocevje_forest", "kocevje_forest_ursus_arctos_1", "fir_beech_forest", TorchReaction.Shy)]
     [InlineData("canis_lupus", "volk", "pohorje_forest", "pohorje_forest_canis_lupus_1", "mountain_forest", TorchReaction.Shy)]
-    [InlineData("rupicapra_rupicapra", "gams", "triglav_alps", "triglav_chamois_1", "alpine_grassland", TorchReaction.Calm)]
+    [InlineData("rupicapra_rupicapra", "gams", "triglav_alps", "triglav_alps_rupicapra_rupicapra_1", "alpine_grassland", TorchReaction.Calm)]
     public void Repository_content_has_the_signature_species_of_the_regions(string id, string slName, string mapId, string spotId, string habitatId, TorchReaction torch)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -144,7 +144,7 @@ public sealed class ContentValidationTests
 
     [Theory]
     [InlineData("salamandra_salamandra", "navadni močerad", "kocevje_forest", "kocevje_forest_salamandra_salamandra_1", "fir_beech_forest")]
-    [InlineData("salamandra_atra", "planinski močerad", "triglav_alps", "triglav_salamander_1", "alpine_grassland")]
+    [InlineData("salamandra_atra", "planinski močerad", "triglav_alps", "triglav_alps_salamandra_atra_1", "alpine_grassland")]
     public void Repository_content_has_the_salamanders(string id, string slName, string mapId, string spotId, string habitatId)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -237,8 +237,8 @@ public sealed class ContentValidationTests
     [Theory]
     [InlineData("kocevje_forest", "fir_beech_forest", new[] { "kocevje_forest_allium_ursinum_1", "kocevje_forest_galium_odoratum_1", "kocevje_forest_cervus_elaphus_1" })]
     [InlineData("pohorje_forest", "mountain_forest", new[] { "pohorje_forest_drosera_rotundifolia_1", "pohorje_forest_vaccinium_myrtillus_1", "pohorje_forest_sciurus_vulgaris_1" })]
-    [InlineData("triglav_alps", "alpine_grassland", new[] { "triglav_edelweiss_1", "triglav_rose_1", "triglav_marmot_1" })]
-    [InlineData("cerknica_lake", "wetland", new[] { "cerknica_heron_1", "cerknica_corncrake_1", "cerknica_frog_1", "cerknica_demoiselle_1", "cerknica_yellow_iris_1", "cerknica_siberian_iris_1", "cerknica_water_lily_1" })]
+    [InlineData("triglav_alps", "alpine_grassland", new[] { "triglav_alps_leontopodium_nivale_1", "triglav_alps_potentilla_nitida_1", "triglav_alps_marmota_marmota_1" })]
+    [InlineData("cerknica_lake", "wetland", new[] { "cerknica_lake_ardea_cinerea_1", "cerknica_lake_crex_crex_1", "cerknica_lake_hyla_arborea_1", "cerknica_lake_calopteryx_splendens_1", "cerknica_lake_iris_pseudacorus_1", "cerknica_lake_iris_sibirica_1", "cerknica_lake_nymphaea_alba_1" })]
     public void Region_maps_have_habitat_zones_and_spots(string mapId, string habitatId, string[] spotIds)
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
@@ -258,7 +258,7 @@ public sealed class ContentValidationTests
 
         Assert.Equal(new WildlifeTraits(TorchReaction.Shy, Aquatic: true), catalog.FindSpecies(SpeciesId.Parse("proteus_anguinus"))!.Wildlife);
         Assert.False(catalog.FindSpecies(SpeciesId.Parse("leptodirus_hochenwartii"))!.Wildlife!.Aquatic);
-        Assert.Equal(SpeciesId.Parse("proteus_anguinus"), SpotOn(catalog, "rakov_skocjan_karst", "karst_olm_1")?.SpeciesId);
+        Assert.Equal(SpeciesId.Parse("proteus_anguinus"), SpotOn(catalog, "rakov_skocjan_karst", "rakov_skocjan_karst_proteus_anguinus_1")?.SpeciesId);
         // The karst zones lie in the gorge only; nothing is searched in the cave.
         Assert.Equal("karst", HabitatAt(catalog, "rakov_skocjan_karst", 5, 3)?.Id);
         Assert.Null(HabitatAt(catalog, "rakov_skocjan_karst", 21, 8));
@@ -322,9 +322,9 @@ public sealed class ContentValidationTests
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
 
-        var spot = SpotOn(catalog, "cerknica_lake", "cerknica_corncrake_1");
+        var spot = SpotOn(catalog, "cerknica_lake", "cerknica_lake_crex_crex_1");
         Assert.Equal(SpeciesId.Parse("crex_crex"), spot?.SpeciesId);
-        Assert.Equal("wetland", HabitatAt(catalog, "cerknica_lake", 14, 5)?.Id);
+        Assert.Equal("wetland", HabitatAt(catalog, "cerknica_lake", 5, 5)?.Id);
         Assert.Equal("wetland", HabitatAt(catalog, "cerknica_lake", 5, 12)?.Id);
     }
 
@@ -548,6 +548,24 @@ public sealed class ContentValidationTests
         var error = Assert.Throws<ContentValidationException>(() => FileContentCatalog.Load(content.Write()));
 
         Assert.Contains(error.Errors, message => message.Contains(expectedError, StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("""{ "id": "test_peaks", "floor": [0], "layers": [{ "id": "snow", "coverage": 0.2, "scale": 3, "smooth": 1, "bias": "up" }] }""", "layer 'snow' needs")]
+    [InlineData("""{ "id": "test_peaks", "floor": [0], "layers": [{ "id": "snow", "coverage": 0.2, "scale": 3, "smooth": 1, "bias": "north", "biasStrength": 2 }] }""", "layer 'snow' needs")]
+    [InlineData("""{ "id": "test_lake", "floor": [0], "water": { "kind": "shore", "edge": "up", "chance": 1, "size": 2, "tiles": [0] } }""", "'water' needs")]
+    [InlineData("""{ "id": "test_lake", "floor": [0], "water": { "kind": "shore", "chance": 1, "size": 2, "tiles": [0], "shallowWidth": 2 } }""", "'water' needs")]
+    [InlineData("""{ "id": "test_lake", "floor": [0], "water": { "kind": "sea", "chance": 1, "size": 2, "tiles": [0] } }""", "'water' needs")]
+    public void Broken_biome_rules_are_rejected(string biome, string expectedError)
+    {
+        using var content = new ContentFolder();
+        var folder = content.Write();
+        Directory.CreateDirectory(Path.Combine(folder, "biomes"));
+        File.WriteAllText(Path.Combine(folder, "biomes", "broken.json"), biome);
+
+        var error = Assert.Throws<ContentValidationException>(() => FileContentCatalog.Load(folder));
+
+        Assert.Contains(error.Errors, message => message.StartsWith("biomes/broken.json", StringComparison.Ordinal) && message.Contains(expectedError, StringComparison.Ordinal));
     }
 
     [Fact]

@@ -104,21 +104,23 @@ public sealed partial class FileContentCatalog
             errors.Add($"{name}: invalid biome ID '{file.Id}' (expected lowercase snake_case).");
         }
 
-        if (file.Floor is not { Count: > 0 } || file.PathSet is null)
+        if (file.Floor is not { Count: > 0 })
         {
-            errors.Add($"{name}: 'floor' tiles and a 'pathSet' are required.");
+            errors.Add($"{name}: 'floor' tiles are required.");
         }
 
         var layers = new List<TerrainLayer>();
         foreach (var layer in file.Layers ?? [])
         {
-            if (layer.Id is null || layer.Coverage is < 0 or > 1 || layer.Scale < 1 || layer.Smooth < 0)
+            var bias = layer.Bias is null ? null : ParseEdge(layer.Bias);
+            if (layer.Id is null || layer.Coverage is < 0 or > 1 || layer.Scale < 1 || layer.Smooth < 0
+                || (layer.Bias is not null && bias is null) || layer.BiasStrength is < 0 or > 1)
             {
-                errors.Add($"{name}: layer '{layer.Id}' needs an ID, a coverage from 0 to 1, a scale of at least 1 and smoothing of 0 or more.");
+                errors.Add($"{name}: layer '{layer.Id}' needs an ID, a coverage from 0 to 1, a scale of at least 1, smoothing of 0 or more, and optionally a bias edge (north, east, south or west) with a strength from 0 to 1.");
                 continue;
             }
 
-            layers.Add(new TerrainLayer(layer.Id, layer.Coverage, layer.Scale, layer.Smooth, layer.Floor));
+            layers.Add(new TerrainLayer(layer.Id, layer.Coverage, layer.Scale, layer.Smooth, layer.Floor, layer.Blocking, bias, layer.BiasStrength));
         }
 
         var layerIds = layers.Select(layer => layer.Id).ToHashSet(StringComparer.Ordinal);
@@ -142,26 +144,28 @@ public sealed partial class FileContentCatalog
         if (file.Openings is { } open)
         {
             if (open.Count is not [var minCount, var maxCount] || open.Radius is not [var minRadius, var maxRadius]
-                || minCount < 0 || maxCount < minCount || minRadius < 1 || maxRadius < minRadius || open.Floor is not { Count: > 0 } || open.PathSet is null)
+                || minCount < 0 || maxCount < minCount || minRadius < 1 || maxRadius < minRadius || open.Floor is not { Count: > 0 })
             {
-                errors.Add($"{name}: 'openings' needs 'count' and 'radius' ranges ([min, max]), 'floor' tiles and a 'pathSet'.");
+                errors.Add($"{name}: 'openings' needs 'count' and 'radius' ranges ([min, max]) and 'floor' tiles.");
             }
             else
             {
-                openings = new Openings(minCount, maxCount, minRadius, maxRadius, open.Floor, open.PathSet.Value);
+                openings = new Openings(minCount, maxCount, minRadius, maxRadius, open.Floor, open.PathSet);
             }
         }
 
         Water? water = null;
         if (file.Water is { } spec)
         {
-            if (!Enum.TryParse<WaterKind>(spec.Kind, ignoreCase: true, out var kind) || spec.Chance is < 0 or > 1 || spec.Size < 1 || spec.Tiles is not { Count: > 0 })
+            var edge = spec.Edge is null ? Edge.South : ParseEdge(spec.Edge);
+            if (!Enum.TryParse<WaterKind>(spec.Kind, ignoreCase: true, out var kind) || !Enum.IsDefined(kind) || spec.Chance is < 0 or > 1 || spec.Size < 1
+                || spec.Tiles is not { Count: > 0 } || edge is null || spec.ShallowWidth < 0 || (spec.ShallowWidth > 0 && spec.Shallow is not { Count: > 0 }))
             {
-                errors.Add($"{name}: 'water' needs a kind (stream or pond), a chance from 0 to 1, a size of at least 1 and tiles.");
+                errors.Add($"{name}: 'water' needs a kind (stream, pond or shore), a chance from 0 to 1, a size of at least 1 and tiles; a shore names its edge, and shallows need tiles.");
             }
             else
             {
-                water = new Water(kind, spec.Chance, spec.Size, spec.Tiles, spec.Bank);
+                water = new Water(kind, spec.Chance, spec.Size, spec.Tiles, spec.Bank, edge.Value, spec.Shallow, spec.ShallowWidth);
             }
         }
 
@@ -197,8 +201,10 @@ public sealed partial class FileContentCatalog
 
         return errors.Count > errorCount
             ? null
-            : new Biome(file.Id!, file.Floor!, file.PathSet!.Value, file.Border ?? [], layers, openings, water, decor, zones);
+            : new Biome(file.Id!, file.Floor!, file.PathSet, file.Border ?? [], layers, openings, water, decor, zones);
     }
+
+    private static Edge? ParseEdge(string text) => Enum.TryParse<Edge>(text, ignoreCase: true, out var edge) && Enum.IsDefined(edge) ? edge : null;
 
     /// <summary>The template of a map with <c>generated</c> rectangles, or <c>null</c> for an authored map.</summary>
     private static MapTemplate? BuildTemplate(TiledMapFile map, string mapId, string name, WorldContent world, List<string> errors)
@@ -297,9 +303,11 @@ public sealed partial class FileContentCatalog
         }
 
         var pathTiles = world.Biomes.Values
-            .SelectMany(biome => new[] { biome.PathSet }.Concat(biome.Openings is { } openings ? [openings.PathSet] : []))
+            .SelectMany(biome => new[] { biome.PathSet, biome.Openings?.PathSet })
+            .OfType<int>()
             .SelectMany(set => Enumerable.Range(set, 16))
             .ToHashSet();
+        var wadeable = (map.Tilesets?.FirstOrDefault()?.Tiles ?? []).Where(tile => tile.IsFlagged("wadeable")).Select(tile => tile.Id).ToHashSet();
         var blockingObjects = objects.Where(o => o.ObjectClass is "npc" or "signpost" or "station" or "gate" or "lamp").Select(tileAt).ToList();
         return new MapTemplate(
             mapId,
@@ -311,7 +319,8 @@ public sealed partial class FileContentCatalog
             pathTiles,
             pointAt(spawn),
             blockingObjects,
-            areas);
+            areas,
+            wadeable);
     }
 
     private static void ValidateBiomeTiles(Biome biome, int tileCount, string at, List<string> errors)
@@ -319,9 +328,9 @@ public sealed partial class FileContentCatalog
         var tiles = biome.Floor.Concat(biome.Border)
             .Concat(biome.Layers.SelectMany(layer => layer.Floor ?? []))
             .Concat(biome.Openings?.Floor ?? [])
-            .Concat(biome.Water?.Tiles ?? []).Concat(biome.Water?.Bank ?? [])
+            .Concat(biome.Water?.Tiles ?? []).Concat(biome.Water?.Bank ?? []).Concat(biome.Water?.Shallow ?? [])
             .Concat(biome.Decor.SelectMany(rule => rule.Tiles))
-            .Concat([biome.PathSet + 15, (biome.Openings?.PathSet ?? 0) + 15]);
+            .Concat(new[] { biome.PathSet, biome.Openings?.PathSet }.OfType<int>().SelectMany(set => new[] { set, set + 15 }));
         if (tiles.FirstOrDefault(tile => tile < 0 || tile >= tileCount, -1) is var bad and >= 0)
         {
             errors.Add($"{at}: biome '{biome.Id}' uses tile {bad}, outside the tileset ({tileCount} tiles).");
@@ -356,13 +365,14 @@ public sealed partial class FileContentCatalog
         {
             "in" => WaterNeed.In,
             "near" => WaterNeed.Near,
+            "wade" => WaterNeed.Wade,
             null when species.Wildlife?.Aquatic == true => WaterNeed.In,
             null => WaterNeed.None,
             _ => (WaterNeed?)null,
         };
         if (water is null)
         {
-            errors.Add($"{at}: placement 'water' must be 'in' or 'near' (found '{file?.Water}').");
+            errors.Add($"{at}: placement 'water' must be 'in', 'near' or 'wade' (found '{file?.Water}').");
             return null;
         }
 

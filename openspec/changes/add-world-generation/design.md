@@ -138,7 +138,14 @@ Content validation checks that:
   - `autotile:<set>` picks edge and corner tiles from the 4-neighbour mask (the tileset already has path edge sets)
   - water edges use the same mechanism
 - **Eleven biomes:** `meadow`, `hedgerow`, `fir_beech_forest`, `mountain_forest`, `alpine`, `wetland`, `karst`, `cave`, `coast`, `city_park`, `village`.
-- **Zone kinds without a habitat:** a zone kind may have no habitat (the cave's `cave_floor` and `cave_water`). It is used for species placement only, is not searchable, and gets no habitat zone, as the cave has none today.
+- **As built (phase 2):**
+  - a layer may be `blocking` (reeds, cliffs, cave rock; cleanup opens it back to floor where a pocket needs a way) and may have a `bias` edge with a `biasStrength`, which raises its noise towards that edge (snow and scree towards the peaks, reeds towards the lake)
+  - water kinds are `stream`, `pond` and `shore`: a band along one edge whose depth wanders by a tile, `shallowWidth` rows of `shallow` tiles on its land side, reaching the map's edge through the border
+  - a biome without a `pathSet` (the cave) keeps its floor where paths run
+  - placement `water: wade` puts a spot on wadeable water with no reachable land beside it, so only the boots reach it (the water lily, the demoiselle); the template reads wadeable tiles from the tileset
+  - an opening drowned by water is no longer a path target
+  - Rakov Škocjan keeps its authored stone wall with the cave mouth between two generated rectangles (gorge and cave), each with a connector beside the mouth, so no cross-area links are needed
+- **Zone kinds without a habitat:** a zone kind may have no habitat (the cave's `cave_floor` and `cave_pool`, the alpine `snowfield` and `rock`). It is used for species placement only, is not searchable, and gets no habitat zone, as the cave has none today.
 
 ### 5a. Structures and lamps (towns, made things)
 

@@ -111,5 +111,11 @@
       2,
       4
     ]
+  },
+  "placement": {
+    "zones": [
+      "cave_pool"
+    ],
+    "water": "in"
   }
 }

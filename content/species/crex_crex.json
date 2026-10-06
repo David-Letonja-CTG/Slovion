@@ -131,5 +131,10 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "wet_meadow"
+    ]
   }
 }

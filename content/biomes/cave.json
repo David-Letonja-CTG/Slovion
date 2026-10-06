@@ -1,0 +1,13 @@
+{
+  "id": "cave",
+  "floor": [113],
+  "border": [114],
+  "layers": [{ "id": "rock", "coverage": 0.4, "scale": 3, "smooth": 2, "floor": [114], "blocking": true }],
+  "openings": { "count": [1, 2], "radius": [2, 2], "floor": [113] },
+  "water": { "kind": "pond", "chance": 1.0, "size": 2, "tiles": [116] },
+  "decor": [{ "tiles": [32], "blocking": true, "density": 0.03, "where": "floor" }],
+  "zones": [
+    { "kind": "cave_pool", "where": "water" },
+    { "kind": "cave_floor", "where": "any" }
+  ]
+}

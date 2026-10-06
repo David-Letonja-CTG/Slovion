@@ -104,5 +104,12 @@
       1,
       2
     ]
+  },
+  "placement": {
+    "zones": [
+      "lake_shore"
+    ],
+    "water": "near",
+    "tile": 52
   }
 }

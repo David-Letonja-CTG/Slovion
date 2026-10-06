@@ -17,11 +17,11 @@
 
 ## Phase 2 — alpine, wetland, karst
 
-- [ ] 2.1 Biome `alpine` (Triglav): grassland, scree and rocks, dwarf pine; template; placement
-- [ ] 2.2 Biome `wetland` (Cerknica): open water, shallows (`wadeable`), reed bed, mud edge, wet meadow; template; placement
-- [ ] 2.3 Biome `karst` (Rakov Škocjan): limestone, sparse grass, river through the gorge; template; placement
-- [ ] 2.3a Biome `cave`: an underground area entered from the gorge, cave floor and cave water (zone kinds without a habitat), holding exactly the olm (in cave water), the cave beetle and the bat (on the floor); tests
-- [ ] 2.4 Tests and E2E for these regions; PR for phase 2
+- [x] 2.1 Biome `alpine` (Triglav): grassland, scree and rocks, dwarf pine; template; placement
+- [x] 2.2 Biome `wetland` (Cerknica): open water, shallows (`wadeable`), reed bed, mud edge, wet meadow; template; placement
+- [x] 2.3 Biome `karst` (Rakov Škocjan): limestone, sparse grass, river through the gorge; template; placement
+- [x] 2.3a Biome `cave`: an underground area entered from the gorge, cave floor and cave water (zone kinds without a habitat), holding exactly the olm (in cave water), the cave beetle and the bat (on the floor); tests
+- [x] 2.4 Tests and E2E for these regions; PR for phase 2
 
 ## Phase 3 — coast, meadow, towns
 

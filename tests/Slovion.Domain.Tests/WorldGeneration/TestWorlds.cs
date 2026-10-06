@@ -114,6 +114,12 @@ internal static class TestWorlds
         return text.ToString();
     }
 
+    /// <summary>The cells of <paramref name="rect"/> on the test map.</summary>
+    public static IEnumerable<int> Cells(GridRect rect) =>
+        from y in Enumerable.Range(rect.Y, rect.Height)
+        from x in Enumerable.Range(rect.X, rect.Width)
+        select (y * Width) + x;
+
     /// <summary>The tiles the player reaches from the spawn without tools (blocking objects included).</summary>
     public static bool[] Reach(GeneratedMap map, MapTemplate template)
     {

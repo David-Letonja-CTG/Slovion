@@ -1,0 +1,688 @@
+{
+  "compressionlevel": -1,
+  "height": 20,
+  "infinite": false,
+  "layers": [
+    {
+      "data": [
+        113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113,
+        115, 115, 115, 115, 115, 115, 115, 115, 113, 113, 113, 113, 120, 113, 113, 119, 119, 120,
+        47, 47, 120, 120, 120, 120, 120, 113, 115, 115, 114, 114, 114, 114, 114, 114, 113, 113, 119,
+        119, 120, 119, 119, 119, 119, 47, 47, 120, 120, 120, 120, 120, 120, 113, 115, 115, 114, 114,
+        115, 115, 115, 114, 113, 119, 119, 119, 119, 119, 119, 119, 119, 47, 47, 120, 120, 120, 120,
+        120, 120, 113, 115, 115, 114, 115, 115, 115, 114, 114, 113, 119, 119, 119, 119, 119, 119,
+        119, 119, 47, 47, 120, 76, 120, 120, 119, 119, 113, 114, 115, 114, 114, 114, 114, 114, 114,
+        113, 119, 119, 119, 119, 119, 119, 119, 119, 47, 47, 120, 75, 120, 119, 119, 119, 113, 114,
+        114, 114, 114, 114, 114, 114, 114, 113, 120, 120, 120, 120, 120, 120, 119, 119, 47, 47, 120,
+        75, 119, 119, 119, 120, 113, 114, 114, 114, 114, 114, 114, 114, 114, 113, 120, 120, 120,
+        120, 120, 120, 119, 119, 47, 47, 119, 75, 119, 119, 120, 120, 113, 114, 114, 114, 114, 114,
+        115, 114, 114, 113, 120, 120, 120, 120, 120, 120, 120, 120, 47, 47, 119, 75, 119, 120, 120,
+        120, 113, 114, 114, 114, 114, 114, 114, 114, 114, 113, 78, 70, 70, 70, 70, 70, 70, 70, 70,
+        70, 70, 69, 70, 70, 70, 72, 116, 114, 114, 117, 117, 114, 114, 114, 114, 113, 120, 120, 120,
+        120, 120, 120, 120, 120, 47, 47, 119, 38, 38, 120, 120, 120, 113, 114, 117, 117, 117, 117,
+        117, 114, 114, 113, 120, 120, 120, 120, 120, 120, 120, 120, 47, 47, 38, 38, 38, 120, 120,
+        120, 113, 114, 117, 117, 117, 117, 117, 114, 114, 113, 120, 120, 120, 120, 120, 120, 120,
+        120, 47, 47, 38, 38, 120, 120, 120, 120, 113, 114, 114, 117, 117, 117, 114, 114, 114, 113,
+        120, 120, 120, 120, 120, 120, 120, 120, 47, 47, 120, 120, 120, 120, 120, 120, 113, 114, 114,
+        117, 117, 117, 114, 114, 114, 113, 120, 120, 120, 120, 120, 120, 120, 120, 120, 47, 47, 120,
+        120, 120, 120, 120, 113, 114, 114, 114, 114, 114, 115, 115, 114, 113, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 47, 47, 120, 120, 120, 120, 120, 113, 114, 114, 114, 114, 114, 115,
+        115, 114, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113,
+        113, 113, 115, 115, 115, 115, 115, 115, 115, 115, 113, 113, 113, 113, 113, 113, 113, 113,
+        113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 115, 115, 115, 115, 115, 115, 115, 115,
+        113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113,
+        115, 115, 115, 115, 115, 115, 115, 115, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113,
+        113, 113, 113, 113, 113, 113, 113, 113, 115, 115, 115, 115, 115, 115, 115, 115
+      ],
+      "height": 20,
+      "id": 1,
+      "name": "ground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 28, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 121, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 28, 0, 0, 0, 0,
+        0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0,
+        0, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 28, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 122, 0, 0, 0, 0, 0,
+        33, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "height": 20,
+      "id": 2,
+      "name": "decor",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 5, 0, 0, 0, 0, 5,
+        5, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0,
+        0, 0, 5, 5, 5, 0, 5, 5, 5, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 5, 0, 5,
+        0, 0, 0, 0, 0, 5, 5, 0, 0, 5, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0,
+        5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 5, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0,
+        0, 0, 0, 5, 0, 5, 5, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 5, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0,
+        5, 5, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 5, 5, 5, 0, 0, 5, 0,
+        5, 5, 5, 5, 5, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 5, 0, 5, 5, 5, 5, 5,
+        0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 5, 5, 5, 0, 0, 5, 5, 0, 0,
+        0, 0, 0, 0, 5, 0, 5, 5, 0, 0, 0, 5, 0, 0, 5, 0, 0, 5, 5, 5, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 5, 5, 0, 0, 0, 0, 0, 5, 0, 5, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 5, 5,
+        0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      ],
+      "height": 20,
+      "id": 3,
+      "name": "collision",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": false,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 4,
+      "name": "objects",
+      "objects": [
+        {
+          "height": 0,
+          "id": 1,
+          "name": "spawn",
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ],
+          "rotation": 0,
+          "type": "spawn",
+          "visible": true,
+          "width": 0,
+          "x": 24,
+          "y": 152
+        },
+        {
+          "gid": 31,
+          "height": 16,
+          "id": 2,
+          "name": "signpost",
+          "rotation": 0,
+          "type": "signpost",
+          "visible": true,
+          "width": 16,
+          "x": 32,
+          "y": 144
+        },
+        {
+          "gid": 20,
+          "height": 16,
+          "id": 3,
+          "name": "tilen",
+          "properties": [
+            {
+              "name": "npcId",
+              "type": "string",
+              "value": "tilen"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 16,
+          "x": 48,
+          "y": 176
+        },
+        {
+          "gid": 57,
+          "height": 16,
+          "id": 4,
+          "name": "cave_station",
+          "properties": [
+            {
+              "name": "stationId",
+              "type": "string",
+              "value": "cave_station"
+            }
+          ],
+          "rotation": 0,
+          "type": "station",
+          "visible": true,
+          "width": 16,
+          "x": 96,
+          "y": 144
+        },
+        {
+          "id": 14,
+          "name": "strip_1_1_6_5",
+          "type": "habitat",
+          "x": 16,
+          "y": 16,
+          "width": 96,
+          "height": 80,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "karst"
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "name": "strip_1_13_6_3",
+          "type": "habitat",
+          "x": 16,
+          "y": 208,
+          "width": 96,
+          "height": 48,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "karst"
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "name": "area_rakov_skocjan_0_0_7_20",
+          "type": "area",
+          "x": 0,
+          "y": 0,
+          "width": 112,
+          "height": 320,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "rakov_skocjan"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "name": "area_rakov_skocjan_7_0_11_1",
+          "type": "area",
+          "x": 112,
+          "y": 0,
+          "width": 176,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "rakov_skocjan"
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "name": "area_rakov_skocjan_7_16_11_4",
+          "type": "area",
+          "x": 112,
+          "y": 256,
+          "width": 176,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "rakov_skocjan"
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "area_rakov_skocjan_17_1_1_15",
+          "type": "area",
+          "x": 272,
+          "y": 16,
+          "width": 16,
+          "height": 240,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "rakov_skocjan"
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "area_zelske_jame_18_0_8_1",
+          "type": "area",
+          "x": 288,
+          "y": 0,
+          "width": 128,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "zelske_jame"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "area_zelske_jame_18_16_8_4",
+          "type": "area",
+          "x": 288,
+          "y": 256,
+          "width": 128,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "zelske_jame"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "rakov_skocjan_karst_saxifraga_rotundifolia_1",
+          "type": "spot",
+          "point": true,
+          "x": 264,
+          "y": 72,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "saxifraga_rotundifolia"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "rakov_skocjan_karst_saxifraga_rotundifolia_1"
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "rakov_skocjan_karst_chrysosplenium_alternifolium_1",
+          "type": "spot",
+          "point": true,
+          "x": 216,
+          "y": 232,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "chrysosplenium_alternifolium"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "rakov_skocjan_karst_chrysosplenium_alternifolium_1"
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "rakov_skocjan_karst_leptodirus_hochenwartii_1",
+          "type": "spot",
+          "point": true,
+          "x": 392,
+          "y": 104,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "leptodirus_hochenwartii"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "rakov_skocjan_karst_leptodirus_hochenwartii_1"
+            }
+          ]
+        },
+        {
+          "id": 25,
+          "name": "rakov_skocjan_karst_rhinolophus_ferrumequinum_1",
+          "type": "spot",
+          "point": true,
+          "x": 344,
+          "y": 40,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "rhinolophus_ferrumequinum"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "rakov_skocjan_karst_rhinolophus_ferrumequinum_1"
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "rakov_skocjan_karst_proteus_anguinus_1",
+          "type": "spot",
+          "point": true,
+          "x": 328,
+          "y": 216,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "proteus_anguinus"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "rakov_skocjan_karst_proteus_anguinus_1"
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "name": "generated_habitat_27",
+          "type": "habitat",
+          "x": 112,
+          "y": 16,
+          "width": 160,
+          "height": 48,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "karst"
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "generated_habitat_28",
+          "type": "habitat",
+          "x": 112,
+          "y": 64,
+          "width": 80,
+          "height": 80,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "karst"
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "generated_habitat_29",
+          "type": "habitat",
+          "x": 208,
+          "y": 64,
+          "width": 64,
+          "height": 80,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "karst"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "generated_habitat_30",
+          "type": "habitat",
+          "x": 112,
+          "y": 160,
+          "width": 160,
+          "height": 96,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "karst"
+            }
+          ]
+        },
+        {
+          "id": 31,
+          "name": "generated_area_31",
+          "type": "area",
+          "x": 112,
+          "y": 16,
+          "width": 160,
+          "height": 240,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "rakov_skocjan"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": 32,
+          "name": "generated_area_32",
+          "type": "area",
+          "x": 288,
+          "y": 16,
+          "width": 128,
+          "height": 240,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "zelske_jame"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "nextlayerid": 5,
+  "nextobjectid": 33,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.11.0",
+  "tileheight": 16,
+  "tilesets": [
+    {
+      "columns": 8,
+      "firstgid": 1,
+      "image": "/content/tilesets/meadow.png",
+      "imageheight": 304,
+      "imagewidth": 128,
+      "margin": 0,
+      "name": "meadow",
+      "spacing": 0,
+      "tilecount": 152,
+      "tileheight": 16,
+      "tilewidth": 16,
+      "tiles": [
+        {
+          "id": 26,
+          "animation": [
+            {
+              "tileid": 26,
+              "duration": 900
+            },
+            {
+              "tileid": 28,
+              "duration": 900
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "animation": [
+            {
+              "tileid": 27,
+              "duration": 1100
+            },
+            {
+              "tileid": 29,
+              "duration": 1100
+            }
+          ]
+        },
+        {
+          "id": 46,
+          "animation": [
+            {
+              "tileid": 46,
+              "duration": 600
+            },
+            {
+              "tileid": 47,
+              "duration": 600
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "animation": [
+            {
+              "tileid": 48,
+              "duration": 600
+            },
+            {
+              "tileid": 49,
+              "duration": 600
+            }
+          ]
+        },
+        {
+          "id": 116,
+          "animation": [
+            {
+              "tileid": 116,
+              "duration": 800
+            },
+            {
+              "tileid": 117,
+              "duration": 800
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilewidth": 16,
+  "type": "map",
+  "version": "1.10",
+  "width": 26
+}

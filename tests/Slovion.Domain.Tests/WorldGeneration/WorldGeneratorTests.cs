@@ -210,9 +210,4 @@ public class WorldGeneratorTests
         var error = Assert.Throws<InvalidOperationException>(() => WorldGenerator.Generate(template, Biomes, 1));
         Assert.Contains("proteus_anguinus", error.Message, StringComparison.Ordinal);
     }
-
-    private static IEnumerable<int> Cells(GridRect rect) =>
-        from y in Enumerable.Range(rect.Y, rect.Height)
-        from x in Enumerable.Range(rect.X, rect.Width)
-        select (y * Width) + x;
 }

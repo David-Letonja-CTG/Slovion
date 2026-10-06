@@ -4,19 +4,30 @@ namespace Slovion.Domain.WorldGeneration;
 
 /// <summary>
 /// What a biome looks like, as data (design §5): its floor, terrain layers grown from noise, openings, water, paths,
-/// decoration and the habitat zone kinds derived from all of that. Tiles are tileset indices (Tiled GID − 1). The
-/// generator interprets these generic rules only; it knows no biome by name.
+/// decoration and the habitat zone kinds derived from all of that. Tiles are tileset indices (Tiled GID − 1); without a
+/// <c>PathSet</c> paths keep the floor (a cave). The generator interprets these generic rules only; it knows no biome by name.
 /// </summary>
-public sealed record Biome(string Id, IReadOnlyList<int> Floor, int PathSet, IReadOnlyList<int> Border, IReadOnlyList<TerrainLayer> Layers, Openings? Openings, Water? Water, IReadOnlyList<DecorRule> Decor, IReadOnlyList<ZoneRule> Zones);
+public sealed record Biome(string Id, IReadOnlyList<int> Floor, int? PathSet, IReadOnlyList<int> Border, IReadOnlyList<TerrainLayer> Layers, Openings? Openings, Water? Water, IReadOnlyList<DecorRule> Decor, IReadOnlyList<ZoneRule> Zones);
 
 /// <summary>
 /// A terrain grown from smoothed noise: it covers <paramref name="Coverage"/> of the area, in blobs about
-/// <paramref name="Scale"/> tiles across, smoothed <paramref name="Smooth"/> times; optionally with its own floor.
+/// <paramref name="Scale"/> tiles across, smoothed <paramref name="Smooth"/> times; optionally with its own floor,
+/// which may block (reeds, rock). <paramref name="Bias"/> pulls it towards one edge of the area (snow towards the
+/// peaks) by <paramref name="BiasStrength"/> (0–1).
 /// </summary>
-public sealed record TerrainLayer(string Id, double Coverage, int Scale, int Smooth, IReadOnlyList<int>? Floor);
+public sealed record TerrainLayer(string Id, double Coverage, int Scale, int Smooth, IReadOnlyList<int>? Floor, bool Blocking = false, Edge? Bias = null, double BiasStrength = 0);
+
+/// <summary>A side of a generated area.</summary>
+public enum Edge
+{
+    North,
+    East,
+    South,
+    West,
+}
 
 /// <summary>Round open places (clearings, meadows) that paths lead to, with their own floor and path tiles.</summary>
-public sealed record Openings(int MinCount, int MaxCount, int MinRadius, int MaxRadius, IReadOnlyList<int> Floor, int PathSet);
+public sealed record Openings(int MinCount, int MaxCount, int MinRadius, int MaxRadius, IReadOnlyList<int> Floor, int? PathSet);
 
 public enum WaterKind
 {
@@ -25,10 +36,17 @@ public enum WaterKind
 
     /// <summary>A round body of water inside the area.</summary>
     Pond,
+
+    /// <summary>Water along one edge of the area (a lake shore, the sea), with a ragged shoreline and shallows on the land side.</summary>
+    Shore,
 }
 
-/// <summary>Water of the biome: present with <paramref name="Chance"/>, <paramref name="Size"/> wide (stream) or across (pond).</summary>
-public sealed record Water(WaterKind Kind, double Chance, int Size, IReadOnlyList<int> Tiles, IReadOnlyList<int>? Bank);
+/// <summary>
+/// Water of the biome: present with <paramref name="Chance"/>, <paramref name="Size"/> wide (stream), across (pond)
+/// or deep (shore, along <paramref name="Edge"/>); a shore's <paramref name="ShallowWidth"/> rows nearest the land use
+/// <paramref name="Shallow"/> tiles (wadeable or swimmable ones let the boots or the snorkel through).
+/// </summary>
+public sealed record Water(WaterKind Kind, double Chance, int Size, IReadOnlyList<int> Tiles, IReadOnlyList<int>? Bank, Edge Edge = Edge.South, IReadOnlyList<int>? Shallow = null, int ShallowWidth = 0);
 
 /// <summary>Decoration on cells chosen by <paramref name="Where"/>, each with <paramref name="Density"/>; blocking or not.</summary>
 public sealed record DecorRule(IReadOnlyList<int> Tiles, bool Blocking, double Density, CellSelector Where);

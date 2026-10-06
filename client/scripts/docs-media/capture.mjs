@@ -281,7 +281,8 @@ const scenes = {
       region: 'rakov_skocjan',
       clearSky: 'rakov_skocjan_karst',
     });
-    await keys(page, 'ArrowRight', 19);
+    // Generated per save (D13): with the docs' fixed world seed 1, the cave floor beside its pool.
+    await keys(page, 'ArrowRight', 18);
     await page.keyboard.press('KeyL');
     await page.waitForTimeout(1500);
     await canvasShot(page, 'cave.png');
