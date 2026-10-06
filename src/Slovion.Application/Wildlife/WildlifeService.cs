@@ -10,13 +10,13 @@ namespace Slovion.Application.Wildlife;
 public sealed record ResidentView(string SpotId, SpeciesId SpeciesId, TorchReaction Torch, bool Aquatic, bool Perched, bool Present);
 
 /// <summary>Which animals live on a map and which of them are around at the save's in-game time.</summary>
-public sealed class WildlifeService(IContentCatalog content, TimeProvider time)
+public sealed class WildlifeService(IContentCatalog content, IWorldMaps maps, TimeProvider time)
 {
     /// <summary>Every resident of the map, or <c>null</c> when the map is unknown.</summary>
     public IReadOnlyList<ResidentView>? List(SaveSlot save, string mapId)
     {
         ArgumentNullException.ThrowIfNull(save);
-        if (content.SpotsOn(mapId) is not { } spots)
+        if (maps.Find(save, mapId)?.Spots is not { } spots)
         {
             return null;
         }

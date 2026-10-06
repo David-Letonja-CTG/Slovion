@@ -42,8 +42,8 @@ public class WeatherAvailabilityTests
     public async Task A_night_species_also_found_in_rain_comes_out_by_day_only_in_rain(WeatherKind weather, bool found)
     {
         var catalog = CatalogWith(weather);
-        var encounters = new EncounterService(catalog, new InMemoryDiscoveryRepository(), new InMemoryEncounterRepository(), new SeededRandom(1), time);
-        var wildlife = new WildlifeService(catalog, time);
+        var encounters = new EncounterService(catalog, catalog, new InMemoryDiscoveryRepository(), new InMemoryEncounterRepository(), new SeededRandom(1), time);
+        var wildlife = new WildlifeService(catalog, catalog, time);
         time.Advance(TimeSpan.FromSeconds(180)); // 11:00, by day
 
         var result = await encounters.StartAsync(Save, FakeContentCatalog.MapId, "salamandra_salamandra", "sl", Token);

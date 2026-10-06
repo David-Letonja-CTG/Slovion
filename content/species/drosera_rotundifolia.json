@@ -114,5 +114,11 @@
       1,
       2
     ]
+  },
+  "placement": {
+    "zones": [
+      "bog_edge"
+    ],
+    "tile": 42
   }
 }

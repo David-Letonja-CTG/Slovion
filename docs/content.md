@@ -76,6 +76,43 @@ Maps are [Tiled](https://www.mapeditor.org/) JSON: orthogonal, 16 × 16 tiles, w
 
 By convention a region map is 26 × 20 tiles (the larger first meadow is the exception), with the spawn at (1, 9), the signpost at (2, 8), the region's person at (3, 10) and the station at (6, 8), all outside the habitat zones.
 
+### Generated maps (templates)
+
+A region's natural parts are generated per save (docs/decisions.md D13). Its map is then a **template**: everything outside its `generated` rectangles is authored and kept, everything inside is generated.
+
+| Class | Shape | Properties | Meaning |
+|---|---|---|---|
+| `generated` | rectangle | `biome`, `areaId`, optional `underground` (bool), `species` (comma-separated IDs) | filled from the biome; becomes the area; holds one spot of each species |
+| `connector` | point | — | on a generated rectangle's edge, where an authored path comes in; generated paths start there |
+
+Rules:
+- No authored object (spot, habitat or area zone, person, station…) may lie inside a `generated` rectangle; validation names any that does.
+- The authored path tile next to a connector must be open towards it.
+- The server generates every template with a few seeds at startup, so content that cannot be placed fails early.
+- To turn an authored map into a template, run `node client/scripts/make-template.mjs <config.json>` (see the script's header for the config).
+- The client's engine tests use the server's maps for world seed 1 (`client/src/engine/testing/maps/`). After changing a template, a biome or the generator, rewrite them with `SLOVION_UPDATE_FIXTURES=1 dotnet test --project tests/Slovion.IntegrationTests`.
+
+**Biomes** (`biomes/<id>.json`) are gameplay data (D6). Tiles are tileset indices (Tiled GID − 1).
+
+| Field | Meaning |
+|---|---|
+| `floor` | the base ground tiles |
+| `pathSet` | first tile of a 16-tile path set: +1/+2/+4/+8 when the north/east/south/west side is closed |
+| `border` | blocking tiles where the area meets the map's edge |
+| `layers` | terrains grown from smoothed noise: `id`, `coverage` (0–1), `scale` (blob size in tiles), `smooth` (passes), optional `floor` |
+| `openings` | clearings that paths lead to: `count` and `radius` ranges, `floor`, `pathSet` |
+| `water` | `kind` (`stream` or `pond`), `chance`, `size`, `tiles` (`wadeable` tiles let the boots through), optional `bank` |
+| `decor` | `tiles`, `blocking`, `density` and `where` |
+| `zones` | in order, the first match wins: `kind`, `where` and the `habitat` it belongs to (none: placement only, not searchable) |
+
+`where` selects cells: `any`, `floor`, `opening`, `water`, `layer:<id>`, `edge:<id>[:distance]` (both sides of a layer's boundary), `near:water[:distance]`.
+
+**Placement** in a species file, gameplay data never shown (D6):
+- `zones`: preferred zone kinds, best first; without it, every zone kind whose habitat lists the species
+- `water`: `in` (aquatic) or `near`
+- `tile`: for a plant, the decoration drawn at its spot (required)
+- `blocking`: the plant blocks its tile, like a shrub
+
 ## Sound
 
 Music and nature sounds are synthesized in the browser (no recordings), so they are client data rather than `content/`: small JSON files in [`client/public/audio/`](../client/public/audio/), cached by the installed app. No sound stands for a particular species (D6); species calls are a later feature.

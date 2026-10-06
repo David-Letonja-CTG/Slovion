@@ -45,7 +45,12 @@ export default defineConfig({
       command:
         'dotnet run --project ../src/Slovion.Api --configuration Release --no-launch-profile',
       url: `${apiUrl}/health`,
-      env: { ASPNETCORE_URLS: apiUrl, ASPNETCORE_ENVIRONMENT: 'Development' },
+      // One world seed for every save (development only, D13), so generated maps are the same on every run.
+      env: {
+        ASPNETCORE_URLS: apiUrl,
+        ASPNETCORE_ENVIRONMENT: 'Development',
+        WorldGeneration__FixedSeed: '1',
+      },
       reuseExistingServer: !ci,
       timeout: 180_000,
     },

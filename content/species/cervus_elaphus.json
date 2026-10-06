@@ -125,5 +125,12 @@
       2,
       4
     ]
+  },
+  "placement": {
+    "zones": [
+      "forest_edge",
+      "clearing",
+      "glade"
+    ]
   }
 }

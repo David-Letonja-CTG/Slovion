@@ -29,7 +29,7 @@ public class StationServiceTests
         catalog.Stations.Add(StationOf("forest_station", 2, "abies_alba", "fagus_sylvatica", "picea_abies"));
         catalog.Stations.Add(StationOf("meadow_station", 1, "salvia_pratensis"));
         service = new StationService(catalog, discoveries);
-        encounters = new EncounterService(catalog, discoveries, new InMemoryEncounterRepository(), new SeededRandom(1), time);
+        encounters = new EncounterService(catalog, catalog, discoveries, new InMemoryEncounterRepository(), new SeededRandom(1), time);
     }
 
     [Fact]

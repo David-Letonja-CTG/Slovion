@@ -27,7 +27,7 @@ public class EncounterServiceTests
             FakeContentCatalog.Species("lepus_europaeus", "poljski zajec", group: SpeciesGroup.Mammal),
             FakeContentCatalog.Species("alauda_arvensis", "poljski škrjanec", group: SpeciesGroup.Bird),
             FakeContentCatalog.Species("papilio_machaon", "lastovičar", group: SpeciesGroup.Insect));
-        service = new EncounterService(catalog, discoveries, new InMemoryEncounterRepository(), new SeededRandom(1), time);
+        service = new EncounterService(catalog, catalog, discoveries, new InMemoryEncounterRepository(), new SeededRandom(1), time);
     }
 
     private async Task<EncounterView> Start(string spotId, string language = "sl") =>

@@ -41,7 +41,7 @@ public class SearchTests
     private SaveSlot Save => SaveSlot.Create(slot, [1], new FakeTimeProvider().GetUtcNow());
 
     private EncounterService Service(IRandomSource random) =>
-        new(catalog, discoveries, new InMemoryEncounterRepository(), random, clock);
+        new(catalog, catalog, discoveries, new InMemoryEncounterRepository(), random, clock);
 
     private Task<SearchResult> Search(EncounterService service, int x = 12) =>
         service.SearchAsync(Save, FakeContentCatalog.MapId, x, 3, "sl", Token);

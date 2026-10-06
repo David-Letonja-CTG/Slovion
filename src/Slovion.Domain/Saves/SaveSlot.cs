@@ -1,4 +1,5 @@
 using Slovion.Domain.Content;
+using Slovion.Domain.WorldGeneration;
 
 namespace Slovion.Domain.Saves;
 
@@ -17,20 +18,29 @@ public sealed class SaveSlot
     /// <summary>The region the player is in; the game continues there.</summary>
     public string RegionId { get; private set; }
 
-    private SaveSlot(Guid id, byte[] tokenHash, DateTimeOffset createdAt, string regionId)
+    /// <summary>The seed of this save's natural world (D13): its generated maps depend on it. Never changes.</summary>
+    public long WorldSeed { get; private set; }
+
+    /// <summary>The generation version the save's world is made with. Never changes.</summary>
+    public int WorldVersion { get; private set; }
+
+    private SaveSlot(Guid id, byte[] tokenHash, DateTimeOffset createdAt, string regionId, long worldSeed, int worldVersion)
     {
         Id = id;
         TokenHash = tokenHash;
         CreatedAt = createdAt;
         RegionId = regionId;
+        WorldSeed = worldSeed;
+        WorldVersion = worldVersion;
     }
 
-    public static SaveSlot Create(Guid id, byte[] tokenHash, DateTimeOffset createdAt)
+    /// <summary>A new save in the start region, with a world made from <paramref name="worldSeed"/> at the current generation version.</summary>
+    public static SaveSlot Create(Guid id, byte[] tokenHash, DateTimeOffset createdAt, long worldSeed = 0)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(id, Guid.Empty);
         ArgumentNullException.ThrowIfNull(tokenHash);
         ArgumentOutOfRangeException.ThrowIfZero(tokenHash.Length);
-        return new SaveSlot(id, tokenHash, createdAt, Region.StartId);
+        return new SaveSlot(id, tokenHash, createdAt, Region.StartId, worldSeed, WorldGenerator.Version);
     }
 
     /// <summary>Makes <paramref name="regionId"/> the current region. Whether it may be entered is decided by the caller.</summary>

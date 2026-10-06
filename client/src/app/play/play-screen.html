@@ -2,6 +2,10 @@
   @if (loadError(); as reason) {
     <p class="play__status" role="alert">{{ 'errors.' + reason | transloco }}</p>
   } @else if (world(); as loaded) {
+    @if (debugWorld) {
+      <!-- Development only: which map this is and how it was generated. -->
+      <p class="play__debug">{{ loaded.map.id }} {{ loaded.worldDetails }}</p>
+    }
     <app-game-canvas
       class="play__game"
       [world]="loaded"
@@ -10,6 +14,7 @@
       [residents]="residents()"
       [weather]="weather()?.weather ?? 'clear'"
       [reducedMotion]="reducedMotion"
+      [debug]="debugWorld"
       [views]="views()"
       [tools]="toolIds()"
       (inventoryRequested)="openInventory()"

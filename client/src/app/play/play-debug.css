@@ -1,0 +1,12 @@
+/* Development only: the debug view's details, over the bottom left of the world. */
+.play__debug {
+  position: absolute;
+  bottom: var(--hud-bottom);
+  left: var(--hud-left);
+  z-index: 6;
+  margin: 0;
+  padding: 0.2rem 0.4rem;
+  background: rgb(0 0 0 / 70%);
+  color: #fff;
+  font: 0.7rem monospace;
+}

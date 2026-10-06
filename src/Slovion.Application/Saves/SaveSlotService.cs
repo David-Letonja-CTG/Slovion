@@ -2,13 +2,13 @@ using Slovion.Domain.Saves;
 
 namespace Slovion.Application.Saves;
 
-public sealed class SaveSlotService(ISaveSlotRepository saveSlots, TimeProvider time)
+public sealed class SaveSlotService(ISaveSlotRepository saveSlots, IWorldSeedSource worldSeeds, TimeProvider time)
 {
-    /// <summary>Creates an empty save slot and returns its token. The token is not stored.</summary>
+    /// <summary>Creates an empty save slot with its own world seed and returns its token. The token is not stored.</summary>
     public async Task<string> CreateAsync(CancellationToken cancellationToken)
     {
         var token = SaveToken.Generate();
-        var slot = SaveSlot.Create(Guid.NewGuid(), SaveToken.Hash(token), time.GetUtcNow());
+        var slot = SaveSlot.Create(Guid.NewGuid(), SaveToken.Hash(token), time.GetUtcNow(), worldSeeds.NextSeed());
         await saveSlots.AddAsync(slot, cancellationToken);
         return token;
     }

@@ -1,0 +1,778 @@
+{
+  "compressionlevel": -1,
+  "height": 20,
+  "infinite": false,
+  "layers": [
+    {
+      "data": [
+        15, 16, 16, 16, 16, 15, 16, 25, 16, 25, 16, 25, 26, 16, 25, 25, 26, 15, 26, 25, 25, 26, 16,
+        15, 15, 16, 25, 15, 15, 25, 15, 16, 15, 26, 15, 15, 16, 16, 16, 16, 16, 25, 16, 16, 15, 47,
+        25, 25, 16, 16, 16, 25, 25, 16, 25, 25, 15, 25, 25, 15, 15, 15, 26, 16, 16, 25, 2, 1, 1, 25,
+        26, 47, 16, 15, 26, 16, 26, 16, 16, 25, 16, 15, 25, 15, 16, 16, 25, 16, 26, 25, 25, 14, 1,
+        1, 13, 2, 15, 47, 16, 16, 26, 25, 16, 25, 25, 15, 15, 25, 25, 26, 25, 16, 26, 25, 16, 25, 2,
+        13, 14, 13, 2, 2, 2, 16, 47, 16, 25, 25, 16, 16, 16, 16, 25, 15, 16, 15, 16, 25, 16, 16, 15,
+        16, 1, 1, 1, 76, 13, 14, 1, 26, 25, 47, 25, 25, 26, 25, 16, 25, 16, 15, 16, 16, 15, 25, 16,
+        26, 16, 25, 1, 14, 13, 75, 13, 2, 2, 26, 15, 47, 16, 16, 16, 26, 15, 15, 15, 16, 15, 25, 25,
+        15, 25, 16, 25, 25, 16, 2, 1, 75, 1, 13, 16, 25, 16, 47, 26, 25, 25, 16, 25, 25, 25, 25, 25,
+        16, 15, 15, 26, 16, 16, 16, 26, 90, 70, 69, 68, 25, 25, 15, 25, 47, 1, 2, 25, 16, 16, 94,
+        86, 86, 86, 86, 86, 86, 86, 84, 25, 26, 90, 87, 16, 16, 93, 86, 86, 86, 86, 70, 72, 1, 16,
+        26, 16, 16, 16, 15, 15, 16, 15, 15, 16, 93, 84, 13, 75, 16, 26, 25, 16, 15, 15, 47, 25, 1,
+        14, 1, 16, 25, 25, 15, 25, 25, 16, 15, 16, 25, 26, 26, 77, 66, 71, 16, 15, 25, 25, 25, 26,
+        47, 26, 25, 16, 15, 25, 15, 25, 15, 15, 16, 16, 15, 25, 16, 15, 13, 13, 79, 13, 14, 15, 15,
+        16, 16, 15, 25, 47, 25, 16, 16, 25, 25, 15, 25, 16, 15, 25, 25, 15, 15, 26, 1, 14, 2, 13,
+        13, 16, 25, 15, 25, 25, 16, 47, 15, 26, 15, 15, 25, 15, 15, 15, 16, 16, 25, 16, 25, 16, 16,
+        2, 1, 14, 25, 25, 25, 26, 15, 16, 15, 47, 15, 25, 16, 16, 16, 16, 25, 16, 15, 25, 16, 25,
+        16, 16, 25, 15, 25, 16, 16, 15, 16, 15, 25, 16, 47, 16, 26, 26, 25, 16, 25, 16, 15, 15, 15,
+        15, 15, 15, 15, 25, 16, 25, 15, 26, 16, 16, 16, 25, 25, 16, 15, 47, 26, 25, 26, 26, 26, 25,
+        16, 15, 16, 15, 15, 16, 25, 26, 25, 26, 26, 25, 25, 15, 15, 26, 16, 16, 16, 47, 16, 26, 15,
+        16, 26, 25, 25, 25, 25, 16, 25, 16, 16, 16, 25, 25, 26, 26, 15, 26, 25, 16, 16, 16, 26, 47,
+        25, 16, 25, 25, 16, 15, 16, 15, 16, 25, 16, 25, 15, 16, 15, 26, 16, 25, 26, 16, 16, 15, 15,
+        25, 16, 15, 16, 25, 26, 15, 16
+      ],
+      "height": 20,
+      "id": 1,
+      "name": "ground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+        32, 32, 32, 32, 27, 0, 28, 0, 0, 27, 0, 28, 30, 28, 28, 28, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0,
+        42, 0, 32, 32, 0, 27, 0, 0, 28, 0, 0, 27, 0, 27, 27, 28, 0, 0, 0, 0, 0, 30, 0, 41, 30, 0, 0,
+        0, 32, 32, 28, 0, 0, 27, 0, 0, 27, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 30, 0, 28, 0,
+        32, 32, 0, 0, 27, 0, 0, 0, 0, 28, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 30, 30, 32,
+        32, 0, 28, 0, 0, 27, 0, 0, 28, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 32, 32, 27,
+        0, 0, 28, 0, 0, 27, 28, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 28, 0, 27, 0, 28, 32, 32, 0, 0,
+        27, 0, 0, 0, 28, 0, 27, 0, 28, 28, 7, 0, 0, 7, 0, 28, 28, 28, 0, 27, 0, 0, 32, 32, 0, 0, 0,
+        0, 27, 0, 0, 0, 0, 27, 28, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 32, 32, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 27, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 27, 30, 0, 30, 28, 0, 0, 0, 0, 0, 0, 0, 32, 32, 27, 0, 0, 28, 0, 0, 27, 0, 0, 0, 0,
+        0, 27, 30, 0, 27, 28, 27, 0, 28, 0, 0, 0, 0, 32, 32, 0, 0, 27, 0, 41, 0, 28, 0, 0, 0, 0, 0,
+        0, 28, 30, 28, 28, 28, 30, 0, 0, 0, 0, 0, 32, 32, 0, 28, 0, 0, 27, 0, 0, 30, 0, 7, 0, 0, 0,
+        30, 0, 27, 30, 30, 28, 0, 0, 30, 0, 30, 32, 32, 27, 0, 0, 0, 28, 0, 0, 28, 30, 0, 0, 0, 0,
+        0, 0, 28, 0, 28, 27, 0, 0, 0, 0, 0, 32, 32, 0, 0, 27, 0, 0, 0, 27, 0, 0, 28, 0, 0, 0, 30, 0,
+        0, 0, 30, 0, 0, 0, 28, 0, 0, 32, 32, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 32, 32, 27, 0, 0, 28, 0, 0, 0, 28, 28, 0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0,
+        0, 0, 0, 0, 32, 32, 0, 0, 27, 0, 0, 28, 0, 0, 0, 30, 0, 30, 0, 33, 0, 0, 0, 30, 0, 0, 0, 0,
+        0, 0, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+        32, 32, 32, 32, 32, 32
+      ],
+      "height": 20,
+      "id": 2,
+      "name": "decor",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 5, 0,
+        0, 5, 0, 5, 5, 5, 5, 5, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 5, 0, 5, 0, 0, 5, 0, 0, 5, 0,
+        5, 5, 5, 0, 0, 0, 0, 0, 5, 5, 0, 5, 0, 0, 0, 5, 5, 5, 0, 0, 5, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 5, 5, 0, 5, 0, 5, 0, 5, 5, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 5,
+        5, 0, 0, 5, 5, 5, 5, 0, 5, 0, 0, 5, 0, 0, 5, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 5,
+        5, 5, 5, 0, 0, 5, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 5, 5, 5, 0, 0, 5,
+        0, 0, 0, 5, 0, 5, 0, 5, 5, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0,
+        0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 0, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0,
+        5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 5, 5, 0,
+        5, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 5, 5, 0, 5, 5, 5, 5, 5, 0, 0, 0,
+        0, 5, 5, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 5, 5, 0, 5,
+        0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 5, 5, 5, 5, 5, 0, 5, 0, 5, 5, 5, 5, 0, 0, 0, 5, 0, 0,
+        5, 5, 0, 0, 0, 0, 0, 0, 5, 0, 5, 5, 5, 0, 0, 0, 0, 5, 5, 0, 0, 5, 0, 0, 0, 5, 0, 0, 5, 0, 0,
+        0, 5, 0, 0, 0, 5, 5, 0, 0, 5, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 5, 0, 0, 0, 0, 5, 5, 5, 0, 0, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 5, 0, 0,
+        0, 0, 5, 5, 0, 0, 5, 0, 0, 5, 0, 0, 0, 5, 0, 5, 0, 5, 0, 0, 0, 5, 0, 5, 0, 0, 0, 0, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      ],
+      "height": 20,
+      "id": 3,
+      "name": "collision",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": false,
+      "width": 26,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 4,
+      "name": "objects",
+      "objects": [
+        {
+          "height": 0,
+          "id": 1,
+          "name": "spawn",
+          "point": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ],
+          "rotation": 0,
+          "type": "spawn",
+          "visible": true,
+          "width": 0,
+          "x": 24,
+          "y": 152
+        },
+        {
+          "gid": 31,
+          "height": 16,
+          "id": 2,
+          "name": "signpost",
+          "rotation": 0,
+          "type": "signpost",
+          "visible": true,
+          "width": 16,
+          "x": 32,
+          "y": 144
+        },
+        {
+          "gid": 20,
+          "height": 16,
+          "id": 10,
+          "name": "jure",
+          "properties": [
+            {
+              "name": "npcId",
+              "type": "string",
+              "value": "jure"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 16,
+          "x": 48,
+          "y": 176
+        },
+        {
+          "gid": 57,
+          "height": 16,
+          "id": 12,
+          "name": "forest_station",
+          "properties": [
+            {
+              "name": "stationId",
+              "type": "string",
+              "value": "forest_station"
+            }
+          ],
+          "rotation": 0,
+          "type": "station",
+          "visible": true,
+          "width": 16,
+          "x": 96,
+          "y": 144
+        },
+        {
+          "id": 18,
+          "name": "strip_1_1_7_7",
+          "type": "habitat",
+          "x": 16,
+          "y": 16,
+          "width": 112,
+          "height": 112,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "strip_3_8_3_1",
+          "type": "habitat",
+          "x": 48,
+          "y": 128,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "strip_1_11_7_8",
+          "type": "habitat",
+          "x": 16,
+          "y": 176,
+          "width": 112,
+          "height": 128,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "area_kocevje_forest_strip",
+          "type": "area",
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 320,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "kocevje_forest"
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "kocevje_forest_ursus_arctos_1",
+          "type": "spot",
+          "point": true,
+          "x": 184,
+          "y": 248,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "ursus_arctos"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "kocevje_forest_ursus_arctos_1"
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "kocevje_forest_cervus_elaphus_1",
+          "type": "spot",
+          "point": true,
+          "x": 376,
+          "y": 152,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "cervus_elaphus"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "kocevje_forest_cervus_elaphus_1"
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "kocevje_forest_salamandra_salamandra_1",
+          "type": "spot",
+          "point": true,
+          "x": 392,
+          "y": 248,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "salamandra_salamandra"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "kocevje_forest_salamandra_salamandra_1"
+            }
+          ]
+        },
+        {
+          "id": 25,
+          "name": "kocevje_forest_allium_ursinum_1",
+          "type": "spot",
+          "point": true,
+          "x": 328,
+          "y": 40,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "allium_ursinum"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "kocevje_forest_allium_ursinum_1"
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "kocevje_forest_galium_odoratum_1",
+          "type": "spot",
+          "point": true,
+          "x": 376,
+          "y": 24,
+          "width": 0,
+          "height": 0,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "speciesId",
+              "type": "string",
+              "value": "galium_odoratum"
+            },
+            {
+              "name": "spotId",
+              "type": "string",
+              "value": "kocevje_forest_galium_odoratum_1"
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "name": "generated_habitat_27",
+          "type": "habitat",
+          "x": 128,
+          "y": 16,
+          "width": 272,
+          "height": 64,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "generated_habitat_28",
+          "type": "habitat",
+          "x": 128,
+          "y": 80,
+          "width": 112,
+          "height": 48,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "generated_habitat_29",
+          "type": "habitat",
+          "x": 256,
+          "y": 80,
+          "width": 144,
+          "height": 48,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "generated_habitat_30",
+          "type": "habitat",
+          "x": 128,
+          "y": 128,
+          "width": 80,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 31,
+          "name": "generated_habitat_31",
+          "type": "habitat",
+          "x": 272,
+          "y": 128,
+          "width": 128,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 32,
+          "name": "generated_habitat_32",
+          "type": "habitat",
+          "x": 160,
+          "y": 144,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 33,
+          "name": "generated_habitat_33",
+          "type": "habitat",
+          "x": 224,
+          "y": 144,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 34,
+          "name": "generated_habitat_34",
+          "type": "habitat",
+          "x": 368,
+          "y": 144,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 35,
+          "name": "generated_habitat_35",
+          "type": "habitat",
+          "x": 128,
+          "y": 160,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 36,
+          "name": "generated_habitat_36",
+          "type": "habitat",
+          "x": 176,
+          "y": 160,
+          "width": 16,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 37,
+          "name": "generated_habitat_37",
+          "type": "habitat",
+          "x": 128,
+          "y": 176,
+          "width": 32,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 38,
+          "name": "generated_habitat_38",
+          "type": "habitat",
+          "x": 208,
+          "y": 160,
+          "width": 192,
+          "height": 32,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 39,
+          "name": "generated_habitat_39",
+          "type": "habitat",
+          "x": 128,
+          "y": 192,
+          "width": 48,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 40,
+          "name": "generated_habitat_40",
+          "type": "habitat",
+          "x": 192,
+          "y": 192,
+          "width": 208,
+          "height": 16,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 41,
+          "name": "generated_habitat_41",
+          "type": "habitat",
+          "x": 128,
+          "y": 208,
+          "width": 272,
+          "height": 96,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "habitatId",
+              "type": "string",
+              "value": "fir_beech_forest"
+            }
+          ]
+        },
+        {
+          "id": 42,
+          "name": "generated_area_42",
+          "type": "area",
+          "x": 128,
+          "y": 0,
+          "width": 288,
+          "height": 320,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "areaId",
+              "type": "string",
+              "value": "kocevje_forest"
+            },
+            {
+              "name": "underground",
+              "type": "bool",
+              "value": false
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "nextlayerid": 5,
+  "nextobjectid": 43,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.11.2",
+  "tileheight": 16,
+  "tilesets": [
+    {
+      "columns": 8,
+      "firstgid": 1,
+      "image": "/content/tilesets/meadow.png",
+      "imageheight": 304,
+      "imagewidth": 128,
+      "margin": 0,
+      "name": "meadow",
+      "spacing": 0,
+      "tilecount": 152,
+      "tileheight": 16,
+      "tilewidth": 16,
+      "tiles": [
+        {
+          "id": 26,
+          "animation": [
+            {
+              "tileid": 26,
+              "duration": 900
+            },
+            {
+              "tileid": 28,
+              "duration": 900
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "animation": [
+            {
+              "tileid": 27,
+              "duration": 1100
+            },
+            {
+              "tileid": 29,
+              "duration": 1100
+            }
+          ]
+        },
+        {
+          "id": 46,
+          "animation": [
+            {
+              "tileid": 46,
+              "duration": 600
+            },
+            {
+              "tileid": 47,
+              "duration": 600
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 48,
+          "animation": [
+            {
+              "tileid": 48,
+              "duration": 600
+            },
+            {
+              "tileid": 49,
+              "duration": 600
+            }
+          ]
+        },
+        {
+          "id": 116,
+          "animation": [
+            {
+              "tileid": 116,
+              "duration": 800
+            },
+            {
+              "tileid": 117,
+              "duration": 800
+            }
+          ],
+          "properties": [
+            {
+              "name": "wadeable",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilewidth": 16,
+  "type": "map",
+  "version": "1.10",
+  "width": 26
+}

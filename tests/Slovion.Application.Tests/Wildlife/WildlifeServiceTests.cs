@@ -20,7 +20,7 @@ public class WildlifeServiceTests
             FakeContentCatalog.Species("lepus_europaeus", "poljski zajec", null, SpeciesGroup.Mammal),
             FakeContentCatalog.Species("lanius_collurio", "rjavi srakoper", null, SpeciesGroup.Bird, Season.Spring, Season.Summer, Season.Autumn),
             FakeContentCatalog.Species("salvia_pratensis", "travniška kadulja"));
-        service = new WildlifeService(catalog, time);
+        service = new WildlifeService(catalog, catalog, time);
     }
 
     [Fact]

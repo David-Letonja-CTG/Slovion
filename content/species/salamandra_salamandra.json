@@ -141,5 +141,12 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "stream_bank",
+      "forest_floor",
+      "dense_forest"
+    ]
   }
 }

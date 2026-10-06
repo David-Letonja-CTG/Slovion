@@ -32,12 +32,12 @@ public interface IContentCatalog
 
     Species? FindSpecies(SpeciesId id);
 
-    MapSpot? FindSpot(string mapId, string spotId);
+    /// <summary>Whether a map (authored or a template) exists. Its layout for a save comes from <see cref="IWorldMaps"/>.</summary>
+    bool HasMap(string mapId);
 
-    /// <summary>All spots of a map, or <c>null</c> when the map is unknown.</summary>
-    IReadOnlyList<MapSpot>? SpotsOn(string mapId);
+    Habitat? FindHabitat(string habitatId);
 
-    /// <summary>The NPC standing in a map, if any.</summary>
+    /// <summary>The NPC standing in a map, if any. People are authored, so this is the same for every save.</summary>
     MapNpc? FindNpcOnMap(string mapId, string npcId);
 
     Quest? FindQuest(string questId);
@@ -49,7 +49,4 @@ public interface IContentCatalog
 
     /// <summary>The quest an NPC gives; every NPC gives exactly one.</summary>
     Quest? FindQuestByGiver(string npcId);
-
-    /// <summary>The habitat whose zone contains tile (<paramref name="x"/>, <paramref name="y"/>) of a map, if any.</summary>
-    Habitat? FindHabitatAt(string mapId, int x, int y);
 }

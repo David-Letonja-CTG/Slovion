@@ -68,9 +68,9 @@ Randomness and time are injected on both sides (`IRandomSource` and `TimeProvide
 ```mermaid
 flowchart TB
   Api["<b>Slovion.Api</b><br/>endpoints, problem details,<br/>save-token filter, static /content"]
-  App["<b>Slovion.Application</b><br/>services: encounters, journal, quests,<br/>travel, wildlife, weather, stations<br/>ports: IContentCatalog, repositories, IRandomSource"]
-  Domain["<b>Slovion.Domain</b><br/>entities and rules: species, sightings,<br/>quest progress, world time, weather"]
-  Infra["<b>Slovion.Infrastructure</b><br/>FileContentCatalog (content/ files),<br/>EF Core DbContext, repositories, migrations"]
+  App["<b>Slovion.Application</b><br/>services: encounters, journal, quests,<br/>travel, wildlife, weather, stations<br/>ports: IContentCatalog, IWorldMaps,<br/>repositories, IRandomSource, IWorldSeedSource"]
+  Domain["<b>Slovion.Domain</b><br/>entities and rules: species, sightings,<br/>quest progress, world time, weather,<br/>world generation (pure, seeded)"]
+  Infra["<b>Slovion.Infrastructure</b><br/>FileContentCatalog (content/ files),<br/>WorldMaps (per-save maps, cached),<br/>EF Core DbContext, repositories, migrations"]
 
   Api --> App
   Api --> Infra
@@ -89,10 +89,14 @@ flowchart TB
   | Quests | talking to people, quest state, flags, tools | `conversations`, `progress` |
   | Travel | regions, unlock rules, the current region | `regions`, `travel` |
   | Wildlife | which resident animals are around now | `wildlife` |
-  | World | the in-game clock and the weather | `time`, `weather` |
+  | World | the in-game clock, the weather, and the save's maps (generated per save, D13) | `time`, `weather`, `maps/{mapId}` |
   | Stations | research stations and certificates | `stations` |
   | Content | the validated content catalog; maps, tilesets, sprites and pictures as static files | `GET /content/…` |
 
+- **Generated worlds (D13):**
+  - `Domain/WorldGeneration` is a pure, seeded generator. It fills a template's `generated` rectangles from their biomes in stages: terrain layers, openings, water, paths, decoration, pocket cleanup, zones, species spots and path tiles, then validation, retries and repair.
+  - `WorldMaps` serves each save its maps. Authored maps are the same for all saves; templates are generated from the save's `world_seed` and `world_version` and kept in a 64-entry LRU cache.
+  - Every generated map goes through the same validation as authored ones before it is used.
 - **Errors** are RFC 7807 problem details with a stable `code` (e.g. `unknown_map`, `invalid_save_token`); the client translates codes, never server text (D7).
 - **OpenAPI** is served at `/openapi/v1.json` in development.
 
@@ -216,6 +220,8 @@ erDiagram
     bytea token_hash
     timestamptz created_at "starts the in-game clock"
     text region_id "current region"
+    bigint world_seed "its generated world (D13)"
+    int world_version "generation version"
   }
   DISCOVERIES {
     uuid save_slot_id
@@ -241,7 +247,7 @@ erDiagram
   }
 ```
 
-- **Derived, not stored:** progress flags and tools come from completed quests, unlocked regions from flags, station certificates from research levels, the in-game time from `created_at`. Changing content therefore never needs a data migration.
+- **Derived, not stored:** progress flags and tools come from completed quests, unlocked regions from flags, station certificates from research levels, the in-game time from `created_at`, the natural maps from `world_seed` and `world_version`. Changing content therefore never needs a data migration.
 - **Migrations** run at API startup (EF Core, `src/Slovion.Infrastructure/Persistence/Migrations`). To add one: `dotnet tool restore`, then `dotnet ef migrations add <Name> --project src/Slovion.Infrastructure --output-dir Persistence/Migrations`.
 
 ## Deployment

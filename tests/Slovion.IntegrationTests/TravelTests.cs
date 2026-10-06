@@ -253,15 +253,15 @@ public sealed class TravelTests(PostgresFixture database)
         await CompleteVerasQuestAsync(client, token);
         await IdentifyOnMapAsync(client, token, "meadow_skylark_1", "alauda_arvensis", "dravsko_polje_meadow");
         await IdentifyOnMapAsync(client, token, "meadow_swallowtail_1", "papilio_machaon", "dravsko_polje_meadow");
-        await IdentifyOnMapAsync(client, token, "kocevje_garlic_1", "allium_ursinum", "kocevje_forest");
+        await IdentifyOnMapAsync(client, token, "kocevje_forest_allium_ursinum_1", "allium_ursinum", "kocevje_forest");
 
         var (_, offer) = await SendAsync(client, token, HttpMethod.Post, "/api/save/conversations", new { mapId = "kocevje_forest", npcId = "jure" });
         Assert.Equal("Jure", offer.GetProperty("npcName").GetString());
         var quest = offer.GetProperty("quest");
         Assert.Equal(("in_the_shade_of_firs", "active", 1, 3), (quest.GetProperty("questId").GetString(), quest.GetProperty("status").GetString(), quest.GetProperty("progress").GetInt32(), quest.GetProperty("goal").GetInt32()));
 
-        await IdentifyOnMapAsync(client, token, "kocevje_woodruff_1", "galium_odoratum", "kocevje_forest");
-        await IdentifyOnMapAsync(client, token, "kocevje_bear_1", "ursus_arctos", "kocevje_forest");
+        await IdentifyOnMapAsync(client, token, "kocevje_forest_galium_odoratum_1", "galium_odoratum", "kocevje_forest");
+        await IdentifyOnMapAsync(client, token, "kocevje_forest_ursus_arctos_1", "ursus_arctos", "kocevje_forest");
         var (_, ready) = await SendAsync(client, token, HttpMethod.Post, "/api/save/conversations", new { mapId = "kocevje_forest", npcId = "jure" });
 
         Assert.Equal("completed", ready.GetProperty("quest").GetProperty("status").GetString());

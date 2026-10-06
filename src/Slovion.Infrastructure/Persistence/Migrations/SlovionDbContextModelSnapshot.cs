@@ -163,6 +163,16 @@ namespace Slovion.Infrastructure.Persistence.Migrations
                         .HasColumnType("bytea")
                         .HasColumnName("token_hash");
 
+                    b.Property<long>("WorldSeed")
+                        .HasColumnType("bigint")
+                        .HasColumnName("world_seed");
+
+                    b.Property<int>("WorldVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1)
+                        .HasColumnName("world_version");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TokenHash")

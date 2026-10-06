@@ -2,6 +2,7 @@ using Slovion.Application.Content;
 using Slovion.Application.Discovery;
 using Slovion.Domain.Content;
 using Slovion.Domain.Discovery;
+using Slovion.Domain.Saves;
 using Slovion.Domain.World;
 
 namespace Slovion.Application.Tests.Discovery;
@@ -86,7 +87,8 @@ internal sealed class SeededRandom(int seed) : IRandomSource
     public int NextIndex(int maxExclusive) => random.Next(maxExclusive);
 }
 
-internal sealed class FakeContentCatalog(params Species[] initial) : IContentCatalog
+/// <summary>A catalog that also plays the save's maps: <see cref="MapId"/> has a spot per species and the grass zone.</summary>
+internal sealed class FakeContentCatalog(params Species[] initial) : IContentCatalog, IWorldMaps
 {
     private readonly List<Species> species = [.. initial];
 
@@ -148,15 +150,20 @@ internal sealed class FakeContentCatalog(params Species[] initial) : IContentCat
 
     public Quest? FindQuestByGiver(string npcId) => Quests.FirstOrDefault(quest => quest.GiverId == npcId);
 
-    public Habitat? FindHabitatAt(string mapId, int x, int y) => mapId == MapId && x >= 10 ? Grass : null;
+    public bool HasMap(string mapId) => mapId == MapId;
 
-    public IReadOnlyList<MapSpot>? SpotsOn(string mapId) =>
-        mapId == MapId ? species.Select(s => new MapSpot(mapId, s.Id.Value, s.Id)).ToList() : null;
+    public Habitat? FindHabitat(string habitatId) => Grass?.Id == habitatId ? Grass : Habitats.FirstOrDefault(habitat => habitat.Id == habitatId);
 
-    /// <summary>Every species has a spot named after it on <see cref="MapId"/>.</summary>
-    public MapSpot? FindSpot(string mapId, string spotId) =>
-        mapId == MapId && species.FirstOrDefault(s => s.Id.Value == spotId) is { } match
-            ? new MapSpot(mapId, spotId, match.Id)
+    /// <summary>Every species has a spot named after it on <see cref="MapId"/>, and <see cref="Grass"/> covers x ≥ 10.</summary>
+    public SaveMap? Find(SaveSlot save, string mapId) =>
+        mapId == MapId
+            ? new SaveMap(
+                MapId,
+                species.Select(s => new MapSpot(mapId, s.Id.Value, s.Id)).ToList(),
+                Grass is null ? [] : [new MapHabitatZone(Grass.Id, 10, 0, int.MaxValue, int.MaxValue)],
+                ReadOnlyMemory<byte>.Empty,
+                "test",
+                null)
             : null;
 
     /// <summary>A habitat with an order, a Slovenian name (and an English one when given) listing <paramref name="species"/> with weight 1.</summary>

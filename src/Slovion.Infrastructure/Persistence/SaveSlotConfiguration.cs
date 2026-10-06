@@ -15,6 +15,8 @@ internal sealed class SaveSlotConfiguration : IEntityTypeConfiguration<SaveSlot>
         builder.Property(slot => slot.TokenHash).HasColumnName("token_hash").IsRequired();
         builder.Property(slot => slot.CreatedAt).HasColumnName("created_at");
         builder.Property(slot => slot.RegionId).HasColumnName("region_id").HasMaxLength(64).HasDefaultValue(Region.StartId).IsRequired();
+        builder.Property(slot => slot.WorldSeed).HasColumnName("world_seed");
+        builder.Property(slot => slot.WorldVersion).HasColumnName("world_version").HasDefaultValue(1);
         builder.HasIndex(slot => slot.TokenHash).IsUnique();
     }
 }

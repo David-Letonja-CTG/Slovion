@@ -67,6 +67,8 @@ export class GameCanvas {
   readonly weather = input<Weather>('clear');
   /** Draws weather without movement, for players who prefer reduced motion. */
   readonly reducedMotion = input(false);
+  /** Draws the debug view of the world (development only). */
+  readonly debug = input(false);
   /** The world view sizes a game may use when it starts; changes go through `Game.setViews`. */
   readonly views = input<readonly ViewSize[]>([WIDE_VIEW]);
   /** A new in-game minute (once per in-game minute while playing, and after a re-sync). */
@@ -109,6 +111,7 @@ export class GameCanvas {
           residents: this.residents(),
           weather: this.weather(),
           reducedMotion: this.reducedMotion(),
+          debug: this.debug(),
           views: this.views(),
           onTimeChange: (time) => this.timeChanged.emit(time),
           onAreaChange: (area) => this.areaChanged.emit(area),

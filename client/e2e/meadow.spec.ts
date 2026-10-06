@@ -353,9 +353,9 @@ test('searching at a spruce on Pohorje finds a plant of the mountain forest', as
   // Jure's quest opens Pohorje: help Vera, identify three Kočevje species and talk to Jure, all through the API.
   await completeVerasQuestThroughApi(page);
   for (const [spot, species] of [
-    ['kocevje_garlic_1', 'allium_ursinum'],
-    ['kocevje_woodruff_1', 'galium_odoratum'],
-    ['kocevje_bear_1', 'ursus_arctos'],
+    ['kocevje_forest_allium_ursinum_1', 'allium_ursinum'],
+    ['kocevje_forest_galium_odoratum_1', 'galium_odoratum'],
+    ['kocevje_forest_ursus_arctos_1', 'ursus_arctos'],
   ]) {
     await identifyThroughApi(page, spot, species, 'kocevje_forest');
   }
