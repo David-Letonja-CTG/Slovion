@@ -243,5 +243,5 @@ Merging into `main` only runs CI. The spec's deployment requirement, D12, the ru
 - **The runbook's restore steps** didn't say to work as `slovion`, and copied the dump from the wrong folder (`/opt/slovion` instead of `backups/`, which only `slovion` can read). Rewritten, including how to bring in a dump from the bucket.
 - **PostgreSQL is pinned to `postgres:18.6`.** The v0.3.0 deploy pulled a newer `postgres:18` image and recreated the database container (on the same volume; no data lost).
   - Pinned in the production stack, the dev compose file, the CI E2E service and the integration tests, so all four use the version production runs.
-  - `18.6` is the digest production already runs, so the next deploy doesn't restart the database.
+  - `18.6` is the digest production already ran. Changing the image name still made Compose recreate the database container once: the v0.3.1 deploy restarted it on the same volume, with every save intact. Later deploys leave it running until the pin changes.
   - `docs/hosting.md` explains how to update it on purpose.
