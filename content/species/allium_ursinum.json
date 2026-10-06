@@ -106,5 +106,13 @@
       1,
       2
     ]
+  },
+  "placement": {
+    "zones": [
+      "forest_floor",
+      "stream_bank",
+      "forest_edge"
+    ],
+    "tile": 40
   }
 }

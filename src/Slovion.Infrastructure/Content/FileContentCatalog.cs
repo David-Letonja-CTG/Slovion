@@ -590,26 +590,29 @@ public sealed partial class FileContentCatalog : IContentCatalog
                 continue;
             }
 
-            var (spots, habitatZones) = ReadLayout(map, mapId, name, world, errors);
+            var template = BuildTemplate(map, mapId, name, world, errors);
+            var (spots, habitatZones) = ReadLayout(map, mapId, name, world, errors, template?.Areas.Select(area => area.Rect).ToList());
             foreach (var placed in ValidateMapActors(map, mapId, name, npcs, rewardFlags, errors))
             {
                 mapNpcs[(mapId, placed.Npc.Id)] = placed;
             }
 
             stations.AddRange(StationPlacementsOf(map, mapId, name));
-            var template = BuildTemplate(map, mapId, name, world, errors);
             maps[mapId] = new MapContent(mapId, File.ReadAllBytes(file), spots, habitatZones, template);
         }
 
         return (maps, mapNpcs, stations);
     }
 
-    /// <summary>A map's spots and habitat zones, validated (also used for every generated map before it is served).</summary>
-    private static (List<MapSpot> Spots, List<MapZone> Habitats) ReadLayout(TiledMapFile map, string mapId, string name, WorldContent world, List<string> errors)
+    /// <summary>
+    /// A map's spots and habitat zones, validated (also used for every generated map before it is served). A template's
+    /// <paramref name="generated"/> rectangles are left out of the area check: generation gives them their area.
+    /// </summary>
+    private static (List<MapSpot> Spots, List<MapZone> Habitats) ReadLayout(TiledMapFile map, string mapId, string name, WorldContent world, List<string> errors, IReadOnlyList<GridRect>? generated = null)
     {
         var spots = ValidateMap(map, mapId, name, world.Species, errors);
         var habitatZones = ValidateZones(map, name, "habitat", "habitatId", world.Habitats.Keys.ToHashSet(StringComparer.Ordinal), errors);
-        ValidateAreaCoverage(map, name, ValidateZones(map, name, "area", "areaId", world.Areas, errors), errors);
+        ValidateAreaCoverage(map, name, ValidateZones(map, name, "area", "areaId", world.Areas, errors), errors, generated ?? []);
         return (spots, habitatZones);
     }
 
@@ -669,7 +672,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
     }
 
     /// <summary>Every walkable tile (collision 0) must lie in an area, so the player always has a location.</summary>
-    private static void ValidateAreaCoverage(TiledMapFile map, string name, List<MapZone> areas, List<string> errors)
+    private static void ValidateAreaCoverage(TiledMapFile map, string name, List<MapZone> areas, List<string> errors, IReadOnlyList<GridRect> generated)
     {
         var collision = map.Layers?.FirstOrDefault(l => l.Name == "collision" && l.Type == "tilelayer")?.Data;
         if (collision is null || collision.Count != map.Width * map.Height)
@@ -680,7 +683,7 @@ public sealed partial class FileContentCatalog : IContentCatalog
         var uncovered = Enumerable.Range(0, collision.Count)
             .Where(i => collision[i] == 0)
             .Select(i => (X: i % map.Width, Y: i / map.Width))
-            .Where(tile => !areas.Any(area => area.Contains(tile.X, tile.Y)))
+            .Where(tile => !areas.Any(area => area.Contains(tile.X, tile.Y)) && !generated.Any(rect => rect.Contains(tile.X, tile.Y)))
             .ToList();
         if (uncovered.Count > 0)
         {

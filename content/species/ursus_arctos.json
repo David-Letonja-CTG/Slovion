@@ -116,5 +116,12 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "dense_forest",
+      "forest_floor",
+      "forest_edge"
+    ]
   }
 }

@@ -1,0 +1,23 @@
+{
+  "id": "mountain_forest",
+  "floor": [14, 15, 24, 25, 24],
+  "pathSet": 80,
+  "border": [31],
+  "layers": [{ "id": "spruce", "coverage": 0.6, "scale": 5, "smooth": 2 }],
+  "openings": { "count": [1, 2], "radius": [2, 3], "floor": [0, 1, 12, 13], "pathSet": 64 },
+  "water": { "kind": "pond", "chance": 1.0, "size": 2, "tiles": [38], "bank": [12, 13] },
+  "decor": [
+    { "tiles": [39, 39, 28, 26], "blocking": true, "density": 0.6, "where": "layer:spruce" },
+    { "tiles": [39, 28], "blocking": true, "density": 0.06, "where": "floor" },
+    { "tiles": [32], "blocking": true, "density": 0.03, "where": "floor" },
+    { "tiles": [36], "blocking": false, "density": 0.06, "where": "near:water" }
+  ],
+  "zones": [
+    { "kind": "bog", "where": "water", "habitat": "mountain_forest" },
+    { "kind": "bog_edge", "where": "near:water", "habitat": "mountain_forest" },
+    { "kind": "glade", "where": "opening", "habitat": "mountain_forest" },
+    { "kind": "forest_edge", "where": "edge:spruce:2", "habitat": "mountain_forest" },
+    { "kind": "dense_forest", "where": "layer:spruce", "habitat": "mountain_forest" },
+    { "kind": "forest_floor", "where": "any", "habitat": "mountain_forest" }
+  ]
+}

@@ -96,8 +96,8 @@ public sealed class ContentValidationTests
     }
 
     [Theory]
-    [InlineData("ursus_arctos", "rjavi medved", "kocevje_forest", "kocevje_bear_1", "fir_beech_forest", TorchReaction.Shy)]
-    [InlineData("canis_lupus", "volk", "pohorje_forest", "pohorje_wolf_1", "mountain_forest", TorchReaction.Shy)]
+    [InlineData("ursus_arctos", "rjavi medved", "kocevje_forest", "kocevje_forest_ursus_arctos_1", "fir_beech_forest", TorchReaction.Shy)]
+    [InlineData("canis_lupus", "volk", "pohorje_forest", "pohorje_forest_canis_lupus_1", "mountain_forest", TorchReaction.Shy)]
     [InlineData("rupicapra_rupicapra", "gams", "triglav_alps", "triglav_chamois_1", "alpine_grassland", TorchReaction.Calm)]
     public void Repository_content_has_the_signature_species_of_the_regions(string id, string slName, string mapId, string spotId, string habitatId, TorchReaction torch)
     {
@@ -143,7 +143,7 @@ public sealed class ContentValidationTests
     }
 
     [Theory]
-    [InlineData("salamandra_salamandra", "navadni močerad", "kocevje_forest", "kocevje_salamander_1", "fir_beech_forest")]
+    [InlineData("salamandra_salamandra", "navadni močerad", "kocevje_forest", "kocevje_forest_salamandra_salamandra_1", "fir_beech_forest")]
     [InlineData("salamandra_atra", "planinski močerad", "triglav_alps", "triglav_salamander_1", "alpine_grassland")]
     public void Repository_content_has_the_salamanders(string id, string slName, string mapId, string spotId, string habitatId)
     {
@@ -235,8 +235,8 @@ public sealed class ContentValidationTests
     }
 
     [Theory]
-    [InlineData("kocevje_forest", "fir_beech_forest", new[] { "kocevje_garlic_1", "kocevje_woodruff_1", "kocevje_deer_1" })]
-    [InlineData("pohorje_forest", "mountain_forest", new[] { "pohorje_sundew_1", "pohorje_bilberry_1", "pohorje_squirrel_1" })]
+    [InlineData("kocevje_forest", "fir_beech_forest", new[] { "kocevje_forest_allium_ursinum_1", "kocevje_forest_galium_odoratum_1", "kocevje_forest_cervus_elaphus_1" })]
+    [InlineData("pohorje_forest", "mountain_forest", new[] { "pohorje_forest_drosera_rotundifolia_1", "pohorje_forest_vaccinium_myrtillus_1", "pohorje_forest_sciurus_vulgaris_1" })]
     [InlineData("triglav_alps", "alpine_grassland", new[] { "triglav_edelweiss_1", "triglav_rose_1", "triglav_marmot_1" })]
     [InlineData("cerknica_lake", "wetland", new[] { "cerknica_heron_1", "cerknica_corncrake_1", "cerknica_frog_1", "cerknica_demoiselle_1", "cerknica_yellow_iris_1", "cerknica_siberian_iris_1", "cerknica_water_lily_1" })]
     public void Region_maps_have_habitat_zones_and_spots(string mapId, string habitatId, string[] spotIds)

@@ -102,5 +102,13 @@
       1,
       2
     ]
+  },
+  "placement": {
+    "zones": [
+      "forest_floor",
+      "forest_edge",
+      "dense_forest"
+    ],
+    "tile": 43
   }
 }

@@ -129,5 +129,12 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "forest_floor",
+      "forest_edge",
+      "glade"
+    ]
   }
 }

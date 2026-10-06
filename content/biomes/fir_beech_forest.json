@@ -1,0 +1,23 @@
+{
+  "id": "fir_beech_forest",
+  "floor": [14, 15, 24, 24, 15, 25],
+  "pathSet": 80,
+  "border": [31],
+  "layers": [{ "id": "stand", "coverage": 0.62, "scale": 5, "smooth": 2 }],
+  "openings": { "count": [1, 2], "radius": [2, 3], "floor": [0, 1, 12, 13], "pathSet": 64 },
+  "water": { "kind": "stream", "chance": 0.75, "size": 1, "tiles": [46] },
+  "decor": [
+    { "tiles": [27, 27, 29, 26], "blocking": true, "density": 0.62, "where": "layer:stand" },
+    { "tiles": [27, 29], "blocking": true, "density": 0.07, "where": "floor" },
+    { "tiles": [32], "blocking": true, "density": 0.03, "where": "floor" },
+    { "tiles": [6], "blocking": false, "density": 0.1, "where": "opening" }
+  ],
+  "zones": [
+    { "kind": "clearing", "where": "opening", "habitat": "fir_beech_forest" },
+    { "kind": "stream", "where": "water", "habitat": "fir_beech_forest" },
+    { "kind": "stream_bank", "where": "near:water", "habitat": "fir_beech_forest" },
+    { "kind": "forest_edge", "where": "edge:stand:2", "habitat": "fir_beech_forest" },
+    { "kind": "dense_forest", "where": "layer:stand", "habitat": "fir_beech_forest" },
+    { "kind": "forest_floor", "where": "any", "habitat": "fir_beech_forest" }
+  ]
+}
