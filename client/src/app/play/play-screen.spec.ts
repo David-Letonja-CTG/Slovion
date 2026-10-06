@@ -2,7 +2,7 @@ import { Provider, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import karst from '../../../../content/maps/rakov_skocjan_karst.json';
+import karst from '../../engine/testing/maps/rakov_skocjan_karst.json';
 import kocevje from '../../engine/testing/maps/kocevje_forest.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import sl from '../../../public/i18n/sl.json';

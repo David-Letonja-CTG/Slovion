@@ -1,14 +1,18 @@
 // Turns an authored region map into a template for world generation (docs/decisions.md D13, docs/content.md):
-// the generated rectangle is cleared to the biome's first floor tile, and the template's own spots, habitat zones and
-// area zones inside it are removed; a `generated` rectangle (biome, area, species) and the connectors are added; and
-// the left strip keeps its own habitat and area zones, split so they stay outside the rectangle.
+// each generated rectangle is cleared to its biome's first floor tile, and the template's own spots, habitat zones and
+// area zones are removed; `generated` rectangles (biome, area, species) and their connectors are added; and the
+// authored rest keeps the habitat and area zones listed in the config, which must stay outside the rectangles.
 //
 //   node scripts/make-template.mjs <config.json>
 //
-// The config: { "map": "kocevje_forest", "rect": [x, y, w, h], "biome": "...", "areaId": "...", "species": [...],
-//   "connectors": [[x, y], ...], "floor": 14, "stripZones": [{ "habitatId": "...", "rect": [x, y, w, h] }],
-//   "stripArea": [x, y, w, h], "stripFloor": [[x, y], ...] }
-// stripFloor lists strip tiles to turn into plain floor (e.g. the end of a stream that now continues nowhere).
+// The config: { "map": "kocevje_forest",
+//   "generated": [{ "rect": [x, y, w, h], "biome": "...", "areaId": "...", "underground": false, "species": [...],
+//     "connectors": [[x, y], ...], "floor": 14 }],
+//   "stripZones": [{ "habitatId": "...", "rect": [x, y, w, h] }],
+//   "stripAreas": [{ "areaId": "...", "rect": [x, y, w, h], "underground": false }],
+//   "stripFloor": [[x, y, tile], ...] }
+// stripFloor lists authored tiles to turn into plain floor without decoration or collision (e.g. the end of a stream
+// that now continues nowhere, or a plant whose spot is now generated).
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,42 +21,41 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'content'
 const config = JSON.parse(readFileSync(process.argv[2], 'utf8'));
 const file = join(root, `${config.map}.json`);
 const map = JSON.parse(readFileSync(file, 'utf8'));
-const [rx, ry, rw, rh] = config.rect;
-const inRect = (x, y) => x >= rx && x < rx + rw && y >= ry && y < ry + rh;
+const inRect = ([rx, ry, rw, rh], x, y) => x >= rx && x < rx + rw && y >= ry && y < ry + rh;
 const layer = (name) => map.layers.find((l) => l.name === name);
+const setFloor = (x, y, tile) => {
+  const i = y * map.width + x;
+  layer('ground').data[i] = tile + 1;
+  layer('decor').data[i] = 0;
+  layer('collision').data[i] = 0;
+};
 
-for (let y = 0; y < map.height; y++) {
-  for (let x = 0; x < map.width; x++) {
-    const i = y * map.width + x;
-    if (inRect(x, y)) {
-      layer('ground').data[i] = config.floor + 1;
-      layer('decor').data[i] = 0;
-      layer('collision').data[i] = 0;
+for (const area of config.generated) {
+  for (let y = 0; y < map.height; y++) {
+    for (let x = 0; x < map.width; x++) {
+      if (inRect(area.rect, x, y)) setFloor(x, y, area.floor);
     }
   }
 }
 
-for (const [x, y] of config.stripFloor ?? []) {
-  const i = y * map.width + x;
-  layer('ground').data[i] = config.floor + 1;
-  layer('decor').data[i] = 0;
-  layer('collision').data[i] = 0;
-}
+for (const [x, y, tile] of config.stripFloor ?? []) setFloor(x, y, tile);
 
+const species = config.generated.flatMap((area) => area.species);
 const objects = map.layers.find((l) => l.type === 'objectgroup').objects;
 const tileOf = (o) => [Math.floor(o.x / 16), Math.floor(o.y / 16)];
 const kept = objects.filter((o) => {
   if (['habitat', 'area', 'generated', 'connector'].includes(o.type)) return false;
   if (o.type === 'spot')
     return (
-      !inRect(...tileOf(o)) &&
-      !config.species.includes(o.properties.find((p) => p.name === 'speciesId').value)
+      !config.generated.some((area) => inRect(area.rect, ...tileOf(o))) &&
+      !species.includes(o.properties.find((p) => p.name === 'speciesId').value)
     );
   return true;
 });
 
 let nextId = Math.max(0, ...objects.map((o) => o.id)) + 1;
 const string = (name, value) => ({ name, type: 'string', value });
+const bool = (name, value) => ({ name, type: 'bool', value });
 const rect = (type, name, [x, y, w, h], properties) => ({
   id: nextId++,
   name,
@@ -71,34 +74,41 @@ for (const zone of config.stripZones)
       string('habitatId', zone.habitatId),
     ]),
   );
-kept.push(
-  rect('area', `area_${config.areaId}_strip`, config.stripArea, [string('areaId', config.areaId)]),
-);
-kept.push(
-  rect('generated', `generated_${config.biome}`, config.rect, [
-    string('areaId', config.areaId),
-    string('biome', config.biome),
-    string('species', config.species.join(',')),
-  ]),
-);
-for (const [x, y] of config.connectors) {
-  kept.push({
-    id: nextId++,
-    name: `connector_${x}_${y}`,
-    type: 'connector',
-    point: true,
-    x: x * 16 + 8,
-    y: y * 16 + 8,
-    width: 0,
-    height: 0,
-    rotation: 0,
-    visible: true,
-  });
+for (const area of config.stripAreas)
+  kept.push(
+    rect('area', `area_${area.areaId}_${area.rect.join('_')}`, area.rect, [
+      string('areaId', area.areaId),
+      ...(area.underground ? [bool('underground', true)] : []),
+    ]),
+  );
+for (const area of config.generated) {
+  kept.push(
+    rect('generated', `generated_${area.biome}`, area.rect, [
+      string('areaId', area.areaId),
+      string('biome', area.biome),
+      string('species', area.species.join(',')),
+      ...(area.underground ? [bool('underground', true)] : []),
+    ]),
+  );
+  for (const [x, y] of area.connectors) {
+    kept.push({
+      id: nextId++,
+      name: `connector_${x}_${y}`,
+      type: 'connector',
+      point: true,
+      x: x * 16 + 8,
+      y: y * 16 + 8,
+      width: 0,
+      height: 0,
+      rotation: 0,
+      visible: true,
+    });
+  }
 }
 
 map.layers.find((l) => l.type === 'objectgroup').objects = kept;
 map.nextobjectid = nextId;
 writeFileSync(file, JSON.stringify(map, null, 1) + '\n');
 console.log(
-  `${config.map}: template with ${config.species.length} species, ${config.connectors.length} connector(s)`,
+  `${config.map}: template with ${config.generated.length} generated area(s), ${species.length} species`,
 );

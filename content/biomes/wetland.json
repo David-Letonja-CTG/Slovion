@@ -1,0 +1,19 @@
+{
+  "id": "wetland",
+  "floor": [51],
+  "pathSet": 64,
+  "border": [31],
+  "layers": [
+    { "id": "dry_meadow", "coverage": 0.25, "scale": 4, "smooth": 2, "floor": [0, 1, 12, 13], "bias": "north", "biasStrength": 0.4 },
+    { "id": "reeds", "coverage": 0.12, "scale": 3, "smooth": 1, "floor": [50], "blocking": true, "bias": "south", "biasStrength": 0.8 }
+  ],
+  "openings": { "count": [1, 2], "radius": [2, 2], "floor": [0, 1, 12, 13], "pathSet": 64 },
+  "water": { "kind": "shore", "edge": "south", "chance": 1.0, "size": 3, "tiles": [48], "shallow": [46], "shallowWidth": 2, "bank": [55] },
+  "decor": [{ "tiles": [5, 20], "blocking": true, "density": 0.03, "where": "floor" }],
+  "zones": [
+    { "kind": "open_water", "where": "water", "habitat": "wetland" },
+    { "kind": "reedbed", "where": "layer:reeds", "habitat": "wetland" },
+    { "kind": "lake_shore", "where": "near:water:2", "habitat": "wetland" },
+    { "kind": "wet_meadow", "where": "any", "habitat": "wetland" }
+  ]
+}

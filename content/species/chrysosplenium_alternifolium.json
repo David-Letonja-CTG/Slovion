@@ -104,5 +104,12 @@
       2,
       1
     ]
+  },
+  "placement": {
+    "zones": [
+      "stream_bank"
+    ],
+    "water": "near",
+    "tile": 121
   }
 }

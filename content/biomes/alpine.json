@@ -1,0 +1,25 @@
+{
+  "id": "alpine",
+  "floor": [22, 23, 35, 22, 23],
+  "pathSet": 96,
+  "border": [37],
+  "layers": [
+    { "id": "scree", "coverage": 0.3, "scale": 4, "smooth": 2, "floor": [33], "bias": "north", "biasStrength": 0.5 },
+    { "id": "snow", "coverage": 0.12, "scale": 4, "smooth": 1, "floor": [34], "bias": "north", "biasStrength": 0.9 },
+    { "id": "cliff", "coverage": 0.06, "scale": 3, "smooth": 1, "floor": [37], "blocking": true, "bias": "north", "biasStrength": 1 }
+  ],
+  "openings": { "count": [1, 2], "radius": [2, 3], "floor": [22, 23, 35], "pathSet": 96 },
+  "decor": [
+    { "tiles": [32], "blocking": true, "density": 0.1, "where": "layer:scree" },
+    { "tiles": [36], "blocking": true, "density": 0.06, "where": "floor" },
+    { "tiles": [32], "blocking": true, "density": 0.03, "where": "floor" }
+  ],
+  "zones": [
+    { "kind": "snowfield", "where": "layer:snow" },
+    { "kind": "rock", "where": "layer:cliff" },
+    { "kind": "scree", "where": "layer:scree", "habitat": "alpine_grassland" },
+    { "kind": "rocky_edge", "where": "edge:scree:2", "habitat": "alpine_grassland" },
+    { "kind": "alpine_meadow", "where": "opening", "habitat": "alpine_grassland" },
+    { "kind": "grassland", "where": "any", "habitat": "alpine_grassland" }
+  ]
+}

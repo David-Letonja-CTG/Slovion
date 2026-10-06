@@ -109,5 +109,12 @@
       2,
       4
     ]
+  },
+  "placement": {
+    "zones": [
+      "lake_shore",
+      "wet_meadow"
+    ],
+    "water": "near"
   }
 }

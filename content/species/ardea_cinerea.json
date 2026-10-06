@@ -125,5 +125,11 @@
       3,
       4
     ]
+  },
+  "placement": {
+    "zones": [
+      "lake_shore"
+    ],
+    "water": "near"
   }
 }

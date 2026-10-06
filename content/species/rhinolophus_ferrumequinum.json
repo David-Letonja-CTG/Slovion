@@ -115,5 +115,10 @@
       1,
       0
     ]
+  },
+  "placement": {
+    "zones": [
+      "cave_floor"
+    ]
   }
 }

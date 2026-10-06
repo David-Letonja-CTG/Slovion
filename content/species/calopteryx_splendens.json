@@ -117,5 +117,11 @@
       1,
       2
     ]
+  },
+  "placement": {
+    "zones": [
+      "open_water"
+    ],
+    "water": "wade"
   }
 }

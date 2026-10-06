@@ -1,0 +1,22 @@
+{
+  "id": "karst",
+  "floor": [119],
+  "pathSet": 64,
+  "border": [112],
+  "layers": [
+    { "id": "limestone", "coverage": 0.35, "scale": 4, "smooth": 2, "floor": [118], "bias": "north", "biasStrength": 0.6 },
+    { "id": "outcrop", "coverage": 0.06, "scale": 3, "smooth": 1, "floor": [37], "blocking": true }
+  ],
+  "openings": { "count": [1, 1], "radius": [2, 2], "floor": [119], "pathSet": 64 },
+  "water": { "kind": "stream", "chance": 1.0, "size": 2, "tiles": [46] },
+  "decor": [
+    { "tiles": [27, 26], "blocking": true, "density": 0.07, "where": "floor" },
+    { "tiles": [32], "blocking": true, "density": 0.1, "where": "layer:limestone" }
+  ],
+  "zones": [
+    { "kind": "stream", "where": "water", "habitat": "karst" },
+    { "kind": "stream_bank", "where": "near:water:2", "habitat": "karst" },
+    { "kind": "rocky_slope", "where": "layer:limestone", "habitat": "karst" },
+    { "kind": "gorge_floor", "where": "any", "habitat": "karst" }
+  ]
+}

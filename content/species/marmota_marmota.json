@@ -126,5 +126,11 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "alpine_meadow",
+      "grassland"
+    ]
   }
 }

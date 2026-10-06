@@ -20,6 +20,9 @@ public sealed class ClientMapFixtureTests
     [Theory]
     [InlineData("kocevje_forest")]
     [InlineData("pohorje_forest")]
+    [InlineData("triglav_alps")]
+    [InlineData("cerknica_lake")]
+    [InlineData("rakov_skocjan_karst")]
     public void The_client_fixtures_are_the_server_s_maps_for_seed_1(string mapId)
     {
         var content = ContentFolder.RepositoryContent();

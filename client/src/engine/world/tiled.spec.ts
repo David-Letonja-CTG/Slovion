@@ -1,5 +1,5 @@
-import cerknica from '../../../../content/maps/cerknica_lake.json';
-import karst from '../../../../content/maps/rakov_skocjan_karst.json';
+import cerknica from '../testing/maps/cerknica_lake.json';
+import karst from '../testing/maps/rakov_skocjan_karst.json';
 // Kočevje and Pohorje are generated per save (D13): their tests use the server's maps for world seed 1.
 import kocevje from '../testing/maps/kocevje_forest.json';
 import ljubljana from '../../../../content/maps/ljubljana_park.json';
@@ -7,7 +7,7 @@ import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import murskaSobota from '../../../../content/maps/murska_sobota_village.json';
 import pohorje from '../testing/maps/pohorje_forest.json';
 import portoroz from '../../../../content/maps/portoroz_coast.json';
-import triglav from '../../../../content/maps/triglav_alps.json';
+import triglav from '../testing/maps/triglav_alps.json';
 import { STEP_MS } from '../game-loop';
 import { ActionState } from '../input/action-state';
 import { MapFormatError, parseTiledMap } from './tiled';
@@ -149,9 +149,9 @@ describe('parseTiledMap', () => {
   it.each([
     ['kocevje_forest', kocevje, 'kocevje_forest_ursus_arctos_1', 'kocevje_forest'],
     ['pohorje_forest', pohorje, 'pohorje_forest_canis_lupus_1', 'pohorje_forest'],
-    ['triglav_alps', triglav, 'triglav_chamois_1', 'triglav_slopes'],
-    ['cerknica_lake', cerknica, 'cerknica_heron_1', 'cerknica_lake'],
-    ['rakov_skocjan_karst', karst, 'karst_saxifrage_1', 'rakov_skocjan'],
+    ['triglav_alps', triglav, 'triglav_alps_rupicapra_rupicapra_1', 'triglav_slopes'],
+    ['cerknica_lake', cerknica, 'cerknica_lake_ardea_cinerea_1', 'cerknica_lake'],
+    ['rakov_skocjan_karst', karst, 'rakov_skocjan_karst_saxifraga_rotundifolia_1', 'rakov_skocjan'],
     ['ljubljana_park', ljubljana, 'city_hedgehog_1', 'ljubljana'],
     ['murska_sobota_village', murskaSobota, 'orchard_hoopoe_1', 'murska_sobota'],
     ['portoroz_coast', portoroz, 'sea_salema_1', 'portoroz'],
@@ -253,9 +253,12 @@ describe('parseTiledMap', () => {
 
     expect([map.areaAt(1, 9), map.isUnderground(1, 9)]).toEqual(['rakov_skocjan', false]);
     expect([map.areaAt(20, 8), map.isUnderground(20, 8)]).toEqual(['zelske_jame', true]);
-    const olm = spot('karst_olm_1');
+    const olm = spot('rakov_skocjan_karst_proteus_anguinus_1');
     expect([map.isWadeable(olm.x, olm.y), map.isUnderground(olm.x, olm.y)]).toEqual([true, true]);
-    for (const id of ['karst_beetle_1', 'karst_bat_1']) {
+    for (const id of [
+      'rakov_skocjan_karst_leptodirus_hochenwartii_1',
+      'rakov_skocjan_karst_rhinolophus_ferrumequinum_1',
+    ]) {
       expect(
         [map.isBlocked(spot(id).x, spot(id).y), map.isUnderground(spot(id).x, spot(id).y)],
         id,
@@ -379,18 +382,18 @@ describe('parseTiledMap', () => {
     ).toBe(true);
   });
 
-  it('needs the boots for the water lily and the islet on the lake, and never enters deep water', () => {
+  it('needs the boots for the water lily and the demoiselle in the shallows, and never enters deep water', () => {
     const without = reachableFromSpawn([], 'cerknica_lake', cerknica);
     const withBoots = reachableFromSpawn([], 'cerknica_lake', cerknica, ['boots']);
     const spot = (id: string) => without.map.spots.find((s) => s.spotId === id)!;
-    const wading = ['cerknica_water_lily_1', 'cerknica_demoiselle_1'];
+    const wading = ['cerknica_lake_nymphaea_alba_1', 'cerknica_lake_calopteryx_splendens_1'];
 
     for (const id of wading) {
       expect(without.reachable(spot(id).x, spot(id).y), id).toBe(false);
       expect(withBoots.reachable(spot(id).x, spot(id).y), id).toBe(true);
     }
-    // The lily lies two tiles out: no tile next to it can be reached without the boots.
-    const lily = spot('cerknica_water_lily_1');
+    // The lily lies out in the shallows: no tile next to it can be reached without the boots.
+    const lily = spot('cerknica_lake_nymphaea_alba_1');
     for (const [dx, dy] of [
       [1, 0],
       [-1, 0],
@@ -402,7 +405,14 @@ describe('parseTiledMap', () => {
     for (const s of without.map.spots.filter((s) => !wading.includes(s.spotId))) {
       expect(without.reachable(s.x, s.y), s.spotId).toBe(true);
     }
-    for (let x = 0; x < without.map.width; x++) expect(withBoots.reachable(x, 17)).toBe(false);
+    // With the boots the player reaches only walkable tiles and the wadeable shallows, never the deep water.
+    const { map } = withBoots;
+    for (let y = 0; y < map.height; y++) {
+      for (let x = 0; x < map.width; x++) {
+        if (withBoots.reachable(x, y))
+          expect(!map.isBlocked(x, y) || map.isWadeable(x, y), `${x},${y}`).toBe(true);
+      }
+    }
   });
 
   it('searches at a spruce beside the Pohorje path, from outside the zones', () => {

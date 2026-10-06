@@ -108,5 +108,12 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "rocky_edge",
+      "scree"
+    ],
+    "tile": 44
   }
 }

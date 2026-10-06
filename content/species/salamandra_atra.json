@@ -137,5 +137,12 @@
       2,
       3
     ]
+  },
+  "placement": {
+    "zones": [
+      "grassland",
+      "alpine_meadow",
+      "rocky_edge"
+    ]
   }
 }

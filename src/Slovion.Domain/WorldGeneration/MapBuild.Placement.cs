@@ -35,6 +35,7 @@ internal sealed partial class MapBuild
     {
         var spec = template.Areas[area];
         var reach = Reach();
+        var wading = WadeReach();
         var fromSpawn = GridSearch.Distances(width, height, [spawn], Walkable);
         var keepAway = spec.Connectors.Select(point => Index(point.X, point.Y)).Append(spawn).ToList();
         foreach (var request in spec.Species)
@@ -51,7 +52,7 @@ internal sealed partial class MapBuild
                 foreach (var cell in Cells(spec.Rect))
                 {
                     var preference = zoneKind[cell] is { } kind ? IndexOf(placement.Zones, kind) : -1;
-                    if (preference >= 0 && Fits(cell, placement, reach, fromSpawn)
+                    if (preference >= 0 && Fits(cell, placement, reach, wading, fromSpawn)
                         && spots.Select(spot => spot.Cell).Concat(keepAway).All(other => Chebyshev(cell, other) >= spacing))
                     {
                         weighted.Add((cell, placement.Zones.Count - preference));
@@ -73,11 +74,12 @@ internal sealed partial class MapBuild
                 decor[chosen] = tile;
                 blocked[chosen] |= placement.Blocking;
                 reach = Reach();
+                wading = WadeReach();
             }
         }
     }
 
-    private bool Fits(int cell, SpeciesPlacement placement, bool[] reach, int[] fromSpawn)
+    private bool Fits(int cell, SpeciesPlacement placement, bool[] reach, bool[] wading, int[] fromSpawn)
     {
         if (border[cell] || path[cell])
         {
@@ -88,6 +90,7 @@ internal sealed partial class MapBuild
         var fits = placement.Water switch
         {
             WaterNeed.In => water[cell] && neighbourReached,
+            WaterNeed.Wade => water[cell] && Wadeable(cell) && wading[cell] && !neighbourReached,
             _ when water[cell] => false,
             _ when placement.Perched => blocked[cell] && decor[cell] != NoTile && neighbourReached,
             WaterNeed.Near => !blocked[cell] && reach[cell] && waterDistance[cell] <= NearWaterTiles,
@@ -99,7 +102,10 @@ internal sealed partial class MapBuild
         return fits && nearSpawn;
     }
 
-    /// <summary>Path tiles by their neighbours (design §5): a set of 16 per floor, +1/+2/+4/+8 when the north/east/south/west side is closed.</summary>
+    /// <summary>
+    /// Path tiles by their neighbours (design §5): a set of 16 per floor, +1/+2/+4/+8 when the north/east/south/west side
+    /// is closed; a biome without path tiles keeps its floor there.
+    /// </summary>
     private void TilePaths()
     {
         for (var cell = 0; cell < ground.Length; cell++)
@@ -111,9 +117,15 @@ internal sealed partial class MapBuild
 
             var biome = biomes[template.Areas[areaOf[cell]].BiomeId];
             var set = opening[cell] && biome.Openings is { } openings ? openings.PathSet : biome.PathSet;
+            if (set is null)
+            {
+                ground[cell] = biome.Floor[cell % biome.Floor.Count];
+                continue;
+            }
+
             var x = cell % width;
             var y = cell / width;
-            ground[cell] = set
+            ground[cell] = set.Value
                 + (IsPath(x, y - 1) ? 0 : 1)
                 + (IsPath(x + 1, y) ? 0 : 2)
                 + (IsPath(x, y + 1) ? 0 : 4)
