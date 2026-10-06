@@ -33,4 +33,4 @@
 - [x] 3.2b Biome `village` (Murska Sobota): houses and a farmhouse with a chimney (the stork's perch) as structures, fields, an orchard, an oxbow of the Mura (`wadeable`); template; placement
 - [x] 3.3 Meadow E2E (tutorial, Vera, hedgerow, signpost) with routes; the docs media capture with a fixed seed and routes
 - [x] 3.4 Full checks; docs; `openspec validate add-world-generation --strict`; PR for phase 3
-- [ ] 3.5 Manual playtest of each region on a few seeds (desktop and phone), recorded in the PR
+- [x] 3.5 Manual playtest of each region on a few seeds (desktop and phone), recorded in the PR
