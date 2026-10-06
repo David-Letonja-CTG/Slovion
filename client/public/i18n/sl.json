@@ -163,6 +163,17 @@
     "on": "Svetilka je prižgana.",
     "off": "Svetilka je ugasnjena."
   },
+  "sound": {
+    "button": "Zvok",
+    "title": "Zvok",
+    "music": "Glasba",
+    "effects": "Zvoki",
+    "nature": "Narava",
+    "mute": "Utišaj vse",
+    "muteButton": "Utišaj",
+    "unmuteButton": "Vklopi zvok",
+    "hint": "Puščici gor in dol izbereta glasnost, levo in desno jo spremenita, Enter utiša ali vklopi zvok."
+  },
   "area": {
     "label": "Lokacija"
   },

@@ -4,6 +4,7 @@ import {
   DestroyRef,
   InjectionToken,
   computed,
+  effect,
   inject,
   signal,
   viewChild,
@@ -12,6 +13,8 @@ import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { Action, Game, Interaction, ResidentInfo, WorldTime, worldTimeAt } from '../../engine';
+import { AudioService } from '../audio/audio.service';
+import { SoundSettingsDialog } from '../audio/sound-settings-dialog';
 import {
   AlreadyIdentified,
   AnswerResult,
@@ -101,6 +104,8 @@ type Overlay =
   | { readonly kind: 'inventory' }
   /** A research station's board. */
   | { readonly kind: 'station'; readonly station: StationInfo }
+  /** The sound settings. */
+  | { readonly kind: 'sound' }
   | { readonly kind: 'error'; readonly code: ApiErrorCode };
 
 /** The game: the world on canvas plus UI overlays that take input while open. */
@@ -118,6 +123,7 @@ type Overlay =
     TranslocoPipe,
     TravelMap,
     InventoryPanel,
+    SoundSettingsDialog,
     StationDialog,
   ],
   templateUrl: './play-screen.html',
@@ -134,6 +140,8 @@ export class PlayScreen {
   private readonly travelMap = viewChild(TravelMap);
   private readonly inventory = viewChild(InventoryPanel);
   private readonly stationDialog = viewChild(StationDialog);
+  private readonly soundSettings = viewChild(SoundSettingsDialog);
+  protected readonly audio = inject(AudioService);
   private readonly fadeMs = inject(TRAVEL_FADE_MS);
   private game: Game | undefined;
   /** The map of the place the player is in. */
@@ -201,6 +209,26 @@ export class PlayScreen {
           this.loadError.set(reason);
         }
       });
+
+    // Sound follows the place, the time of day and the weather; the music is turned down while a dialog is open.
+    effect(() => {
+      const place = this.world();
+      const time = this.time();
+      if (!place || !time) return;
+      const area = this.area();
+      this.audio.setScene({
+        mapId: place.map.id,
+        timeOfDay: time.timeOfDay,
+        weather: this.weather()?.weather ?? 'clear',
+        underground: place.map.areas.some(
+          (zone) => zone.areaId === area && zone.underground === true,
+        ),
+      });
+    });
+    effect(() => {
+      const kind = this.overlay().kind;
+      this.audio.duck(kind !== 'none' && kind !== 'pending');
+    });
 
     // The game loop pauses while the page is hidden, but the server clock does not: re-sync on return.
     const document = inject(DOCUMENT);
@@ -303,6 +331,7 @@ export class PlayScreen {
   }
 
   protected onTorchChanged(on: boolean): void {
+    if (on !== this.torchOn()) this.audio.play('torch');
     this.torchOn.set(on);
   }
 
@@ -357,6 +386,7 @@ export class PlayScreen {
       return;
     }
 
+    if (interaction.kind === 'search') this.audio.play('search');
     const request =
       interaction.kind === 'spot'
         ? this.api.startEncounter(interaction.mapId, interaction.spotId)
@@ -392,6 +422,7 @@ export class PlayScreen {
    */
   protected onTravel(region: RegionInfo): void {
     this.overlay.set({ kind: 'pending' });
+    this.audio.play('travel');
     this.api.travel(region.regionId).subscribe({
       next: (travelled) => void this.arrive(travelled.mapId),
       error: (error: unknown) => {
@@ -427,6 +458,7 @@ export class PlayScreen {
   ): Overlay {
     if ('found' in result) return { kind: interaction === 'spot' ? 'notNow' : 'nothing' };
     if ('alreadyIdentified' in result) {
+      if (result.researched) this.audio.play('research');
       return {
         kind: 'known',
         name: result.entry.species?.name ?? '',
@@ -435,6 +467,7 @@ export class PlayScreen {
         certificates: result.newCertificates ?? [],
       };
     }
+    this.audio.play('observe');
     return { kind: 'encounter', encounter: result };
   }
 
@@ -442,6 +475,7 @@ export class PlayScreen {
     this.overlay.set({ kind: 'pending' });
     this.api.answer(encounter.encounterId, speciesId).subscribe({
       next: (result) => {
+        this.audio.play(result.correct ? 'correct' : 'wrong');
         if (result.correct) this.refreshProgress();
         this.overlay.set({ kind: 'result', result });
       },
@@ -455,6 +489,12 @@ export class PlayScreen {
     this.game?.setTools(conversation.items.map((item) => item.itemId));
     const owned = new Set(this.toolIds());
     const received = conversation.items.filter((item) => !owned.has(item.itemId));
+    const before = this.progress().quests.find(
+      (quest) => quest.questId === conversation.quest.questId,
+    );
+    const completed = conversation.quest.status === 'completed' && before?.status !== 'completed';
+    if (completed) this.audio.play('quest');
+    if (received.length > 0) this.audio.play('tool');
     this.progress.update((progress) => ({
       flags: conversation.flags,
       quests: [
@@ -490,6 +530,17 @@ export class PlayScreen {
     this.open({ kind: 'naturedex' });
   }
 
+  /** The sound settings, from the button; focus returns to the game when they close. */
+  protected openSoundSettings(): void {
+    this.open({ kind: 'sound' });
+  }
+
+  /** The quick mute button; focus goes back to the game. */
+  protected toggleMute(): void {
+    this.audio.update({ muted: !this.audio.settings().muted });
+    this.canvas()?.focus();
+  }
+
   /** The bag, from the Inventory action or the button; focus returns to the game when it closes. */
   protected openInventory(): void {
     this.open({ kind: 'inventory' });
@@ -508,6 +559,7 @@ export class PlayScreen {
     this.canvas()?.focus();
     // A finished research station is announced after the research message, like a new tool.
     if (closing.kind === 'known') {
+      if (closing.certificates.length > 0) this.audio.play('certificate');
       for (const certificate of closing.certificates) {
         const name = this.transloco.translate('certificate.received', { name: certificate.name });
         this.banner.update((banner) => ({ key: (banner?.key ?? 0) + 1, name }));
@@ -558,6 +610,8 @@ export class PlayScreen {
       this.inventory()?.handleAction(action);
     } else if (kind === 'station') {
       this.stationDialog()?.handleAction(action);
+    } else if (kind === 'sound') {
+      this.soundSettings()?.handleAction(action);
     }
   }
 }

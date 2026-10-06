@@ -1,5 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { Provider } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
@@ -91,6 +92,8 @@ export class MemoryStorage {
 export interface TestAppOptions {
   /** Device storage; `'blocked'` makes every access throw. */
   readonly storage?: MemoryStorage | 'blocked';
+  /** Further providers, e.g. a stand-in for a service. */
+  readonly providers?: readonly Provider[];
 }
 
 /** Configures TestBed like the real app, with HTTP, storage, images and the engine faked. */
@@ -123,6 +126,7 @@ export async function setupTestApp(options: TestAppOptions = {}) {
           return game;
         },
       },
+      ...(options.providers ?? []),
     ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load('sl'));

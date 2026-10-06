@@ -110,6 +110,7 @@ flowchart TB
     Session["session/<br/>GameSession, SaveTokenStore"]
     I18n["i18n/<br/>Transloco, sl-SI catalog"]
     Pwa["pwa/<br/>updates, connection status"]
+    Audio["audio/<br/>AudioService, sound settings,<br/>Web Audio synth"]
   end
   Engine["engine/ (client/src/engine)"]
 
@@ -118,14 +119,16 @@ flowchart TB
   Play --> Loader
   Play --> Dialogs
   Play --> Canvas
+  Play --> Audio
   Canvas --> Engine
   Dialogs --> Api
   Api --> Session
 ```
 
 - **`PlayScreen` is the conductor.** It loads the current region (regions, progress, time, wildlife, weather, the map and its images), creates the game through `GameCanvas`, and turns each engine interaction into an API call and a dialog. While a dialog is open, input goes to the UI instead of the world.
+- **Sound is synthesized** with Web Audio in `audio/synth/` (framework-free like the engine, tested against a fake audio context). `AudioService` makes the audio context on the first click or key press, loads the themes and soundscapes from `public/audio/`, and stops while the page is hidden; `PlayScreen` tells it the scene (map, time of day, weather, underground) and which effect to play. Sound never affects the game.
 - **All text is translated.** UI text comes from the `sl-SI` catalog (`public/i18n/sl.json`, checked by `npm run i18n:check`); content text comes localized from the API (D7).
-- **The installed app** (PWA) caches the built app shell, never `/api` or `/content`; playing needs the server, and a new version shows *Osveži*. The dev server never registers the service worker. To try it locally: run the API, then `npm run build` and `node e2e/serve-dist.mjs 4201` in `client/`, and open http://localhost:4201.
+- **The installed app** (PWA) caches the built app shell with its music and soundscapes, never `/api` or `/content`; playing needs the server, and a new version shows *Osveži*. The dev server never registers the service worker. To try it locally: run the API, then `npm run build` and `node e2e/serve-dist.mjs 4201` in `client/`, and open http://localhost:4201.
 
 ## Game engine
 
@@ -266,6 +269,7 @@ Setup, secrets, backups and operations are in [hosting.md](hosting.md).
 | Add a species, region, quest, tool or station | Content files only — see [content.md](content.md) | Content validation runs at startup and in `dotnet test` |
 | Add a game rule the server decides | `Domain` (rule) and `Application` (use case), an endpoint in `Api/<Feature>` | Domain and application tests, integration tests |
 | Add something that moves or is drawn | `client/src/engine/` (world, renderer, tiled parser) | Engine tests with `textMap` and a fake environment |
+| Add music, ambience or a sound effect | `client/public/audio/` (data) or `client/src/app/audio/synth/` — see [content.md](content.md#sound) | Synth tests with the fake audio context, the audio data test |
 | Add a screen, dialog or text | `client/src/app/` and `public/i18n/sl.json` | Component tests, `npm run i18n:check` |
 | Store new player state | an entity in `Domain`, its configuration and a migration in `Infrastructure` | Integration tests (need Docker) |
 | Change how the game is hosted or deployed | `deploy/`, `.github/workflows/deploy.yml`, [hosting.md](hosting.md) | The container smoke test in CI |

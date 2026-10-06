@@ -1,6 +1,8 @@
+import { Provider } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import karst from '../../../../content/maps/rakov_skocjan_karst.json';
 import kocevje from '../../../../content/maps/kocevje_forest.json';
 import meadow from '../../../../content/maps/dravsko_polje_meadow.json';
 import sl from '../../../public/i18n/sl.json';
@@ -14,6 +16,8 @@ import {
   RegionsInfo,
   StationInfo,
 } from '../api/game-api';
+import { AudioService } from '../audio/audio.service';
+import { FakeAudioService } from '../audio/testing/fake-audio-service';
 import { GameSession } from '../session/game-session';
 import { SaveTokenStore } from '../session/save-token-store';
 import {
@@ -42,6 +46,8 @@ const AREA_NAMES: Record<string, string> = {
   meadow: 'Travnik na Dravskem polju',
   south_hedgerow: 'Južna mejica',
   kocevje_forest: 'Kočevski gozd',
+  rakov_skocjan: 'Rakov Škocjan',
+  zelske_jame: 'Zelške jame',
 };
 /** The meadow's weather on a new save: the period 06:00–11:59, changing at 12:00. */
 const CLEAR_MORNING = { weather: 'clear', changesAtMinutes: 720 } as const;
@@ -63,8 +69,9 @@ async function openPlay(
   progressResponse: PlayerProgress | number = NO_PROGRESS,
   regions: RegionsInfo = REGIONS,
   weather: object | number = CLEAR_MORNING,
+  providers: readonly Provider[] = [],
 ) {
-  const app = await setupTestApp();
+  const app = await setupTestApp({ providers });
   TestBed.inject(SaveTokenStore).set('play-token');
   TestBed.inject(GameSession).active.set(true);
 
@@ -1480,5 +1487,230 @@ describe('Research stations', () => {
       expect(panel().querySelector('.certificates')).toBeNull();
       expect(panel().querySelector('h2')?.textContent).toBe(sl.naturedex.title);
     });
+  });
+});
+
+describe('Sound', () => {
+  afterEach(() => TestBed.inject(Router).dispose());
+
+  const IN_GRASS = { kind: 'search', mapId: 'dravsko_polje_meadow', x: 12, y: 12 } as const;
+  const VERA = { kind: 'npc', mapId: 'dravsko_polje_meadow', npcId: 'vera' } as const;
+  const QUEST_DONE: QuestInfo = {
+    questId: 'eye_for_nature',
+    title: 'Oko za naravo',
+    summary: '',
+    returnHint: '',
+    status: 'completed',
+    progress: 3,
+    goal: 3,
+  };
+
+  /** The play screen with a recording stand-in for the sound. */
+  async function openWithSound(
+    map: object = meadow,
+    progress: PlayerProgress = NO_PROGRESS,
+    regions: RegionsInfo = REGIONS,
+    weather: object = CLEAR_MORNING,
+  ) {
+    const audio = new FakeAudioService();
+    const play = await openPlay(map, progress, regions, weather, [
+      { provide: AudioService, useValue: audio },
+    ]);
+    const button = (selector: string) => play.root().querySelector<HTMLButtonElement>(selector);
+    return { ...play, audio, button };
+  }
+
+  it('has no sound buttons where the browser cannot play sound', async () => {
+    const { root } = await openPlay();
+
+    expect(root().querySelector('.play__sound')).toBeNull();
+    expect(root().querySelector('.play__mute')).toBeNull();
+  });
+
+  it('plays the scene of the place, the time of day and the weather', async () => {
+    const { audio } = await openWithSound(meadow, NO_PROGRESS, REGIONS, {
+      weather: 'rain',
+      changesAtMinutes: 720,
+    });
+
+    expect(audio.scenes.at(-1)).toEqual({
+      mapId: 'dravsko_polje_meadow',
+      timeOfDay: 'morning',
+      weather: 'rain',
+      underground: false,
+    });
+  });
+
+  it('follows the player into an underground area and out again', async () => {
+    const karstRegion = {
+      ...REGIONS.regions[0],
+      regionId: 'rakov_skocjan',
+      name: 'Rakov Škocjan',
+      mapId: 'rakov_skocjan_karst',
+    };
+    const { audio, game, settle } = await openWithSound(karst, NO_PROGRESS, {
+      currentRegionId: 'rakov_skocjan',
+      regions: [...REGIONS.regions, karstRegion],
+    });
+
+    game.options!.onAreaChange!('zelske_jame');
+    await settle();
+    expect(audio.scenes.at(-1)).toMatchObject({ mapId: 'rakov_skocjan_karst', underground: true });
+
+    game.options!.onAreaChange!('rakov_skocjan');
+    await settle();
+    expect(audio.scenes.at(-1)?.underground).toBe(false);
+  });
+
+  it('turns the music down while a dialog is open', async () => {
+    const { audio, game, settle } = await openWithSound();
+    expect(audio.ducked).toBe(false);
+
+    game.options!.onOpenInventory!();
+    await settle();
+    expect(audio.ducked).toBe(true);
+
+    game.pressUi('Cancel');
+    await settle();
+    expect(audio.ducked).toBe(false);
+  });
+
+  it.each([
+    [true, 'correct'],
+    [false, 'wrong'],
+  ] as const)(
+    'plays the observation sound, then for a %s answer the %s sound',
+    async (correct, effect) => {
+      const { audio, game, http, root, settle } = await openWithSound();
+
+      game.options!.onInteract(SAGE);
+      http
+        .expectOne('/api/save/encounters')
+        .flush(SAGE_ENCOUNTER, { status: 201, statusText: 'Created' });
+      await settle();
+      expect(audio.effects).toEqual(['observe']);
+
+      [...root().querySelectorAll<HTMLButtonElement>('app-identification-dialog button')]
+        .find((button) => button.textContent?.trim() === 'travniška kadulja')!
+        .click();
+      http
+        .expectOne(`/api/save/encounters/${SAGE_ENCOUNTER.encounterId}/identification`)
+        .flush(sageAnswer(correct));
+      if (correct) http.expectOne('/api/save/progress').flush(NO_PROGRESS);
+      await settle();
+
+      expect(audio.effects).toEqual(['observe', effect]);
+    },
+  );
+
+  it('plays the search sound when a search starts', async () => {
+    const { audio, game, http } = await openWithSound();
+
+    game.options!.onInteract(IN_GRASS);
+
+    expect(audio.effects).toEqual(['search']);
+    http.expectOne('/api/save/searches').flush({ found: false });
+  });
+
+  it('plays the research sound, then the certificate sound as the message closes', async () => {
+    const { audio, game, http, settle } = await openWithSound();
+
+    game.options!.onInteract(SAGE);
+    http.expectOne('/api/save/encounters').flush({
+      alreadyIdentified: true,
+      researched: true,
+      entry: { ...SAGE_ENTRY, researchLevel: 3 },
+      newCertificates: [{ stationId: 'meadow_station', name: 'Postaja' }],
+    });
+    await settle();
+    expect(audio.effects).toEqual(['research']);
+
+    game.pressUi('Confirm');
+    await settle();
+    expect(audio.effects).toEqual(['research', 'certificate']);
+  });
+
+  it('plays the quest and tool sounds when a conversation completes a quest and gives a tool', async () => {
+    const { audio, game, http, settle } = await openWithSound(meadow, {
+      flags: [],
+      quests: [{ ...QUEST_DONE, status: 'active' }],
+      items: [LAMP],
+    });
+
+    game.options!.onInteract(VERA);
+    http.expectOne('/api/save/conversations').flush({
+      npcName: 'Vera',
+      lines: ['Odlično!'],
+      quest: QUEST_DONE,
+      flags: [],
+      items: [LAMP, BINOCULARS],
+    });
+    await settle();
+    game.pressUi('Confirm');
+    await settle();
+
+    expect(audio.effects).toEqual(['quest', 'tool']);
+  });
+
+  it('plays no quest sound when talking about a quest completed before', async () => {
+    const { audio, game, http, settle } = await openWithSound(meadow, {
+      flags: [],
+      quests: [QUEST_DONE],
+      items: [LAMP],
+    });
+
+    game.options!.onInteract(VERA);
+    http.expectOne('/api/save/conversations').flush({
+      npcName: 'Vera',
+      lines: ['Lep dan!'],
+      quest: QUEST_DONE,
+      flags: [],
+      items: [LAMP],
+    });
+    await settle();
+    game.pressUi('Confirm');
+    await settle();
+
+    expect(audio.effects).toEqual([]);
+  });
+
+  it('plays the torch sound when the torch is switched', async () => {
+    const { audio, game } = await openWithSound();
+
+    game.options!.onTorchChange!(true);
+    game.options!.onTorchChange!(false);
+
+    expect(audio.effects).toEqual(['torch', 'torch']);
+  });
+
+  it('mutes with the button, which then offers to turn sound back on', async () => {
+    const { audio, button, settle } = await openWithSound();
+    expect(button('.play__mute')?.textContent?.trim()).toBe(sl.sound.muteButton);
+    expect(button('.play__mute')?.getAttribute('aria-pressed')).toBe('false');
+
+    button('.play__mute')!.click();
+    await settle();
+
+    expect(audio.settings().muted).toBe(true);
+    expect(button('.play__mute')?.textContent?.trim()).toBe(sl.sound.unmuteButton);
+    expect(button('.play__mute')?.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('opens the sound settings with the button and closes them with Cancel', async () => {
+    const { game, button, root, settle } = await openWithSound();
+
+    button('.play__sound')!.click();
+    await settle();
+    expect(root().querySelector('app-sound-settings-dialog h2')?.textContent).toBe(sl.sound.title);
+    expect(game.consumer).toBe('ui');
+
+    game.pressUi('MoveRight');
+    await settle();
+    expect(root().querySelector<HTMLInputElement>('input[data-volume="music"]')?.value).toBe('60');
+
+    game.pressUi('Cancel');
+    await settle();
+    expect(root().querySelector('app-sound-settings-dialog')).toBeNull();
+    expect(game.consumer).toBe('world');
   });
 });

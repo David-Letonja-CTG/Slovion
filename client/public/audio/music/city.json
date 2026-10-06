@@ -1,0 +1,16 @@
+{
+  "id": "city",
+  "tempo": 104,
+  "channels": [
+    {
+      "wave": "pulse25",
+      "volume": 0.09,
+      "notes": "D5:1 F5:1 Bb5:2 F5:2 D5:2 G5:1 Bb5:1 D6:2 Bb5:2 G5:2 Eb5:2 G5:2 Bb5:2 G5:2 F5:2 A5:2 C6:4 Bb5:2 A5:2 Bb5:2 F5:2 G5:2 F5:2 D5:4 C5:2 Eb5:2 A4:2 C5:2 Bb4:6 -:2 F5:1 G5:1 F5:2 D5:2 F5:2 D6:2 C6:2 Bb5:4 G5:1 Ab5:1 G5:2 Eb5:4 A5:2 C6:2 F6:4 D6:2 Bb5:2 F5:2 D5:2 Bb5:2 G5:2 D5:4 Eb5:2 C5:2 F5:2 A5:2 Bb5:6 -:2"
+    },
+    {
+      "wave": "triangle",
+      "volume": 0.13,
+      "notes": "Bb2:2 F3:2 Bb2:2 F3:2 G2:2 D3:2 G2:2 D3:2 Eb3:2 Bb2:2 Eb3:2 Bb2:2 F2:2 C3:2 F2:2 C3:2 Bb2:2 F3:2 Bb2:2 F3:2 G2:2 D3:2 G2:2 D3:2 C3:2 G2:2 F2:2 C3:2 Bb2:8 Bb2:2 F3:2 Bb2:2 F3:2 G2:2 D3:2 G2:2 D3:2 Eb3:2 Bb2:2 Eb3:2 Bb2:2 F2:2 C3:2 F2:2 C3:2 Bb2:2 F3:2 Bb2:2 F3:2 G2:2 D3:2 G2:2 D3:2 C3:2 G2:2 F2:2 C3:2 Bb2:8"
+    }
+  ]
+}

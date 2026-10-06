@@ -1,0 +1,16 @@
+{
+  "id": "wetland",
+  "tempo": 80,
+  "channels": [
+    {
+      "wave": "pulse25",
+      "volume": 0.09,
+      "notes": "C5:2 F5:2 A5:4 A5:2 G5:2 F5:2 D5:2 D5:2 F5:2 Bb5:4 A5:2 G5:2 E5:4 F5:2 A5:2 C6:4 C6:2 A5:2 E5:4 D5:2 F5:2 E5:2 G5:2 F5:6 -:2 A5:4 C6:2 A5:2 F5:4 D5:2 F5:2 G5:2 Bb5:2 D6:4 C6:2 Bb5:2 G5:4 A5:2 G5:2 F5:4 E5:2 C5:2 A4:4 Bb4:2 D5:2 C5:2 E5:2 F5:6 -:2"
+    },
+    {
+      "wave": "triangle",
+      "volume": 0.13,
+      "notes": "F2:4 C3:4 D3:4 A2:4 Bb2:4 F2:4 C3:4 G2:4 F2:4 C3:4 A2:4 E3:4 Bb2:4 C3:4 F2:8 F2:4 C3:4 D3:4 A2:4 Bb2:4 F2:4 C3:4 G2:4 F2:4 C3:4 A2:4 E3:4 Bb2:4 C3:4 F2:8"
+    }
+  ]
+}

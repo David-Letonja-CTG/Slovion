@@ -15,7 +15,8 @@
           "/i18n/**",
           "/sprites/**",
           "/images/**",
-          "/icons/**"
+          "/icons/**",
+          "/audio/**"
         ]
       }
     }
