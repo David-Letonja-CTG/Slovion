@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,11 @@ public static class DependencyInjection
     public const string DatabaseHealthCheckName = "database";
     public const string ContentRootPathSetting = "Content:RootPath";
 
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    /// <summary>A world seed for every new save; allowed in development (and end-to-end tests) only.</summary>
+    public const string FixedWorldSeedSetting = "WorldGeneration:FixedSeed";
+
+    /// <exception cref="InvalidOperationException">A fixed world seed is configured outside development.</exception>
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, bool isDevelopment = false)
     {
         var connectionString = configuration.GetConnectionString(ConnectionStringName)
             ?? throw new InvalidOperationException($"Connection string '{ConnectionStringName}' is not configured.");
@@ -28,13 +33,25 @@ public static class DependencyInjection
         services.AddScoped<IEncounterRepository, EncounterRepository>();
         services.AddScoped<IQuestRepository, QuestRepository>();
         services.AddSingleton<IRandomSource, SystemRandomSource>();
+        if (configuration[FixedWorldSeedSetting] is { } text && long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var fixedSeed))
+        {
+            services.AddSingleton<IWorldSeedSource>(isDevelopment
+                ? new FixedWorldSeedSource(fixedSeed)
+                : throw new InvalidOperationException($"'{FixedWorldSeedSetting}' is for development only; every production save needs its own world."));
+        }
+        else
+        {
+            services.AddSingleton<IWorldSeedSource, RandomWorldSeedSource>();
+        }
 
         services.AddHealthChecks()
             .AddDbContextCheck<SlovionDbContext>(DatabaseHealthCheckName);
 
         // Content is loaded and validated eagerly: invalid content stops the API from starting.
         var contentRoot = ContentRootPath(configuration);
-        services.AddSingleton<IContentCatalog>(FileContentCatalog.Load(contentRoot));
+        var catalog = FileContentCatalog.Load(contentRoot);
+        services.AddSingleton<IContentCatalog>(catalog);
+        services.AddSingleton<IWorldMaps>(new WorldMaps(catalog));
 
         return services;
     }

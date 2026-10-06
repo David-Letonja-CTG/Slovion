@@ -70,12 +70,12 @@ public abstract record AnswerResult
 /// Observation encounters and identification, decided by the server (docs/decisions.md D1, D3). Only species available
 /// at the save's in-game time can be encountered (D8).
 /// </summary>
-public sealed class EncounterService(IContentCatalog content, IDiscoveryRepository discoveries, IEncounterRepository encounters, IRandomSource random, TimeProvider time)
+public sealed class EncounterService(IContentCatalog content, IWorldMaps maps, IDiscoveryRepository discoveries, IEncounterRepository encounters, IRandomSource random, TimeProvider time)
 {
     public async Task<StartEncounterResult> StartAsync(SaveSlot save, string mapId, string spotId, string language, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(save);
-        var spot = content.FindSpot(mapId, spotId);
+        var spot = maps.Find(save, mapId)?.FindSpot(spotId);
         var species = spot is null ? null : content.FindSpecies(spot.SpeciesId);
         if (spot is null || species is null)
         {
@@ -99,7 +99,7 @@ public sealed class EncounterService(IContentCatalog content, IDiscoveryReposito
     public async Task<SearchResult> SearchAsync(SaveSlot save, string mapId, int x, int y, string language, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(save);
-        var habitat = content.FindHabitatAt(mapId, x, y);
+        var habitat = maps.Find(save, mapId)?.HabitatAt(x, y) is { } habitatId ? content.FindHabitat(habitatId) : null;
         if (habitat is null)
         {
             return new SearchResult.UnknownHabitat();

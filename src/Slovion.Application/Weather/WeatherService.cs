@@ -22,7 +22,7 @@ public sealed class WeatherService(IContentCatalog content, TimeProvider time)
     public WeatherView? Current(SaveSlot save, string mapId)
     {
         ArgumentNullException.ThrowIfNull(save);
-        if (content.SpotsOn(mapId) is null)
+        if (!content.HasMap(mapId))
         {
             return null;
         }

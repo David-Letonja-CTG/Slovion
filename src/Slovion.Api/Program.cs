@@ -21,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSlovionProblemDetails();
 builder.Services.AddOpenApi();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<SaveSlotService>();
 builder.Services.AddScoped<EncounterService>();
@@ -50,7 +50,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapHealthChecks("/health");
-app.MapSaveEndpoints().MapDiscoveryEndpoints().MapQuestEndpoints().MapTimeEndpoints().MapWildlifeEndpoints().MapTravelEndpoints().MapWeatherEndpoints().MapStationEndpoints();
+app.MapSaveEndpoints().MapDiscoveryEndpoints().MapQuestEndpoints().MapTimeEndpoints().MapWildlifeEndpoints().MapTravelEndpoints().MapWeatherEndpoints().MapStationEndpoints().MapMapEndpoints();
 app.MapApiNotFoundFallback();
 
 await app.RunAsync();

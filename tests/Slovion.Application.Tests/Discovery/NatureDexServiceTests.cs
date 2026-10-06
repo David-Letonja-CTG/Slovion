@@ -31,7 +31,7 @@ public class NatureDexServiceTests
         catalog.Habitats.Add(FakeContentCatalog.Habitat("bank", 2, "Breg", null, Dandelion));
 
         var discoveries = new InMemoryDiscoveryRepository();
-        encounters = new EncounterService(catalog, discoveries, new InMemoryEncounterRepository(), new SeededRandom(1), time);
+        encounters = new EncounterService(catalog, catalog, discoveries, new InMemoryEncounterRepository(), new SeededRandom(1), time);
         service = new NatureDexService(catalog, discoveries);
     }
 

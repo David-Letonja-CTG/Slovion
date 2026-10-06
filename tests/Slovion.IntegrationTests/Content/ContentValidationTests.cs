@@ -1,5 +1,7 @@
 using System.Text.Json.Nodes;
+using Slovion.Application.Content;
 using Slovion.Domain.Content;
+using Slovion.Domain.Saves;
 using Slovion.Domain.World;
 using Slovion.Infrastructure.Content;
 
@@ -7,6 +9,15 @@ namespace Slovion.IntegrationTests.Content;
 
 public sealed class ContentValidationTests
 {
+    /// <summary>A map as a save with <paramref name="seed"/> sees it (authored maps are the same for every seed).</summary>
+    private static SaveMap? Map(FileContentCatalog catalog, string mapId, long seed = 0) =>
+        new WorldMaps(catalog).Find(SaveSlot.Create(Guid.NewGuid(), [1], DateTimeOffset.UnixEpoch, seed), mapId);
+
+    private static Habitat? HabitatAt(FileContentCatalog catalog, string mapId, int x, int y) =>
+        Map(catalog, mapId)?.HabitatAt(x, y) is { } habitatId ? catalog.FindHabitat(habitatId) : null;
+
+    private static MapSpot? SpotOn(FileContentCatalog catalog, string mapId, string spotId) => Map(catalog, mapId)?.FindSpot(spotId);
+
     [Fact]
     public void Repository_content_is_valid()
     {
@@ -15,27 +26,27 @@ public sealed class ContentValidationTests
         var sage = catalog.FindSpecies(SpeciesId.Parse("salvia_pratensis"));
         Assert.NotNull(sage);
         Assert.Equal("travniška kadulja", sage.Text["sl"].Name.Value);
-        Assert.Equal(sage.Id, catalog.FindSpot("dravsko_polje_meadow", "meadow_sage_1")?.SpeciesId);
+        Assert.Equal(sage.Id, SpotOn(catalog, "dravsko_polje_meadow", "meadow_sage_1")?.SpeciesId);
         Assert.Contains("sl", catalog.Languages);
 
         // The tall grass patches south and north of the path are habitat; the path and spawn are not.
-        Assert.Equal(70, catalog.FindHabitatAt("dravsko_polje_meadow", 12, 12)?.SearchChancePercent);
-        Assert.Equal("tall_grass", catalog.FindHabitatAt("dravsko_polje_meadow", 18, 15)?.Id);
-        Assert.Equal("tall_grass", catalog.FindHabitatAt("dravsko_polje_meadow", 8, 3)?.Id);
-        Assert.Equal("tall_grass", catalog.FindHabitatAt("dravsko_polje_meadow", 13, 6)?.Id);
-        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 10, 10));
-        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 19, 12));
-        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 12, 11));
+        Assert.Equal(70, HabitatAt(catalog, "dravsko_polje_meadow", 12, 12)?.SearchChancePercent);
+        Assert.Equal("tall_grass", HabitatAt(catalog, "dravsko_polje_meadow", 18, 15)?.Id);
+        Assert.Equal("tall_grass", HabitatAt(catalog, "dravsko_polje_meadow", 8, 3)?.Id);
+        Assert.Equal("tall_grass", HabitatAt(catalog, "dravsko_polje_meadow", 13, 6)?.Id);
+        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 10, 10));
+        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 19, 12));
+        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 12, 11));
 
         // The hedgerow strip south of the meadow: zones beside the track; the track and the hedge are not.
-        Assert.Equal("hedgerow", catalog.FindHabitatAt("dravsko_polje_meadow", 2, 20)?.Id);
-        Assert.Equal("hedgerow", catalog.FindHabitatAt("dravsko_polje_meadow", 13, 22)?.Id);
-        Assert.Equal("hedgerow", catalog.FindHabitatAt("dravsko_polje_meadow", 29, 22)?.Id);
-        Assert.Equal("hedgerow", catalog.FindHabitatAt("dravsko_polje_meadow", 5, 26)?.Id);
-        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 20, 21));
-        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 10, 23));
-        Assert.Null(catalog.FindHabitatAt("dravsko_polje_meadow", 20, 19));
-        Assert.Equal(SpeciesId.Parse("crataegus_monogyna"), catalog.FindSpot("dravsko_polje_meadow", "hedgerow_hawthorn_1")?.SpeciesId);
+        Assert.Equal("hedgerow", HabitatAt(catalog, "dravsko_polje_meadow", 2, 20)?.Id);
+        Assert.Equal("hedgerow", HabitatAt(catalog, "dravsko_polje_meadow", 13, 22)?.Id);
+        Assert.Equal("hedgerow", HabitatAt(catalog, "dravsko_polje_meadow", 29, 22)?.Id);
+        Assert.Equal("hedgerow", HabitatAt(catalog, "dravsko_polje_meadow", 5, 26)?.Id);
+        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 20, 21));
+        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 10, 23));
+        Assert.Null(HabitatAt(catalog, "dravsko_polje_meadow", 20, 19));
+        Assert.Equal(SpeciesId.Parse("crataegus_monogyna"), SpotOn(catalog, "dravsko_polje_meadow", "hedgerow_hawthorn_1")?.SpeciesId);
 
         // Vera stands on the meadow and gives the first quest, whose flag opens the hedgerow gate.
         Assert.Equal("Vera", catalog.FindNpcOnMap("dravsko_polje_meadow", "vera")?.Npc.Names["sl"]);
@@ -98,7 +109,7 @@ public sealed class ContentValidationTests
         Assert.Equal(slName, species.Text["sl"].Name.Value);
         Assert.Equal(3, species.Clues.Count);
         Assert.Equal(torch, species.Wildlife?.Torch);
-        Assert.Equal(species.Id, catalog.FindSpot(mapId, spotId)?.SpeciesId);
+        Assert.Equal(species.Id, SpotOn(catalog, mapId, spotId)?.SpeciesId);
         Assert.Contains(catalog.AllHabitats.Single(habitat => habitat.Id == habitatId).Species, entry => entry.SpeciesId == species.Id);
     }
 
@@ -144,7 +155,7 @@ public sealed class ContentValidationTests
         Assert.Equal(TorchReaction.Calm, species.Wildlife?.Torch);
         Assert.Equal([Weather.Rain], species.Availability.AlsoInWeather!.Order());
         Assert.DoesNotContain(TimeOfDay.Day, species.Availability.Times);
-        Assert.Equal(species.Id, catalog.FindSpot(mapId, spotId)?.SpeciesId);
+        Assert.Equal(species.Id, SpotOn(catalog, mapId, spotId)?.SpeciesId);
         Assert.Contains(catalog.AllHabitats.Single(habitat => habitat.Id == habitatId).Species, entry => entry.SpeciesId == species.Id);
     }
 
@@ -165,7 +176,7 @@ public sealed class ContentValidationTests
         var quest = catalog.FindQuestByGiver(npcId);
         Assert.NotNull(quest);
         Assert.Equal((questId, 3, habitatId, flag), (quest.Id, quest.IdentifiedSpeciesGoal, quest.GoalHabitatId, quest.RewardFlag));
-        Assert.Null(catalog.FindHabitatAt(mapId, 3, 10));
+        Assert.Null(HabitatAt(catalog, mapId, 3, 10));
     }
 
     [Theory]
@@ -233,11 +244,11 @@ public sealed class ContentValidationTests
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
 
         // The spawn (1, 9), the tile beside it and the signpost (2, 8) lie outside the zones; ground further away does not.
-        Assert.Null(catalog.FindHabitatAt(mapId, 1, 9));
-        Assert.Null(catalog.FindHabitatAt(mapId, 2, 9));
-        Assert.Null(catalog.FindHabitatAt(mapId, 2, 8));
-        Assert.Equal(habitatId, catalog.FindHabitatAt(mapId, 5, 16)?.Id);
-        Assert.All(spotIds, spotId => Assert.NotNull(catalog.FindSpot(mapId, spotId)));
+        Assert.Null(HabitatAt(catalog, mapId, 1, 9));
+        Assert.Null(HabitatAt(catalog, mapId, 2, 9));
+        Assert.Null(HabitatAt(catalog, mapId, 2, 8));
+        Assert.Equal(habitatId, HabitatAt(catalog, mapId, 5, 16)?.Id);
+        Assert.All(spotIds, spotId => Assert.NotNull(SpotOn(catalog, mapId, spotId)));
     }
 
     [Fact]
@@ -247,10 +258,10 @@ public sealed class ContentValidationTests
 
         Assert.Equal(new WildlifeTraits(TorchReaction.Shy, Aquatic: true), catalog.FindSpecies(SpeciesId.Parse("proteus_anguinus"))!.Wildlife);
         Assert.False(catalog.FindSpecies(SpeciesId.Parse("leptodirus_hochenwartii"))!.Wildlife!.Aquatic);
-        Assert.Equal(SpeciesId.Parse("proteus_anguinus"), catalog.FindSpot("rakov_skocjan_karst", "karst_olm_1")?.SpeciesId);
+        Assert.Equal(SpeciesId.Parse("proteus_anguinus"), SpotOn(catalog, "rakov_skocjan_karst", "karst_olm_1")?.SpeciesId);
         // The karst zones lie in the gorge only; nothing is searched in the cave.
-        Assert.Equal("karst", catalog.FindHabitatAt("rakov_skocjan_karst", 5, 3)?.Id);
-        Assert.Null(catalog.FindHabitatAt("rakov_skocjan_karst", 21, 8));
+        Assert.Equal("karst", HabitatAt(catalog, "rakov_skocjan_karst", 5, 3)?.Id);
+        Assert.Null(HabitatAt(catalog, "rakov_skocjan_karst", 21, 8));
     }
 
     [Fact]
@@ -260,13 +271,13 @@ public sealed class ContentValidationTests
         const string map = "ljubljana_park";
 
         // The spawn (1, 9), the signpost (2, 8) and Ana (3, 10) lie outside the zones.
-        Assert.Null(catalog.FindHabitatAt(map, 1, 9));
-        Assert.Null(catalog.FindHabitatAt(map, 2, 8));
-        Assert.Equal("city", catalog.FindHabitatAt(map, 10, 7)?.Id);
-        Assert.Equal("wetland", catalog.FindHabitatAt(map, 8, 17)?.Id);
-        Assert.Null(catalog.FindHabitatAt(map, 13, 3)); // the street
+        Assert.Null(HabitatAt(catalog, map, 1, 9));
+        Assert.Null(HabitatAt(catalog, map, 2, 8));
+        Assert.Equal("city", HabitatAt(catalog, map, 10, 7)?.Id);
+        Assert.Equal("wetland", HabitatAt(catalog, map, 8, 17)?.Id);
+        Assert.Null(HabitatAt(catalog, map, 13, 3)); // the street
         string[][] spots = [["barje_corncrake_1", "crex_crex"], ["barje_fritillary_1", "fritillaria_meleagris"], ["barje_fritillary_2", "fritillaria_meleagris"], ["city_hedgehog_1", "erinaceus_roumanicus"], ["city_kingfisher_1", "alcedo_atthis"], ["city_swift_1", "apus_apus"]];
-        Assert.All(spots, spot => Assert.Equal(spot[1], catalog.FindSpot(map, spot[0])?.SpeciesId.Value));
+        Assert.All(spots, spot => Assert.Equal(spot[1], SpotOn(catalog, map, spot[0])?.SpeciesId.Value));
     }
 
     [Fact]
@@ -280,13 +291,13 @@ public sealed class ContentValidationTests
         Assert.Contains(catalog.AllHabitats.Single(habitat => habitat.Id == "farmland").Species, entry => entry.SpeciesId == SpeciesId.Parse("alauda_arvensis"));
 
         // The spawn (1, 9), the signpost (2, 8), Štefan (3, 10) and the station (6, 8) lie outside the zones.
-        Assert.All(new[] { (1, 9), (2, 8), (3, 10), (6, 8) }, tile => Assert.Null(catalog.FindHabitatAt(map, tile.Item1, tile.Item2)));
-        Assert.Equal("farmland", catalog.FindHabitatAt(map, 12, 6)?.Id);
-        Assert.Equal("farmland", catalog.FindHabitatAt(map, 21, 6)?.Id);
-        Assert.Equal("wetland", catalog.FindHabitatAt(map, 22, 10)?.Id);
-        Assert.Equal("wetland", catalog.FindHabitatAt(map, 5, 14)?.Id);
+        Assert.All(new[] { (1, 9), (2, 8), (3, 10), (6, 8) }, tile => Assert.Null(HabitatAt(catalog, map, tile.Item1, tile.Item2)));
+        Assert.Equal("farmland", HabitatAt(catalog, map, 12, 6)?.Id);
+        Assert.Equal("farmland", HabitatAt(catalog, map, 21, 6)?.Id);
+        Assert.Equal("wetland", HabitatAt(catalog, map, 22, 10)?.Id);
+        Assert.Equal("wetland", HabitatAt(catalog, map, 5, 14)?.Id);
         string[][] spots = [["village_stork_1", "ciconia_ciconia"], ["orchard_hoopoe_1", "upupa_epops"], ["field_skylark_1", "alauda_arvensis"], ["field_pansy_1", "viola_arvensis"], ["oxbow_otter_1", "lutra_lutra"]];
-        Assert.All(spots, spot => Assert.Equal(spot[1], catalog.FindSpot(map, spot[0])?.SpeciesId.Value));
+        Assert.All(spots, spot => Assert.Equal(spot[1], SpotOn(catalog, map, spot[0])?.SpeciesId.Value));
     }
 
     [Fact]
@@ -300,10 +311,10 @@ public sealed class ContentValidationTests
         Assert.Equal(new WildlifeTraits(TorchReaction.Calm, Perched: true), catalog.FindSpecies(SpeciesId.Parse("pinna_nobilis"))!.Wildlife);
 
         // The spawn (1, 9), the signpost (2, 8), Nina (3, 10) and the station (6, 8) lie outside the zones, and so does the sea.
-        Assert.All(new[] { (1, 9), (2, 8), (3, 10), (6, 8), (6, 14) }, tile => Assert.Null(catalog.FindHabitatAt(map, tile.Item1, tile.Item2)));
-        Assert.Equal("saltpan", catalog.FindHabitatAt(map, 17, 6)?.Id);
+        Assert.All(new[] { (1, 9), (2, 8), (3, 10), (6, 8), (6, 14) }, tile => Assert.Null(HabitatAt(catalog, map, tile.Item1, tile.Item2)));
+        Assert.Equal("saltpan", HabitatAt(catalog, map, 17, 6)?.Id);
         string[][] spots = [["saltpan_stilt_1", "himantopus_himantopus"], ["saltpan_egret_1", "egretta_garzetta"], ["saltpan_killifish_1", "aphanius_fasciatus"], ["saltpan_glasswort_1", "salicornia_europaea"], ["sea_salema_1", "sarpa_salpa"], ["sea_pen_shell_1", "pinna_nobilis"]];
-        Assert.All(spots, spot => Assert.Equal(spot[1], catalog.FindSpot(map, spot[0])?.SpeciesId.Value));
+        Assert.All(spots, spot => Assert.Equal(spot[1], SpotOn(catalog, map, spot[0])?.SpeciesId.Value));
     }
 
     [Fact]
@@ -311,10 +322,10 @@ public sealed class ContentValidationTests
     {
         var catalog = FileContentCatalog.Load(ContentFolder.RepositoryContent());
 
-        var spot = catalog.FindSpot("cerknica_lake", "cerknica_corncrake_1");
+        var spot = SpotOn(catalog, "cerknica_lake", "cerknica_corncrake_1");
         Assert.Equal(SpeciesId.Parse("crex_crex"), spot?.SpeciesId);
-        Assert.Equal("wetland", catalog.FindHabitatAt("cerknica_lake", 14, 5)?.Id);
-        Assert.Equal("wetland", catalog.FindHabitatAt("cerknica_lake", 5, 12)?.Id);
+        Assert.Equal("wetland", HabitatAt(catalog, "cerknica_lake", 14, 5)?.Id);
+        Assert.Equal("wetland", HabitatAt(catalog, "cerknica_lake", 5, 12)?.Id);
     }
 
     [Theory]
@@ -393,7 +404,7 @@ public sealed class ContentValidationTests
 
         Assert.Equal(torch, catalog.FindSpecies(SpeciesId.Parse(id))!.Wildlife?.Torch);
         Assert.Null(catalog.FindSpecies(SpeciesId.Parse("salvia_pratensis"))!.Wildlife);
-        Assert.Equal(SpeciesId.Parse("lanius_collurio"), catalog.FindSpot("dravsko_polje_meadow", "hedgerow_shrike_1")?.SpeciesId);
+        Assert.Equal(SpeciesId.Parse("lanius_collurio"), SpotOn(catalog, "dravsko_polje_meadow", "hedgerow_shrike_1")?.SpeciesId);
     }
 
     [Theory]
@@ -418,12 +429,12 @@ public sealed class ContentValidationTests
 
         var catalog = FileContentCatalog.Load(content.Write());
 
-        Assert.NotNull(catalog.FindSpot("test_meadow", "sage_1"));
-        Assert.Equal("tall_grass", catalog.FindHabitatAt("test_meadow", 1, 0)?.Id);
-        Assert.Equal("tall_grass", catalog.FindHabitatAt("test_meadow", 2, 2)?.Id);
-        Assert.Null(catalog.FindHabitatAt("test_meadow", 0, 1));
-        Assert.Null(catalog.FindHabitatAt("test_meadow", 3, 1));
-        Assert.Null(catalog.FindHabitatAt("other_map", 1, 0));
+        Assert.NotNull(SpotOn(catalog, "test_meadow", "sage_1"));
+        Assert.Equal("tall_grass", HabitatAt(catalog, "test_meadow", 1, 0)?.Id);
+        Assert.Equal("tall_grass", HabitatAt(catalog, "test_meadow", 2, 2)?.Id);
+        Assert.Null(HabitatAt(catalog, "test_meadow", 0, 1));
+        Assert.Null(HabitatAt(catalog, "test_meadow", 3, 1));
+        Assert.Null(HabitatAt(catalog, "other_map", 1, 0));
     }
 
     public static TheoryData<string, Action<ContentFolder>, string> BrokenContent => new()

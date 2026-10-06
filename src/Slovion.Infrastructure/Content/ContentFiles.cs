@@ -23,7 +23,26 @@ internal sealed record AvailabilityFile(List<string>? Seasons, List<string>? Tim
 /// <summary>Fictional gameplay traits of an animal: its reaction to the torch.</summary>
 internal sealed record WildlifeFile(string? Torch, bool? Aquatic, bool? Perched);
 
-internal sealed record SpeciesFile(string? Id, string? Group, FactFile? ScientificName, Dictionary<string, SourceFile>? Sources, Dictionary<string, SpeciesTextFile>? Text, AvailabilityFile? Availability, WildlifeFile? Wildlife, IdentificationFile? Identification);
+/// <summary>
+/// Where a species gets its spot on generated maps (fictional gameplay data, D6, never shown): preferred zone kinds in
+/// order, its need for water (<c>in</c> or <c>near</c>), and for a plant the decoration tile drawn at its spot and whether it blocks.
+/// </summary>
+internal sealed record PlacementFile(List<string>? Zones, string? Water, int? Tile, bool? Blocking);
+
+internal sealed record SpeciesFile(string? Id, string? Group, FactFile? ScientificName, Dictionary<string, SourceFile>? Sources, Dictionary<string, SpeciesTextFile>? Text, AvailabilityFile? Availability, WildlifeFile? Wildlife, IdentificationFile? Identification, PlacementFile? Placement);
+
+internal sealed record BiomeLayerFile(string? Id, double Coverage, int Scale, int Smooth, List<int>? Floor);
+
+internal sealed record BiomeOpeningsFile(List<int>? Count, List<int>? Radius, List<int>? Floor, int? PathSet);
+
+internal sealed record BiomeWaterFile(string? Kind, double Chance, int Size, List<int>? Tiles, List<int>? Bank);
+
+internal sealed record BiomeDecorFile(List<int>? Tiles, bool Blocking, double Density, string? Where);
+
+internal sealed record BiomeZoneFile(string? Kind, string? Where, string? Habitat);
+
+/// <summary>A biome (design §5): tiles and rules the generator interprets; gameplay data, not facts (D6).</summary>
+internal sealed record BiomeFile(string? Id, List<int>? Floor, int? PathSet, List<int>? Border, List<BiomeLayerFile>? Layers, BiomeOpeningsFile? Openings, BiomeWaterFile? Water, List<BiomeDecorFile>? Decor, List<BiomeZoneFile>? Zones);
 
 /// <summary>The subset of the Tiled JSON map format that Slovion uses on the server.</summary>
 internal sealed record TiledMapFile(string? Orientation, int Width, int Height, int TileWidth, int TileHeight, List<TiledLayerFile>? Layers, List<TiledTilesetFile>? Tilesets);
@@ -45,6 +64,11 @@ internal sealed record TiledObjectFile(string? Name, string? Type, string? Class
     public string? StringProperty(string name) =>
         Properties?.FirstOrDefault(property => property.Name == name)?.Value is { ValueKind: JsonValueKind.String } value
             ? value.GetString()
+            : null;
+
+    public bool? BoolProperty(string name) =>
+        Properties?.FirstOrDefault(property => property.Name == name)?.Value is { ValueKind: JsonValueKind.True or JsonValueKind.False } value
+            ? value.GetBoolean()
             : null;
 }
 
