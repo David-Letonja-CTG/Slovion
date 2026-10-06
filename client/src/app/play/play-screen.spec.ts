@@ -1,4 +1,4 @@
-import { Provider } from '@angular/core';
+import { Provider, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -18,6 +18,8 @@ import {
 } from '../api/game-api';
 import { AudioService } from '../audio/audio.service';
 import { FakeAudioService } from '../audio/testing/fake-audio-service';
+import { Fullscreen } from '../device/fullscreen';
+import { TOUCH_DEVICE } from '../device/touch-device';
 import { GameSession } from '../session/game-session';
 import { SaveTokenStore } from '../session/save-token-store';
 import {
@@ -1712,5 +1714,105 @@ describe('Sound', () => {
     await settle();
     expect(root().querySelector('app-sound-settings-dialog')).toBeNull();
     expect(game.consumer).toBe('world');
+  });
+});
+
+describe('Touch screens and fullscreen', () => {
+  afterEach(() => TestBed.inject(Router).dispose());
+
+  /** Stands in for the browser's fullscreen mode. */
+  class FakeFullscreen {
+    readonly available = true;
+    readonly active = signal(false);
+    toggle = vi.fn(() => this.active.update((on) => !on));
+  }
+
+  /** The play screen on a touch screen (or not), with a fake fullscreen mode. */
+  async function openOn(touch: boolean) {
+    const fullscreen = new FakeFullscreen();
+    const play = await openPlay(meadow, NO_PROGRESS, REGIONS, CLEAR_MORNING, [
+      { provide: TOUCH_DEVICE, useValue: signal(touch) },
+      { provide: Fullscreen, useValue: fullscreen },
+    ]);
+    const control = (selector: string) => play.root().querySelector<HTMLElement>(selector);
+    /** Taps a touch control: a finger down and up. */
+    const tap = (selector: string) => {
+      for (const type of ['pointerdown', 'pointerup']) {
+        const event = new MouseEvent(type, { bubbles: true, cancelable: true });
+        Object.defineProperty(event, 'pointerId', { value: 1 });
+        control(selector)!.dispatchEvent(event);
+      }
+    };
+    return { ...play, fullscreen, control, tap };
+  }
+
+  it('shows the D-pad and buttons on touch screens, in the handheld layout, without the keyboard hint', async () => {
+    const { root } = await openOn(true);
+
+    expect(root().querySelector('app-touch-controls')).not.toBeNull();
+    expect(root().querySelector('main')?.classList).toContain('play--touch');
+    expect(root().querySelector('.play__hint')).toBeNull();
+  });
+
+  it('shows no touch controls with a mouse and keyboard', async () => {
+    const { root } = await openOn(false);
+
+    expect(root().querySelector('app-touch-controls')).toBeNull();
+    expect(root().querySelector('main')?.classList).not.toContain('play--touch');
+    expect(root().querySelector('.play__hint')).not.toBeNull();
+  });
+
+  it('hands the controls to the game like keys', async () => {
+    const { game, tap } = await openOn(true);
+
+    tap('[data-button="a"]');
+
+    expect(game.pressed).toEqual(['+Interact', '+Confirm', '-Interact', '-Confirm']);
+  });
+
+  it('drives a dialog with the controls: B closes the bag', async () => {
+    const { game, root, tap, settle } = await openOn(true);
+    game.options!.onOpenInventory!();
+    await settle();
+    expect(root().querySelector('app-inventory-panel')).not.toBeNull();
+
+    tap('[data-button="b"]');
+    await settle();
+
+    expect(root().querySelector('app-inventory-panel')).toBeNull();
+    expect(game.consumer).toBe('world');
+  });
+
+  it('opens Terenski dnevnik with the Dnevnik button', async () => {
+    const { game, http, control, root, settle } = await openOn(false);
+
+    control('.play__journal')!.click();
+    await settle();
+    http.expectOne('/api/save/naturedex').flush({ habitats: [] });
+    await settle();
+
+    expect(control('.play__journal')?.textContent?.trim()).toBe(sl.naturedex.button);
+    expect(root().querySelector('app-naturedex-panel h2')?.textContent).toBe(sl.naturedex.title);
+    expect(game.consumer).toBe('ui');
+  });
+
+  it('switches to fullscreen with the button, which shows that it is on', async () => {
+    const { fullscreen, control, settle } = await openOn(false);
+    const button = () => control('.play__fullscreen')!;
+    expect(button().textContent?.trim()).toBe(sl.fullscreen.button);
+    expect(button().getAttribute('aria-pressed')).toBe('false');
+
+    button().click();
+    await settle();
+
+    expect(fullscreen.toggle).toHaveBeenCalled();
+    expect(button().getAttribute('aria-pressed')).toBe('true');
+    expect(button().classList).toContain('button--primary');
+  });
+
+  it('has no fullscreen button where the browser cannot go fullscreen', async () => {
+    const { root } = await openPlay();
+
+    expect(root().querySelector('.play__fullscreen')).toBeNull();
   });
 });

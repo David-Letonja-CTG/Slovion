@@ -92,6 +92,7 @@ Implemented:
 | `add-murska-sobota` | Murska Sobota after Ana's quest: a Prekmurje village with a stork on a chimney, fields, an orchard and an oxbow of the Mura; Štefan's quest. |
 | `add-portoroz` | Portorož after Štefan's quest: the Sečovlje salt pans and the sea; Nina's quest gives a snorkel for the shallows. |
 | `add-sound` | Synthesized chiptune themes per region, nature ambience by day, night and weather, sound effects and sound settings. |
+| `add-touch-controls` | Phones and tablets: a D-pad and A/B buttons, a handheld layout upright and sideways, a *Dnevnik* button and fullscreen. |
 
 Next candidates, each as its own change once the owner chooses:
 
@@ -105,4 +106,4 @@ First slice: `localization`, `game-viewport`, `input-actions`, `game-session`, `
 
 Added since: `habitat-search`, `world-conditions`, `map-areas`, `wildlife`, `regions`.
 
-Later: `research-stations`, `sound`.
+Later: `research-stations`, `sound`, `touch-controls`.

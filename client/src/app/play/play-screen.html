@@ -1,4 +1,4 @@
-<main class="play">
+<main class="play" [class.play--touch]="touch()">
   @if (loadError(); as reason) {
     <p class="play__status" role="alert">{{ 'errors.' + reason | transloco }}</p>
   } @else if (world(); as loaded) {
@@ -38,6 +38,9 @@
         <button type="button" class="button play__torch play__bag" (click)="openInventory()">
           {{ 'inventory.button' | transloco }}
         </button>
+        <button type="button" class="button play__torch play__journal" (click)="onMenu()">
+          {{ 'naturedex.button' | transloco }}
+        </button>
         @if (audio.available) {
           <button
             type="button"
@@ -55,6 +58,17 @@
             {{ (audio.settings().muted ? 'sound.unmuteButton' : 'sound.muteButton') | transloco }}
           </button>
         }
+        @if (fullscreen.available) {
+          <button
+            type="button"
+            class="button play__torch play__fullscreen"
+            [class.button--primary]="fullscreen.active()"
+            [attr.aria-pressed]="fullscreen.active()"
+            (click)="toggleFullscreen()"
+          >
+            {{ 'fullscreen.button' | transloco }}
+          </button>
+        }
         <p class="play__torch-status" aria-live="polite">
           {{ (torchOn() ? 'torch.on' : 'torch.off') | transloco }}
         </p>
@@ -68,7 +82,15 @@
     @if (activeQuest(); as quest) {
       <app-quest-tracker class="play__tracker" [quest]="quest" />
     }
-    <p class="play__hint">{{ 'play.controlsHint' | transloco }}</p>
+    @if (touch()) {
+      <app-touch-controls
+        class="play__touch"
+        (pressed)="onTouchPressed($event)"
+        (released)="onTouchReleased($event)"
+      />
+    } @else {
+      <p class="play__hint">{{ 'play.controlsHint' | transloco }}</p>
+    }
     <div class="play__fade" [class.play__fade--dark]="fading()" aria-hidden="true"></div>
   } @else {
     <p class="play__status">{{ 'common.loading' | transloco }}</p>

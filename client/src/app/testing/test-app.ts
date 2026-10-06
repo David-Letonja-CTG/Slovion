@@ -70,6 +70,19 @@ export class FakeGame implements Game {
     this.worldMinutes = minutes;
   }
 
+  /** The actions pressed and released through `press` and `release` (touch controls), in order. */
+  readonly pressed: string[] = [];
+
+  press(actions: readonly Action[]): void {
+    this.pressed.push(...actions.map((action) => `+${action}`));
+    if (this.consumer === 'ui')
+      actions.forEach((action) => this.uiListeners.forEach((listener) => listener(action)));
+  }
+
+  release(actions: readonly Action[]): void {
+    this.pressed.push(...actions.map((action) => `-${action}`));
+  }
+
   /** Simulates the player pressing a key while the UI has input. */
   pressUi(action: Action): void {
     if (this.consumer === 'ui') this.uiListeners.forEach((listener) => listener(action));

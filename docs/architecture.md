@@ -103,7 +103,7 @@ flowchart TB
   subgraph Angular["Angular app (client/src/app)"]
     Title["title/<br/>TitleScreen: new game, continue"]
     Play["play/<br/>PlayScreen: loads a region, routes<br/>interactions to the API and dialogs"]
-    Dialogs["play/<br/>identification, dialogue, journal,<br/>travel map, bag, station, banners"]
+    Dialogs["play/<br/>identification, dialogue, journal,<br/>travel map, bag, station, banners,<br/>touch controls"]
     Canvas["game/<br/>GameCanvas: hosts the engine"]
     Loader["play/WorldLoader<br/>map JSON, tileset, sprites"]
     Api["api/<br/>GameApi + interceptor (save token)"]
@@ -111,6 +111,7 @@ flowchart TB
     I18n["i18n/<br/>Transloco, sl-SI catalog"]
     Pwa["pwa/<br/>updates, connection status"]
     Audio["audio/<br/>AudioService, sound settings,<br/>Web Audio synth"]
+    Device["device/<br/>touch screen, fullscreen"]
   end
   Engine["engine/ (client/src/engine)"]
 
@@ -120,6 +121,7 @@ flowchart TB
   Play --> Dialogs
   Play --> Canvas
   Play --> Audio
+  Play --> Device
   Canvas --> Engine
   Dialogs --> Api
   Api --> Session
@@ -134,7 +136,8 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-  Keys["keyboard / touch"] --> Dispatcher["ActionDispatcher<br/>logical actions<br/>(MoveUp, Interact, Torch…)"]
+  Keys["keyboard"] --> Dispatcher["ActionDispatcher<br/>logical actions<br/>(MoveUp, Interact, Torch…)"]
+  Touch["touch controls<br/>(Angular, via Game.press)"] --> Dispatcher
   Dispatcher --> State["ActionState"]
   Loop["GameLoop<br/>fixed time step"] --> World
   State --> World["World<br/>player, residents, NPCs,<br/>tools, clock, interactions"]
@@ -143,13 +146,13 @@ flowchart LR
   Host -- "residents, flags, tools,<br/>time, weather" --> World
   Loop --> Renderer["renderWorld<br/>tiles, objects, animals, player,<br/>darkness and light, weather"]
   World --> Renderer
-  Renderer --> CanvasEl["canvas<br/>480 × 270, integer-scaled"]
+  Renderer --> CanvasEl["canvas<br/>320 × 180, integer-scaled"]
 ```
 
 - **`createGame`** (`game.ts`) wires everything: input, the loop, the world, the renderer and a `GameEnvironment` (clock, frame scheduler, size and visibility), which tests replace with fakes.
-- **Logical actions only.** Game code reacts to `MoveUp`, `Interact`, `Torch`…, never to keys; the keyboard map lives in one place.
+- **Logical actions only.** Game code reacts to `MoveUp`, `Interact`, `Torch`…, never to keys or touches. The keyboard map lives in one place (`input/keyboard.ts`); the on-screen D-pad and A/B buttons (`play/touch-controls.ts`) press the same actions through `Game.press` and `Game.release`, and the dispatcher routes both to the world or to the open dialog.
 - **Maps are data.** `tiled.ts` parses and validates Tiled JSON into a `WorldMap`; tile properties (`wadeable`, `swimmable`) and object classes (`spot`, `habitat`, `area`, `npc`, `gate`, `signpost`, `station`, `lamp`) drive behaviour. See [content.md](content.md).
-- **Drawing** happens at a logical 480 × 270, scaled by whole numbers for crisp pixel art. The time-of-day tint goes into an offscreen layer, and the torch and lamp posts cut soft circles of light out of it.
+- **Drawing** happens at a logical 320 × 180, scaled by whole numbers for crisp pixel art. The time-of-day tint goes into an offscreen layer, and the torch and lamp posts cut soft circles of light out of it.
 
 ## Request flows
 

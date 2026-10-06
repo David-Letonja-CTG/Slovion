@@ -313,6 +313,38 @@ describe('createGame', () => {
     expect(ui).toEqual(['Interact']);
   });
 
+  it('takes presses from another input source like keys, and stops walking once released', () => {
+    const { environment, context, game, interactions } = setup(['S.......', '*.......']);
+    const playerX = () => context.draws.filter((draw) => draw.image === 'player').at(-1)!.dx;
+    game.start();
+
+    game.press(['MoveRight']);
+    for (let i = 0; i < 40; i++) environment.frames.frame(STEP_MS);
+    game.release(['MoveRight']);
+    for (let i = 0; i < 40; i++) environment.frames.frame(STEP_MS);
+    const stopped = playerX();
+    for (let i = 0; i < 40; i++) environment.frames.frame(STEP_MS);
+
+    expect(stopped).toBeGreaterThan(0);
+    expect(playerX()).toBe(stopped);
+    expect(interactions).toEqual([]);
+  });
+
+  it('routes presses from another input source to UI overlays while they have input', () => {
+    const { environment, game, interactions } = setup();
+    const ui: Action[] = [];
+    game.onUiAction((action) => ui.push(action));
+    game.start();
+
+    game.setActionConsumer('ui');
+    game.press(['Interact', 'Confirm']);
+    game.release(['Interact', 'Confirm']);
+    environment.frames.frame(STEP_MS);
+
+    expect(interactions).toEqual([]);
+    expect(ui).toEqual(['Interact', 'Confirm']);
+  });
+
   it('pauses while the page is hidden and resumes when shown', () => {
     const { environment, game } = setup();
     game.start();

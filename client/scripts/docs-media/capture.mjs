@@ -7,7 +7,7 @@
 //   node scripts/docs-media/capture.mjs              # all scenes, against http://localhost:4200
 //   node scripts/docs-media/capture.mjs hero cave    # only some scenes
 //   DOCS_MEDIA_URL=http://localhost:4300 node scripts/docs-media/capture.mjs
-import { chromium } from '@playwright/test';
+import { chromium, devices } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -47,13 +47,14 @@ const sql = (query) =>
 /**
  * Starts a new save in a fresh page, with `quests` done and the clock at `minutes` past 08:00 on day 0 (spring; one real
  * second is one in-game minute), travels to `region` and enters the world. With `clearSky` (the map ID), a rainy, foggy
- * or snowy day is skipped for the same time on the next spring day, so pictures show the map clearly.
+ * or snowy day is skipped for the same time on the next spring day, so pictures show the map clearly. With `device`,
+ * the page emulates that device (e.g. a phone with a touch screen) instead of a desktop `viewport`.
  */
 async function newGame(
   browser,
-  { quests = [], minutes = 240, region, clearSky, viewport = VIEW } = {},
+  { quests = [], minutes = 240, region, clearSky, viewport = VIEW, device } = {},
 ) {
-  const page = await browser.newPage({ viewport });
+  const page = await browser.newPage(device ?? { viewport });
   await page.goto(base);
   await page.getByRole('button', { name: 'Nova igra' }).click();
   await page.waitForSelector('app-game-canvas canvas');
@@ -192,6 +193,28 @@ const scenes = {
     await page.waitForTimeout(500);
     await page.screenshot({ path: join(out, 'species-page.png') });
     await page.close();
+  },
+
+  /** A phone, upright and sideways, with the touch controls. */
+  async phone(browser) {
+    const phone = devices['Pixel 7'];
+    const upright = await newGame(browser, {
+      minutes: 240,
+      clearSky: 'dravsko_polje_meadow',
+      device: phone,
+    });
+    await upright.screenshot({ path: join(out, 'phone.png') });
+    await upright.close();
+    const sideways = await newGame(browser, {
+      minutes: 240,
+      clearSky: 'dravsko_polje_meadow',
+      device: {
+        ...phone,
+        viewport: { width: phone.viewport.height, height: phone.viewport.width },
+      },
+    });
+    await sideways.screenshot({ path: join(out, 'phone-sideways.png') });
+    await sideways.close();
   },
 
   /** The travel map with every region open. */

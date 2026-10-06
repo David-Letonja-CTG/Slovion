@@ -25,6 +25,13 @@ export interface Game {
   setActionConsumer(consumer: ActionConsumer): void;
   /** UI overlays receive actions here while they are the consumer. */
   onUiAction(listener: (action: Action) => void): Unsubscribe;
+  /**
+   * Presses actions from an input source outside the engine, e.g. on-screen touch controls; they are routed like key
+   * presses (to the world or the UI) and stay held until released.
+   */
+  press(actions: readonly Action[]): void;
+  /** Releases actions pressed with `press`. */
+  release(actions: readonly Action[]): void;
   /** Replaces the save's progress flags, which open gates (the server sets them, D3). */
   setOpenFlags(flags: readonly string[]): void;
   /** Re-syncs the in-game clock with the server (D8). */
@@ -163,6 +170,8 @@ export function createGame(
 
     setActionConsumer: (consumer) => dispatcher.setConsumer(consumer),
     onUiAction: (listener) => dispatcher.onUiAction(listener),
+    press: (actions) => dispatcher.pressAll(actions),
+    release: (actions) => actions.forEach((action) => dispatcher.release(action)),
     setOpenFlags: (flags) => world.setOpenFlags(flags),
     setWorldTime: (minutes) => world.setWorldTime(minutes),
     setTorch: (on) => world.setTorch(on),

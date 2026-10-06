@@ -3,6 +3,8 @@
   display: flex;
   flex-direction: column;
   height: 100dvh;
+  /* No double-tap zoom while playing. */
+  touch-action: manipulation;
 }
 
 .play__game {
@@ -71,6 +73,104 @@
 
 .play__fade--dark {
   opacity: 1;
+}
+
+/* Touch screens (docs/gameplay.md): buttons big enough for a finger, and the controls above dialogs, which they drive. */
+.play--touch .play__torch {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.play--touch .play__touch {
+  z-index: 11;
+}
+
+/*
+ * Held upright, like a handheld console: the world view at the top at full width with nothing over it; the clock,
+ * the buttons, the quest and the controls below it.
+ */
+@media (orientation: portrait) {
+  /* The controls area has a fixed height, so dialogs can end above it. */
+  .play--touch {
+    --play-controls-height: calc(11.5rem + env(safe-area-inset-bottom));
+  }
+
+  .play--touch .play__game {
+    flex: none;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+
+  .play--touch .play__conditions,
+  .play--touch .play__tracker {
+    position: static;
+  }
+
+  .play--touch .play__conditions {
+    order: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.75rem max(0.75rem, env(safe-area-inset-right)) 0
+      max(0.75rem, env(safe-area-inset-left));
+  }
+
+  .play--touch .play__conditions > app-conditions-indicator {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+
+  .play--touch .play__tracker {
+    order: 2;
+    margin: 0.75rem 0.75rem 0;
+  }
+
+  .play--touch .play__touch {
+    position: relative;
+    order: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: var(--play-controls-height);
+    margin-top: auto;
+  }
+}
+
+/*
+ * Held sideways: the world fills the screen. The buttons make one row along the top edge with the clock at its end,
+ * the quest sits below them, and the controls sit see-through in the bottom corners.
+ */
+@media (orientation: landscape) {
+  .play--touch .play__conditions {
+    top: max(0.5rem, env(safe-area-inset-top));
+    right: max(0.5rem, env(safe-area-inset-right));
+    left: max(0.5rem, env(safe-area-inset-left));
+    flex-flow: row wrap;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  .play--touch .play__conditions > app-conditions-indicator {
+    order: 1;
+  }
+
+  .play--touch .play__torch {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .play--touch .play__tracker {
+    top: calc(max(0.5rem, env(safe-area-inset-top)) + 3.5rem);
+  }
+
+  .play--touch .play__touch {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0.55;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
