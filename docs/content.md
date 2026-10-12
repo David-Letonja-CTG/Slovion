@@ -22,7 +22,7 @@ Everything the player can meet is content: versioned files in [`content/`](../co
 | Folder | One file per | Holds | Notes |
 |---|---|---|---|
 | `species/` | species (`<genus_species>.json`) | group, scientific name, sources, Slovenian name, family, habitat, distribution, season, characteristics, availability, identification clues; for animals also wildlife traits | see below |
-| `species-pictures/` | species (`.png`, 32 × 32) | the journal picture | required |
+| `species-pictures/` | species (`.png`, 32 × 32) | the journal picture, on a transparent background (an unknown species shows as its silhouette, so a full background would be a black square) | required |
 | `wildlife-sprites/` | animal (`.png`, 32 × 16) | two 16 × 16 walking frames facing right | required for animals |
 | `habitats/` | habitat | Slovenian name (a journal section), `order`, search chance, species weights | every species is in at least one habitat |
 | `regions/` | region | map, travel-map position (percent of `client/public/images/slovenia.svg`), `order`, name and locked hint, unlock rule, weather weights per season | `{}`, `{ "flag": "…" }` or `{ "identifiedSpecies": n }`; new saves start in `dravsko_polje` |

@@ -8,26 +8,36 @@
     </header>
     <p class="travel__question">{{ 'travel.question' | transloco }}</p>
 
-    <div class="travel__map" role="img" [attr.aria-label]="'travel.mapLabel' | transloco">
-      <img class="travel__outline" src="/images/slovenia.svg" alt="" />
-      @for (region of regions(); track region.regionId; let i = $index) {
-        <span
-          class="travel__marker"
-          [class.travel__marker--current]="region.regionId === currentRegionId()"
-          [class.travel__marker--locked]="!region.unlocked"
-          [class.travel__marker--selected]="i === selected()"
-          [style.left.%]="region.x"
-          [style.top.%]="region.y"
-        ></span>
-        <span
-          class="travel__label"
-          [class.travel__label--selected]="i === selected()"
-          [style.left.%]="region.x"
-          [style.top.%]="region.y"
-          aria-hidden="true"
-          >{{ region.name }}</span
-        >
-      }
+    <!-- The map's place names can be tapped too; the list below is what keyboards and screen readers use. -->
+    <div class="travel__place">
+      <div class="travel__map" role="img" [attr.aria-label]="'travel.mapLabel' | transloco">
+        <img class="travel__outline" src="/images/slovenia.svg" alt="" />
+        @for (region of regions(); track region.regionId; let i = $index) {
+          <span
+            class="travel__marker"
+            [class.travel__marker--current]="region.regionId === currentRegionId()"
+            [class.travel__marker--locked]="!region.unlocked"
+            [class.travel__marker--selected]="i === selected()"
+            [style.left.%]="region.x"
+            [style.top.%]="region.y"
+          ></span>
+          <button
+            type="button"
+            tabindex="-1"
+            class="travel__label"
+            [class.travel__label--left]="labelLeft(region)"
+            [class.travel__label--selected]="i === selected()"
+            [class.travel__label--locked]="!region.unlocked"
+            [attr.data-region]="region.regionId"
+            [style.left.%]="region.x"
+            [style.top.%]="region.y"
+            aria-hidden="true"
+            (click)="choose(i)"
+          >
+            {{ region.name }}
+          </button>
+        }
+      </div>
     </div>
 
     <ul class="travel__list">

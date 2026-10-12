@@ -2,7 +2,7 @@
 
 An original 2D exploration game set in a fictionalized Slovenia. Instead of fighting or catching monsters, the player walks through Slovenian landscapes, **observes real animals and plants, identifies them from sourced clues**, and fills a field journal (*Terenski dnevnik*).
 
-![Walking across the Dravsko polje meadow](docs/images/hero.gif)
+![A walk through the meadow, the forest, the Alps, the lake and the coast](docs/images/hero.gif)
 
 - **Real nature, real sources:** every species fact cites its source; gameplay values (rarity, goals) are fictional and never shown as facts.
 - **For all ages:** no combat, no capture, no accounts, no personal data, no GPS.

@@ -1,7 +1,9 @@
 <div class="overlay">
   <section
+    #dialog
     class="dialog naturedex"
     [class.naturedex--pages]="state().kind === 'loaded' && view().kind === 'grid'"
+    [style.height.px]="keptHeight()"
     role="dialog"
     aria-modal="true"
     aria-labelledby="naturedex-title"
@@ -9,6 +11,12 @@
     <header class="naturedex__header">
       <h2 id="naturedex-title">{{ 'naturedex.title' | transloco }}</h2>
       <div class="naturedex__actions">
+        <!-- An opened species or the certificates go back to the grid from here, beside the other buttons. -->
+        @if (view().kind !== 'grid') {
+          <button #backButton type="button" class="button" data-action="back" (click)="back()">
+            {{ 'naturedex.back' | transloco }}
+          </button>
+        }
         <button
           type="button"
           class="button"
@@ -147,9 +155,6 @@
           }
         } @else if (opened.kind === 'certificates') {
           <article class="certificates">
-            <button #backButton type="button" class="button entry__back" (click)="back()">
-              {{ 'naturedex.back' | transloco }}
-            </button>
             <h3>{{ 'naturedex.certificates.title' | transloco }}</h3>
             @if (opened.stations === null) {
               <p>{{ 'common.loading' | transloco }}</p>
@@ -170,9 +175,6 @@
         } @else if (opened.kind === 'page') {
           @if (opened.entry.species; as species) {
             <article class="entry" [attr.data-species]="opened.speciesId">
-              <button #backButton type="button" class="button entry__back" (click)="back()">
-                {{ 'naturedex.back' | transloco }}
-              </button>
               <div class="entry__top">
                 <img
                   class="entry__picture"
@@ -240,9 +242,6 @@
         } @else {
           <!-- Observed but not identified: no name, facts or sources yet (D1). -->
           <article class="entry entry--unknown" [attr.data-species]="opened.speciesId">
-            <button #backButton type="button" class="button entry__back" (click)="back()">
-              {{ 'naturedex.back' | transloco }}
-            </button>
             <div class="entry__top">
               <img
                 class="entry__picture entry__picture--observed"

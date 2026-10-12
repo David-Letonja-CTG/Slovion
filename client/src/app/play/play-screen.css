@@ -14,8 +14,6 @@
   position: relative;
   height: 100dvh;
   overflow: hidden;
-  /* No double-tap zoom while playing. */
-  touch-action: manipulation;
 }
 
 .play__game {

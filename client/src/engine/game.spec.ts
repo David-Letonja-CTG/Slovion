@@ -120,6 +120,21 @@ describe('createGame', () => {
     expect(canvas.style.width).toBe('1280px');
   });
 
+  it("draws the map's still tiles once into a layer, then copies it every frame", () => {
+    const { environment, context, game } = setup();
+    const tiles = fakeContext('tiles');
+    environment.layer = tiles as unknown as CanvasRenderingContext2D;
+    game.start();
+
+    environment.frames.frame(STEP_MS);
+    environment.frames.frame(STEP_MS);
+
+    expect(environment.layerSizes).toEqual([[64, 32]]); // the 4×2 test map, once
+    expect(tiles.draws.filter((draw) => draw.image === 'tileset')).toHaveLength(8);
+    expect(context.draws.filter((draw) => draw.image === 'tiles')).toHaveLength(2);
+    expect(context.draws.some((draw) => draw.image === 'tileset')).toBe(false);
+  });
+
   it('renders crisp pixels: smoothing off, pixelated scaling, integer draw scale', () => {
     const { environment, canvas, context, game } = setup();
     game.start();

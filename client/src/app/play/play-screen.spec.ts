@@ -604,6 +604,19 @@ describe('Terenski dnevnik', () => {
     expect(source?.textContent).toContain('Notranjski regijski park');
   });
 
+  it("keeps the journal's size for an opened species and again for the grid", async () => {
+    const { panel, picture, press, settle: wait } = await openNatureDex();
+    const dialog = () => panel()!.querySelector<HTMLElement>('.naturedex')!;
+    dialog().getBoundingClientRect = () => ({ height: 534 }) as DOMRect;
+
+    picture('salvia_pratensis').click();
+    await wait();
+    expect(dialog().style.height).toBe('534px');
+
+    await press('Cancel');
+    expect(dialog().style.height).toBe('');
+  });
+
   it('shows the research level and leaves out facts research has not revealed yet', async () => {
     const levelOne: NatureDexEntry = {
       ...SAGE_ENTRY,
@@ -712,12 +725,12 @@ describe('Terenski dnevnik', () => {
     expect(game.consumer).toBe('world');
   });
 
-  it('returns to the grid with the back button', async () => {
-    const { picture, page, settle: wait } = await openNatureDex();
+  it('returns to the grid with the back button beside the others', async () => {
+    const { panel, picture, page, settle: wait } = await openNatureDex();
 
     picture('salvia_pratensis').click();
     await wait();
-    page()!.querySelector<HTMLButtonElement>('.entry__back')!.click();
+    panel()!.querySelector<HTMLButtonElement>('.naturedex__actions [data-action="back"]')!.click();
     await wait();
 
     expect(page()).toBeNull();
@@ -1266,12 +1279,23 @@ describe('Travel', () => {
     play.game.options!.onTorchChange!(true);
     await openTravelMap(play);
 
-    play.root().querySelector<HTMLButtonElement>('[data-region="kocevje"]')!.click();
+    play.root().querySelector<HTMLButtonElement>('.travel__region[data-region="kocevje"]')!.click();
     await play.settle();
     await arriveInKocevje(play);
 
     expect(play.game.options?.world.map.id).toBe('kocevje_forest');
     expect(play.game.torch).toBe(true);
+  });
+
+  it("travels when an open region's name on the map is tapped", async () => {
+    const play = await openPlay();
+    await openTravelMap(play);
+
+    play.root().querySelector<HTMLButtonElement>('.travel__label[data-region="kocevje"]')!.click();
+    await play.settle();
+    await arriveInKocevje(play);
+
+    expect(play.game.options?.world.map.id).toBe('kocevje_forest');
   });
 
   it.each([
@@ -1283,7 +1307,8 @@ describe('Travel', () => {
 
     for (let i = 0; i < downs; i++) play.game.pressUi('MoveDown');
     play.game.pressUi('Confirm');
-    play.root().querySelector<HTMLButtonElement>('[data-region="triglav"]')!.click();
+    play.root().querySelector<HTMLButtonElement>('.travel__region[data-region="triglav"]')!.click();
+    play.root().querySelector<HTMLButtonElement>('.travel__label[data-region="triglav"]')!.click();
     await play.settle();
 
     play.http.expectNone('/api/save/travel');
@@ -1304,7 +1329,7 @@ describe('Travel', () => {
   it('shows the regions again when the region was locked meanwhile', async () => {
     const play = await openPlay();
     await openTravelMap(play);
-    play.root().querySelector<HTMLButtonElement>('[data-region="kocevje"]')!.click();
+    play.root().querySelector<HTMLButtonElement>('.travel__region[data-region="kocevje"]')!.click();
     await play.settle();
 
     play.http
@@ -1326,7 +1351,7 @@ describe('Travel', () => {
   it('shows the map error when the new region cannot be loaded', async () => {
     const play = await openPlay();
     await openTravelMap(play);
-    play.root().querySelector<HTMLButtonElement>('[data-region="kocevje"]')!.click();
+    play.root().querySelector<HTMLButtonElement>('.travel__region[data-region="kocevje"]')!.click();
     await play.settle();
     play.http.expectOne('/api/save/travel').flush(KOCEVJE);
     await play.settle();

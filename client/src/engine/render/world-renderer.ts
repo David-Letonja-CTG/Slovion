@@ -4,7 +4,7 @@ import { drawDebugOverlay } from './debug-overlay';
 import { drawWeather } from './weather';
 import { cameraOffset } from '../world/camera';
 import { World } from '../world/world';
-import { TILE_SIZE, animatedTile } from '../world/world-map';
+import { TILE_SIZE, WorldMap, animatedTile } from '../world/world-map';
 import { TimeOfDay } from '../world/world-time';
 
 /** Images the world needs. Loaded by the host; the engine never fetches (design §6). */
@@ -58,7 +58,100 @@ interface Point {
 }
 
 /**
- * Draws the visible part of the map in authored layer order, then closed gates, signposts, stations, lamp posts and NPCs, then
+ * A map's tile layers drawn once at the map's full size (one map pixel per pixel), except the cells holding an
+ * animated tile in any layer: those stay empty in the image and are drawn every frame. Each frame then copies the
+ * visible part of the image instead of drawing every visible tile of every layer.
+ */
+export interface PrerenderedTiles {
+  readonly image: CanvasImageSource;
+  /** Cells (`y * width + x`) with an animated tile in any layer. */
+  readonly animatedCells: readonly number[];
+}
+
+/** Creates a 2D context on a new canvas of the given size, or `null` where there is none (then nothing is cached). */
+export type LayerFactory = (width: number, height: number) => CanvasRenderingContext2D | null;
+
+/** Draws the map's still tiles once; `undefined` where no canvas can be made. */
+export function prerenderTiles(
+  map: WorldMap,
+  tileset: CanvasImageSource,
+  createLayer: LayerFactory,
+): PrerenderedTiles | undefined {
+  const layer = createLayer(map.width * TILE_SIZE, map.height * TILE_SIZE);
+  if (!layer) return undefined;
+  const { firstGid, tileCount, animations } = map.tileset;
+  const animatedCells: number[] = [];
+  for (let y = 0; y < map.height; y++) {
+    for (let x = 0; x < map.width; x++) {
+      const cell = y * map.width + x;
+      const animated = map.layers.some((tileLayer) => {
+        const stored = tileLayer.tiles[cell] - firstGid;
+        return stored >= 0 && stored < tileCount && animations?.has(stored) === true;
+      });
+      if (animated) animatedCells.push(cell);
+      else drawCellLayers(layer, map, tileset, x, y, 0, { x: 0, y: 0 });
+    }
+  }
+  return { image: layer.canvas, animatedCells };
+}
+
+/** Draws every layer's tile at one cell in layer order, animated tiles at their frame for `elapsedMs`. */
+function drawCellLayers(
+  context: CanvasRenderingContext2D,
+  map: WorldMap,
+  tileset: CanvasImageSource,
+  x: number,
+  y: number,
+  elapsedMs: number,
+  camera: Point,
+): void {
+  const { firstGid, columns, tileCount } = map.tileset;
+  for (const layer of map.layers) {
+    const stored = layer.tiles[y * map.width + x] - firstGid;
+    if (stored < 0 || stored >= tileCount) continue; // 0 = empty
+    const index = animatedTile(map.tileset, stored, elapsedMs);
+    context.drawImage(
+      tileset,
+      (index % columns) * TILE_SIZE,
+      Math.floor(index / columns) * TILE_SIZE,
+      TILE_SIZE,
+      TILE_SIZE,
+      x * TILE_SIZE - camera.x,
+      y * TILE_SIZE - camera.y,
+      TILE_SIZE,
+      TILE_SIZE,
+    );
+  }
+}
+
+/** Copies the part of the prerendered map inside the view; a map smaller than the view is centred (`cameraOffset`). */
+function drawPrerendered(
+  context: CanvasRenderingContext2D,
+  image: CanvasImageSource,
+  map: WorldMap,
+  camera: Point,
+  view: ViewSize,
+): void {
+  const left = Math.max(0, camera.x);
+  const top = Math.max(0, camera.y);
+  const width = Math.min(map.width * TILE_SIZE, camera.x + view.width) - left;
+  const height = Math.min(map.height * TILE_SIZE, camera.y + view.height) - top;
+  if (width <= 0 || height <= 0) return;
+  context.drawImage(
+    image,
+    left,
+    top,
+    width,
+    height,
+    left - camera.x,
+    top - camera.y,
+    width,
+    height,
+  );
+}
+
+/**
+ * Draws the visible part of the map in authored layer order (copied from `tiles` where they were prerendered), then closed gates, signposts, stations, lamp posts and NPCs, then
  * the player, then the time-of-day tint over everything, with circles of light around the lit torch and lamps.
  */
 export function renderWorld(
@@ -68,6 +161,7 @@ export function renderWorld(
   darknessLayer: DarknessLayerFactory,
   view: ViewSize = WIDE_VIEW,
   debug = false,
+  tiles?: PrerenderedTiles,
 ): void {
   const { map, player } = world;
   const position = player.position;
@@ -89,24 +183,19 @@ export function renderWorld(
   const lastY = Math.min(map.height - 1, Math.floor((camera.y + view.height - 1) / TILE_SIZE));
   const { firstGid, columns, tileCount } = map.tileset;
 
-  for (const layer of map.layers) {
+  // A tile never reaches beyond its cell, so drawing cell by cell (each cell's layers in order) keeps layer order.
+  const drawCell = (x: number, y: number): void =>
+    drawCellLayers(context, map, images.tileset, x, y, world.elapsedMs, camera);
+  if (tiles) {
+    drawPrerendered(context, tiles.image, map, camera, view);
+    for (const cell of tiles.animatedCells) {
+      const x = cell % map.width;
+      const y = Math.floor(cell / map.width);
+      if (x >= firstX && x <= lastX && y >= firstY && y <= lastY) drawCell(x, y);
+    }
+  } else {
     for (let y = firstY; y <= lastY; y++) {
-      for (let x = firstX; x <= lastX; x++) {
-        const stored = layer.tiles[y * map.width + x] - firstGid;
-        if (stored < 0 || stored >= tileCount) continue; // 0 = empty
-        const index = animatedTile(map.tileset, stored, world.elapsedMs);
-        context.drawImage(
-          images.tileset,
-          (index % columns) * TILE_SIZE,
-          Math.floor(index / columns) * TILE_SIZE,
-          TILE_SIZE,
-          TILE_SIZE,
-          x * TILE_SIZE - camera.x,
-          y * TILE_SIZE - camera.y,
-          TILE_SIZE,
-          TILE_SIZE,
-        );
-      }
+      for (let x = firstX; x <= lastX; x++) drawCell(x, y);
     }
   }
 

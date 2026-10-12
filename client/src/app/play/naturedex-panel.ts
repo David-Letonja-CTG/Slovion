@@ -67,6 +67,12 @@ export class NatureDexPanel {
   private readonly pictures = viewChildren<ElementRef<HTMLButtonElement>>('picture');
   private readonly grid = viewChild<ElementRef<HTMLElement>>('grid');
   private readonly backButton = viewChild<ElementRef<HTMLButtonElement>>('backButton');
+  private readonly dialog = viewChild<ElementRef<HTMLElement>>('dialog');
+  /**
+   * The journal's height while the grid was last shown, kept for an opened species and the certificates so the journal
+   * keeps its size (their text scrolls inside it); `null` while the grid is shown.
+   */
+  protected readonly keptHeight = signal<number | null>(null);
 
   private readonly api = inject(GameApi);
 
@@ -134,12 +140,21 @@ export class NatureDexPanel {
   }
 
   protected back(): void {
+    this.keptHeight.set(null);
     this.view.set({ kind: 'grid' });
+  }
+
+  /** Leaves the grid for another view at the journal's current size. */
+  private leaveGrid(view: View): void {
+    if (this.view().kind === 'grid') {
+      this.keptHeight.set(this.dialog()?.nativeElement.getBoundingClientRect().height || null);
+    }
+    this.view.set(view);
   }
 
   /** The certificates page: research stations whose goal the save has met (the server decides, D3). */
   protected openCertificates(): void {
-    this.view.set({ kind: 'certificates', stations: null });
+    this.leaveGrid({ kind: 'certificates', stations: null });
     this.api.stations().subscribe({
       next: ({ stations }) => {
         if (this.view().kind === 'certificates') {
@@ -184,7 +199,7 @@ export class NatureDexPanel {
   /** Unknown species open nothing; their name stays hidden until identified (D1). */
   private open(slot: NatureDexSlot): void {
     if (slot.entry === null || slot.status === 'unknown') return;
-    this.view.set({
+    this.leaveGrid({
       kind: slot.status === 'identified' ? 'page' : 'card',
       speciesId: slot.speciesId,
       entry: slot.entry,

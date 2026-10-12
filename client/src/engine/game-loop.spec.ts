@@ -23,14 +23,28 @@ describe('GameLoop', () => {
     expect(counts.renders).toBe(30);
   });
 
-  it('advances exactly 60 steps per second at 144 fps', () => {
+  it('advances exactly 60 steps per second at 144 fps, drawing only frames where the world moved', () => {
     const { frames, counts, loop } = createLoop();
     loop.start();
 
     frames.frames(144, 1000);
 
     expect(counts.updates).toBe(60);
-    expect(counts.renders).toBe(144);
+    // The first frame is drawn at once; after that, a frame without a step would only repeat the last picture.
+    expect(counts.renders).toBe(61);
+  });
+
+  it('draws a frame without a step after being invalidated, e.g. by a resize', () => {
+    const { frames, counts, loop } = createLoop();
+    loop.start();
+    frames.frame(STEP_MS);
+    const before = counts.renders;
+
+    frames.frame(1);
+    loop.invalidate();
+    frames.frame(1);
+
+    expect(counts.renders).toBe(before + 1);
   });
 
   it('passes the fixed step duration to update', () => {

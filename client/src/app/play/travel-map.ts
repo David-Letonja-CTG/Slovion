@@ -64,6 +64,21 @@ export class TravelMap {
     return region.unlocked && region.regionId !== this.currentRegionId();
   }
 
+  /**
+   * Whether a region's name goes left of its marker instead of below: when another region lies just below and to the
+   * right of it on the map (at most 12 % across and 10 % down), so the two names do not cover each other.
+   */
+  protected labelLeft(region: RegionInfo): boolean {
+    return this.regions().some(
+      (other) =>
+        other !== region &&
+        other.x >= region.x &&
+        other.x - region.x <= 12 &&
+        other.y > region.y &&
+        other.y - region.y <= 10,
+    );
+  }
+
   /** t(travel.current, travel.open, travel.locked) */
   protected stateKey(region: RegionInfo): string {
     if (region.regionId === this.currentRegionId()) return 'travel.current';

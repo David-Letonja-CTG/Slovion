@@ -82,6 +82,19 @@ export class FakeEnvironment implements GameEnvironment {
     return track(this.inputSinks, sink);
   }
 
+  /**
+   * What `createLayer` returns. None by default: the game then draws every tile every frame, all of it into the
+   * recorded context.
+   */
+  layer: CanvasRenderingContext2D | null = null;
+  /** The sizes offscreen canvases were asked for. */
+  readonly layerSizes: (readonly [number, number])[] = [];
+
+  createLayer(width: number, height: number): CanvasRenderingContext2D | null {
+    this.layerSizes.push([width, height]);
+    return this.layer;
+  }
+
   /** The attached input sink; tests press actions through it like a keyboard would. */
   get input(): ActionSink {
     const [sink] = this.inputSinks;

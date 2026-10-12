@@ -1,13 +1,14 @@
 import { textMap } from '../world/testing';
 import { World } from '../world/world';
 import { COMPACT_VIEW, TALL_VIEW, ViewSize } from '../viewport';
-import { animatedTile } from '../world/world-map';
+import { WorldMap, animatedTile } from '../world/world-map';
 import {
   CAVE_TINT,
   TIME_TINT,
   TORCH_INNER_RADIUS,
   TORCH_OUTER_RADIUS,
   WorldImages,
+  prerenderTiles,
   renderWorld,
 } from './world-renderer';
 
@@ -220,5 +221,69 @@ describe('renderWorld', () => {
     expect(calls.some((call) => call.op === 'fillRect' && call.style === TIME_TINT.night)).toBe(
       false,
     );
+  });
+});
+
+describe('prerendered tiles', () => {
+  /** The test map with its shallow water (tile 7) animated. */
+  function withAnimatedWater(map: WorldMap): WorldMap {
+    const blocked = Array.from({ length: map.width * map.height }, (_, i) =>
+      map.isBlocked(i % map.width, Math.floor(i / map.width)),
+    );
+    return new WorldMap(map.id, map.width, map.height, map.layers, blocked, map.spawn, map.spots, {
+      ...map.tileset,
+      animations: new Map([
+        [
+          7,
+          [
+            { tile: 7, ms: 500 },
+            { tile: 15, ms: 500 },
+          ],
+        ],
+      ]),
+    });
+  }
+
+  it('draws the still tiles once at map pixels and leaves the animated cells for every frame', () => {
+    const map = withAnimatedWater(textMap(['S.~.']));
+    const layers: ReturnType<typeof recordingContext>[] = [];
+
+    const tiles = prerenderTiles(map, image('tileset'), (width, height) => {
+      const layer = recordingContext(`map ${width}×${height}`);
+      layers.push(layer);
+      return layer as unknown as CanvasRenderingContext2D;
+    });
+
+    expect(tiles?.animatedCells).toEqual([2]);
+    expect(layers[0].canvas).toEqual({ name: 'map 64×16' });
+    expect(drawsOf(layers[0].calls, 'tileset').map((call) => call.args[4])).toEqual([0, 16, 48]);
+  });
+
+  it('caches nothing where no canvas can be made', () => {
+    expect(prerenderTiles(textMap(['S.']), image('tileset'), () => null)).toBeUndefined();
+  });
+
+  it('copies the visible part of the map once a frame, then draws only the animated cells', () => {
+    const world = new World(withAnimatedWater(textMap(['S.~.'])), () => undefined);
+    const context = recordingContext();
+    const tiles = { image: image('map'), animatedCells: [2] };
+
+    renderWorld(
+      context as unknown as CanvasRenderingContext2D,
+      world,
+      IMAGES,
+      () => recordingContext() as unknown as CanvasRenderingContext2D,
+      COMPACT_VIEW,
+      false,
+      tiles,
+    );
+
+    // The 64×16 map is smaller than the 240×180 view, so it is centred: copied whole to (88, 82).
+    expect(drawsOf(context.calls, 'map')).toEqual([
+      { op: 'drawImage', image: 'map', args: [0, 0, 64, 16, 88, 82, 64, 16] },
+    ]);
+    const water = drawsOf(context.calls, 'tileset');
+    expect(water).toHaveLength(1);
+    expect(water[0].args.slice(4, 6)).toEqual([88 + 32, 82]);
   });
 });

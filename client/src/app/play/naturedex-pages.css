@@ -142,19 +142,6 @@
     padding: 0.5rem;
   }
 
-  .naturedex--pages {
-    padding: 0.75rem;
-  }
-
-  .naturedex--pages h2 {
-    font-size: 1.2rem;
-  }
-
-  .naturedex--pages .naturedex__actions .button {
-    padding: 0.4rem 0.7rem;
-    font-size: 1rem;
-  }
-
   .naturedex--pages .picture {
     padding: 0.2rem 0.25rem;
   }
@@ -189,13 +176,21 @@
 /*
  * Where there is room: the index beside the page, five bigger pictures per row. The journal grows with the screen,
  * its text too (the panel's font size; the parts inside use em), and the pictures are whole multiples of their 32
- * pixels: 64 px, 96 px from 960 px wide (then five per row instead of four), 128 px on large screens.
+ * pixels: 64 px, 96 px from 960 px wide (then five per row instead of four), 128 px on large screens. It is only as
+ * wide as the index and a row of pictures need; an opened species and the certificates are a narrower column at the
+ * same height (naturedex-panel.ts).
  */
 @media (min-width: 40rem) and (min-height: 34rem) {
   .naturedex {
-    width: min(80rem, 90vw);
-    max-width: none;
+    --picture: 64px;
+
+    width: max-content;
+    max-width: min(80rem, 90vw);
     font-size: clamp(1rem, 0.5rem + 0.6vw, 1.3rem);
+  }
+
+  .naturedex:not(.naturedex--pages) {
+    width: 44em;
   }
 
   .naturedex .button {
@@ -219,14 +214,14 @@
     white-space: nowrap;
   }
 
-  .naturedex--pages .naturedex__actions {
-    justify-self: end;
+  /* The encouragement wraps within the page instead of widening the journal. */
+  .naturedex--pages .naturedex__empty {
+    width: 0;
+    min-width: 100%;
   }
 
-  /* An opened species or the certificates keep a readable line length in the wider panel. */
-  .entry,
-  .certificates {
-    max-width: 48em;
+  .naturedex--pages .naturedex__actions {
+    justify-self: end;
   }
 
   .naturedex__index {
@@ -255,9 +250,14 @@
     display: none;
   }
 
+  /* A picture's tile: the picture and room for a two-line name (narrower where the screen is short of room). */
   .habitat__grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, calc(var(--picture) + 2em)));
     gap: 0.75rem;
+  }
+
+  .picture img {
+    width: var(--picture);
   }
 
   .picture__stars {
@@ -266,18 +266,18 @@
 }
 
 @media (min-width: 60rem) and (min-height: 34rem) {
-  .habitat__grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+  .naturedex {
+    --picture: 96px;
   }
 
-  .picture img {
-    width: 96px;
+  .habitat__grid {
+    grid-template-columns: repeat(5, minmax(0, calc(var(--picture) + 2em)));
   }
 }
 
 @media (min-width: 75rem) and (min-height: 45rem) {
-  .picture img {
-    width: 128px;
+  .naturedex {
+    --picture: 128px;
   }
 }
 
