@@ -17,7 +17,8 @@ export interface GameLoopCallbacks {
 
 /**
  * Fixed-timestep loop: the simulation advances in constant steps regardless of the display's
- * refresh rate, while rendering happens once per display frame.
+ * refresh rate. A display frame is rendered when the simulation advanced or the loop was invalidated (e.g. the
+ * canvas was resized), so a fast display (90–144 Hz) does not redraw the same picture several times.
  */
 export class GameLoop {
   private handle: number | undefined;
@@ -25,6 +26,8 @@ export class GameLoop {
   private accumulator = 0;
   private running = false;
   private paused = false;
+  /** Whether the next frame must be drawn even if the simulation does not advance. */
+  private stale = true;
 
   constructor(
     private readonly callbacks: GameLoopCallbacks,
@@ -57,6 +60,11 @@ export class GameLoop {
     this.restartTiming();
   }
 
+  /** Draws the next frame even if the simulation does not advance, e.g. after the canvas was cleared by a resize. */
+  invalidate(): void {
+    this.stale = true;
+  }
+
   private restartTiming(): void {
     this.lastTime = this.clock.now();
     this.accumulator = 0;
@@ -71,13 +79,19 @@ export class GameLoop {
     this.accumulator += Math.min(now - this.lastTime, MAX_CATCH_UP_MS);
     this.lastTime = now;
 
+    let stepped = false;
     while (this.accumulator + EPSILON_MS >= STEP_MS) {
       this.callbacks.update(STEP_MS);
       this.accumulator -= STEP_MS;
+      stepped = true;
     }
     this.accumulator = Math.max(0, this.accumulator);
 
-    this.callbacks.render(this.accumulator / STEP_MS);
+    // Nothing changed since the last frame: the canvas still shows it.
+    if (stepped || this.stale) {
+      this.stale = false;
+      this.callbacks.render(this.accumulator / STEP_MS);
+    }
     this.scheduleFrame();
   };
 

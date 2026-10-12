@@ -1,16 +1,17 @@
 // Regenerates the screenshots and GIFs in docs/images/ from the running game, so the docs stay current.
 //
 // Needs the database (docker compose up -d db), the API and the client (npm start). Each scene starts a new save,
-// moves its in-game clock and marks quests as done directly in the database, then plays a short route. The routes
-// fit the generated regions of world seed 1 (docs/decisions.md D13), so run the API with WorldGeneration__FixedSeed=1.
+// moves its in-game clock and marks quests as done (or fills the journal) directly in the database, then plays a short
+// route. The routes fit the generated regions of world seed 1 (docs/decisions.md D13), so run the API with
+// WorldGeneration__FixedSeed=1.
 //
 //   cd client
 //   node scripts/docs-media/capture.mjs              # all scenes, against http://localhost:4200
-//   node scripts/docs-media/capture.mjs hero cave    # only some scenes
+//   node scripts/docs-media/capture.mjs tour cave    # only some scenes (tour: hero.gif and regions.png)
 //   DOCS_MEDIA_URL=http://localhost:4300 node scripts/docs-media/capture.mjs
 import { chromium, devices } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
-import { writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { encodeGif } from './gif.mjs';
@@ -122,7 +123,8 @@ async function startRecording(page, ms = 100) {
   );
 }
 
-async function stopRecording(page, name, ms = 100) {
+/** Stops collecting and returns the frames (RGBA at the logical size). */
+async function stopRecording(page) {
   const count = await page.evaluate(() => {
     clearInterval(window.__recorder);
     return window.__frames.length;
@@ -136,8 +138,67 @@ async function stopRecording(page, name, ms = 100) {
     }, i);
     frames.push(new Uint8Array(Buffer.from(b64, 'base64')));
   }
+  return frames;
+}
+
+function writeGif(name, frames, ms = 100) {
   writeFileSync(join(out, name), encodeGif(frames, { ...LOGICAL, scale: 2, delayMs: ms }));
   console.log(`${name}: ${frames.length} frames`);
+}
+
+/** The backdrop colour (#11161c) the tour fades through between its places. */
+const BACKDROP = [0x11, 0x16, 0x1c];
+
+/** `steps` frames blending `frame` towards the backdrop (`out`) or from it (`in`). */
+function fade(frame, steps, direction) {
+  return Array.from({ length: steps }, (_, i) => {
+    const t = direction === 'out' ? (i + 1) / (steps + 1) : (steps - i) / (steps + 1);
+    const blended = new Uint8Array(frame.length);
+    for (let p = 0; p < frame.length; p += 4) {
+      for (let c = 0; c < 3; c++)
+        blended[p + c] = Math.round(frame[p + c] * (1 - t) + BACKDROP[c] * t);
+      blended[p + 3] = 255;
+    }
+    return blended;
+  });
+}
+
+/** Clips joined by a short fade through the backdrop. */
+function joinClips(clips) {
+  return clips.flatMap((clip, i) => [
+    ...(i > 0 ? fade(clip[0], 3, 'in') : []),
+    ...clip,
+    ...(i < clips.length - 1 ? fade(clip.at(-1), 3, 'out') : []),
+  ]);
+}
+
+/**
+ * Marks most species of every habitat identified (research levels 1 to 3, `fullyResearched` at 3), one per habitat
+ * only observed and the last one unknown, so the journal looks like a save well into the journey.
+ */
+function fillJournal(page, fullyResearched = []) {
+  return page
+    .evaluate(() => localStorage.getItem('slovion.saveToken'))
+    .then((token) => {
+      const slot = `(select id from save_slots where token_hash = sha256(convert_to('${token}', 'UTF8')))`;
+      const rows = [];
+      const habitats = readdirSync(join(repo, 'content', 'habitats')).map((file) =>
+        JSON.parse(readFileSync(join(repo, 'content', 'habitats', file), 'utf8')),
+      );
+      for (const habitat of habitats) {
+        const ids = habitat.species.map((entry) => entry.speciesId);
+        ids.slice(0, -1).forEach((id, i) => {
+          const observed = ids.length >= 4 && i === ids.length - 2;
+          const level = fullyResearched.includes(id) ? 3 : 1 + (i % 3);
+          rows.push(
+            `(${slot}, '${id}', 'docs', now() - interval '${i} days', ${observed ? 'null' : `now() - interval '${i} days'`}, '${habitat.id}', ${observed ? 0 : level})`,
+          );
+        });
+      }
+      sql(
+        `insert into discoveries (save_slot_id, species_id, map_id, observed_at, identified_at, habitat_id, research_level) values ${rows.join(', ')} on conflict do nothing;`,
+      );
+    });
 }
 
 const canvasShot = (page, name) =>
@@ -159,21 +220,156 @@ const canvasImage = (page) =>
     [LOGICAL.width, LOGICAL.height],
   );
 
+/**
+ * A walk in every region in journey order, at the time of day that suits it (minutes past 08:00 on a spring day), along
+ * a route that fits world seed 1; `torch` lights the torch first, and `hero` puts the walk in the tour of hero.gif.
+ */
+const WALKS = [
+  {
+    region: 'dravsko_polje',
+    map: 'dravsko_polje_meadow',
+    name: 'Dravsko polje, morning',
+    minutes: 60,
+    // From the spawn (10, 10) down past the sage at (11, 14), then right; the hare lives at (9, 17).
+    route: [
+      ['ArrowDown', 5],
+      ['ArrowRight', 3],
+    ],
+    hero: true,
+  },
+  {
+    region: 'kocevje',
+    map: 'kocevje_forest',
+    name: 'Kočevje, noon',
+    minutes: 240,
+    // Along the forest path to the clearing.
+    route: [['ArrowRight', 9]],
+    hero: true,
+  },
+  {
+    region: 'pohorje',
+    map: 'pohorje_forest',
+    name: 'Pohorje, morning',
+    minutes: 30,
+    // Along the path to the bend above the bog pool.
+    route: [
+      ['ArrowRight', 7],
+      ['ArrowDown', 1],
+    ],
+  },
+  {
+    region: 'triglav',
+    map: 'triglav_alps',
+    name: 'Triglav, afternoon',
+    minutes: 330,
+    route: [
+      ['ArrowRight', 8],
+      ['ArrowDown', 2],
+    ],
+    hero: true,
+  },
+  {
+    region: 'cerknica',
+    map: 'cerknica_lake',
+    name: 'Cerkniško jezero, morning',
+    minutes: 0,
+    // To the end of the path, then down through the meadow towards the shallows.
+    route: [
+      ['ArrowRight', 7],
+      ['ArrowDown', 3],
+      ['ArrowRight', 4],
+    ],
+    hero: true,
+  },
+  {
+    region: 'rakov_skocjan',
+    map: 'rakov_skocjan_karst',
+    name: 'Rakov Škocjan, evening',
+    minutes: 690,
+    torch: true,
+    route: [['ArrowRight', 12]],
+  },
+  {
+    region: 'ljubljana',
+    map: 'ljubljana_park',
+    name: 'Ljubljana, evening',
+    minutes: 690,
+    torch: true,
+    // Along the path past the street lamps, by the Ljubljanica.
+    route: [
+      ['ArrowRight', 8],
+      ['ArrowDown', 2],
+    ],
+  },
+  {
+    region: 'murska_sobota',
+    map: 'murska_sobota_village',
+    name: 'Murska Sobota, afternoon',
+    minutes: 420,
+    // Along the path to the fields and the fish pond.
+    route: [
+      ['ArrowRight', 6],
+      ['ArrowDown', 2],
+    ],
+  },
+  {
+    region: 'portoroz',
+    map: 'portoroz_coast',
+    name: 'Portorož, afternoon',
+    minutes: 300,
+    // Along the path, then down to the beach.
+    route: [
+      ['ArrowRight', 8],
+      ['ArrowDown', 3],
+    ],
+    hero: true,
+  },
+];
+
+/** Frames (100 ms each) of every place in the hero tour. */
+const HERO_CLIP_FRAMES = 28;
+
 const scenes = {
-  /** Walking across the Dravsko polje meadow on a spring morning, past the sage towards the brown hare. */
-  async hero(browser) {
-    const page = await newGame(browser, { minutes: 60, clearSky: 'dravsko_polje_meadow' });
-    await startRecording(page);
-    await page.waitForTimeout(600);
-    // Seed 1: from the spawn (10, 10) down past the sage at (11, 14), then right; the hare lives at (9, 17).
-    await keys(page, 'ArrowDown', 5);
-    await keys(page, 'ArrowRight', 3);
-    await page.waitForTimeout(600);
-    await stopRecording(page, 'hero.gif');
+  /**
+   * The tour: every region's walk. The hero GIF joins five of them by day (meadow, forest, mountains, lake, coast), as
+   * the tints of evening and night would band in its single palette; the regions montage shows where each walk ends.
+   */
+  async tour(browser) {
+    const clips = [];
+    const images = [];
+    for (const walk of WALKS) {
+      const page = await newGame(browser, {
+        quests: JOURNEY,
+        minutes: walk.minutes,
+        region: walk.region,
+        clearSky: walk.map,
+      });
+      if (walk.torch) await page.keyboard.press('KeyL');
+      await startRecording(page);
+      await page.waitForTimeout(400);
+      for (const [key, times] of walk.route) await keys(page, key, times);
+      await page.waitForTimeout(600);
+      const frames = await stopRecording(page);
+      // The tour shows each place briefly, so hero.gif stays a few megabytes.
+      if (walk.hero) clips.push(frames.slice(0, HERO_CLIP_FRAMES));
+      images.push([walk.name, await canvasImage(page)]);
+      await page.close();
+    }
+    writeGif('hero.gif', joinClips(clips));
+
+    const page = await browser.newPage({ viewport: { width: 3 * 488 + 8, height: 600 } });
+    await page.setContent(`<body style="margin:0;padding:4px;background:#11161c;font:16px sans-serif;color:#e8efe4">
+      <div style="display:grid;grid-template-columns:repeat(3,480px);gap:8px">
+      ${images.map(([n, src]) => `<figure style="margin:0"><img src="${src}" width="480" height="270" style="image-rendering:pixelated;display:block"><figcaption style="padding:4px 2px 0">${n}</figcaption></figure>`).join('')}
+      </div></body>`);
+    await page.screenshot({ path: join(out, 'regions.png'), fullPage: true });
     await page.close();
   },
 
-  /** Observing the meadow sage, then its page in Terenski dnevnik. */
+  /**
+   * Observing the meadow sage, then Terenski dnevnik of a save well into the journey: the wetland page and the fully
+   * researched page of the white water lily.
+   */
   async journal(browser) {
     const page = await newGame(browser, { minutes: 60 });
     // Seed 1's sage grows at (11, 14): from the spawn (10, 10), one step right, then down until it is ahead.
@@ -189,12 +385,14 @@ const scenes = {
     await page.getByRole('dialog').filter({ hasText: 'Pravilno!' }).waitFor();
     await page.keyboard.press('Enter');
     await page.waitForTimeout(400);
+    await fillJournal(page, ['nymphaea_alba']);
     await page.keyboard.press('KeyM');
     const journal = page.getByRole('dialog', { name: 'Terenski dnevnik' });
     await journal.waitFor();
+    await journal.locator('.index__habitat[data-habitat="wetland"]').click();
     await page.waitForTimeout(500);
     await page.screenshot({ path: join(out, 'journal.png') });
-    await journal.locator('.picture[data-species="salvia_pratensis"]').first().click();
+    await journal.locator('.picture[data-species="nymphaea_alba"]').first().click();
     await page.waitForTimeout(500);
     await page.screenshot({ path: join(out, 'species-page.png') });
     await page.close();
@@ -238,34 +436,6 @@ const scenes = {
     await page.close();
   },
 
-  /** Every region's spawn at noon, in journey order. */
-  async regions(browser) {
-    const regions = [
-      ['dravsko_polje', 'dravsko_polje_meadow', 'Dravsko polje'],
-      ['kocevje', 'kocevje_forest', 'Kočevje'],
-      ['pohorje', 'pohorje_forest', 'Pohorje'],
-      ['triglav', 'triglav_alps', 'Triglav'],
-      ['cerknica', 'cerknica_lake', 'Cerkniško jezero'],
-      ['rakov_skocjan', 'rakov_skocjan_karst', 'Rakov Škocjan'],
-      ['ljubljana', 'ljubljana_park', 'Ljubljana'],
-      ['murska_sobota', 'murska_sobota_village', 'Murska Sobota'],
-      ['portoroz', 'portoroz_coast', 'Portorož'],
-    ];
-    const images = [];
-    for (const [region, map, name] of regions) {
-      const page = await newGame(browser, { quests: JOURNEY, minutes: 240, region, clearSky: map });
-      images.push([name, await canvasImage(page)]);
-      await page.close();
-    }
-    const page = await browser.newPage({ viewport: { width: 3 * 488 + 8, height: 600 } });
-    await page.setContent(`<body style="margin:0;padding:4px;background:#11161c;font:16px sans-serif;color:#e8efe4">
-      <div style="display:grid;grid-template-columns:repeat(3,480px);gap:8px">
-      ${images.map(([n, src]) => `<figure style="margin:0"><img src="${src}" width="480" height="270" style="image-rendering:pixelated;display:block"><figcaption style="padding:4px 2px 0">${n}</figcaption></figure>`).join('')}
-      </div></body>`);
-    await page.screenshot({ path: join(out, 'regions.png'), fullPage: true });
-    await page.close();
-  },
-
   /** Ljubljana at night: the street lamps and the torch. */
   async night(browser) {
     const page = await newGame(browser, { quests: JOURNEY, minutes: 870, region: 'ljubljana' });
@@ -274,7 +444,7 @@ const scenes = {
     await page.waitForTimeout(600);
     await keys(page, 'ArrowRight', 10);
     await page.waitForTimeout(600);
-    await stopRecording(page, 'night.gif');
+    writeGif('night.gif', await stopRecording(page));
     await page.close();
   },
 
@@ -326,7 +496,7 @@ const scenes = {
     await keys(page, 'ArrowDown', 6);
     await keys(page, 'ArrowRight', 20);
     await page.waitForTimeout(800);
-    await stopRecording(page, 'snorkel.gif');
+    writeGif('snorkel.gif', await stopRecording(page));
     await page.close();
   },
 };

@@ -31,6 +31,15 @@ body {
   margin: 0;
 }
 
+/*
+ * A game, not a page: pinching and double-tapping never zoom it (the viewport meta tag says so too, and main.ts stops
+ * Safari's pinch gesture, which ignores both). Lists and dialogs still scroll.
+ */
+html,
+body {
+  touch-action: pan-x pan-y;
+}
+
 body {
   /* No browser tap flash on touch screens: buttons show their own state. */
   -webkit-tap-highlight-color: transparent;

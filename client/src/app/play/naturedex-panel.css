@@ -2,7 +2,8 @@
   --color-tile: #3d4f3a;
 
   width: min(40rem, 100%);
-  max-height: calc(100dvh - 2rem);
+  /* Within the space above the touch controls (overlay.css). */
+  max-height: 100%;
   overflow-y: auto;
   text-align: left;
 }
@@ -147,10 +148,6 @@
   color: var(--color-accent);
 }
 
-.entry__back {
-  margin-bottom: 1rem;
-}
-
 @media (max-width: 30rem) {
   .entry__facts {
     grid-template-columns: 1fr;
@@ -249,5 +246,33 @@
   .naturedex__actions .button,
   .index__habitat {
     min-height: 44px;
+  }
+}
+
+/*
+ * Upright phones and narrow windows: less frame and smaller buttons; an opened species has three buttons (Nazaj too),
+ * which go below the title where they don't fit beside it.
+ */
+@media (max-width: 39.99rem) {
+  .naturedex {
+    padding: 0.75rem;
+  }
+
+  .naturedex h2 {
+    font-size: 1.2rem;
+  }
+
+  .naturedex__actions .button {
+    padding: 0.4rem 0.7rem;
+    font-size: 1rem;
+  }
+
+  .naturedex__header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .naturedex__actions {
+    margin-left: auto;
   }
 }

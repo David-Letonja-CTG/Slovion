@@ -325,12 +325,16 @@ test('the signpost takes the player to Kočevje once Vera is helped, and the gam
   await page.keyboard.press('KeyE');
   const travelMap = page.getByRole('dialog', { name: 'Kažipot' });
   await expect(travelMap).toBeVisible();
-  await expect(travelMap.locator('[data-region="dravsko_polje"]')).toContainText('Tukaj si');
-  await expect(travelMap.locator('[data-region="kocevje"]')).toContainText('Odprto');
-  await expect(travelMap.locator('[data-region="pohorje"]')).toContainText(
+  await expect(travelMap.locator('.travel__region[data-region="dravsko_polje"]')).toContainText(
+    'Tukaj si',
+  );
+  await expect(travelMap.locator('.travel__region[data-region="kocevje"]')).toContainText('Odprto');
+  await expect(travelMap.locator('.travel__region[data-region="pohorje"]')).toContainText(
     'Pomagaj Juretu v Kočevju.',
   );
-  await expect(travelMap.locator('[data-region="triglav"]')).toContainText('Zaklenjeno');
+  await expect(travelMap.locator('.travel__region[data-region="triglav"]')).toContainText(
+    'Zaklenjeno',
+  );
 
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Enter');

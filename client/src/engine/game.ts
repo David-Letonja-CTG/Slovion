@@ -4,7 +4,12 @@ import { ActionConsumer, ActionDispatcher } from './input/action-dispatcher';
 import { ActionState } from './input/action-state';
 import { Action } from './input/actions';
 import { GameEnvironment, Unsubscribe, browserEnvironment } from './platform';
-import { WorldImages, renderWorld } from './render/world-renderer';
+import {
+  PrerenderedTiles,
+  WorldImages,
+  prerenderTiles,
+  renderWorld,
+} from './render/world-renderer';
 import { ViewSize, ViewportLayout, WIDE_VIEW, chooseView, computeViewport } from './viewport';
 import { ResidentInfo } from './world/resident';
 import { Interaction, World, WorldClock } from './world/world';
@@ -113,6 +118,18 @@ export function createGame(
     return darkness;
   };
 
+  // The map's still tiles are drawn once, the first time they are needed; without a canvas for them, every frame draws
+  // every tile.
+  let tiles: PrerenderedTiles | undefined | null = null;
+  const prerendered = (): PrerenderedTiles | undefined => {
+    if (tiles === null) {
+      tiles = prerenderTiles(options.world.map, options.world.tileset, (width, height) =>
+        environment.createLayer(width, height),
+      );
+    }
+    return tiles;
+  };
+
   const input = new ActionState();
   const dispatcher = new ActionDispatcher(input);
   const world = new World(
@@ -143,7 +160,15 @@ export function createGame(
     {
       update: (stepMs) => world.update(input, stepMs),
       render: () => {
-        renderWorld(context, world, options.world, darknessLayer, view, options.debug ?? false);
+        renderWorld(
+          context,
+          world,
+          options.world,
+          darknessLayer,
+          view,
+          options.debug ?? false,
+          prerendered(),
+        );
         if (options.debug) {
           // The debug view tells where the player stands, so end-to-end tests can walk generated maps (D13).
           const { tileX, tileY, facing } = world.player;
@@ -162,6 +187,8 @@ export function createGame(
     view = chooseView(views, availableWidth, availableHeight);
     const layout = computeViewport(availableWidth, availableHeight, ratio, view);
     resizeCanvas(canvas, context, layout, view);
+    // Resizing clears the canvas: draw it again even if the world stands still.
+    loop.invalidate();
   };
 
   return {

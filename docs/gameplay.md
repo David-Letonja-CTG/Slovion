@@ -4,7 +4,7 @@ Slovion is about **observing real Slovenian nature**: walk through a region, mee
 
 > **Explore → Discover → Identify → Learn → Collect → Progress → Explore further**
 
-![Walking across the Dravsko polje meadow](images/hero.gif)
+![A walk through the meadow, the forest, the Alps, the lake and the coast](images/hero.gif)
 
 ## The core loop
 
@@ -18,6 +18,7 @@ Slovion is about **observing real Slovenian nature**: walk through a region, mee
    - **Wide screens:** an index of all habitats with their progress sits beside the page; finished habitats show their count in yellow.
    - **Phones:** ◀ and ▶ turn the pages.
    - **Arrow keys and the D-pad:** they also turn the page past its first or last picture.
+   - **The journal** is only as wide as its index and a row of pictures. An opened species and *Potrdila* (the certificates) are a narrower column at the journal's height; a long page scrolls inside it.
 5. **Research** further: seeing a species again at another time of day, or on another day, raises its research level up to ★★★ and reveals more of its page.
 6. **Progress:** people in each region give a quest. Finishing it opens the next region, and some quests give a field tool.
 
@@ -39,9 +40,9 @@ Every region is generated for each save (docs/decisions.md D13): a new game gets
 
 ## The journey
 
-A signpost (*kažipot*) by every arrival point opens the travel map. Regions open one after another, each through the quest of the region before. The game continues in the region where the player last was.
+A signpost (*kažipot*) by every arrival point opens the travel map: a map of Slovenia beside the list of regions (above it on an upright phone). A region is chosen from the list or by tapping its name on the map. Regions open one after another, each through the quest of the region before. The game continues in the region where the player last was.
 
-![Every region at noon](images/regions.png)
+![Every region, each at its own time of day](images/regions.png)
 
 | # | Region | Person | Quest | Opened by | What is special |
 |---|---|---|---|---|---|
@@ -102,7 +103,7 @@ The sound settings (*Zvok*) use up and down to choose a volume, left and right t
 
 *Več* (more) holds what is needed less often: *Zvok*, *Utišaj* and *Cel zaslon*, and for keyboard players the list of keys, which also shows over the world for a few seconds when a game starts. *Cel zaslon* switches to fullscreen where the browser allows it; on iPhone, adding Slovion to the home screen runs it full screen.
 
-**On phones and tablets** the D-pad and the A and B buttons appear. Held upright, the world is zoomed in and fills the screen from the top down to the time-and-place line: it shows 11×15 tiles, so everything is much larger than on a wide screen (a short phone shows 15×11). The quest lies over its top-left corner and folds to one line. Below come one row with the game's buttons and the controls at the bottom, like a handheld console. Held sideways, the world fills the screen's height, the HUD buttons show only their icons and the controls sit see-through in the corners. Every button is at least 44 pixels for a finger, and nothing hides under a notch or the home bar.
+**On phones and tablets** the D-pad and the A and B buttons appear. Held upright, the world is zoomed in and fills the screen from the top down to the time-and-place line: it shows 11×15 tiles, so everything is much larger than on a wide screen (a short phone shows 15×11). The quest lies over its top-left corner and folds to one line. Below come one row with the game's buttons and the controls at the bottom, like a handheld console. Held sideways, the world fills the screen's height, the HUD buttons show only their icons and the controls sit see-through in the corners. Every button is at least 44 pixels for a finger, and nothing hides under a notch or the home bar. Pinching or double-tapping never zooms the game; dialogs fit above the controls, and only their lists and long pages scroll.
 
 | Upright | Sideways |
 |---|---|

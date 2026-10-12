@@ -31,6 +31,8 @@ export interface GameEnvironment {
   observeVisibility(onChange: (hidden: boolean) => void): Unsubscribe;
   /** Connects the player's input devices (currently the keyboard) to `sink`. */
   attachInput(sink: ActionSink): Unsubscribe;
+  /** A 2D context on a new offscreen canvas of the given size, or `null` where there is none. */
+  createLayer(width: number, height: number): CanvasRenderingContext2D | null;
 }
 
 /** The real browser implementation of {@link GameEnvironment}. */
@@ -76,5 +78,12 @@ export function browserEnvironment(window: Window): GameEnvironment {
     },
 
     attachInput: (sink) => attachKeyboard(window, sink),
+
+    createLayer(width, height) {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      return canvas.getContext('2d');
+    },
   };
 }

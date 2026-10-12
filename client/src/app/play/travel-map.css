@@ -1,12 +1,25 @@
+/*
+ * The travel map fits the space above the touch controls (overlay.css) and never scrolls as a whole: only the list
+ * does. Where there is room across, the map of Slovenia sits beside the list; on an upright phone above it.
+ */
 .travel {
-  width: min(36rem, 100%);
-  max-height: calc(100dvh - 2rem);
-  overflow-y: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(13rem, 2fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    'header header'
+    'question question'
+    'place list';
+  gap: 0.75rem 1rem;
+  width: min(60rem, 100%);
+  max-width: none;
+  max-height: 100%;
   text-align: left;
 }
 
 .travel__header {
   display: flex;
+  grid-area: header;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
@@ -17,9 +30,22 @@
   margin: 0;
 }
 
+.travel__question {
+  grid-area: question;
+}
+
+.travel__place {
+  display: flex;
+  grid-area: place;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
 /* The schematic map keeps the outline's aspect ratio, so marker positions in percent line up. */
 .travel__map {
   position: relative;
+  container-type: inline-size;
   aspect-ratio: 153 / 100;
   width: 100%;
 }
@@ -38,6 +64,7 @@
   border-radius: 50%;
   background: #e8c94a;
   transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .travel__marker--locked {
@@ -53,15 +80,31 @@
   height: 1.1rem;
 }
 
+/* A place's name below its marker (or left of it, travel-map.ts); tapping it chooses the place like the list does. */
 .travel__label {
   position: absolute;
   padding: 0 0.25rem;
+  border: 0;
   background: rgb(0 0 0 / 45%);
   color: #fff;
-  font-size: 0.8rem;
+  /* Smaller on a small map (a short phone), so the names stay apart. */
+  font-size: clamp(0.6rem, 2.6cqi, 0.8rem);
   white-space: nowrap;
   transform: translate(-50%, 0.6rem);
-  pointer-events: none;
+  cursor: pointer;
+}
+
+.travel__label--left {
+  transform: translate(calc(-100% - 0.6rem), -50%);
+}
+
+.travel__label--locked {
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.travel__label:hover {
+  outline: 2px solid var(--color-accent);
 }
 
 .travel__label--selected {
@@ -70,10 +113,13 @@
 
 .travel__list {
   display: flex;
+  grid-area: list;
   flex-direction: column;
   gap: 0.4rem;
+  min-height: 0;
   margin: 0;
   padding: 0;
+  overflow-y: auto;
   list-style: none;
 }
 
@@ -114,4 +160,80 @@
   grid-column: 1 / -1;
   color: var(--color-text-muted);
   font-size: 0.9rem;
+}
+
+/*
+ * Phones: the dialog takes the whole space, and the map is as large as its share allows (a size container, so its
+ * width follows the height left for it: 153 / 100 of it at most).
+ */
+@media (max-width: 39.99rem), (max-height: 33.99rem) {
+  .travel {
+    height: 100%;
+    padding: 0.75rem;
+  }
+
+  .travel h2 {
+    font-size: 1.2rem;
+  }
+
+  .travel__header .button {
+    padding: 0.4rem 0.7rem;
+    font-size: 1rem;
+  }
+
+  /* The title says it already; the room goes to the map and the list. */
+  .travel__question {
+    display: none;
+  }
+
+  .travel__place {
+    container-type: size;
+  }
+
+  .travel__map {
+    width: min(100cqw, 153cqh);
+  }
+
+  .travel__region {
+    padding: 0.35rem 0.6rem;
+  }
+
+  .travel__hint {
+    font-size: 0.8rem;
+  }
+}
+
+/* Upright phones and narrow windows: the map above the list, each with its share of the height. */
+@media (max-width: 39.99rem) {
+  .travel {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-areas:
+      'header'
+      'place'
+      'list';
+    gap: 0.5rem;
+  }
+}
+
+/* Phones held sideways: the map fills the height beside the list. */
+@media (min-width: 40rem) and (max-height: 33.99rem) {
+  .travel {
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'header header'
+      'place list';
+    gap: 0.5rem 1rem;
+  }
+}
+
+/* Fingers: list entries at least 44 CSS pixels high, and the names on the map a little larger to tap. */
+@media (pointer: coarse) {
+  .travel__region {
+    min-height: 44px;
+  }
+
+  .travel__label {
+    padding: 0.15rem 0.35rem;
+  }
 }
