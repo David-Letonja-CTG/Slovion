@@ -170,6 +170,8 @@ jobs:
           set -euo pipefail
           cd /opt/slovion
           chmod +x backup.sh
+          # Other sites' Caddy blocks (D12); made here so it belongs to this user, not to Docker's root.
+          mkdir -p sites
           if [ -f .env ]; then cp .env .env.previous; fi
           mv env.next .env
           chmod 600 .env

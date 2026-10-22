@@ -10,19 +10,23 @@ cd "$(dirname "$(readlink -f "$0")")"
 mkdir -p backups
 chmod 700 backups
 
-name="slovion-$(date -u +%Y%m%dT%H%M%SZ).dump"
-docker compose exec -T db pg_dump -U slovion -d slovion -Fc > "backups/$name.partial"
-mv "backups/$name.partial" "backups/$name"
-echo "dumped backups/$name ($(stat -c %s "backups/$name") bytes)"
-
 # Read only BACKUP_URL from .env; the file is in compose format, not shell syntax.
 backup_url="$(grep -E '^BACKUP_URL=' .env 2>/dev/null | head -n 1 | cut -d= -f2- || true)"
-if [ -n "$backup_url" ]; then
-  curl -fsS --retry 3 --upload-file "backups/$name" "${backup_url%/}/$name"
-  echo "uploaded $name"
-else
-  echo "BACKUP_URL is not set; the dump is kept on this machine only"
-fi
+stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 
-# Keep the newest 3 local dumps.
-ls -1t backups/slovion-*.dump | tail -n +4 | xargs -r rm --
+# Every database on this server: Slovion's, and those of other services on this VM (D12, e.g. olympus).
+databases="$(docker compose exec -T db psql -U slovion -d slovion -Atc \
+  "select datname from pg_database where not datistemplate and datname <> 'postgres' order by datname")"
+for db in $databases; do
+  name="$db-$stamp.dump"
+  docker compose exec -T db pg_dump -U slovion -d "$db" -Fc > "backups/$name.partial"
+  mv "backups/$name.partial" "backups/$name"
+  echo "dumped backups/$name ($(stat -c %s "backups/$name") bytes)"
+  if [ -n "$backup_url" ]; then
+    curl -fsS --retry 3 --upload-file "backups/$name" "${backup_url%/}/$name"
+    echo "uploaded $name"
+  fi
+  # Keep the newest 3 local dumps of each database.
+  ls -1t "backups/$db-"*.dump | tail -n +4 | xargs -r rm --
+done
+[ -n "$backup_url" ] || echo "BACKUP_URL is not set; the dumps are kept on this machine only"

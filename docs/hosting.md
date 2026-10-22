@@ -149,9 +149,9 @@ Once the domain is final, strict transport security (HSTS) can be added to the `
 ## Backups and restore
 
 - **Every day at 03:30 UTC** (plus a few random minutes), `slovion-backup.timer` runs `/opt/slovion/backup.sh`:
-  1. a `pg_dump` in custom format to `/opt/slovion/backups/slovion-<UTC time>.dump`
+  1. a `pg_dump` in custom format of every database on the server: `/opt/slovion/backups/<database>-<UTC time>.dump` (`slovion`, and `olympus` for the other game on this VM)
   2. an upload to the bucket through `BACKUP_URL`
-  3. only the newest 3 dumps are kept on the VM
+  3. only the newest 3 dumps of each database are kept on the VM
 - **The bucket** deletes dumps after 14 days.
 
 Run a backup now, or look at the last runs:
@@ -180,6 +180,16 @@ For a dump from the bucket, download it in the console, copy it to the VM (`scp 
 ```bash
 sudo install -o slovion -g slovion -m 600 ~/slovion-<time>.dump /opt/slovion/backups/
 ```
+
+## Other services on this VM
+
+The VM also runs the **Olympus Unbound** game server (D12, revised 2026-10-22), deployed from [its repository](https://github.com/David-Letonja-CTG/Olympus-Unbound/blob/main/docs/hosting.md#the-game-server):
+
+- **Container:** `olympus-api`, in `/opt/slovion/olympus`, on this stack's network (`slovion_default`).
+- **Database:** `olympus` with its own role on this PostgreSQL server. Olympus's deploy creates them if missing.
+- **Caddy:** `sites/olympus.caddy` serves `olympus.<SITE_ADDRESS>` (the same IP through sslip.io) with its own certificate. Olympus's deploy writes the file and reloads Caddy through the container-local admin endpoint.
+
+Slovion's deploys keep it working: `sites/` stays, and a Caddy restart reads it again. When Slovion's database is restored, leave `olympus` alone, or restore it from its own dump the same way (`-d olympus`).
 
 ## Operations
 

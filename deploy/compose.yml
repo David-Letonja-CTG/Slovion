@@ -23,6 +23,8 @@ services:
     volumes:
       - caddy-data:/data
       - caddy-config:/config
+      # Site blocks of other services on this VM (D12), e.g. the Olympus Unbound game server.
+      - ./sites:/etc/caddy/sites:ro
     depends_on:
       api:
         condition: service_healthy
