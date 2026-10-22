@@ -14,7 +14,7 @@ chmod 700 backups
 backup_url="$(grep -E '^BACKUP_URL=' .env 2>/dev/null | head -n 1 | cut -d= -f2- || true)"
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 
-# Every database on this server: Slovion's, and those of other services on this VM (D12, e.g. olympus).
+# Every database on this server: Slovion's, and those of other services on this VM (D12).
 databases="$(docker compose exec -T db psql -U slovion -d slovion -Atc \
   "select datname from pg_database where not datistemplate and datname <> 'postgres' order by datname")"
 for db in $databases; do

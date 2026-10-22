@@ -87,10 +87,10 @@ Slovion runs on **one Oracle Cloud Always Free Arm VM** (Ubuntu 24.04) as a Dock
 - **Address:** `<ip>.sslip.io` with a real certificate until a domain is bought; then only the `SITE_ADDRESS` variable changes.
 - **Backups:** a daily `pg_dump` goes to OCI Object Storage through a write-only pre-authenticated URL and is kept 14 days.
 - **Secrets** live only in the GitHub `production` environment.
-- *Revised 2026-10-22:* the VM also hosts the **Olympus Unbound** game server, at its own name (`olympus.<ip>.sslip.io`). It shares Caddy and the PostgreSQL server with its own database and role, and joins this stack's network.
+- *Revised 2026-10-22:* the VM may also host other services, each at its own name (`<name>.<ip>.sslip.io`). They share Caddy and the PostgreSQL server with their own databases and roles, and join this stack's network.
   - **Caddy:** it imports other sites' blocks from `sites/`, and its admin endpoint listens only inside its container, so they reload it without restarting.
   - **Backups:** the daily backup dumps every database.
-  - **Independence:** Slovion knows nothing else about the other service, which deploys from its own repository.
+  - **Independence:** Slovion knows nothing else about them; each deploys on its own.
 - **VM setup:** a runbook and one bootstrap script; no infrastructure-as-code yet.
 
 Details and operations: [hosting.md](hosting.md).

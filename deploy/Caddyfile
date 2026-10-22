@@ -1,6 +1,6 @@
 # Slovion's web server. SITE_ADDRESS is a host name (HTTPS with an automatic certificate, HTTP redirects to it),
 # e.g. 203-0-113-7.sslip.io, or ":80" for plain HTTP in tests. The API is the compose service "api".
-# Other sites on this VM (D12, e.g. the Olympus Unbound game server) bring their own site blocks in sites/, imported at
+# Other services on this VM (D12) bring their own site blocks in sites/, imported at
 # the end; they reload Caddy through its admin endpoint, which listens only inside this container.
 {
 	admin localhost:2019
